@@ -1,0 +1,159 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String     @id @default(cuid())
+  role          Role       @default(USER)
+  name          String
+  email         String     @unique
+  password      String
+  image         String?
+  bio           String?
+  instagram     String?
+  tiktok        String?
+  facebook      String?
+  createdAt     DateTime   @default(now())
+  memories      Memory[]
+  comments      Comment[]
+  reactions     Reaction[]
+  feedbacks     Feedback[]
+  reports       Report[]
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Memory {
+  id           String     @id @default(cuid())
+  title        String
+  story        String     @db.Text
+  date         DateTime
+  latitude     Float
+  longitude    Float
+  locationName String?
+  emotion      Emotion
+  isPublic     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  userId       String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  photos       Photo[]
+  comments     Comment[]
+  reactions    Reaction[]
+  tags         Tag[]
+  reports      Report[]
+}
+
+enum Emotion {
+  HAPPY
+  SAD
+  NOSTALGIC
+  EXCITED
+  PEACEFUL
+  GRATEFUL
+  ROMANTIC
+  ADVENTUROUS
+}
+
+model Photo {
+  id       String  @id @default(cuid())
+  url      String
+  caption  String?
+  memoryId String
+  memory   Memory  @relation(fields: [memoryId], references: [id], onDelete: Cascade)
+}
+
+model Comment {
+  id        String    @id @default(cuid())
+  content   String
+  createdAt DateTime  @default(now())
+  userId    String
+  memoryId  String
+  parentId  String?
+  user      User      @relation(fields: [userId], references: [id])
+  memory    Memory    @relation(fields: [memoryId], references: [id], onDelete: Cascade)
+  parent    Comment?  @relation("Replies", fields: [parentId], references: [id])
+  replies   Comment[] @relation("Replies")
+}
+
+model Reaction {
+  id       String       @id @default(cuid())
+  type     ReactionType
+  userId   String
+  memoryId String
+  user     User         @relation(fields: [userId], references: [id])
+  memory   Memory       @relation(fields: [memoryId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, memoryId])
+}
+
+enum ReactionType {
+  LOVE
+  WOW
+  SAD
+  LAUGH
+}
+
+model Tag {
+  id       String   @id @default(cuid())
+  name     String   @unique
+  memories Memory[]
+}
+
+model Feedback {
+  id         String         @id @default(cuid())
+  message    String         @db.Text
+  imageUrl   String?
+  adminReply String?        @db.Text
+  status     FeedbackStatus @default(PENDING)
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  userId     String
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum FeedbackStatus {
+  PENDING
+  READ
+  REPLIED
+}
+
+model Report {
+  id        String       @id @default(cuid())
+  reason    ReportReason
+  details   String?      @db.Text
+  status    ReportStatus @default(PENDING)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  
+  reporterId String
+  reporter   User        @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+  
+  memoryId  String
+  memory    Memory      @relation(fields: [memoryId], references: [id], onDelete: Cascade)
+}
+
+enum ReportReason {
+  SARA
+  PORNOGRAPHY
+  VIOLENCE
+  SPAM
+  OTHER
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWED
+  RESOLVED
+  DISMISSED
+}
