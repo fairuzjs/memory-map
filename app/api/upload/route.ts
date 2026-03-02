@@ -1,44 +1,48 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
-import { writeFile, mkdir } from "fs/promises"
-import { join } from "path"
+import { createClient } from "@supabase/supabase-js"
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
+
 export async function POST(req: Request) {
-    try {
-        const session = await auth()
-        if (!session?.user) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-        }
+  try {
+    const session = await auth()
 
-        const formData = await req.formData()
-        const file = formData.get("file") as File
-
-        if (!file) {
-            return NextResponse.json({ error: "No file uploaded" }, { status: 400 })
-        }
-
-        const bytes = await file.arrayBuffer()
-        const buffer = Buffer.from(bytes)
-
-        const uniqueId = crypto.randomUUID()
-        const originalExt = file.name.split(".").pop()
-        const filename = `${uniqueId}.${originalExt}`
-
-        const uploadDir = join(process.cwd(), "public/uploads")
-
-        try {
-            await mkdir(uploadDir, { recursive: true })
-        } catch (err) {
-            // Ignore error if directory already exists
-        }
-
-        const path = join(uploadDir, filename)
-
-        // Ensure the array type since writeFileSync returns void.
-        await writeFile(path, buffer as any)
-
-        return NextResponse.json({ url: `/uploads/${filename}` })
-    } catch (error) {
-        console.error("Upload Error:", error)
-        return NextResponse.json({ error: "Failed to upload file" }, { status: 500 })
+    if (!session?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
+
+    const formData = await req.formData()
+    const file = formData.get("file") as File
+
+    if (!file) {
+      return NextResponse.json({ error: "No file uploaded" }, { status: 400 })
+    }
+
+    const uniqueId = crypto.randomUUID()
+    const fileExt = file.name.split(".").pop()
+    const fileName = `${uniqueId}.${fileExt}`
+
+    const { error } = await supabase.storage
+      .from("uploads") // pastikan bucket ini sudah dibuat di Supabase
+      .upload(fileName, file)
+
+    if (error) {
+      console.error(error)
+      return NextResponse.json({ error: "Upload failed" }, { status: 500 })
+    }
+
+    const { data } = supabase.storage
+      .from("uploads")
+      .getPublicUrl(fileName)
+
+    return NextResponse.json({ url: data.publicUrl })
+
+  } catch (error) {
+    console.error("Upload Error:", error)
+    return NextResponse.json({ error: "Failed to upload file" }, { status: 500 })
+  }
 }
