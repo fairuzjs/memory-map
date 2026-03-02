@@ -4,7 +4,7 @@ import { createClient } from "@supabase/supabase-js"
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
 export async function POST(req: Request) {
@@ -22,17 +22,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 })
     }
 
-    const uniqueId = crypto.randomUUID()
     const fileExt = file.name.split(".").pop()
-    const fileName = `${uniqueId}.${fileExt}`
+    const fileName = `${crypto.randomUUID()}.${fileExt}`
 
     const { error } = await supabase.storage
-      .from("uploads") // pastikan bucket ini sudah dibuat di Supabase
+      .from("uploads")
       .upload(fileName, file)
 
     if (error) {
       console.error(error)
-      return NextResponse.json({ error: "Upload failed" }, { status: 500 })
+      return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
     const { data } = supabase.storage
@@ -43,6 +42,6 @@ export async function POST(req: Request) {
 
   } catch (error) {
     console.error("Upload Error:", error)
-    return NextResponse.json({ error: "Failed to upload file" }, { status: 500 })
+    return NextResponse.json({ error: "Upload failed" }, { status: 500 })
   }
 }
