@@ -2,10 +2,11 @@
 
 import Link from "next/link"
 import { motion, useInView } from "framer-motion"
-import { MapPin, Globe, BookOpen, Heart, ArrowRight, Loader2, Sparkles, Users, Star, Zap, Lock, Share2 } from "lucide-react"
+import { MapPin, Globe, BookOpen, Heart, ArrowRight, Loader2, Users, Star, Zap, Lock, Share2 } from "lucide-react"
 import { useSession } from "next-auth/react"
 import { useEffect, useState, useRef } from "react"
 import dynamic from "next/dynamic"
+import { NotificationDropdown } from "@/components/layout/NotificationDropdown"
 
 const MapView = dynamic(() => import("@/components/map/MapView"), {
   ssr: false,
@@ -122,6 +123,24 @@ export default function LandingPage() {
   const [memories, setMemories] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
+  // Smooth scroll logic
+  const scrollToSection = (e: React.MouseEvent, id: string) => {
+    e.preventDefault()
+    const element = document.getElementById(id)
+    if (element) {
+      const offset = 80 // height of fixed header approx
+      const bodyRect = document.body.getBoundingClientRect().top
+      const elementRect = element.getBoundingClientRect().top
+      const elementPosition = elementRect - bodyRect
+      const offsetPosition = elementPosition - offset
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      })
+    }
+  }
+
   useEffect(() => {
     fetch("/api/memories?public=true")
       .then(res => res.json())
@@ -161,7 +180,7 @@ export default function LandingPage() {
       </div>
 
       {/* ── Navigation ──────────────────────────────────────────────────── */}
-      <nav className="relative z-50 border-b border-white/[0.06]">
+      <nav className="fixed top-0 w-full z-50 border-b border-white/[0.06]">
         <div
           className="absolute inset-0 backdrop-blur-2xl"
           style={{ background: "linear-gradient(to bottom, rgba(8,8,16,0.85), rgba(8,8,16,0.6))" }}
@@ -183,25 +202,28 @@ export default function LandingPage() {
 
             {/* Nav links (desktop) */}
             <div className="hidden md:flex items-center gap-8 text-sm font-medium text-neutral-400">
-              <a href="#features" className="hover:text-white transition-colors">Features</a>
-              <a href="#map" className="hover:text-white transition-colors">Explore</a>
+              <button onClick={(e) => scrollToSection(e, "features")} className="hover:text-white transition-colors cursor-pointer">Features</button>
+              <button onClick={(e) => scrollToSection(e, "map")} className="hover:text-white transition-colors cursor-pointer">Explore</button>
             </div>
 
             {/* Auth */}
             <div className="flex items-center gap-3">
               {session?.user ? (
-                <Link
-                  href="/dashboard"
-                  className="flex items-center gap-2.5 px-4 py-2 rounded-full text-sm font-semibold text-white
-                             border border-white/10 bg-white/5 hover:bg-white/10 transition-all backdrop-blur-sm"
-                >
-                  <img
-                    src={session.user.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${session.user.id}`}
-                    className="w-6 h-6 rounded-full border border-indigo-400/40"
-                    alt=""
-                  />
-                  {session.user.name}
-                </Link>
+                <>
+                  <NotificationDropdown />
+                  <Link
+                    href="/dashboard"
+                    className="flex items-center gap-2.5 px-4 py-2 rounded-full text-sm font-semibold text-white
+                               border border-white/10 bg-white/5 hover:bg-white/10 transition-all backdrop-blur-sm"
+                  >
+                    <img
+                      src={session.user.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${session.user.id}`}
+                      className="w-6 h-6 rounded-full border border-indigo-400/40"
+                      alt=""
+                    />
+                    <span className="inline">{session.user.name}</span>
+                  </Link>
+                </>
               ) : (
                 <>
                   <Link href="/login" className="hidden sm:block text-sm font-medium text-neutral-400 hover:text-white transition-colors px-3">
@@ -214,7 +236,6 @@ export default function LandingPage() {
                   >
                     <span className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors" />
                     <span className="relative">Get Started</span>
-                    <ArrowRight className="relative w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                   </Link>
                 </>
               )}
@@ -236,9 +257,7 @@ export default function LandingPage() {
               {/* Pill badge */}
               <motion.div variants={fadeUp} className="mb-8">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium text-indigo-300 border border-indigo-500/25 bg-indigo-500/[0.08] backdrop-blur-sm">
-                  <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
                   <span>Your life, pinned to the world</span>
-                  <span className="ml-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 uppercase tracking-wider">New</span>
                 </div>
               </motion.div>
 
@@ -295,7 +314,6 @@ export default function LandingPage() {
                         style={{ background: "linear-gradient(135deg, #7c3aed 0%, #9333ea 100%)" }} />
                       <span className="relative flex items-center gap-2">
                         Start Mapping Free
-                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                       </span>
                       {/* Glow ring */}
                       <span className="absolute -inset-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity blur-md -z-10"
@@ -535,7 +553,6 @@ export default function LandingPage() {
                   style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6, #a855f7)" }}
                 >
                   Create Free Account
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
               )}
             </motion.div>

@@ -4,7 +4,11 @@ import { useEffect, useRef, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { MemoryCard } from "@/components/memories/MemoryCard"
-import { Loader2, MapPin, Calendar, Heart, MessageCircle, Pencil, Camera, X, Check, Instagram, Facebook, Settings, ExternalLink } from "lucide-react"
+import {
+    Loader2, MapPin, Calendar, Heart, MessageCircle,
+    Pencil, Camera, X, Check, Instagram, Facebook,
+    Settings, ArrowUpRight, Globe2
+} from "lucide-react"
 import Link from "next/link"
 import toast from "react-hot-toast"
 import { motion, AnimatePresence } from "framer-motion"
@@ -42,17 +46,12 @@ export default function UserProfilePage() {
             fetch(`/api/memories?userId=${id}&public=true`).then(res => res.ok ? res.json() : [])
         ])
             .then(([userData, userMemories]) => {
-                if (!userData) {
-                    router.push("/404")
-                    return
-                }
+                if (!userData) { router.push("/404"); return }
                 setUser(userData)
                 setMemories(userMemories)
                 setLoading(false)
             })
-            .catch(() => {
-                router.push("/404")
-            })
+            .catch(() => router.push("/404"))
     }, [id, router])
 
     const openEdit = () => {
@@ -76,17 +75,14 @@ export default function UserProfilePage() {
             setEditImage(url)
             setPreviewImage(url)
         } catch {
-            toast.error("Failed to upload photo")
+            toast.error("Gagal mengupload foto")
         } finally {
             setIsUploadingPhoto(false)
         }
     }
 
     const handleSave = async () => {
-        if (!editName.trim()) {
-            toast.error("Name cannot be empty")
-            return
-        }
+        if (!editName.trim()) { toast.error("Nama tidak boleh kosong"); return }
         setIsSaving(true)
         try {
             const res = await fetch(`/api/users/${id}`, {
@@ -98,10 +94,10 @@ export default function UserProfilePage() {
             const updated = await res.json()
             setUser((prev: any) => ({ ...prev, ...updated }))
             await updateSession()
-            toast.success("Profile updated!")
+            toast.success("Profil berhasil diperbarui!")
             setIsEditOpen(false)
         } catch {
-            toast.error("Failed to update profile")
+            toast.error("Gagal memperbarui profil")
         } finally {
             setIsSaving(false)
         }
@@ -116,273 +112,410 @@ export default function UserProfilePage() {
     }
 
     const isOwner = session?.user?.id === id
-    const joinDate = new Date(user.createdAt).toLocaleDateString("en-US", { month: 'long', year: 'numeric' })
+    const joinDate = new Date(user.createdAt).toLocaleDateString("id-ID", { month: "long", year: "numeric" })
     const totalReactions = user._count?.reactions || 0
     const totalComments = user._count?.comments || 0
     const totalMemories = memories.length
     const avatarSrc = user.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`
+    const hasSocials = user.instagram || user.tiktok || user.facebook
+    const isAdmin = user.role === "ADMIN"
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-            {/* Elegant Profile Header Card */}
-            <div className="bg-neutral-900/40 backdrop-blur-xl rounded-[2.5rem] border border-neutral-800/80 shadow-2xl overflow-hidden mb-12">
-                {/* Dynamic Cover Mesh - Gradient height diperkecil */}
-                <div className="h-24 sm:h-32 w-full relative bg-gradient-to-br from-indigo-950 via-neutral-900 to-violet-950 overflow-hidden">
-                    <div className="absolute top-0 right-0 w-[30rem] h-[30rem] bg-indigo-500/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3" />
-                    <div className="absolute bottom-0 left-0 w-[20rem] h-[20rem] bg-violet-500/10 rounded-full blur-[80px] translate-y-1/2 -translate-x-1/4" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full" style={{ fontFamily: "Outfit, sans-serif" }}>
+
+{/* ─────────────── PROFILE CARD ─────────────── */}
+            <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                className="rounded-[2rem] overflow-hidden mb-8 relative w-full"
+                style={{
+                    background: "linear-gradient(160deg, rgba(18,18,28,0.95), rgba(10,10,16,0.98))",
+                    border: "1px solid rgba(255,255,255,0.07)",
+                    backdropFilter: "blur(24px)",
+                    boxShadow: "0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(99,102,241,0.05)"
+                }}
+            >
+                {/* ── Cover Banner ── */}
+                <div className="relative h-32 sm:h-40 overflow-hidden">
+                    {/* Base gradient */}
+                    <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, #0f0f23 0%, #1a0a2e 40%, #0d1a3a 70%, #0a0f1e 100%)" }} />
+                    
+                    {/* Vivid blobs */}
+                    <div className="absolute top-[-30%] left-[10%] w-72 h-72 rounded-full" style={{ background: "radial-gradient(circle, rgba(99,102,241,0.35) 0%, transparent 70%)", filter: "blur(48px)" }} />
+                    <div className="absolute top-[-20%] right-[10%] w-80 h-80 rounded-full" style={{ background: "radial-gradient(circle, rgba(139,92,246,0.25) 0%, transparent 70%)", filter: "blur(56px)" }} />
+                    <div className="absolute bottom-[-10%] left-[40%] w-60 h-60 rounded-full" style={{ background: "radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%)", filter: "blur(40px)" }} />
+                    
+                    {/* Noise grain texture */}
+                    <div className="absolute inset-0 opacity-[0.025]" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E")` }} />
+                    
+                    {/* Dot grid overlay */}
+                    <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
+                    
+                    {/* Bottom fade */}
+                    <div className="absolute bottom-0 inset-x-0 h-16" style={{ background: "linear-gradient(to bottom, transparent, rgba(10,10,16,0.9))" }} />
+                    
+                    {/* Admin badge (Desktop only di banner, Mobile pindah ke sebelah nama) */}
+                    {isAdmin && (
+                        <div className="absolute top-4 right-5 px-3 py-1.5 rounded-full text-[10px] font-bold tracking-widest uppercase hidden md:block"
+                            style={{ background: "rgba(99,102,241,0.2)", border: "1px solid rgba(99,102,241,0.35)", color: "#a5b4fc" }}>
+                            Admin
+                        </div>
+                    )}
                 </div>
 
-                {/* Reduced bottom padding */}
-                <div className="px-6 sm:px-10 pb-8 relative">
-                    {/* Avatar & Actions Row */}
-                    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 -mt-16 sm:-mt-20 mb-4 relative z-10">
-                        <div className="relative group shrink-0 inline-block">
-                            {/* Avatar Wrapper with glow */}
-                            <div className="absolute inset-0 bg-indigo-500/20 rounded-full blur-xl group-hover:bg-indigo-500/30 transition-colors" />
-                            {/* Smaller Avatar Size */}
+                {/* ── Konten Profil (Horizontal di Desktop, Stack di Mobile) ── */}
+                <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-center md:items-end justify-between -mt-[48px] sm:-mt-[56px] px-6 lg:px-10 pb-8 relative z-10 w-full">
+                    
+                    {/* KIRI: Avatar, Nama & Bio */}
+                    <div className="flex flex-col md:flex-row items-center md:items-end gap-5 md:gap-6 w-full md:w-auto">
+                        
+                        {/* Avatar */}
+                        <div className="relative group shrink-0">
+                            <div className="absolute -inset-2 rounded-full animate-pulse" style={{ background: "linear-gradient(135deg, rgba(99,102,241,0.4), rgba(139,92,246,0.3))", filter: "blur(10px)" }} />
+                            <div className="absolute -inset-1 rounded-full p-[2px]" style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899)" }}>
+                                <div className="w-full h-full rounded-full" style={{ background: "rgba(10,10,16,1)" }} />
+                            </div>
                             <img
                                 src={avatarSrc}
                                 alt={user.name}
-                                className="w-32 h-32 sm:w-40 sm:h-40 rounded-full border-[6px] sm:border-8 border-neutral-900 bg-neutral-800 object-cover relative z-10"
+                                className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover z-10"
+                                style={{ border: "3px solid rgba(10,10,16,1)" }}
                             />
                             {isOwner && (
                                 <button
                                     onClick={openEdit}
-                                    className="absolute inset-2 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-20"
+                                    className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-1 z-20"
+                                    style={{ background: "rgba(0,0,0,0.65)", backdropFilter: "blur(4px)" }}
+                                    title="Ganti Foto"
                                 >
-                                    <Camera className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+                                    <Camera className="w-6 h-6 text-white" />
+                                    <span className="text-[9px] font-bold text-white uppercase tracking-widest">Ubah</span>
                                 </button>
                             )}
                         </div>
 
-                        {isOwner && (
-                            <div className="flex items-center gap-3 pt-4 sm:pt-0 sm:mb-2">
-                                <Link
-                                    href="/settings"
-                                    className="p-2.5 sm:p-3 rounded-2xl bg-neutral-800/50 hover:bg-neutral-800 border border-neutral-700/50 hover:border-neutral-600 transition-all text-neutral-400 hover:text-white backdrop-blur-sm"
-                                    title="Settings"
-                                >
-                                    <Settings className="w-5 h-5" />
-                                </Link>
-                                <button
-                                    onClick={openEdit}
-                                    className="flex items-center gap-2 bg-white hover:bg-neutral-100 text-neutral-900 px-5 py-2.5 sm:px-6 sm:py-3 rounded-2xl font-semibold transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 text-sm sm:text-base"
-                                >
-                                    <Pencil className="w-4 h-4" /> Edit Profile
-                                </button>
+                        {/* Nama & Bio */}
+                        <div className="text-center md:text-left md:pb-2 max-w-sm">
+                            <div className="flex flex-col md:flex-row items-center gap-2 md:gap-3 mb-1.5">
+                                <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
+                                    {user.name}
+                                </h1>
+                                {isAdmin && (
+                                    <span className="md:hidden inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-widest uppercase"
+                                        style={{ background: "rgba(99,102,241,0.15)", border: "1px solid rgba(99,102,241,0.3)", color: "#818cf8" }}>
+                                        Admin
+                                    </span>
+                                )}
                             </div>
-                        )}
-                    </div>
-
-                    {/* Info Matrix */}
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-                        {/* Bio & Links section (takes 2 columns) */}
-                        <div className="lg:col-span-2 space-y-3 text-center sm:text-left">
-                            <h1 className="text-3xl sm:text-4xl font-black font-[Outfit] tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-neutral-400">
-                                {user.name}
-                            </h1>
-                            <p className="text-neutral-400 text-base sm:text-lg max-w-2xl leading-relaxed font-light">
-                                {user.bio || "This explorer is currently wandering off the grid and hasn't left a bio yet."}
+                            <p className="text-sm sm:text-base text-neutral-400 leading-relaxed font-light">
+                                {user.bio || <span className="italic text-neutral-600">Penjelajah ini belum menulis bio.</span>}
                             </p>
+                        </div>
+                    </div>
 
-                            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 pt-2">
-                                <div className="flex items-center gap-2 text-sm font-medium text-neutral-500">
-                                    <Calendar className="w-4 h-4 text-neutral-600" />
-                                    Joined {joinDate}
+                    {/* KANAN: Statistik, Info & Tombol */}
+                    <div className="flex flex-col items-center md:items-end gap-5 w-full md:w-auto">
+                        
+                        {/* Stats Row */}
+                        <div className="flex items-stretch gap-0 rounded-xl overflow-hidden w-full max-w-sm md:max-w-md"
+                            style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                            {[
+                                { label: "Kenangan", value: totalMemories, icon: MapPin, color: "#818cf8" },
+                                { label: "Reaksi", value: totalReactions, icon: Heart, color: "#f472b6" },
+                                { label: "Komentar", value: totalComments, icon: MessageCircle, color: "#34d399" },
+                            ].map(({ label, value, icon: Icon, color }, i, arr) => (
+                                <div key={label} className="flex-1 flex flex-col items-center justify-center py-2.5 px-3 relative">
+                                    {i < arr.length - 1 && <div className="absolute right-0 top-1/4 bottom-1/4 w-px" style={{ background: "rgba(255,255,255,0.07)" }} />}
+                                    <span className="text-lg sm:text-xl font-black mb-0.5" style={{ color }}>{value}</span>
+                                    <div className="flex items-center gap-1">
+                                        <Icon className="w-2.5 h-2.5" style={{ color }} />
+                                        <span className="text-[10px] font-bold tracking-wider uppercase" style={{ color: "rgba(115,115,115,1)" }}>{label}</span>
+                                    </div>
                                 </div>
-                                <span className="hidden sm:inline w-1 h-1 rounded-full bg-neutral-700" />
-                                <div className="flex items-center gap-2 text-sm font-medium text-neutral-500">
-                                    <MapPin className="w-4 h-4 text-indigo-400" />
-                                    {totalMemories} Locations Explored
+                            ))}
+                        </div>
+
+                        {/* Info Bar & Actions Wrapper */}
+                        <div className="flex flex-col sm:flex-row items-center gap-4 md:gap-5 w-full sm:w-auto justify-center md:justify-end">
+                            
+                            {/* Info & Socials */}
+                            <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-xs sm:text-sm text-neutral-500">
+                                <div className="flex items-center gap-1.5" title="Tanggal Bergabung">
+                                    <Calendar className="w-3.5 h-3.5 text-neutral-600" />
+                                    <span>{joinDate}</span> {/* CLASS HIDDEN DIHAPUS DI SINI */}
                                 </div>
+                                
+                                {hasSocials && (
+                                    <>
+                                        {/* Titik pemisah sekarang akan tampil di mobile juga */}
+                                        <span className="w-1 h-1 rounded-full bg-neutral-700" />
+                                        <div className="flex items-center gap-2">
+                                            {user.instagram && (
+                                                <a href={user.instagram} target="_blank" rel="noopener noreferrer"
+                                                    className="w-7 h-7 rounded-md flex items-center justify-center transition-all hover:scale-110 bg-white/5 border border-white/10 hover:border-pink-500/50" title="Instagram">
+                                                    <Instagram className="w-3.5 h-3.5 text-neutral-400 hover:text-pink-400" />
+                                                </a>
+                                            )}
+                                            {user.tiktok && (
+                                                <a href={user.tiktok} target="_blank" rel="noopener noreferrer"
+                                                    className="w-7 h-7 rounded-md flex items-center justify-center transition-all hover:scale-110 bg-white/5 border border-white/10 hover:border-white/50" title="TikTok">
+                                                    <TikTokIcon className="w-3.5 h-3.5 text-neutral-400 hover:text-white" />
+                                                </a>
+                                            )}
+                                            {user.facebook && (
+                                                <a href={user.facebook} target="_blank" rel="noopener noreferrer"
+                                                    className="w-7 h-7 rounded-md flex items-center justify-center transition-all hover:scale-110 bg-white/5 border border-white/10 hover:border-blue-500/50" title="Facebook">
+                                                    <Facebook className="w-3.5 h-3.5 text-neutral-400 hover:text-blue-400" />
+                                                </a>
+                                            )}
+                                        </div>
+                                    </>
+                                )}
                             </div>
 
-                            {/* Social Badges */}
-                            {(user.instagram || user.tiktok || user.facebook) && (
-                                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-3 border-t border-neutral-800/50 mt-3">
-                                    {user.instagram && (
-                                        <a href={user.instagram} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-neutral-800/40 hover:bg-pink-500/10 border border-neutral-700/50 hover:border-pink-500/30 text-neutral-300 hover:text-pink-400 transition-all group">
-                                            <Instagram className="w-3.5 h-3.5" />
-                                            <span className="text-xs font-medium">Instagram</span>
-                                        </a>
-                                    )}
-                                    {user.tiktok && (
-                                        <a href={user.tiktok} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-neutral-800/40 hover:bg-neutral-500/10 border border-neutral-700/50 hover:border-neutral-500/30 text-neutral-300 hover:text-white transition-all group">
-                                            <TikTokIcon className="w-3.5 h-3.5" />
-                                            <span className="text-xs font-medium">TikTok</span>
-                                        </a>
-                                    )}
-                                    {user.facebook && (
-                                        <a href={user.facebook} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-neutral-800/40 hover:bg-blue-500/10 border border-neutral-700/50 hover:border-blue-500/30 text-neutral-300 hover:text-blue-400 transition-all group">
-                                            <Facebook className="w-3.5 h-3.5" />
-                                            <span className="text-xs font-medium">Facebook</span>
-                                        </a>
-                                    )}
+                            {/* Tombol Aksi */}
+                            {isOwner && (
+                                <div className="flex items-center gap-2">
+                                    <Link href="/settings"
+                                        className="flex items-center justify-center w-9 h-9 rounded-lg text-neutral-400 hover:text-white transition-all bg-white/5 border border-white/10 hover:bg-white/10"
+                                        title="Pengaturan">
+                                        <Settings className="w-4 h-4" />
+                                    </Link>
+                                    <button onClick={openEdit}
+                                        className="flex items-center gap-1.5 px-4 h-9 rounded-lg text-xs sm:text-sm font-bold text-white transition-all hover:scale-[1.03] relative overflow-hidden group"
+                                        style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}>
+                                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "linear-gradient(135deg, #818cf8, #a78bfa)" }} />
+                                        <Pencil className="w-3.5 h-3.5 relative z-10" />
+                                        <span className="relative z-10 hidden sm:inline">Edit Profil</span>
+                                        <span className="relative z-10 sm:hidden">Edit</span>
+                                    </button>
                                 </div>
                             )}
                         </div>
+                    </div>
+                </div>
+            </motion.div>
 
-                        {/* Interactive Stats Panel - Made more compact */}
-                        <div className="flex gap-3 sm:gap-4 justify-center lg:justify-end items-center">
-                            <div className="bg-neutral-800/30 border border-neutral-800/60 rounded-[1.5rem] p-4 sm:p-5 text-center w-full sm:w-28 backdrop-blur-sm hover:bg-neutral-800/50 transition-colors">
-                                <div className="w-10 h-10 mx-auto bg-rose-500/10 rounded-xl flex items-center justify-center mb-2">
-                                    <Heart className="w-5 h-5 text-rose-500 fill-rose-500/20" />
-                                </div>
-                                <div className="text-2xl font-black text-white font-[Outfit]">{totalReactions}</div>
-                                <div className="text-[10px] text-neutral-500 mt-0.5 font-bold tracking-wider uppercase">Reactions</div>
-                            </div>
-                            <div className="bg-neutral-800/30 border border-neutral-800/60 rounded-[1.5rem] p-4 sm:p-5 text-center w-full sm:w-28 backdrop-blur-sm hover:bg-neutral-800/50 transition-colors">
-                                <div className="w-10 h-10 mx-auto bg-blue-500/10 rounded-xl flex items-center justify-center mb-2">
-                                    <MessageCircle className="w-5 h-5 text-blue-500 fill-blue-500/20" />
-                                </div>
-                                <div className="text-2xl font-black text-white font-[Outfit]">{totalComments}</div>
-                                <div className="text-[10px] text-neutral-500 mt-0.5 font-bold tracking-wider uppercase">Comments</div>
-                            </div>
+            {/* ─────────────── MEMORIES SECTION ─────────────── */}
+            <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+            >
+                {/* Section Header */}
+                <div className="flex items-center gap-4 mb-7">
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+                            style={{ background: "linear-gradient(135deg, rgba(99,102,241,0.2), rgba(139,92,246,0.2))", border: "1px solid rgba(99,102,241,0.2)" }}>
+                            <MapPin className="w-4 h-4 text-indigo-400" />
                         </div>
+                        <h2 className="text-lg font-bold text-white tracking-tight">Kenangan Publik</h2>
                     </div>
+                    {memories.length > 0 && (
+                        <span className="px-2.5 py-1 rounded-full text-xs font-bold text-indigo-300"
+                            style={{ background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.2)" }}>
+                            {memories.length}
+                        </span>
+                    )}
+                    <div className="flex-1 h-px"
+                        style={{ background: "linear-gradient(to right, rgba(99,102,241,0.2), transparent)" }} />
                 </div>
-            </div>
 
-            <div className="mb-8 border-b border-neutral-800/50 pb-4">
-                <h2 className="text-2xl font-bold font-[Outfit] text-white flex items-center gap-3">
-                    Public Memories
-                    <span className="block px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-sm font-semibold">
-                        {memories.length}
-                    </span>
-                </h2>
-            </div>
-
-            {memories.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {memories.map((memory) => (
-                        <MemoryCard key={memory.id} memory={memory} />
-                    ))}
-                </div>
-            ) : (
-                <div className="text-center py-24 bg-neutral-900/20 rounded-[2.5rem] border border-neutral-800/50 border-dashed backdrop-blur-sm">
-                    <div className="w-20 h-20 mx-auto bg-neutral-800/50 rounded-3xl flex items-center justify-center mb-6 border border-neutral-700/50">
-                        <MapPin className="w-10 h-10 text-neutral-500" />
+                {/* Grid or Empty State */}
+                {memories.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                        {memories.map((memory, i) => (
+                            <motion.div
+                                key={memory.id}
+                                initial={{ opacity: 0, y: 12 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: i * 0.05, ease: [0.22, 1, 0.36, 1] }}
+                            >
+                                <MemoryCard memory={memory} />
+                            </motion.div>
+                        ))}
                     </div>
-                    <p className="text-white font-semibold text-xl font-[Outfit] mb-2">No public memories yet</p>
-                    {isOwner ? (
-                        <p className="text-neutral-500 text-sm max-w-sm mx-auto mb-6">
-                            You haven't shared any memories publicly. Share your first global experience on the map with the world.
-                        </p>
-                    ) : (
-                        <p className="text-neutral-500 text-sm max-w-sm mx-auto">
-                            {user.name} hasn't shared anything publicly yet. Check back later!
-                        </p>
-                    )}
-                    {isOwner && (
-                        <Link href="/memories/create" className="inline-flex items-center gap-2 bg-neutral-800 hover:bg-neutral-700 text-white px-6 py-3 rounded-xl font-medium transition-colors">
-                            <MapPin className="w-4 h-4" /> Start Mapping
-                        </Link>
-                    )}
-                </div>
-            )}
+                ) : (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.98 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="text-center py-20 rounded-3xl"
+                        style={{
+                            background: "linear-gradient(160deg, rgba(18,18,28,0.5), rgba(10,10,16,0.7))",
+                            border: "1.5px dashed rgba(255,255,255,0.06)"
+                        }}
+                    >
+                        <div className="w-16 h-16 mx-auto mb-5 rounded-3xl flex items-center justify-center"
+                            style={{
+                                background: "linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.05))",
+                                border: "1px solid rgba(99,102,241,0.15)"
+                            }}>
+                            <MapPin className="w-7 h-7" style={{ color: "rgba(99,102,241,0.45)" }} />
+                        </div>
+                        <p className="text-base font-semibold text-neutral-400 mb-2">Belum ada kenangan publik</p>
+                        {isOwner ? (
+                            <>
+                                <p className="text-sm text-neutral-600 max-w-xs mx-auto mb-6 leading-relaxed">
+                                    Kamu belum berbagi kenangan apapun. Mulai petakan momen pertamamu!
+                                </p>
+                                <Link
+                                    href="/memories/create"
+                                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white hover:scale-105 transition-transform duration-200"
+                                    style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
+                                >
+                                    <MapPin className="w-4 h-4" />
+                                    Mulai Petakan
+                                </Link>
+                            </>
+                        ) : (
+                            <p className="text-sm text-neutral-600 max-w-xs mx-auto leading-relaxed">
+                                {user.name} belum berbagi kenangan apapun. Kunjungi lagi nanti!
+                            </p>
+                        )}
+                    </motion.div>
+                )}
+            </motion.div>
 
-            {/* Edit Profile Modal */}
+            {/* ─────────────── EDIT PROFILE MODAL ─────────────── */}
             <AnimatePresence>
                 {isEditOpen && (
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4"
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4"
+                        style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(12px)" }}
                         onClick={(e) => e.target === e.currentTarget && setIsEditOpen(false)}
                     >
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.95, y: 16 }}
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 16 }}
-                            className="bg-[#111] border border-neutral-800 rounded-[2rem] shadow-2xl shadow-indigo-500/10 w-full max-w-md overflow-hidden relative"
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            transition={{ ease: [0.22, 1, 0.36, 1] }}
+                            className="w-full max-w-md rounded-[2rem] overflow-hidden relative"
+                            style={{
+                                background: "linear-gradient(160deg, rgba(18,18,28,0.98), rgba(10,10,16,0.99))",
+                                border: "1px solid rgba(255,255,255,0.08)",
+                                boxShadow: "0 40px 100px rgba(0,0,0,0.7), 0 0 0 1px rgba(99,102,241,0.08)"
+                            }}
                         >
-                            <div className="absolute top-0 inset-x-0 h-32 bg-gradient-to-br from-indigo-500/10 to-violet-500/10 opacity-50 pointer-events-none" />
+                            {/* Top gradient accent */}
+                            <div className="h-px w-full"
+                                style={{ background: "linear-gradient(90deg, transparent, #6366f1, #8b5cf6, transparent)" }} />
 
-                            <div className="flex items-center justify-between p-6 pb-2 relative z-10">
-                                <h2 className="text-2xl font-bold font-[Outfit] text-white">Edit Profile</h2>
-                                <button onClick={() => setIsEditOpen(false)} className="p-2.5 rounded-full bg-neutral-900/80 hover:bg-neutral-800 text-neutral-400 hover:text-white transition-colors border border-neutral-800">
-                                    <X className="w-5 h-5" />
+                            {/* Modal Header */}
+                            <div className="flex items-center justify-between px-7 pt-6 pb-2">
+                                <div>
+                                    <h2 className="text-xl font-bold text-white">Edit Profil</h2>
+                                    <p className="text-xs text-neutral-600 mt-0.5">Perbarui informasi profil kamu</p>
+                                </div>
+                                <button
+                                    onClick={() => setIsEditOpen(false)}
+                                    className="w-8 h-8 rounded-xl flex items-center justify-center text-neutral-500 hover:text-white transition-colors"
+                                    style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
+                                >
+                                    <X className="w-4 h-4" />
                                 </button>
                             </div>
 
-                            <div className="p-6 space-y-7 relative z-10">
-                                <div className="flex flex-col items-center gap-4">
+                            <div className="px-7 py-6 space-y-5">
+                                {/* Avatar upload */}
+                                <div className="flex flex-col items-center gap-3">
                                     <div className="relative group">
-                                        <div className="absolute inset-0 bg-indigo-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        <div className="absolute -inset-1 rounded-full p-[2px]"
+                                            style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899)" }}>
+                                            <div className="w-full h-full rounded-full" style={{ background: "rgba(10,10,16,1)" }} />
+                                        </div>
                                         <img
                                             src={previewImage || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`}
                                             alt="Avatar preview"
-                                            className="w-28 h-28 rounded-full border-4 border-neutral-800 object-cover bg-neutral-900 shadow-xl relative z-10"
+                                            className="relative w-24 h-24 rounded-full object-cover z-10"
                                         />
                                         <button
                                             type="button"
                                             onClick={() => avatarInputRef.current?.click()}
                                             disabled={isUploadingPhoto}
-                                            className="absolute inset-0 rounded-full bg-black/60 opacity-0 group-hover:opacity-100 transition-all flex flex-col items-center justify-center z-20"
+                                            className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-all flex flex-col items-center justify-center gap-1 z-20"
+                                            style={{ background: "rgba(0,0,0,0.65)", backdropFilter: "blur(4px)" }}
                                         >
-                                            {isUploadingPhoto ? (
-                                                <Loader2 className="w-6 h-6 text-white animate-spin" />
-                                            ) : (
-                                                <>
-                                                    <Camera className="w-6 h-6 text-white mb-1" />
-                                                    <span className="text-[10px] font-bold text-white uppercase tracking-wider">Upload</span>
-                                                </>
-                                            )}
+                                            {isUploadingPhoto
+                                                ? <Loader2 className="w-5 h-5 text-white animate-spin" />
+                                                : <><Camera className="w-5 h-5 text-white" /><span className="text-[9px] font-bold text-white uppercase tracking-widest">Upload</span></>
+                                            }
                                         </button>
-                                        <input
-                                            ref={avatarInputRef}
-                                            type="file"
-                                            accept="image/*"
-                                            className="hidden"
-                                            onChange={handleAvatarUpload}
-                                        />
+                                        <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
                                     </div>
+                                    <p className="text-[11px] text-neutral-700">Klik pada foto untuk menggantinya</p>
                                 </div>
 
+                                {/* Divider */}
+                                <div className="h-px" style={{ background: "rgba(255,255,255,0.05)" }} />
+
+                                {/* Name */}
                                 <div>
-                                    <label className="block text-sm font-semibold text-neutral-300 mb-2">Display Name</label>
+                                    <label className="block text-xs font-bold text-neutral-500 mb-2 uppercase tracking-wide">Nama Tampilan</label>
                                     <input
                                         type="text"
                                         value={editName}
                                         onChange={(e) => setEditName(e.target.value)}
-                                        placeholder="What should we call you?"
-                                        className="w-full bg-neutral-900 border border-neutral-800 hover:border-neutral-700 rounded-2xl px-5 py-4 text-white placeholder-neutral-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-base"
+                                        placeholder="Siapa namamu?"
+                                        className="w-full rounded-2xl px-4 py-3.5 text-sm text-white placeholder:text-neutral-700 focus:outline-none transition-all"
+                                        style={{
+                                            background: "rgba(0,0,0,0.4)",
+                                            border: editName ? "1px solid rgba(99,102,241,0.35)" : "1px solid rgba(255,255,255,0.07)",
+                                            boxShadow: editName ? "0 0 0 3px rgba(99,102,241,0.08)" : "none"
+                                        }}
                                     />
                                 </div>
 
+                                {/* Bio */}
                                 <div>
-                                    <label className="block text-sm font-semibold text-neutral-300 mb-2">Bio / About Me</label>
+                                    <label className="block text-xs font-bold text-neutral-500 mb-2 uppercase tracking-wide">Bio</label>
                                     <textarea
                                         value={editBio}
-                                        onChange={(e) => setEditBio(e.target.value)}
-                                        placeholder="Tell other explorers a bit about yourself..."
-                                        rows={4}
-                                        className="w-full bg-neutral-900 border border-neutral-800 hover:border-neutral-700 rounded-2xl px-5 py-4 text-white placeholder-neutral-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-base resize-none leading-relaxed"
+                                        onChange={(e) => setEditBio(e.target.value.slice(0, 200))}
+                                        placeholder="Ceritakan sedikit tentang dirimu..."
+                                        rows={3}
+                                        className="w-full rounded-2xl px-4 py-3.5 text-sm text-white placeholder:text-neutral-700 focus:outline-none resize-none transition-all leading-relaxed"
+                                        style={{
+                                            background: "rgba(0,0,0,0.4)",
+                                            border: "1px solid rgba(255,255,255,0.07)",
+                                        }}
                                     />
-                                    <p className="text-xs text-neutral-500 mt-2 text-right font-medium">{editBio.length}/200</p>
+                                    <div className="flex justify-end mt-1.5">
+                                        <span className={`text-[10px] tabular-nums ${editBio.length > 180 ? "text-amber-500" : "text-neutral-700"}`}>
+                                            {editBio.length}/200
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-3 p-6 pt-0 relative z-10 mt-2">
+                            {/* Footer Actions */}
+                            <div className="flex items-center gap-2.5 px-7 pb-7">
                                 <button
                                     type="button"
                                     onClick={() => setIsEditOpen(false)}
-                                    className="px-6 py-4 rounded-2xl border border-neutral-800 text-neutral-300 hover:bg-neutral-900 transition-colors text-sm font-semibold"
+                                    className="px-5 py-3 rounded-2xl text-sm font-semibold text-neutral-400 hover:text-white transition-all"
+                                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
                                 >
-                                    Cancel
+                                    Batal
                                 </button>
                                 <button
                                     type="button"
                                     onClick={handleSave}
                                     disabled={isSaving || isUploadingPhoto}
-                                    className="flex-1 py-4 px-6 rounded-2xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 disabled:cursor-not-allowed text-white transition-all text-sm font-semibold flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20"
+                                    className="flex-1 py-3 px-5 rounded-2xl text-sm font-bold text-white flex items-center justify-center gap-2 transition-all disabled:opacity-40 disabled:cursor-not-allowed relative overflow-hidden group"
+                                    style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
                                 >
-                                    {isSaving ? (
-                                        <><Loader2 className="w-5 h-5 animate-spin" /> Saving Changes...</>
-                                    ) : (
-                                        <><Check className="w-5 h-5" /> Confirm Update</>
-                                    )}
+                                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        style={{ background: "linear-gradient(135deg, #818cf8, #a78bfa)" }} />
+                                    <span className="relative flex items-center gap-2">
+                                        {isSaving
+                                            ? <><Loader2 className="w-4 h-4 animate-spin" />Menyimpan...</>
+                                            : <><Check className="w-4 h-4" />Simpan Perubahan</>
+                                        }
+                                    </span>
                                 </button>
                             </div>
                         </motion.div>

@@ -39,6 +39,23 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
             data: { type, userId, memoryId }
         })
 
+        // Notify memory owner
+        const memory = await prisma.memory.findUnique({
+            where: { id: memoryId },
+            select: { userId: true }
+        })
+
+        if (memory && memory.userId !== userId) {
+            await prisma.notification.create({
+                data: {
+                    type: "REACTION",
+                    userId: memory.userId,
+                    actorId: userId,
+                    memoryId: memoryId
+                }
+            })
+        }
+
         return NextResponse.json({ message: "Reaction added", action: "added", reaction })
     } catch (error) {
         console.error("Reaction Error:", error)

@@ -15,6 +15,12 @@ export async function POST(req: Request) {
         const formData = await req.formData();
         const message = formData.get("message") as string;
         const image = formData.get("image") as File | null;
+        const categoryRaw = (formData.get("category") as string | null)?.toUpperCase();
+        const VALID_CATEGORIES = ["SUGGESTION", "BUG", "QUESTION", "OTHER"] as const;
+        type ValidCategory = typeof VALID_CATEGORIES[number];
+        const category: ValidCategory = VALID_CATEGORIES.includes(categoryRaw as ValidCategory)
+            ? (categoryRaw as ValidCategory)
+            : "SUGGESTION";
 
         if (!message || message.trim().length === 0) {
             return NextResponse.json({ error: "Message is required" }, { status: 400 });
@@ -61,6 +67,7 @@ export async function POST(req: Request) {
             data: {
                 message,
                 imageUrl,
+                category,
                 userId: session.user.id,
             },
         });

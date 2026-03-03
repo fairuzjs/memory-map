@@ -3,11 +3,31 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { signOut, useSession } from "next-auth/react"
-import { MapPin, Map, Plus, LogOut, LayoutDashboard, User as UserIcon, ArrowRight, Globe, Shield, MessageSquareText } from "lucide-react"
+import { MapPin, Map, Plus, LogOut, LayoutDashboard, User as UserIcon, ArrowRight, Globe, Shield, MessageSquareText, Menu, X } from "lucide-react"
+import { useState, useEffect } from "react"
+import { NotificationDropdown } from "./NotificationDropdown"
 
 export function Navbar() {
     const pathname = usePathname()
     const { data: session } = useSession()
+    const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+    // Close menu when route changes
+    useEffect(() => {
+        setIsMenuOpen(false)
+    }, [pathname])
+
+    // Prevent scrolling when menu is open
+    useEffect(() => {
+        if (isMenuOpen) {
+            document.body.style.overflow = 'hidden'
+        } else {
+            document.body.style.overflow = 'unset'
+        }
+        return () => {
+            document.body.style.overflow = 'unset'
+        }
+    }, [isMenuOpen])
 
     const navLinks = [
         { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -41,7 +61,7 @@ export function Navbar() {
                             </span>
                         </Link>
 
-                        {/* Nav Links */}
+                        {/* Nav Links - Desktop */}
                         <div className="hidden md:flex items-center gap-1">
                             {navLinks.map((link) => {
                                 const Icon = link.icon
@@ -77,7 +97,7 @@ export function Navbar() {
                         </div>
                     </div>
 
-                    {/* ── Right: CTA + User ──────────────────────────── */}
+                    {/* ── Right: CTA + User + Hamburger ──────────────────────────── */}
                     <div className="flex items-center gap-3">
                         {/* User section */}
                         {session?.user ? (
@@ -90,6 +110,9 @@ export function Navbar() {
                                     <MessageSquareText className="w-4 h-4" />
                                     <span>Pusat Bantuan</span>
                                 </Link>
+
+                                <NotificationDropdown />
+
                                 <div className="flex items-center gap-2 pl-3 border-l border-white/[0.08]">
                                     {/* Profile avatar */}
                                     <Link
@@ -108,10 +131,10 @@ export function Navbar() {
                                         )}
                                     </Link>
 
-                                    {/* Sign out */}
+                                    {/* Sign out - Desktop only (will add to mobile menu) */}
                                     <button
                                         onClick={() => signOut({ callbackUrl: "/login" })}
-                                        className="p-2 text-neutral-500 hover:text-red-400 transition-colors rounded-lg hover:bg-white/[0.05]"
+                                        className="hidden md:block p-2 text-neutral-500 hover:text-red-400 transition-colors rounded-lg hover:bg-white/[0.05]"
                                         title="Sign out"
                                     >
                                         <LogOut className="w-4 h-4" />
@@ -125,7 +148,7 @@ export function Navbar() {
                                 </Link>
                                 <Link
                                     href="/register"
-                                    className="relative inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold text-white overflow-hidden group"
+                                    className="relative hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold text-white overflow-hidden group"
                                     style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
                                 >
                                     <span className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors" />
@@ -134,9 +157,118 @@ export function Navbar() {
                                 </Link>
                             </>
                         )}
+
+                        {/* Mobile Menu Toggle */}
+                        <button
+                            onClick={() => setIsMenuOpen(!isMenuOpen)}
+                            className="flex md:hidden items-center justify-center w-10 h-10 rounded-lg text-neutral-400 hover:text-white hover:bg-white/[0.05] transition-all"
+                            aria-label="Toggle menu"
+                        >
+                            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                        </button>
                     </div>
                 </div>
             </div>
+
+            {/* ── Mobile Navigation Menu ────────────────────────── */}
+            {isMenuOpen && (
+                <div className="md:hidden fixed inset-0 top-[72px] z-40">
+                    {/* Backdrop */}
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={() => setIsMenuOpen(false)} />
+
+                    {/* Menu Content */}
+                    <div className="relative w-full bg-[#080810] border-b border-white/[0.06] px-4 py-6 shadow-2xl animate-in slide-in-from-top duration-300">
+                        <div className="flex flex-col gap-2">
+                            {navLinks.map((link) => {
+                                const Icon = link.icon
+                                const isActive = pathname === link.href
+                                return (
+                                    <Link
+                                        key={link.name}
+                                        href={link.href}
+                                        className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium transition-all ${isActive
+                                            ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"
+                                            : "text-neutral-400 hover:text-neutral-200 hover:bg-white/[0.05]"
+                                            }`}
+                                    >
+                                        <Icon className="w-5 h-5" />
+                                        {link.name}
+                                    </Link>
+                                )
+                            })}
+
+                            {session?.user?.role === "ADMIN" && (
+                                <Link
+                                    href="/admin"
+                                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium transition-all ${pathname.startsWith('/admin')
+                                        ? "bg-rose-500/10 text-rose-400 border border-rose-500/20"
+                                        : "text-neutral-400 hover:text-neutral-200 hover:bg-white/[0.05]"
+                                        }`}
+                                >
+                                    <Shield className="w-5 h-5" />
+                                    Admin Panel
+                                </Link>
+                            )}
+
+                            <div className="h-px bg-white/[0.06] my-2" />
+
+                            {session?.user && (
+                                <Link
+                                    href={`/profile/${session.user.id}`}
+                                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium transition-all ${pathname.startsWith(`/profile/${session.user.id}`)
+                                        ? "bg-white/[0.08] text-white"
+                                        : "text-neutral-400 hover:text-neutral-200 hover:bg-white/[0.05]"
+                                        }`}
+                                >
+                                    <UserIcon className="w-5 h-5" />
+                                    Profile
+                                </Link>
+                            )}
+
+                            <Link
+                                href="/feedbacks"
+                                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium transition-all ${pathname === '/feedbacks'
+                                    ? "bg-white/[0.08] text-white"
+                                    : "text-neutral-400 hover:text-neutral-200 hover:bg-white/[0.05]"
+                                    }`}
+                            >
+                                <MessageSquareText className="w-5 h-5" />
+                                Pusat Bantuan
+                            </Link>
+
+                            {!session?.user && (
+                                <>
+                                    <Link
+                                        href="/login"
+                                        className="flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium text-neutral-400 hover:text-neutral-200 hover:bg-white/[0.05] transition-all"
+                                    >
+                                        <UserIcon className="w-5 h-5" />
+                                        Sign In
+                                    </Link>
+                                    <Link
+                                        href="/register"
+                                        className="mt-2 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-base font-semibold text-white transition-all"
+                                        style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
+                                    >
+                                        Get Started
+                                        <ArrowRight className="w-4 h-4" />
+                                    </Link>
+                                </>
+                            )}
+
+                            {session?.user && (
+                                <button
+                                    onClick={() => signOut({ callbackUrl: "/login" })}
+                                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium text-red-400/80 hover:text-red-400 hover:bg-red-500/10 transition-all text-left"
+                                >
+                                    <LogOut className="w-5 h-5" />
+                                    Sign Out
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </nav>
     )
 }

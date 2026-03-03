@@ -27,6 +27,31 @@ model User {
   reactions     Reaction[]
   feedbacks     Feedback[]
   reports       Report[]
+  notifications Notification[] @relation("ReceivedNotifications")
+  actions       Notification[] @relation("TriggeredNotifications")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  type      NotificationType
+  isRead    Boolean          @default(false)
+  userId    String           @map("user_id")
+  actorId   String           @map("actor_id")
+  memoryId  String?          @map("memory_id")
+  createdAt DateTime         @default(now())
+
+  user   User    @relation("ReceivedNotifications", fields: [userId], references: [id], onDelete: Cascade)
+  actor  User    @relation("TriggeredNotifications", fields: [actorId], references: [id], onDelete: Cascade)
+  memory Memory? @relation(fields: [memoryId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([actorId])
+}
+
+enum NotificationType {
+  COMMENT
+  REACTION
+  REPLY
 }
 
 enum Role {
@@ -53,6 +78,7 @@ model Memory {
   reactions    Reaction[]
   tags         Tag[]
   reports      Report[]
+  notifications Notification[]
 }
 
 enum Emotion {
@@ -112,21 +138,29 @@ model Tag {
 }
 
 model Feedback {
-  id         String         @id @default(cuid())
-  message    String         @db.Text
+  id         String             @id @default(cuid())
+  message    String             @db.Text
   imageUrl   String?
-  adminReply String?        @db.Text
-  status     FeedbackStatus @default(PENDING)
-  createdAt  DateTime       @default(now())
-  updatedAt  DateTime       @updatedAt
+  adminReply String?            @db.Text
+  status     FeedbackStatus     @default(PENDING)
+  category   FeedbackCategory   @default(SUGGESTION)
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
   userId     String
-  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       User               @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum FeedbackStatus {
   PENDING
   READ
   REPLIED
+}
+
+enum FeedbackCategory {
+  SUGGESTION
+  BUG
+  QUESTION
+  OTHER
 }
 
 model Report {

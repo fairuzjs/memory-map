@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react"
 import { MapContainer, TileLayer, Marker, Popup, LayersControl, useMap } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
 import { createEmotionIcon, setupLeafletDefaultIcon } from "./MapIcons"
+import MarkerClusterGroup from "./MarkerClusterGroup"
 import Link from "next/link"
 import { Calendar, MapPin, Search, Loader2 } from "lucide-react"
 
@@ -172,47 +173,58 @@ export default function MapView({ memories }: MapViewProps) {
                     </LayersControl.BaseLayer>
                 </LayersControl>
 
-                {safeMemories.map((memory) => {
-                    const lat = memory.latitude || 0
-                    const lng = memory.longitude || 0
+                <MarkerClusterGroup>
+                    {safeMemories.map((memory) => {
+                        const lat = memory.latitude || 0
+                        const lng = memory.longitude || 0
 
-                    return (
-                        <Marker
-                            key={memory.id}
-                            position={[lat, lng]}
-                            icon={createEmotionIcon(memory.emotion)}
-                        >
-                            <Popup className="memory-popup">
-                                <div className="w-48 overflow-hidden rounded-md bg-neutral-900 text-neutral-200 shadow-lg border border-neutral-800 p-0 text-left">
-                                    {memory.photos?.length > 0 && (
-                                        <div className="w-full h-24 overflow-hidden mb-2">
-                                            <img src={memory.photos[0].url} alt="" className="w-full h-full object-cover" />
+                        return (
+                            <Marker
+                                key={memory.id}
+                                position={[lat, lng]}
+                                icon={createEmotionIcon(memory.emotion)}
+                            >
+                                <Popup className="memory-popup">
+                                    <div className="w-64 sm:w-72 overflow-hidden bg-transparent text-neutral-100 p-0 text-left">
+                                        {memory.photos?.length > 0 && (
+                                            <div className="w-full h-40 overflow-hidden relative group">
+                                                <img src={memory.photos[0].url} alt="" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                                                <div className="absolute inset-0 bg-gradient-to-t from-[#11111a] via-transparent to-transparent opacity-80" />
+                                            </div>
+                                        )}
+                                        <div className="p-5 pt-4">
+                                            <h4 className="font-bold font-[Outfit] text-lg text-white mb-2 leading-tight tracking-tight">
+                                                {memory.title}
+                                            </h4>
+
+                                            <p className="text-sm text-neutral-300 line-clamp-3 mb-5 leading-relaxed font-light opacity-90">
+                                                {memory.story}
+                                            </p>
+
+                                            <div className="flex items-center justify-between py-3 border-t border-white/[0.08] mb-5">
+                                                <div className="flex items-center gap-2 text-[11px] text-neutral-400 font-medium">
+                                                    <Calendar className="w-3.5 h-3.5 text-indigo-400" />
+                                                    {new Date(memory.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}
+                                                </div>
+                                                <div className="flex items-center gap-2 text-[11px] text-neutral-200 font-semibold bg-white/[0.05] px-2 py-0.5 rounded-full">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.8)]" />
+                                                    {memory.user?.name}
+                                                </div>
+                                            </div>
+
+                                            <Link
+                                                href={`/memories/${memory.id}`}
+                                                className="block w-full text-center text-sm font-bold py-3 px-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl transition-all shadow-[0_4px_20px_rgba(79,70,229,0.3)] active:scale-[0.97]"
+                                            >
+                                                View Story
+                                            </Link>
                                         </div>
-                                    )}
-                                    <div className="p-3">
-                                        <h4 className="font-bold font-[Outfit] text-sm text-white mb-1 leading-tight">{memory.title}</h4>
-                                        <p className="text-xs text-neutral-400 line-clamp-2 mb-2">{memory.story}</p>
-
-                                        <div className="flex items-center justify-between mt-3 text-[10px] text-neutral-500">
-                                            <span className="flex items-center gap-1">
-                                                <Calendar className="w-3 h-3" />
-                                                {new Date(memory.date).toLocaleDateString()}
-                                            </span>
-                                            <span>{memory.user?.name}</span>
-                                        </div>
-
-                                        <Link
-                                            href={`/memories/${memory.id}`}
-                                            className="block mt-3 w-full text-center text-xs font-semibold py-1.5 px-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md transition-colors"
-                                        >
-                                            View Story
-                                        </Link>
                                     </div>
-                                </div>
-                            </Popup>
-                        </Marker>
-                    )
-                })}
+                                </Popup>
+                            </Marker>
+                        )
+                    })}
+                </MarkerClusterGroup>
             </MapContainer>
         </div>
     )
