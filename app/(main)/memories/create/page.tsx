@@ -10,13 +10,15 @@ import { Input } from "@/components/ui/Input"
 import { Button } from "@/components/ui/Button"
 import { EmotionPicker } from "@/components/memories/EmotionPicker"
 import { PhotoUploader } from "@/components/memories/PhotoUploader"
+import { CollaboratorPicker } from "@/components/memories/CollaboratorPicker"
 import { motion } from "framer-motion"
+import { BookText, MapPin, Smile, ImagePlus, Users, Globe } from "lucide-react"
 
 import dynamic from "next/dynamic"
 
 const LocationPicker = dynamic(() => import("@/components/map/LocationPicker"), {
     ssr: false,
-    loading: () => <div className="h-[300px] w-full bg-neutral-900 animate-pulse rounded-2xl border border-neutral-800" />
+    loading: () => <div className="h-[300px] w-full bg-neutral-900/50 animate-pulse rounded-2xl border border-white/5" />
 })
 
 export default function CreateMemoryPage() {
@@ -27,7 +29,6 @@ export default function CreateMemoryPage() {
         register,
         handleSubmit,
         control,
-        setValue,
         formState: { errors }
     } = useForm<MemoryInput>({
         resolver: zodResolver(memorySchema),
@@ -36,6 +37,7 @@ export default function CreateMemoryPage() {
             isPublic: true,
             photos: [],
             tags: [],
+            collaborators: [],
             latitude: -2.5489,
             longitude: 118.0149,
             locationName: "Indonesia",
@@ -43,7 +45,6 @@ export default function CreateMemoryPage() {
         }
     })
 
-    // Helper inside onSubmit or use map coordinates directly provided by LocationPicker
     async function onSubmit(data: MemoryInput) {
         setIsSubmitting(true)
         try {
@@ -55,119 +56,222 @@ export default function CreateMemoryPage() {
 
             if (!res.ok) throw new Error("Failed to create memory")
 
-            toast.success("Memory created successfully!")
+            toast.success("Kenangan berhasil dibuat!")
             router.push("/memories")
         } catch (error) {
-            toast.error("Something went wrong")
+            toast.error("Terjadi kesalahan saat menyimpan kenangan")
         } finally {
             setIsSubmitting(false)
         }
     }
 
     return (
-        <div className="max-w-5xl mx-auto px-4 py-8 w-full">
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-                <h1 className="text-3xl font-bold font-[Outfit] mb-2">Preserve a Memory</h1>
-                <p className="text-neutral-400 mb-8">What special moment would you like to keep?</p>
+        <div className="max-w-7xl mx-auto px-4 py-8 sm:py-12 w-full relative">
+            {/* Background Effects */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-64 bg-indigo-500/10 blur-[120px] pointer-events-none rounded-full" />
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-                    <div className="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
-                        <h2 className="text-xl font-medium font-[Outfit] mb-4">The Story</h2>
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="relative z-10">
 
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-neutral-300 mb-1">Title</label>
-                                <Input {...register("title")} placeholder="A Walk to Remember" disabled={isSubmitting} />
-                                {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>}
+                {/* Page Header */}
+                <div className="mb-10 text-center max-w-4xl mx-auto">
+                    <h1 className="text-3xl sm:text-4xl font-bold font-[Outfit] mb-4 bg-clip-text text-transparent bg-gradient-to-r from-white via-indigo-100 to-indigo-300">
+                        Simpan Kenangan Baru
+                    </h1>
+                    <p className="text-neutral-300 text-md">
+                        Abadikan momen spesial Anda, tandai di peta, dan bagikan perasaan dengan sahabat terdekat.
+                    </p>
+                </div>
+
+                <form onSubmit={handleSubmit(onSubmit)} className="mt-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+
+                        {/* ── LEFT COLUMN ──────────────────────────── */}
+                        <div className="lg:col-span-7 space-y-6">
+
+                            {/* The Story */}
+                            <div className="bg-neutral-900/40 backdrop-blur-xl p-6 sm:p-8 rounded-3xl border border-white/[0.05] shadow-2xl transition-all hover:border-white/[0.08]">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <div className="p-2 sm:p-3 bg-indigo-500/10 rounded-xl">
+                                        <BookText className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-400" />
+                                    </div>
+                                    <h2 className="text-xl sm:text-2xl font-semibold font-[Outfit] text-white">Momen</h2>
+                                </div>
+
+                                <div className="space-y-5">
+                                    <div>
+                                        <label className="block text-sm font-medium text-neutral-400 mb-2">Judul</label>
+                                        <Input
+                                            {...register("title")}
+                                            placeholder="Liburan tak terlupakan..."
+                                            className="bg-black/20 border-white/10 focus:border-indigo-500/50 transition-colors text-base"
+                                            disabled={isSubmitting}
+                                        />
+                                        {errors.title && <p className="text-red-400 text-sm mt-1.5">{errors.title.message}</p>}
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-neutral-400 mb-2">Cerita</label>
+                                        <textarea
+                                            {...register("story")}
+                                            className="w-full min-h-[160px] bg-black/20 border border-white/10 rounded-xl p-4 text-base focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none resize-none transition-all placeholder:text-neutral-600 text-neutral-200"
+                                            placeholder="Ceritakan apa yang terjadi... setiap detail berharga."
+                                            disabled={isSubmitting}
+                                        />
+                                        {errors.story && <p className="text-red-400 text-sm mt-1.5">{errors.story.message}</p>}
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-neutral-400 mb-2">Tanggal</label>
+                                        <Input
+                                            type="date"
+                                            {...register("date")}
+                                            className="bg-black/20 border-white/10 focus:border-indigo-500/50 transition-colors [&::-webkit-calendar-picker-indicator]:invert"
+                                            disabled={isSubmitting}
+                                        />
+                                        {errors.date && <p className="text-red-400 text-sm mt-1.5">{errors.date.message}</p>}
+                                    </div>
+                                </div>
                             </div>
 
-                            <div>
-                                <label className="block text-sm font-medium text-neutral-300 mb-1">Story</label>
-                                <textarea
-                                    {...register("story")}
-                                    className="w-full h-32 bg-neutral-900 border border-neutral-700 rounded-md p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none resize-none"
-                                    placeholder="Tell us what happened..."
-                                    disabled={isSubmitting}
-                                />
-                                {errors.story && <p className="text-red-500 text-sm mt-1">{errors.story.message}</p>}
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-neutral-300 mb-1">Date</label>
-                                <Input type="date" {...register("date")} disabled={isSubmitting} />
-                                {errors.date && <p className="text-red-500 text-sm mt-1">{errors.date.message}</p>}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
-                        <h2 className="text-xl font-medium font-[Outfit] mb-4">Where did it happen?</h2>
-                        <Controller
-                            control={control}
-                            name="latitude"
-                            render={({ field: latField }) => (
+                            {/* Emotion */}
+                            <div className="bg-neutral-900/40 backdrop-blur-xl p-6 sm:p-8 rounded-3xl border border-white/[0.05] shadow-2xl transition-all hover:border-white/[0.08]">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <div className="p-2 sm:p-3 bg-rose-500/10 rounded-xl">
+                                        <Smile className="w-5 h-5 sm:w-6 sm:h-6 text-rose-400" />
+                                    </div>
+                                    <h2 className="text-xl sm:text-2xl font-semibold font-[Outfit] text-white">Perasaan</h2>
+                                </div>
                                 <Controller
                                     control={control}
-                                    name="longitude"
-                                    render={({ field: lngField }) => (
-                                        <Controller
-                                            control={control}
-                                            name="locationName"
-                                            render={({ field: nameField }) => (
-                                                <LocationPicker
-                                                    latitude={latField.value}
-                                                    longitude={lngField.value}
-                                                    locationName={nameField.value || ""}
-                                                    onChange={(lat, lng, name) => {
-                                                        latField.onChange(lat)
-                                                        lngField.onChange(lng)
-                                                        nameField.onChange(name)
-                                                    }}
-                                                />
-                                            )}
+                                    name="emotion"
+                                    render={({ field }) => <EmotionPicker value={field.value} onChange={field.onChange} />}
+                                />
+                            </div>
+
+                            {/* Photos */}
+                            <div className="bg-neutral-900/40 backdrop-blur-xl p-6 sm:p-8 rounded-3xl border border-white/[0.05] shadow-2xl transition-all hover:border-white/[0.08]">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <div className="p-2 sm:p-3 bg-emerald-500/10 rounded-xl">
+                                        <ImagePlus className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-400" />
+                                    </div>
+                                    <h2 className="text-xl sm:text-2xl font-semibold font-[Outfit] text-white">Galeri Foto</h2>
+                                </div>
+                                <Controller
+                                    control={control}
+                                    name="photos"
+                                    render={({ field }) => <PhotoUploader photos={field.value || []} onChange={field.onChange} />}
+                                />
+                            </div>
+
+                        </div>
+
+                        {/* ── RIGHT COLUMN ──────────────────────────── */}
+                        <div className="lg:col-span-5 space-y-6">
+
+                            {/* Location */}
+                            <div className="bg-neutral-900/40 backdrop-blur-xl p-6 sm:p-8 rounded-3xl border border-white/[0.05] shadow-2xl transition-all hover:border-white/[0.08] relative z-30">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <div className="p-2 sm:p-3 bg-amber-500/10 rounded-xl">
+                                        <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-amber-400" />
+                                    </div>
+                                    <h2 className="text-xl sm:text-2xl font-semibold font-[Outfit] text-white">Lokasi</h2>
+                                </div>
+                                <div className="rounded-2xl overflow-hidden border border-white/10">
+                                    <Controller
+                                        control={control}
+                                        name="latitude"
+                                        render={({ field: latField }) => (
+                                            <Controller
+                                                control={control}
+                                                name="longitude"
+                                                render={({ field: lngField }) => (
+                                                    <Controller
+                                                        control={control}
+                                                        name="locationName"
+                                                        render={({ field: nameField }) => (
+                                                            <LocationPicker
+                                                                latitude={latField.value}
+                                                                longitude={lngField.value}
+                                                                locationName={nameField.value || ""}
+                                                                onChange={(lat, lng, name) => {
+                                                                    latField.onChange(lat)
+                                                                    lngField.onChange(lng)
+                                                                    nameField.onChange(name)
+                                                                }}
+                                                            />
+                                                        )}
+                                                    />
+                                                )}
+                                            />
+                                        )}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Collaborators */}
+                            <div className="bg-neutral-900/40 backdrop-blur-xl p-6 sm:p-8 rounded-3xl border border-white/[0.05] shadow-2xl transition-all hover:border-white/[0.08] relative z-20">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <div className="p-2 sm:p-3 bg-blue-500/10 rounded-xl">
+                                        <Users className="w-5 h-5 sm:w-6 sm:h-6 text-blue-400" />
+                                    </div>
+                                    <h2 className="text-xl sm:text-2xl font-semibold font-[Outfit] text-white">Kolaborator</h2>
+                                </div>
+                                <p className="text-sm text-neutral-400 mb-6 ml-14">
+                                    Tandai teman yang membagikan momen ini. (Maks 5)
+                                </p>
+                                <Controller
+                                    control={control}
+                                    name="collaborators"
+                                    render={({ field }) => (
+                                        <CollaboratorPicker
+                                            value={field.value || []}
+                                            onChange={field.onChange}
                                         />
                                     )}
                                 />
-                            )}
-                        />
-                    </div>
+                                {errors.collaborators && (
+                                    <p className="text-red-400 text-sm mt-3">{errors.collaborators.message}</p>
+                                )}
+                            </div>
 
-                    <div className="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
-                        <h2 className="text-xl font-medium font-[Outfit] mb-4">How did you feel?</h2>
-                        <Controller
-                            control={control}
-                            name="emotion"
-                            render={({ field }) => <EmotionPicker value={field.value} onChange={field.onChange} />}
-                        />
-                    </div>
+                            {/* Settings */}
+                            <div className="bg-neutral-900/40 backdrop-blur-xl p-6 sm:p-8 rounded-3xl border border-white/[0.05] shadow-2xl transition-all hover:border-white/[0.08] flex items-center justify-between relative z-10">
+                                <div className="flex items-center gap-4">
+                                    <div className="p-3 bg-violet-500/10 rounded-xl hidden sm:block">
+                                        <Globe className="w-6 h-6 text-violet-400" />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-lg font-medium font-[Outfit] text-white">Kenangan Publik</h2>
+                                        <p className="text-sm text-neutral-400 mt-1">Izinkan orang lain melihat kenangan ini di peta.</p>
+                                    </div>
+                                </div>
+                                <label className="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" {...register("isPublic")} className="sr-only peer" />
+                                    <div className="w-12 h-7 bg-neutral-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-indigo-500 border border-white/10"></div>
+                                </label>
+                            </div>
 
-                    <div className="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800">
-                        <h2 className="text-xl font-medium font-[Outfit] mb-4">Add Photos</h2>
-                        <Controller
-                            control={control}
-                            name="photos"
-                            render={({ field }) => <PhotoUploader photos={field.value || []} onChange={field.onChange} />}
-                        />
-                    </div>
+                            {/* Actions */}
+                            <div className="flex flex-col sm:flex-row justify-end gap-4 pt-4">
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    onClick={() => router.back()}
+                                    disabled={isSubmitting}
+                                    className="w-full sm:w-auto hover:bg-white/5 rounded-xl px-6"
+                                >
+                                    Batal
+                                </Button>
+                                <Button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl px-8 shadow-lg shadow-indigo-500/25 transition-all"
+                                >
+                                    {isSubmitting ? "Menyimpan..." : "Simpan Berbagi"}
+                                </Button>
+                            </div>
 
-                    <div className="bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800 flex items-center justify-between">
-                        <div>
-                            <h2 className="text-lg font-medium font-[Outfit]">Public Memory</h2>
-                            <p className="text-sm text-neutral-400">Allow others to see this memory on the global map.</p>
                         </div>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" {...register("isPublic")} className="sr-only peer" />
-                            <div className="w-11 h-6 bg-neutral-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
-                        </label>
-                    </div>
-
-                    <div className="flex justify-end gap-4">
-                        <Button type="button" variant="ghost" onClick={() => router.back()} disabled={isSubmitting}>
-                            Cancel
-                        </Button>
-                        <Button type="submit" disabled={isSubmitting}>
-                            {isSubmitting ? "Saving..." : "Save Memory"}
-                        </Button>
                     </div>
                 </form>
             </motion.div>

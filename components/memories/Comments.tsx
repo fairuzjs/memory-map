@@ -77,11 +77,24 @@ export function Comments({ memoryId, initialComments }: { memoryId: string, init
         }
     }
 
+    const totalCount = comments.reduce((acc, c) => acc + 1 + (c.replies?.length || 0), 0)
+
     return (
         <div className="mt-8 pt-8 border-t border-neutral-800">
-            <h3 className="text-xl font-[Outfit] font-semibold text-white mb-6">
-                Comments ({comments.reduce((acc, c) => acc + 1 + (c.replies?.length || 0), 0)})
-            </h3>
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-[Outfit] font-semibold text-white flex items-center gap-2.5">
+                    Comments
+                    {totalCount > 0 && (
+                        <span className="text-sm font-semibold bg-indigo-500/15 text-indigo-400 border border-indigo-500/25 rounded-full px-2.5 py-0.5">
+                            {totalCount}
+                        </span>
+                    )}
+                </h3>
+                {totalCount > 3 && (
+                    <p className="text-xs text-neutral-500">Scroll to see all comments</p>
+                )}
+            </div>
 
             <form onSubmit={(e) => handleSubmit(e)} className="mb-8 flex gap-3">
                 <img src={session?.user?.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${session?.user?.name || 'guest'}`} className="w-10 h-10 rounded-full bg-neutral-800 border-neutral-700 border" alt="" />
@@ -99,7 +112,15 @@ export function Comments({ memoryId, initialComments }: { memoryId: string, init
                 </div>
             </form>
 
-            <div className="space-y-6">
+            {/* Scrollable comment list — max ~3 comments visible */}
+            <div
+                className="space-y-6 overflow-y-auto pr-1"
+                style={{
+                    maxHeight: comments.length > 3 ? "520px" : undefined,
+                    scrollbarWidth: "thin",
+                    scrollbarColor: "#404040 transparent",
+                }}
+            >
                 {comments.map((comment: any) => (
                     <div key={comment.id} className="group">
                         <div className="flex gap-3">

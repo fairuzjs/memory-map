@@ -23,6 +23,11 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
                 reactions: {
                     include: { user: { select: { id: true, name: true } } }
                 },
+                collaborators: {
+                    where: { status: "ACCEPTED" },
+                    include: { user: { select: { id: true, name: true, image: true } } },
+                    orderBy: { createdAt: "asc" }
+                },
                 _count: { select: { reactions: true } }
             }
         })
@@ -36,6 +41,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
         return NextResponse.json({ error: "Server error" }, { status: 500 })
     }
 }
+
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
@@ -53,7 +59,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         const result = memorySchema.safeParse(body)
         if (!result.success) return NextResponse.json({ error: "Invalid data", details: result.error.flatten() }, { status: 400 })
 
-        const { photos, tags, date, ...data } = result.data
+        const { photos, tags, date, collaborators, ...data } = result.data
 
         await prisma.photo.deleteMany({ where: { memoryId: id } })
 

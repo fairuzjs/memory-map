@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Bell, MessageCircle, Heart, Loader2, CheckCircle2, X } from "lucide-react"
+import { Bell, MessageCircle, Heart, Loader2, X, Users, CheckCircle2, XCircle } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 
@@ -20,9 +20,10 @@ const timeAgo = (date: string) => {
 
 interface Notification {
     id: string
-    type: "COMMENT" | "REACTION" | "REPLY"
+    type: "COMMENT" | "REACTION" | "REPLY" | "COLLABORATION_INVITE"
     isRead: boolean
     createdAt: string
+    memoryId: string | null
     actor: {
         id: string
         name: string
@@ -39,6 +40,7 @@ export function NotificationDropdown() {
     const [notifications, setNotifications] = useState<Notification[]>([])
     const [loading, setLoading] = useState(false)
     const [unreadCount, setUnreadCount] = useState(0)
+    const [respondingId, setRespondingId] = useState<string | null>(null)
 
     const fetchNotifications = async () => {
         setLoading(true)
@@ -58,8 +60,7 @@ export function NotificationDropdown() {
 
     useEffect(() => {
         fetchNotifications()
-        // Optional: polling or websocket
-        const interval = setInterval(fetchNotifications, 60000) // update every minute
+        const interval = setInterval(fetchNotifications, 60000)
         return () => clearInterval(interval)
     }, [])
 
@@ -125,6 +126,49 @@ export function NotificationDropdown() {
         }
     }
 
+    // Handle accept / decline collaboration invite
+    const handleCollaborationRespond = async (
+        e: React.MouseEvent,
+        notifId: string,
+        memoryId: string,
+        action: "ACCEPTED" | "DECLINED"
+    ) => {
+        e.stopPropagation()
+        e.preventDefault()
+        setRespondingId(notifId)
+        try {
+            const res = await fetch(`/api/memories/${memoryId}/collaborators/respond`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action })
+            })
+
+            // 200 OK → berhasil respond
+            // 409 → sudah pernah dijawab sebelumnya
+            // Keduanya: hapus notifikasi dari DB & UI
+            if (res.ok || res.status === 409) {
+                // Hapus notifikasi dari database (bukan hanya mark as read)
+                await fetch("/api/notifications", {
+                    method: "DELETE",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ id: notifId })
+                })
+                setNotifications(prev => prev.filter(n => n.id !== notifId))
+                setUnreadCount(prev => Math.max(0, prev - 1))
+                return
+            }
+
+            const errData = await res.json().catch(() => ({}))
+            console.error("Respond API error:", res.status, errData)
+        } catch (err) {
+            console.error("Failed to respond to collaboration invite", err)
+        } finally {
+            setRespondingId(null)
+        }
+    }
+
+
+
     return (
         <div className="relative">
             <button
@@ -181,7 +225,7 @@ export function NotificationDropdown() {
                                 </div>
                             </div>
 
-                            <div className="max-h-[320px] overflow-y-auto custom-scrollbar relative z-10">
+                            <div className="max-h-[380px] overflow-y-auto custom-scrollbar relative z-10">
                                 {loading && notifications.length === 0 ? (
                                     <div className="flex flex-col items-center justify-center py-12 gap-3">
                                         <Loader2 className="w-6 h-6 text-indigo-500 animate-spin" />
@@ -215,10 +259,14 @@ export function NotificationDropdown() {
                                                             className="w-10 h-10 rounded-full border border-white/10"
                                                             alt=""
                                                         />
-                                                        <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center border-2 border-[#11111a] ${n.type === "REACTION" ? "bg-rose-500" : "bg-indigo-500"
+                                                        <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center border-2 border-[#11111a] ${n.type === "REACTION" ? "bg-rose-500" :
+                                                            n.type === "COLLABORATION_INVITE" ? "bg-violet-500" :
+                                                                "bg-indigo-500"
                                                             }`}>
                                                             {n.type === "REACTION" ? (
                                                                 <Heart className="w-2.5 h-2.5 text-white fill-white" />
+                                                            ) : n.type === "COLLABORATION_INVITE" ? (
+                                                                <Users className="w-2.5 h-2.5 text-white" />
                                                             ) : (
                                                                 <MessageCircle className="w-2.5 h-2.5 text-white" />
                                                             )}
@@ -229,32 +277,69 @@ export function NotificationDropdown() {
                                                         <p className="text-sm text-neutral-300 leading-snug">
                                                             <span className="font-bold text-white">{n.actor.name}</span>
                                                             {" "}
-                                                            {n.type === "REACTION" ? "reacted to" : n.type === "COMMENT" ? "commented on" : "replied to your comment in"}
+                                                            {n.type === "REACTION" ? "reacted to" :
+                                                                n.type === "COMMENT" ? "commented on" :
+                                                                    n.type === "REPLY" ? "replied to your comment in" :
+                                                                        "invited you to collaborate on"}
                                                             {" "}
-                                                            <span className="font-semibold text-indigo-400">"{n.memory?.title || "your memory"}"</span>
+                                                            <span className="font-semibold text-indigo-400">
+                                                                &quot;{n.memory?.title || "a memory"}&quot;
+                                                            </span>
                                                         </p>
                                                         <p className="text-[11px] text-neutral-500 mt-1 font-medium">
                                                             {timeAgo(n.createdAt)}
                                                         </p>
+
+                                                        {/* Accept / Decline buttons for collaboration invites */}
+                                                        {n.type === "COLLABORATION_INVITE" && n.memoryId && (
+                                                            <div className="flex items-center gap-2 mt-2.5" onClick={e => e.stopPropagation()}>
+                                                                <button
+                                                                    disabled={respondingId === n.id}
+                                                                    onClick={(e) => handleCollaborationRespond(e, n.id, n.memoryId!, "ACCEPTED")}
+                                                                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition-all disabled:opacity-50"
+                                                                >
+                                                                    {respondingId === n.id ? (
+                                                                        <Loader2 className="w-3 h-3 animate-spin" />
+                                                                    ) : (
+                                                                        <CheckCircle2 className="w-3 h-3" />
+                                                                    )}
+                                                                    Accept
+                                                                </button>
+                                                                <button
+                                                                    disabled={respondingId === n.id}
+                                                                    onClick={(e) => handleCollaborationRespond(e, n.id, n.memoryId!, "DECLINED")}
+                                                                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-neutral-800 hover:bg-rose-500/20 text-neutral-400 hover:text-rose-400 border border-neutral-700 hover:border-rose-500/30 transition-all disabled:opacity-50"
+                                                                >
+                                                                    <XCircle className="w-3 h-3" />
+                                                                    Decline
+                                                                </button>
+                                                            </div>
+                                                        )}
                                                     </div>
 
-                                                    <button
-                                                        onClick={(e) => deleteNotification(e, n.id)}
-                                                        className="shrink-0 self-center p-1.5 rounded-lg border border-transparent text-neutral-600 hover:text-rose-400 hover:bg-rose-500/10 transition-all opacity-0 group-hover:opacity-100 relative z-30"
-                                                        title="Delete"
-                                                    >
-                                                        <X className="w-3.5 h-3.5" />
-                                                    </button>
+                                                    {/* Delete button — hide for collaboration invites karena ada tombol sendiri */}
+                                                    {n.type !== "COLLABORATION_INVITE" && (
+                                                        <button
+                                                            onClick={(e) => deleteNotification(e, n.id)}
+                                                            className="shrink-0 self-center p-1.5 rounded-lg border border-transparent text-neutral-600 hover:text-rose-400 hover:bg-rose-500/10 transition-all opacity-0 group-hover:opacity-100 relative z-30"
+                                                            title="Delete"
+                                                        >
+                                                            <X className="w-3.5 h-3.5" />
+                                                        </button>
+                                                    )}
                                                 </div>
 
-                                                <Link
-                                                    href={n.memory ? `/map?id=${n.memory.id}` : "/map"}
-                                                    onClick={() => {
-                                                        if (!n.isRead) markAsRead(n.id)
-                                                        setIsOpen(false)
-                                                    }}
-                                                    className="absolute inset-0 z-10"
-                                                />
+                                                {/* Clickable link — only for non-collaboration notifications */}
+                                                {n.type !== "COLLABORATION_INVITE" && (
+                                                    <Link
+                                                        href={n.memory ? `/map?id=${n.memory.id}` : "/map"}
+                                                        onClick={() => {
+                                                            if (!n.isRead) markAsRead(n.id)
+                                                            setIsOpen(false)
+                                                        }}
+                                                        className="absolute inset-0 z-10"
+                                                    />
+                                                )}
                                             </div>
                                         ))}
                                     </div>

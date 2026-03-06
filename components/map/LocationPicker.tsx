@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState, useCallback, useMemo } from "react"
-import { MapContainer, TileLayer, Marker, useMapEvents, LayersControl } from "react-leaflet"
+import { MapContainer, TileLayer, Marker, useMapEvents, LayersControl, useMap } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
 import L from "leaflet"
 import { MapPin, Search } from "lucide-react"
@@ -36,6 +36,16 @@ function LocationMarker({ position, setPosition }: any) {
             iconAnchor: [16, 42],
         })} />
     )
+}
+
+function MapUpdater({ position }: { position: L.LatLng | null }) {
+    const map = useMap()
+    useEffect(() => {
+        if (position) {
+            map.flyTo(position, 13, { duration: 1.5 })
+        }
+    }, [position, map])
+    return null
 }
 
 export default function LocationPicker({ latitude, longitude, locationName, onChange }: LocationPickerProps) {
@@ -83,11 +93,11 @@ export default function LocationPicker({ latitude, longitude, locationName, onCh
             const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${newPos.lat}&lon=${newPos.lng}`)
             const data = await res.json()
 
-            const name = data.address?.city || data.address?.town || data.address?.village || data.display_name?.split(',')[0] || "Unknown Location"
+            const name = data.address?.city || data.address?.town || data.address?.village || data.display_name?.split(',')[0] || "Lokasi Tidak Diketahui"
             setSearchQuery(name)
             onChange(newPos.lat, newPos.lng, name)
         } catch (e) {
-            onChange(newPos.lat, newPos.lng, "Unknown Location")
+            onChange(newPos.lat, newPos.lng, "Lokasi Tidak Diketahui")
         }
     }, [onChange])
 
@@ -155,7 +165,7 @@ export default function LocationPicker({ latitude, longitude, locationName, onCh
                             // Delay hiding so clicking suggestion works
                             setTimeout(() => setShowSuggestions(false), 200)
                         }}
-                        placeholder="Search location (e.g., Bali, Paris)"
+                        placeholder="Cari lokasi (cth: Bali, Jakarta)"
                         className="pl-9"
                     />
 
@@ -176,7 +186,7 @@ export default function LocationPicker({ latitude, longitude, locationName, onCh
                 </div>
                 <Button type="button" onClick={(e) => handleSearch(e)} disabled={isSearching} className="gap-2">
                     <Search className="w-4 h-4" />
-                    {isSearching ? "..." : "Search"}
+                    {isSearching ? "..." : "Cari"}
                 </Button>
             </div>
 
@@ -187,37 +197,38 @@ export default function LocationPicker({ latitude, longitude, locationName, onCh
                     style={{ width: "100%", height: "100%", zIndex: 10 }}
                 >
                     <LayersControl position="topright">
-                        <LayersControl.BaseLayer checked name="Street (Default)">
+                        <LayersControl.BaseLayer checked name="Jalanan (Bawaan)">
                             <TileLayer
                                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                             />
                         </LayersControl.BaseLayer>
-                        <LayersControl.BaseLayer name="Satellite">
+                        <LayersControl.BaseLayer name="Satelit">
                             <TileLayer
                                 attribution='&copy; <a href="https://www.esri.com/">Esri</a>, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
                                 url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
                             />
                         </LayersControl.BaseLayer>
-                        <LayersControl.BaseLayer name="Dark">
+                        <LayersControl.BaseLayer name="Gelap">
                             <TileLayer
                                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
                                 url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
                             />
                         </LayersControl.BaseLayer>
-                        <LayersControl.BaseLayer name="Terrain">
+                        <LayersControl.BaseLayer name="Dataran">
                             <TileLayer
                                 attribution='Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
                                 url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
                             />
                         </LayersControl.BaseLayer>
                     </LayersControl>
+                    <MapUpdater position={position} />
                     <LocationMarker position={position} setPosition={handlePositionChange} />
                 </MapContainer>
             </div>
 
             <p className="text-xs text-neutral-500">
-                Click on the map to drop a pin, or use the search bar to find a specific spot.
+                Klik di peta untuk menjatuhkan pin, atau gunakan pencarian untuk menemukan tempat terindah.
             </p>
         </div>
     )

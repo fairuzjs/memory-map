@@ -185,15 +185,18 @@ export default function MapView({ memories }: MapViewProps) {
                                 icon={createEmotionIcon(memory.emotion)}
                             >
                                 <Popup className="memory-popup">
-                                    <div className="w-64 sm:w-72 overflow-hidden bg-transparent text-neutral-100 p-0 text-left">
+                                    <Link
+                                        href={`/memories/${memory.id}`}
+                                        className="block w-64 sm:w-72 overflow-hidden bg-transparent text-neutral-100 p-0 text-left cursor-pointer group/popup"
+                                    >
                                         {memory.photos?.length > 0 && (
-                                            <div className="w-full h-40 overflow-hidden relative group">
-                                                <img src={memory.photos[0].url} alt="" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                                            <div className="w-full h-40 overflow-hidden relative">
+                                                <img src={memory.photos[0].url} alt="" className="w-full h-full object-cover transition-transform duration-700 group-hover/popup:scale-110" />
                                                 <div className="absolute inset-0 bg-gradient-to-t from-[#11111a] via-transparent to-transparent opacity-80" />
                                             </div>
                                         )}
                                         <div className="p-5 pt-4">
-                                            <h4 className="font-bold font-[Outfit] text-lg text-white mb-2 leading-tight tracking-tight">
+                                            <h4 className="font-bold font-[Outfit] text-lg text-white mb-2 leading-tight tracking-tight group-hover/popup:text-indigo-300 transition-colors">
                                                 {memory.title}
                                             </h4>
 
@@ -201,7 +204,7 @@ export default function MapView({ memories }: MapViewProps) {
                                                 {memory.story}
                                             </p>
 
-                                            <div className="flex items-center justify-between py-3 border-t border-white/[0.08] mb-5">
+                                            <div className="flex items-center justify-between py-3 border-t border-white/[0.08]">
                                                 <div className="flex items-center gap-2 text-[11px] text-neutral-400 font-medium">
                                                     <Calendar className="w-3.5 h-3.5 text-indigo-400" />
                                                     {new Date(memory.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}
@@ -211,15 +214,8 @@ export default function MapView({ memories }: MapViewProps) {
                                                     {memory.user?.name}
                                                 </div>
                                             </div>
-
-                                            <Link
-                                                href={`/memories/${memory.id}`}
-                                                className="block w-full text-center text-sm font-bold py-3 px-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl transition-all shadow-[0_4px_20px_rgba(79,70,229,0.3)] active:scale-[0.97]"
-                                            >
-                                                View Story
-                                            </Link>
                                         </div>
-                                    </div>
+                                    </Link>
                                 </Popup>
                             </Marker>
                         )

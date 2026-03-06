@@ -36,12 +36,20 @@ export default function ForgotPasswordPage() {
     async function onSubmit(data: ForgotPasswordInput) {
         setIsLoading(true)
         try {
-            // Replace with actual API call
-            await new Promise((resolve) => setTimeout(resolve, 1500))
+            const res = await fetch("/api/forgot-password", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+            })
+
+            if (!res.ok) {
+                throw new Error("Gagal mengirim email")
+            }
+
             setIsSent(true)
-            toast.success("Instructions sent to your email")
+            toast.success("Instruksi telah dikirim ke email Anda")
         } catch {
-            toast.error("Something went wrong")
+            toast.error("Terjadi kesalahan")
         } finally {
             setIsLoading(false)
         }
@@ -77,7 +85,7 @@ export default function ForgotPasswordPage() {
                     <motion.div custom={0} variants={fadeUp} initial="hidden" animate="show" className="mb-8">
                         <Link href="/login" className="inline-flex items-center gap-2 text-sm font-medium text-neutral-500 hover:text-white transition-colors group">
                             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                            Back to login
+                            Kembali ke masuk
                         </Link>
                     </motion.div>
 
@@ -98,12 +106,12 @@ export default function ForgotPasswordPage() {
                     {/* Heading */}
                     <motion.div custom={1} variants={fadeUp} initial="hidden" animate="show" className="mb-8 text-center lg:text-left">
                         <h2 className="font-[Outfit] font-extrabold text-3xl text-white tracking-tight mb-2">
-                            Reset password
+                            Reset Kata Sandi
                         </h2>
                         <p className="text-neutral-500 text-sm">
                             {isSent
-                                ? "We've sent you instructions to reset your password."
-                                : "Enter your email address to receive password reset instructions."}
+                                ? "Kami telah mengirimkan instruksi untuk mereset kata sandi Anda ke email."
+                                : "Masukkan alamat email Anda untuk menerima instruksi reset kata sandi."}
                         </p>
                     </motion.div>
 
@@ -152,11 +160,11 @@ export default function ForgotPasswordPage() {
                                                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                                                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                                                 </svg>
-                                                Sending...
+                                                Mengirim...
                                             </>
                                         ) : (
                                             <>
-                                                Send instructions
+                                                Kirim Instruksi
                                                 <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                                             </>
                                         )}
@@ -172,7 +180,7 @@ export default function ForgotPasswordPage() {
                                 whileTap={{ scale: 0.985 }}
                                 className="inline-flex items-center gap-2 text-sm font-medium text-white px-6 py-2.5 rounded-full border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] transition-colors"
                             >
-                                Try another email
+                                Coba email lain
                             </motion.button>
                         </motion.div>
                     )}

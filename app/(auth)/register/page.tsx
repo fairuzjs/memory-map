@@ -23,18 +23,18 @@ const fadeUp: Variants = {
 const perks = [
     {
         icon: Globe,
-        title: "Pin anywhere on Earth",
-        desc: "Drop memories on an interactive world map with exact coordinates."
+        title: "Tandai di mana saja di Bumi",
+        desc: "Simpan kenangan pada peta dunia interaktif dengan koordinat yang tepat."
     },
     {
         icon: BookOpen,
-        title: "Rich journaling",
-        desc: "Attach photos, stories, and emotions to every location."
+        title: "Jurnal yang kaya",
+        desc: "Lampirkan foto, cerita, dan perasaan di setiap lokasi."
     },
     {
         icon: Lock,
-        title: "Private by default",
-        desc: "Your memories are encrypted and only visible to you."
+        title: "Privasi secara bawaan",
+        desc: "Kenangan Anda dienkripsi dan hanya dapat dilihat oleh Anda."
     },
 ]
 
@@ -66,14 +66,14 @@ export default function RegisterPage() {
 
             if (!response.ok) {
                 const error = await response.json()
-                toast.error(error.error || "Registration failed")
+                toast.error(error.error || "Pendaftaran gagal")
                 return
             }
 
-            toast.success("Account created! Please sign in.")
+            toast.success("Akun berhasil dibuat! Silakan masuk.")
             router.push("/login")
         } catch {
-            toast.error("Something went wrong")
+            toast.error("Terjadi kesalahan")
         } finally {
             setIsLoading(false)
         }
@@ -130,10 +130,10 @@ export default function RegisterPage() {
                     <motion.div custom={1} variants={fadeUp} initial="hidden" animate="show">
                         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium text-indigo-300 border border-indigo-500/20 bg-indigo-500/[0.07] mb-6">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                            Free forever · No credit card
+                            Gratis selamanya · Tanpa kartu kredit
                         </div>
                         <h1 className="font-[Outfit] font-extrabold text-white leading-[1.08]" style={{ fontSize: "clamp(2.2rem, 3.5vw, 3.2rem)" }}>
-                            Start your<br />
+                            Mulai<br />
                             <span
                                 style={{
                                     WebkitBackgroundClip: "text",
@@ -142,14 +142,14 @@ export default function RegisterPage() {
                                     backgroundClip: "text"
                                 }}
                             >
-                                memory atlas.
+                                atlas kenangan Anda.
                             </span>
                         </h1>
                     </motion.div>
 
                     <motion.p custom={2} variants={fadeUp} initial="hidden" animate="show"
                         className="text-neutral-500 text-base leading-relaxed max-w-xs">
-                        Join thousands of explorers who use MemoryMap to keep their most precious moments alive — beautifully.
+                        Bergabunglah dengan ribuan penjelajah yang menggunakan MemoryMap untuk menghidupkan kembali momen paling berharga anda dengan indah.
                     </motion.p>
 
                     {/* Perks list */}
@@ -182,7 +182,7 @@ export default function RegisterPage() {
                             ))}
                         </div>
                         <p className="text-neutral-600 text-xs">
-                            <span className="text-neutral-300 font-semibold">12,000+</span> explorers worldwide
+                            <span className="text-neutral-300 font-semibold">12.000+</span> penjelajah di seluruh dunia
                         </p>
                     </motion.div>
                 </div>
@@ -202,7 +202,7 @@ export default function RegisterPage() {
                     <motion.div custom={0} variants={fadeUp} initial="hidden" animate="show" className="mb-8">
                         <Link href="/" className="inline-flex items-center gap-2 text-sm font-medium text-neutral-500 hover:text-white transition-colors group">
                             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                            Back to Home
+                            Kembali ke Beranda
                         </Link>
                     </motion.div>
 
@@ -223,10 +223,10 @@ export default function RegisterPage() {
                     {/* Heading */}
                     <motion.div custom={1} variants={fadeUp} initial="hidden" animate="show" className="mb-8">
                         <h2 className="font-[Outfit] font-extrabold text-3xl text-white tracking-tight mb-1.5">
-                            Create account
+                            Buat akun
                         </h2>
                         <p className="text-neutral-500 text-sm">
-                            Free forever. No credit card required.
+                            Gratis selamanya. Tanpa kartu kredit.
                         </p>
                     </motion.div>
 
@@ -236,12 +236,12 @@ export default function RegisterPage() {
                         {/* Full Name */}
                         <motion.div custom={2} variants={fadeUp} initial="hidden" animate="show" className="space-y-1.5">
                             <label className="block text-xs font-semibold text-neutral-400 tracking-widest uppercase">
-                                Full Name
+                                Nama Lengkap
                             </label>
                             <Input
                                 {...register("name")}
                                 type="text"
-                                placeholder="Your name"
+                                placeholder="Nama Anda"
                                 disabled={isLoading}
                                 className="h-11 w-full rounded-xl border border-white/[0.08] bg-white/[0.03] text-white text-sm placeholder:text-neutral-700 focus:border-indigo-500/60 focus:ring-2 focus:ring-indigo-500/20 focus:bg-white/[0.05] transition-all px-4 outline-none"
                             />
@@ -270,13 +270,13 @@ export default function RegisterPage() {
                         {/* Password */}
                         <motion.div custom={4} variants={fadeUp} initial="hidden" animate="show" className="space-y-1.5">
                             <label className="block text-xs font-semibold text-neutral-400 tracking-widest uppercase">
-                                Password
+                                Sandi
                             </label>
                             <div className="relative">
                                 <Input
                                     {...register("password")}
                                     type={showPassword ? "text" : "password"}
-                                    placeholder="Min. 8 characters"
+                                    placeholder="Min. 8 karakter"
                                     disabled={isLoading}
                                     className="h-11 w-full rounded-xl border border-white/[0.08] bg-white/[0.03] text-white text-sm placeholder:text-neutral-700 focus:border-indigo-500/60 focus:ring-2 focus:ring-indigo-500/20 focus:bg-white/[0.05] transition-all px-4 pr-11 outline-none"
                                 />
@@ -299,7 +299,7 @@ export default function RegisterPage() {
                                         <X className="w-3.5 h-3.5 text-neutral-600" />
                                     )}
                                     <span className={passwordValue.length >= 8 ? "text-emerald-400" : "text-neutral-500"}>
-                                        At least 8 characters
+                                        Minimal 8 karakter
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-2 text-xs">
@@ -309,7 +309,7 @@ export default function RegisterPage() {
                                         <X className="w-3.5 h-3.5 text-neutral-600" />
                                     )}
                                     <span className={/\d/.test(passwordValue) ? "text-emerald-400" : "text-neutral-500"}>
-                                        At least 1 number
+                                        Minimal 1 angka
                                     </span>
                                 </div>
                             </div>
@@ -322,13 +322,13 @@ export default function RegisterPage() {
                         {/* Confirm Password */}
                         <motion.div custom={4.5} variants={fadeUp} initial="hidden" animate="show" className="space-y-1.5">
                             <label className="block text-xs font-semibold text-neutral-400 tracking-widest uppercase">
-                                Confirm Password
+                                Konfirmasi Sandi
                             </label>
                             <div className="relative">
                                 <Input
                                     {...register("confirmPassword")}
                                     type={showConfirmPassword ? "text" : "password"}
-                                    placeholder="Repeat your password"
+                                    placeholder="Ulangi sandi Anda"
                                     disabled={isLoading}
                                     className="h-11 w-full rounded-xl border border-white/[0.08] bg-white/[0.03] text-white text-sm placeholder:text-neutral-700 focus:border-indigo-500/60 focus:ring-2 focus:ring-indigo-500/20 focus:bg-white/[0.05] transition-all px-4 pr-11 outline-none"
                                 />
@@ -349,10 +349,10 @@ export default function RegisterPage() {
                         {/* Terms */}
                         <motion.div custom={5} variants={fadeUp} initial="hidden" animate="show">
                             <p className="text-xs text-neutral-600 leading-relaxed">
-                                By creating an account you agree to our{" "}
-                                <Link href="#" className="text-indigo-400 hover:text-indigo-300 transition-colors">Terms of Service</Link>
-                                {" "}and{" "}
-                                <Link href="#" className="text-indigo-400 hover:text-indigo-300 transition-colors">Privacy Policy</Link>.
+                                Dengan membuat akun, Anda menyetujui{" "}
+                                <Link href="#" className="text-indigo-400 hover:text-indigo-300 transition-colors">Syarat Layanan</Link>
+                                {" "}dan{" "}
+                                <Link href="#" className="text-indigo-400 hover:text-indigo-300 transition-colors">Kebijakan Privasi</Link> kami.
                             </p>
                         </motion.div>
 
@@ -381,11 +381,11 @@ export default function RegisterPage() {
                                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                                             </svg>
-                                            Creating account...
+                                            Membuat akun...
                                         </>
                                     ) : (
                                         <>
-                                            Create free account
+                                            Buat akun gratis
                                             <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                                         </>
                                     )}
@@ -397,9 +397,9 @@ export default function RegisterPage() {
                     {/* Login link */}
                     <motion.p custom={8} variants={fadeUp} initial="hidden" animate="show"
                         className="mt-6 text-center text-sm text-neutral-600">
-                        Already have an account?{" "}
+                        Sudah punya akun?{" "}
                         <Link href="/login" className="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors">
-                            Sign in →
+                            Masuk →
                         </Link>
                     </motion.p>
                 </div>

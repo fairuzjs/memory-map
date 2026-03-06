@@ -3,9 +3,10 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { signOut, useSession } from "next-auth/react"
-import { MapPin, Map, Plus, LogOut, LayoutDashboard, User as UserIcon, ArrowRight, Globe, Shield, MessageSquareText, Menu, X } from "lucide-react"
+import { MapPin, Map, Plus, LogOut, LayoutDashboard, User as UserIcon, ArrowRight, Globe, Shield, MessageSquareText, Menu, X, Flame } from "lucide-react"
 import { useState, useEffect } from "react"
 import { NotificationDropdown } from "./NotificationDropdown"
+import { motion, AnimatePresence } from "framer-motion"
 
 export function Navbar() {
     const pathname = usePathname()
@@ -33,28 +34,31 @@ export function Navbar() {
         { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
         { name: "Map", href: "/map", icon: Map },
         { name: "Community", href: "/community", icon: Globe },
+        { name: "Streak", href: "/streak", icon: Flame },
     ]
 
     return (
-        <nav className="fixed top-0 z-50 w-full border-b border-white/[0.06]">
-            {/* Glass background — same treatment as landing page */}
+        <nav className="fixed top-0 z-50 w-full transition-all duration-300">
+            {/* Glassmorphism Background */}
             <div
-                className="absolute inset-0 backdrop-blur-2xl"
-                style={{ background: "linear-gradient(to bottom, rgba(8,8,16,0.88), rgba(8,8,16,0.65))" }}
+                className="absolute inset-0 backdrop-blur-xl border-b border-white/[0.08]"
+                style={{ background: "rgba(8,8,16,0.7)", boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)" }}
             />
 
+            {/* Subtle Bottom Gradient Line */}
+            <div className="absolute bottom-0 left-0 w-full h-[1px]"
+                style={{ background: "linear-gradient(90deg, transparent, rgba(99,102,241,0.2), transparent)" }} />
+
             <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between h-[72px]">
+                <div className="flex items-center justify-between h-[76px]">
 
                     {/* ── Left: Logo + Nav Links ─────────────────────── */}
                     <div className="flex items-center gap-8">
                         {/* Logo — identical to landing page */}
                         <Link href="/" className="flex items-center gap-3 group">
-                            <div className="relative w-10 h-10">
-                                <div className="absolute inset-0 bg-indigo-600 rounded-xl rotate-[-12deg] group-hover:rotate-0 transition-all duration-300 shadow-lg shadow-indigo-500/30" />
-                                <div className="relative w-10 h-10 flex items-center justify-center">
-                                    <MapPin className="w-5 h-5 text-white" />
-                                </div>
+                            <div className="relative w-10 h-10 flex items-center justify-center">
+                                <div className="absolute inset-0 bg-indigo-600 rounded-xl rotate-[-8deg] group-hover:rotate-0 transition-transform duration-300 shadow-lg shadow-indigo-500/30" />
+                                <MapPin className="relative w-5 h-5 text-white z-10" />
                             </div>
                             <span className="font-extrabold text-[22px] font-[Outfit] text-white tracking-tight">
                                 Memory<span className="text-indigo-400">Map</span>
@@ -70,9 +74,9 @@ export function Navbar() {
                                     <Link
                                         key={link.name}
                                         href={link.href}
-                                        className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${isActive
-                                            ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"
-                                            : "text-neutral-400 hover:text-neutral-200 hover:bg-white/[0.05]"
+                                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${isActive
+                                            ? "bg-white/[0.08] text-white"
+                                            : "text-neutral-400 hover:text-white hover:bg-white/[0.04]"
                                             }`}
                                     >
                                         <Icon className="w-4 h-4" />
@@ -85,9 +89,9 @@ export function Navbar() {
                             {session?.user?.role === "ADMIN" && (
                                 <Link
                                     href="/admin"
-                                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${pathname.startsWith('/admin')
-                                        ? "bg-rose-500/10 text-rose-400 border border-rose-500/20"
-                                        : "text-neutral-400 hover:text-neutral-200 hover:bg-white/[0.05]"
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${pathname.startsWith('/admin')
+                                        ? "bg-rose-500/10 text-rose-400"
+                                        : "text-neutral-400 hover:text-white hover:bg-white/[0.04]"
                                         }`}
                                 >
                                     <Shield className="w-4 h-4" />
@@ -171,14 +175,17 @@ export function Navbar() {
             </div>
 
             {/* ── Mobile Navigation Menu ────────────────────────── */}
-            {isMenuOpen && (
-                <div className="md:hidden fixed inset-0 top-[72px] z-40">
-                    {/* Backdrop */}
-                    <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={() => setIsMenuOpen(false)} />
-
-                    {/* Menu Content */}
-                    <div className="relative w-full bg-[#080810] border-b border-white/[0.06] px-4 py-6 shadow-2xl animate-in slide-in-from-top duration-300">
-                        <div className="flex flex-col gap-2">
+            <AnimatePresence>
+                {isMenuOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="md:hidden border-t border-white/[0.06] bg-[#0c0c16]/95 backdrop-blur-xl overflow-hidden absolute top-[76px] left-0 w-full z-40"
+                    >
+                        {/* Menu Content */}
+                        <div className="px-5 py-6 flex flex-col gap-2">
                             {navLinks.map((link) => {
                                 const Icon = link.icon
                                 const isActive = pathname === link.href
@@ -186,12 +193,13 @@ export function Navbar() {
                                     <Link
                                         key={link.name}
                                         href={link.href}
-                                        className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium transition-all ${isActive
-                                            ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"
-                                            : "text-neutral-400 hover:text-neutral-200 hover:bg-white/[0.05]"
+                                        onClick={() => setIsMenuOpen(false)}
+                                        className={`flex items-center gap-3 px-4 py-3 rounded-xl text-[15px] font-medium transition-all ${isActive
+                                            ? "bg-white/[0.08] text-white"
+                                            : "text-neutral-300 hover:text-white hover:bg-white/[0.06]"
                                             }`}
                                     >
-                                        <Icon className="w-5 h-5" />
+                                        <Icon className="w-5 h-5 flex-shrink-0" />
                                         {link.name}
                                     </Link>
                                 )
@@ -200,39 +208,42 @@ export function Navbar() {
                             {session?.user?.role === "ADMIN" && (
                                 <Link
                                     href="/admin"
-                                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium transition-all ${pathname.startsWith('/admin')
-                                        ? "bg-rose-500/10 text-rose-400 border border-rose-500/20"
-                                        : "text-neutral-400 hover:text-neutral-200 hover:bg-white/[0.05]"
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-[15px] font-medium transition-all ${pathname.startsWith('/admin')
+                                        ? "bg-rose-500/10 text-rose-400"
+                                        : "text-neutral-300 hover:text-white hover:bg-white/[0.06]"
                                         }`}
                                 >
-                                    <Shield className="w-5 h-5" />
+                                    <Shield className="w-5 h-5 flex-shrink-0" />
                                     Admin Panel
                                 </Link>
                             )}
 
-                            <div className="h-px bg-white/[0.06] my-2" />
+                            <div className="h-px bg-white/[0.06] my-2 mx-2" />
 
                             {session?.user && (
                                 <Link
                                     href={`/profile/${session.user.id}`}
-                                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium transition-all ${pathname.startsWith(`/profile/${session.user.id}`)
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-[15px] font-medium transition-all ${pathname.startsWith(`/profile/${session.user.id}`)
                                         ? "bg-white/[0.08] text-white"
-                                        : "text-neutral-400 hover:text-neutral-200 hover:bg-white/[0.05]"
+                                        : "text-neutral-300 hover:text-white hover:bg-white/[0.06]"
                                         }`}
                                 >
-                                    <UserIcon className="w-5 h-5" />
+                                    <UserIcon className="w-5 h-5 flex-shrink-0" />
                                     Profile
                                 </Link>
                             )}
 
                             <Link
                                 href="/feedbacks"
-                                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium transition-all ${pathname === '/feedbacks'
+                                onClick={() => setIsMenuOpen(false)}
+                                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-[15px] font-medium transition-all ${pathname === '/feedbacks'
                                     ? "bg-white/[0.08] text-white"
-                                    : "text-neutral-400 hover:text-neutral-200 hover:bg-white/[0.05]"
+                                    : "text-neutral-300 hover:text-white hover:bg-white/[0.06]"
                                     }`}
                             >
-                                <MessageSquareText className="w-5 h-5" />
+                                <MessageSquareText className="w-5 h-5 flex-shrink-0" />
                                 Pusat Bantuan
                             </Link>
 
@@ -240,35 +251,40 @@ export function Navbar() {
                                 <>
                                     <Link
                                         href="/login"
-                                        className="flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium text-neutral-400 hover:text-neutral-200 hover:bg-white/[0.05] transition-all"
+                                        onClick={() => setIsMenuOpen(false)}
+                                        className="flex items-center gap-3 px-4 py-3 rounded-xl text-[15px] font-medium text-neutral-300 hover:text-white hover:bg-white/[0.06] transition-all"
                                     >
-                                        <UserIcon className="w-5 h-5" />
+                                        <UserIcon className="w-5 h-5 flex-shrink-0" />
                                         Sign In
                                     </Link>
                                     <Link
                                         href="/register"
-                                        className="mt-2 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-base font-semibold text-white transition-all"
+                                        onClick={() => setIsMenuOpen(false)}
+                                        className="mt-2 w-full relative inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-[15px] font-semibold text-white overflow-hidden shadow-lg shadow-indigo-500/20"
                                         style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
                                     >
-                                        Get Started
-                                        <ArrowRight className="w-4 h-4" />
+                                        <span className="relative">Get Started</span>
+                                        <ArrowRight className="w-4 h-4 flex-shrink-0 relative" />
                                     </Link>
                                 </>
                             )}
 
                             {session?.user && (
                                 <button
-                                    onClick={() => signOut({ callbackUrl: "/login" })}
-                                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium text-red-400/80 hover:text-red-400 hover:bg-red-500/10 transition-all text-left"
+                                    onClick={() => {
+                                        setIsMenuOpen(false)
+                                        signOut({ callbackUrl: "/login" })
+                                    }}
+                                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-[15px] font-medium text-red-400/80 hover:text-red-400 hover:bg-red-500/10 transition-all text-left"
                                 >
-                                    <LogOut className="w-5 h-5" />
+                                    <LogOut className="w-5 h-5 flex-shrink-0" />
                                     Sign Out
                                 </button>
                             )}
                         </div>
-                    </div>
-                </div>
-            )}
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </nav>
     )
 }

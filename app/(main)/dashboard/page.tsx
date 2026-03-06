@@ -5,7 +5,7 @@ import { useEffect, useState, useRef } from "react"
 import Link from "next/link"
 import {
     Plus, Globe, Users, MapPin, Loader2, ArrowRight,
-    BookOpen, TrendingUp, Map, Heart, Image as ImageIcon, Sparkles
+    BookOpen, TrendingUp, Map, Heart, Image as ImageIcon, Sparkles, Flame, ChevronRight, CheckCircle2
 } from "lucide-react"
 import { motion, useInView } from "framer-motion"
 
@@ -36,8 +36,8 @@ function AnimatedSection({ children, className }: { children: React.ReactNode; c
 const features = [
     {
         icon: MapPin,
-        label: "Global Coverage",
-        desc: "Discover hidden gems pinned by people all over the world.",
+        label: "Jangkauan Global",
+        desc: "Temukan tempat tersembunyi yang ditandai oleh orang-orang di seluruh dunia.",
         iconBg: "bg-indigo-500/10 border border-indigo-500/20",
         iconColor: "text-indigo-400",
         hoverBg: "from-indigo-500/[0.06] to-violet-500/[0.03]",
@@ -45,8 +45,8 @@ const features = [
     },
     {
         icon: Users,
-        label: "Community First",
-        desc: "Share your experiences and react to adventures from fellow explorers.",
+        label: "Komunitas",
+        desc: "Bagikan pengalaman Anda dan tanggapi petualangan dari penjelajah lain.",
         iconBg: "bg-emerald-500/10 border border-emerald-500/20",
         iconColor: "text-emerald-400",
         hoverBg: "from-emerald-500/[0.06] to-teal-500/[0.03]",
@@ -54,8 +54,8 @@ const features = [
     },
     {
         icon: BookOpen,
-        label: "Personal Journal",
-        desc: "Keep your memories safe, categorize by emotion, and look back anytime.",
+        label: "Jurnal Pribadi",
+        desc: "Simpan kenangan dengan aman, kategorikan berdasarkan perasaan, dan lihat kembali kapan saja.",
         iconBg: "bg-amber-500/10 border border-amber-500/20",
         iconColor: "text-amber-400",
         hoverBg: "from-amber-500/[0.06] to-orange-500/[0.03]",
@@ -129,10 +129,11 @@ export default function DashboardPage() {
         totalPhotos: 0,
     })
     const [loading, setLoading] = useState(true)
+    const [streakData, setStreakData] = useState<{ currentStreak: number; alreadyClaimed: boolean } | null>(null)
 
-    const firstName = session?.user?.name?.split(" ")[0] || "Explorer"
+    const firstName = session?.user?.name?.split(" ")[0] || "Penjelajah"
     const hour = new Date().getHours()
-    const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening"
+    const greeting = hour < 12 ? "Selamat pagi" : hour < 18 ? "Selamat siang" : "Selamat malam"
 
     useEffect(() => {
         if (!session?.user?.id) return
@@ -151,6 +152,12 @@ export default function DashboardPage() {
                 setLoading(false)
             })
             .catch(() => setLoading(false))
+
+        // Fetch streak data untuk widget
+        fetch("/api/streak")
+            .then(res => res.json())
+            .then(data => setStreakData({ currentStreak: data.currentStreak, alreadyClaimed: data.alreadyClaimed }))
+            .catch(() => { })
     }, [session?.user?.id])
 
     if (loading) {
@@ -158,7 +165,7 @@ export default function DashboardPage() {
             <div className="flex-1 flex items-center justify-center min-h-[500px]">
                 <div className="flex flex-col items-center gap-3">
                     <Loader2 className="w-6 h-6 text-indigo-400 animate-spin" />
-                    <span className="text-neutral-500 text-sm">Loading your dashboard…</span>
+                    <span className="text-neutral-500 text-sm">Memuat dashboard Anda…</span>
                 </div>
             </div>
         )
@@ -213,7 +220,7 @@ export default function DashboardPage() {
                             className="text-[28px] sm:text-[34px] font-extrabold text-white leading-tight mb-2"
                             style={{ fontFamily: "'Syne', sans-serif" }}
                         >
-                            Welcome back,{" "}
+                            Selamat datang kembali,{" "}
                             <span
                                 style={{
                                     backgroundImage: "linear-gradient(135deg, #a5b4fc, #c084fc)",
@@ -227,7 +234,7 @@ export default function DashboardPage() {
                             .
                         </h1>
                         <p className="text-sm text-neutral-500 max-w-sm leading-relaxed">
-                            Ready to pin your next memory to the world?
+                            Siap untuk menyimpan kenangan baru Anda di peta?
                         </p>
                     </div>
 
@@ -243,18 +250,76 @@ export default function DashboardPage() {
                         >
                             <span className="absolute inset-0 bg-white/0 hover:bg-white/[0.08] transition-colors rounded-xl" />
                             <Plus className="relative w-4 h-4" />
-                            <span className="relative">Add Memory</span>
+                            <span className="relative">Tambah Kenangan</span>
                         </Link>
                         <Link
                             href="/map"
                             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-neutral-400 border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.07] hover:text-white hover:border-white/[0.14] transition-all"
                         >
                             <Globe className="w-4 h-4" />
-                            <span>Explore Map</span>
+                            <span>Jelajahi Peta</span>
                         </Link>
                     </div>
                 </motion.div>
             </motion.div>
+
+            {/* ── Feature Cards ──────────────────────────────────────────────── */}
+            {/* ── Streak Widget ──────────────────────────────────────────────── */}
+            {streakData !== null && (
+                <motion.div initial="hidden" animate="show" variants={stagger}>
+                    <motion.div
+                        variants={fadeUp}
+                        className="relative rounded-2xl overflow-hidden border px-5 py-4 flex items-center justify-between gap-4"
+                        style={{
+                            background: "linear-gradient(135deg, rgba(234,88,12,0.08) 0%, rgba(249,115,22,0.04) 100%)",
+                            borderColor: "rgba(234,88,12,0.18)",
+                        }}
+                    >
+                        {/* Left: icon + info */}
+                        <div className="flex items-center gap-3 min-w-0">
+                            <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                                style={{ background: "rgba(234,88,12,0.15)", border: "1px solid rgba(234,88,12,0.3)" }}>
+                                <Flame className="w-5 h-5 text-orange-400" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                                <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                                    <span className="text-lg font-black text-white leading-none whitespace-nowrap" style={{ fontFamily: "'Syne', sans-serif" }}>
+                                        {streakData.currentStreak}
+                                    </span>
+                                    <span className="text-xs text-neutral-400 whitespace-nowrap">hari streak</span>
+                                    {streakData.alreadyClaimed ? (
+                                        <span className="flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap"
+                                            style={{ background: "rgba(34,197,94,0.1)", color: "#4ade80", border: "1px solid rgba(34,197,94,0.2)" }}>
+                                            <CheckCircle2 className="w-3 h-3" />
+                                            Sudah klaim
+                                        </span>
+                                    ) : (
+                                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap"
+                                            style={{ background: "rgba(251,191,36,0.1)", color: "#fbbf24", border: "1px solid rgba(251,191,36,0.2)" }}>
+                                            Belum klaim
+                                        </span>
+                                    )}
+                                </div>
+                                <p className="text-[11px] text-neutral-600 mt-1 truncate">Daily Streak</p>
+                            </div>
+                        </div>
+
+                        {/* Right: CTA */}
+                        <Link
+                            href="/streak"
+                            className="flex items-center justify-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg transition-all flex-shrink-0 whitespace-nowrap min-w-[max-content]"
+                            style={{
+                                background: "rgba(234,88,12,0.12)",
+                                color: "#fb923c",
+                                border: "1px solid rgba(234,88,12,0.2)",
+                            }}
+                        >
+                            {streakData.alreadyClaimed ? "Lihat Detail" : "Klaim Sekarang"}
+                            <ChevronRight className="w-3.5 h-3.5" />
+                        </Link>
+                    </motion.div>
+                </motion.div>
+            )}
 
             {/* ── Feature Cards ──────────────────────────────────────────────── */}
             <AnimatedSection className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -303,16 +368,16 @@ export default function DashboardPage() {
                                 className="text-[18px] font-bold text-white leading-none"
                                 style={{ fontFamily: "'Syne', sans-serif" }}
                             >
-                                Memory Stats & Activity
+                                Statistik & Aktivitas Kenangan
                             </h2>
-                            <p className="text-[11px] text-neutral-600 mt-0.5 tracking-wide">Your journey by the numbers</p>
+                            <p className="text-[11px] text-neutral-600 mt-0.5 tracking-wide">Perjalanan Anda dalam angka</p>
                         </div>
                     </div>
                     <Link
                         href="/memories"
                         className="group flex items-center gap-1.5 text-xs font-medium text-indigo-400 hover:text-indigo-300 transition-all"
                     >
-                        <span>View Journal</span>
+                        <span>Lihat Jurnal</span>
                         <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                     </Link>
                 </motion.div>
@@ -321,45 +386,45 @@ export default function DashboardPage() {
                 <motion.div variants={stagger} className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <StatCard
                         icon={BookOpen}
-                        label="Memories"
+                        label="Kenangan"
                         value={stats.totalMemories}
                         iconBg="bg-indigo-500/10 border border-indigo-500/20"
                         iconColor="text-indigo-400"
                         barColor="from-indigo-500 to-violet-500"
                         barWidth={Math.min((stats.totalMemories / 20) * 100, 100)}
-                        footer="+1 this week"
+                        footer="+1 minggu ini"
                     />
                     <StatCard
                         icon={Map}
-                        label="Places"
+                        label="Tempat"
                         value={stats.uniqueLocations}
                         iconBg="bg-emerald-500/10 border border-emerald-500/20"
                         iconColor="text-emerald-400"
                         barColor="from-emerald-500 to-teal-500"
                         barWidth={Math.min((stats.uniqueLocations / 20) * 100, 100)}
-                        footer="Across cities"
+                        footer="Di berbagai kota"
                     />
                     <StatCard
                         icon={Heart}
-                        label="Top Vibe"
+                        label="Perasaan Utama"
                         value={stats.topEmotion.charAt(0).toUpperCase() + stats.topEmotion.slice(1).toLowerCase()}
                         iconBg="bg-rose-500/10 border border-rose-500/20"
                         iconColor="text-rose-400"
                         barColor="from-rose-500 to-pink-500"
                         barWidth={65}
-                        footer="Most logged emotion"
+                        footer="Paling sering"
                         valueLg
                         valueColor="text-rose-300"
                     />
                     <StatCard
                         icon={ImageIcon}
-                        label="Photos"
+                        label="Foto"
                         value={stats.totalPhotos}
                         iconBg="bg-amber-500/10 border border-amber-500/20"
                         iconColor="text-amber-400"
                         barColor="from-amber-500 to-orange-500"
                         barWidth={Math.min((stats.totalPhotos / 50) * 100, 100)}
-                        footer="Attached to memories"
+                        footer="Terlampir di kenangan"
                     />
                 </motion.div>
             </AnimatedSection>

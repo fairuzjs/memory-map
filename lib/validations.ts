@@ -9,6 +9,16 @@ export const forgotPasswordSchema = z.object({
     email: z.string().email({ message: "Invalid email address" }),
 })
 
+export const resetPasswordSchema = z.object({
+    password: z.string()
+        .min(8, { message: "Password must be at least 8 characters" })
+        .regex(/\d/, { message: "Password must contain at least 1 number" }),
+    confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+})
+
 export const registerSchema = z.object({
     name: z.string().min(2, { message: "Name must be at least 2 characters" }),
     email: z.string().email({ message: "Invalid email address" }),
@@ -35,9 +45,11 @@ export const memorySchema = z.object({
     isPublic: z.boolean().default(true),
     photos: z.array(z.string()).optional(), // array of uploaded photo URLs
     tags: z.array(z.string()).optional(),
+    collaborators: z.array(z.string()).max(5, { message: "Maximum 5 collaborators allowed" }).optional().default([]),
 })
 
 export type LoginInput = z.infer<typeof loginSchema>
 export type RegisterInput = z.infer<typeof registerSchema>
 export type MemoryInput = z.infer<typeof memorySchema>
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>
+export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>

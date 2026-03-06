@@ -1,31 +1,32 @@
 import Link from "next/link"
-import { MapPin, Calendar, Heart, MessageCircle } from "lucide-react"
+import { MapPin, Calendar, Heart, MessageCircle, Users } from "lucide-react"
 
 interface MemoryCardProps {
     memory: any
+    isCollaboration?: boolean
 }
 
 const emotionMap: Record<string, { icon: string; bg: string; border: string }> = {
-    HAPPY:       { icon: "🌟", bg: "bg-yellow-500/10",  border: "border-yellow-500/20"  },
-    SAD:         { icon: "💧", bg: "bg-blue-500/10",    border: "border-blue-500/20"    },
-    NOSTALGIC:   { icon: "🕰️", bg: "bg-amber-600/10",  border: "border-amber-500/20"   },
-    EXCITED:     { icon: "🔥", bg: "bg-orange-500/10",  border: "border-orange-500/20"  },
-    PEACEFUL:    { icon: "🍃", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
-    GRATEFUL:    { icon: "🙏", bg: "bg-teal-500/10",    border: "border-teal-500/20"    },
-    ROMANTIC:    { icon: "❤️", bg: "bg-rose-500/10",   border: "border-rose-500/20"    },
-    ADVENTUROUS: { icon: "🏕️", bg: "bg-indigo-500/10", border: "border-indigo-500/20"  },
+    HAPPY: { icon: "🌟", bg: "bg-yellow-500/10", border: "border-yellow-500/20" },
+    SAD: { icon: "💧", bg: "bg-blue-500/10", border: "border-blue-500/20" },
+    NOSTALGIC: { icon: "🕰️", bg: "bg-amber-600/10", border: "border-amber-500/20" },
+    EXCITED: { icon: "🔥", bg: "bg-orange-500/10", border: "border-orange-500/20" },
+    PEACEFUL: { icon: "🍃", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
+    GRATEFUL: { icon: "🙏", bg: "bg-teal-500/10", border: "border-teal-500/20" },
+    ROMANTIC: { icon: "❤️", bg: "bg-rose-500/10", border: "border-rose-500/20" },
+    ADVENTUROUS: { icon: "🏕️", bg: "bg-indigo-500/10", border: "border-indigo-500/20" },
 }
 
-export function MemoryCard({ memory }: MemoryCardProps) {
+export function MemoryCard({ memory, isCollaboration }: MemoryCardProps) {
+    const collab = isCollaboration ?? memory.isCollaboration ?? false
     const emotion = emotionMap[memory.emotion] ?? emotionMap.HAPPY
-    const photos  = memory.photos ?? []
+    const photos = memory.photos ?? []
     const hasPhoto = photos.length > 0
 
     return (
-        // ─── Outer wrapper: relative + overflow-hidden clips everything inside ───
         <div className="group relative flex flex-col h-full bg-neutral-900/50 backdrop-blur-sm border border-neutral-800 hover:border-indigo-500/40 rounded-2xl overflow-hidden transition-all duration-300 shadow-xl shadow-neutral-900/50 hover:-translate-y-1">
 
-            {/* ── Photo area — only rendered when memory has photos ───────────── */}
+            {/* ── Photo area ───────────────────────────────────────────────────── */}
             {hasPhoto && (
                 <div className="relative w-full h-48 shrink-0 overflow-hidden">
                     <img
@@ -34,13 +35,31 @@ export function MemoryCard({ memory }: MemoryCardProps) {
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/90 via-neutral-900/20 to-transparent" />
+
+                    {/* Collab badge — di atas foto */}
+                    {collab && (
+                        <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-violet-600/90 backdrop-blur-sm border border-violet-400/30 shadow-lg">
+                            <Users className="w-3 h-3 text-white" />
+                            <span className="text-[11px] font-bold text-white tracking-wide">Collab</span>
+                        </div>
+                    )}
                 </div>
             )}
 
-            {/* ── Content area — grows to fill remaining height ────────────────── */}
+            {/* ── Content area ─────────────────────────────────────────────────── */}
             <div className="relative flex flex-col flex-1 p-5">
 
-                {/* Emotion + Title row — emotion badge stays INSIDE the card */}
+                {/* Collab badge — jika tidak ada foto, tampil di sini */}
+                {collab && !hasPhoto && (
+                    <div className="flex justify-end mb-2">
+                        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-violet-600/20 border border-violet-500/30">
+                            <Users className="w-3 h-3 text-violet-400" />
+                            <span className="text-[11px] font-bold text-violet-400 tracking-wide">Collab</span>
+                        </div>
+                    </div>
+                )}
+
+                {/* Emotion + Title row */}
                 <div className="flex items-start gap-3 mb-3">
                     <div className={`shrink-0 w-9 h-9 flex items-center justify-center rounded-xl border ${emotion.bg} ${emotion.border}`}>
                         <span className="text-lg leading-none">{emotion.icon}</span>
@@ -64,7 +83,7 @@ export function MemoryCard({ memory }: MemoryCardProps) {
                     </div>
                 </div>
 
-                {/* Story — flex-1 lets this fill space, keeping footer pinned to bottom */}
+                {/* Story */}
                 <p className="flex-1 text-neutral-400 text-[13px] line-clamp-3 leading-relaxed mb-4">
                     {memory.story}
                 </p>
@@ -99,7 +118,7 @@ export function MemoryCard({ memory }: MemoryCardProps) {
                 </div>
             </div>
 
-            {/* Full-card clickable overlay — sits above content but below author link */}
+            {/* Full-card clickable overlay */}
             <Link
                 href={`/memories/${memory.id}`}
                 className="absolute inset-0 z-20"

@@ -44,14 +44,14 @@ export default function LoginPage() {
                 isAdminLogin: "false",
             })
             if (result?.error) {
-                toast.error(result.error !== "CredentialsSignin" ? result.error : "Invalid email or password")
+                toast.error(result.error !== "CredentialsSignin" ? result.error : "Email atau password tidak valid")
             } else {
-                toast.success("Login successful")
+                toast.success("Berhasil masuk")
                 router.push("/dashboard")
                 router.refresh()
             }
         } catch {
-            toast.error("Something went wrong")
+            toast.error("Terjadi kesalahan")
         } finally {
             setIsLoading(false)
         }
@@ -108,10 +108,10 @@ export default function LoginPage() {
                     <motion.div custom={1} variants={fadeUp} initial="hidden" animate="show">
                         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium text-indigo-300 border border-indigo-500/20 bg-indigo-500/[0.07] mb-6">
                             <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
-                            12,000+ memories mapped
+                            12.000+ kenangan terpetakan
                         </div>
                         <h1 className="font-[Outfit] font-extrabold text-white leading-[1.08]" style={{ fontSize: "clamp(2.2rem, 3.5vw, 3.2rem)" }}>
-                            Every place<br />
+                            Setiap tempat<br />
                             <span
                                 style={{
                                     WebkitBackgroundClip: "text",
@@ -120,14 +120,14 @@ export default function LoginPage() {
                                     backgroundClip: "text"
                                 }}
                             >
-                                tells a story.
+                                punya cerita.
                             </span>
                         </h1>
                     </motion.div>
 
                     <motion.p custom={2} variants={fadeUp} initial="hidden" animate="show"
                         className="text-neutral-500 text-base leading-relaxed max-w-xs">
-                        Pin your life's most meaningful moments to their exact location on Earth. Private, beautiful, and yours forever.
+                        Sematkan momen paling bermakna dalam hidup Anda di lokasi persisnya di Bumi. Pribadi, indah, dan milik Anda selamanya.
                     </motion.p>
 
                     {/* Testimonial card */}
@@ -140,7 +140,7 @@ export default function LoginPage() {
                             style={{ background: "linear-gradient(90deg, transparent, rgba(139,92,246,0.4), transparent)" }}
                         />
                         <p className="text-neutral-400 text-sm leading-relaxed mb-4">
-                            "MemoryMap changed how I remember travel. Every trip now has a permanent, beautiful home."
+                            "MemoryMap mengubah cara saya mengingat perjalanan wisata. Setiap cerita sekarang punya tempatnya sendiri secara visual."
                         </p>
                         <div className="flex items-center gap-3">
                             <img
@@ -149,8 +149,8 @@ export default function LoginPage() {
                                 alt=""
                             />
                             <div>
-                                <p className="text-white text-xs font-semibold">Maya R.</p>
-                                <p className="text-neutral-600 text-xs">Explorer · 48 memories</p>
+                                <p className="text-white text-xs font-semibold">Fairuz.</p>
+                                <p className="text-neutral-600 text-xs">Developer · 48 kenangan</p>
                             </div>
                             <div className="ml-auto flex gap-0.5">
                                 {[...Array(5)].map((_, i) => (
@@ -178,7 +178,7 @@ export default function LoginPage() {
                     <motion.div custom={0} variants={fadeUp} initial="hidden" animate="show" className="mb-8">
                         <Link href="/" className="inline-flex items-center gap-2 text-sm font-medium text-neutral-500 hover:text-white transition-colors group">
                             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                            Back to Home
+                            Kembali ke Beranda
                         </Link>
                     </motion.div>
 
@@ -199,10 +199,10 @@ export default function LoginPage() {
                     {/* Heading */}
                     <motion.div custom={1} variants={fadeUp} initial="hidden" animate="show" className="mb-8">
                         <h2 className="font-[Outfit] font-extrabold text-3xl text-white tracking-tight mb-1.5">
-                            Welcome back
+                            Selamat Datang
                         </h2>
                         <p className="text-neutral-500 text-sm">
-                            Sign in to continue to your Memory Map.
+                            Masuk ke akun Anda untuk melanjutkan penjelajahan Memory Map.
                         </p>
                     </motion.div>
 
@@ -230,10 +230,10 @@ export default function LoginPage() {
                         <motion.div custom={3} variants={fadeUp} initial="hidden" animate="show" className="space-y-1.5">
                             <div className="flex items-center justify-between">
                                 <label className="block text-xs font-semibold text-neutral-400 tracking-widest uppercase">
-                                    Password
+                                    Sandi
                                 </label>
                                 <Link href="/forgot-password" className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors">
-                                    Forgot password?
+                                    Lupa sandi?
                                 </Link>
                             </div>
                             <div className="relative">
@@ -266,7 +266,7 @@ export default function LoginPage() {
                                     className="w-4 h-4 rounded border border-white/10 bg-white/[0.04] accent-indigo-500"
                                 />
                                 <span className="text-sm text-neutral-500 group-hover:text-neutral-300 transition-colors select-none">
-                                    Remember me for 30 days
+                                    Ingat saya selama 30 hari
                                 </span>
                             </label>
                         </motion.div>
@@ -296,11 +296,11 @@ export default function LoginPage() {
                                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                                             </svg>
-                                            Signing in...
+                                            Memasuki...
                                         </>
                                     ) : (
                                         <>
-                                            Sign in
+                                            Masuk
                                             <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                                         </>
                                     )}
@@ -312,9 +312,9 @@ export default function LoginPage() {
                     {/* Register */}
                     <motion.p custom={7} variants={fadeUp} initial="hidden" animate="show"
                         className="mt-6 text-center text-sm text-neutral-600">
-                        Don't have an account?{" "}
+                        Belum punya akun?{" "}
                         <Link href="/register" className="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors">
-                            Create one free →
+                            Buat akun gratis →
                         </Link>
                     </motion.p>
                 </div>

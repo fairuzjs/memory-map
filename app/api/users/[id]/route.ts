@@ -16,6 +16,10 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
                 tiktok: true,
                 facebook: true,
                 createdAt: true,
+                pinnedBadge: true,
+                streakBadges: {
+                    select: { milestone: true }
+                },
                 _count: {
                     select: {
                         memories: { where: { isPublic: true } },
@@ -50,7 +54,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
             return NextResponse.json({ error: "Forbidden" }, { status: 403 })
         }
 
-        const { name, bio, image, instagram, tiktok, facebook } = await req.json()
+        const { name, bio, image, instagram, tiktok, facebook, pinnedBadge } = await req.json()
 
         if (!name?.trim()) {
             return NextResponse.json({ error: "Name is required" }, { status: 400 })
@@ -68,8 +72,9 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
                 instagram: clean(instagram),
                 tiktok: clean(tiktok),
                 facebook: clean(facebook),
+                pinnedBadge: pinnedBadge === null ? null : (pinnedBadge || undefined),
             },
-            select: { id: true, name: true, bio: true, image: true, instagram: true, tiktok: true, facebook: true }
+            select: { id: true, name: true, bio: true, image: true, instagram: true, tiktok: true, facebook: true, pinnedBadge: true }
         })
 
         return NextResponse.json(updated)
