@@ -18,6 +18,16 @@ function getDecorationClass(name?: string) {
     return "";
 }
 
+function formatPoints(num: number): string {
+    if (num >= 1000000) {
+        return (num / 1000000).toLocaleString("id-ID", { maximumFractionDigits: 1 }) + " jt";
+    }
+    if (num >= 1000) {
+        return (num / 1000).toLocaleString("id-ID", { maximumFractionDigits: 1 }) + " rb";
+    }
+    return num.toLocaleString("id-ID");
+}
+
 type ShopItem = {
     id: string
     name: string
@@ -138,36 +148,24 @@ export default function ShopPage() {
                 transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                 className="mb-8"
             >
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <div>
-                        <div className="flex items-center gap-3 mb-1">
-                            <div className="w-10 h-10 rounded-2xl flex items-center justify-center"
-                                style={{ background: "rgba(99,102,241,0.12)", border: "1px solid rgba(99,102,241,0.2)" }}>
-                                <ShoppingBag className="w-5 h-5 text-indigo-400" />
-                            </div>
-                            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">Memory Shop</h1>
+                <div>
+                    <div className="flex items-center gap-3 sm:gap-4 mb-2">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0"
+                            style={{ background: "rgba(99,102,241,0.12)", border: "1px solid rgba(99,102,241,0.2)" }}>
+                            <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-400" />
                         </div>
-                        <p className="text-sm text-neutral-500 ml-13">Tukarkan poin kamu dengan dekorasi profil eksklusif</p>
+                        <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-none">Memory Shop</h1>
                     </div>
-
-                    {/* Points balance */}
-                    <div className="flex items-center gap-2.5 px-5 py-3 rounded-2xl self-start sm:self-auto"
-                        style={{ background: "linear-gradient(135deg, rgba(251,191,36,0.08), rgba(245,158,11,0.05))", border: "1px solid rgba(251,191,36,0.2)" }}>
-                        <Star className="w-5 h-5 text-amber-400 fill-amber-400" />
-                        <div>
-                            <p className="text-xl font-black text-amber-400 leading-none">{points.toLocaleString()}</p>
-                            <p className="text-[10px] text-amber-600 font-bold uppercase tracking-wider">Memory Points</p>
-                        </div>
-                    </div>
+                    <p className="text-[13px] sm:text-sm text-neutral-500 ml-13 sm:ml-16 leading-relaxed mt-1 sm:mt-1.5">Tukarkan poin kamu dengan dekorasi profil eksklusif</p>
                 </div>
 
                 {/* Type filter tabs */}
-                <div className="flex gap-2 mt-6 flex-wrap">
+                <div className="flex gap-2 mt-5 sm:mt-6 overflow-x-auto pb-2 flex-nowrap [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden -mx-4 px-4 sm:mx-0 sm:px-0">
                     {(["ALL", "AVATAR_FRAME", "PROFILE_BANNER", "MEMORY_CARD_THEME", "USERNAME_DECORATION"] as const).map((tab) => (
                         <button
                             key={tab}
                             onClick={() => setActiveType(tab)}
-                            className="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all"
+                            className="shrink-0 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap"
                             style={{
                                 background: activeType === tab ? "rgba(99,102,241,0.2)" : "rgba(255,255,255,0.03)",
                                 border: activeType === tab ? "1px solid rgba(99,102,241,0.45)" : "1px solid rgba(255,255,255,0.08)",
@@ -285,7 +283,7 @@ export default function ShopPage() {
                                     {!item.owned && (
                                         <div className="flex items-center gap-1.5">
                                             <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-                                            <span className="text-sm font-black text-amber-400">{item.price.toLocaleString()}</span>
+                                            <span className="text-sm font-black text-amber-400">{formatPoints(item.price)}</span>
                                             <span className="text-xs text-neutral-600">poin</span>
                                         </div>
                                     )}
@@ -454,6 +452,24 @@ export default function ShopPage() {
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            {/* Floating Points Balance */}
+            <div
+                className="fixed top-24 right-4 sm:top-24 sm:right-8 z-40 flex items-center gap-2 px-1.5 py-1.5 pr-4 rounded-full shadow-lg backdrop-blur-md cursor-default"
+                style={{
+                    background: "rgba(10,10,15,0.75)",
+                    border: "1px solid rgba(251,191,36,0.3)",
+                    boxShadow: "0 4px 20px -5px rgba(245,158,11,0.3)"
+                }}
+            >
+                <div className="flex items-center justify-center p-1.5 rounded-full bg-amber-400/10">
+                    <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                </div>
+                <div className="flex flex-col justify-center">
+                    <p className="text-sm font-black text-amber-400 leading-[1]">{formatPoints(points)}</p>
+                    <p className="text-[8px] text-amber-500/80 font-black uppercase tracking-widest mt-0.5 leading-[1]">Points</p>
+                </div>
+            </div>
         </div>
     )
 }
