@@ -12,6 +12,24 @@ interface MapViewProps {
     memories: any[]
 }
 
+type CardTheme = {
+    border: string
+    background: string
+    shadow: string
+    imageFilter: string
+    radius: string
+    contentPadding: string
+    titleColor: string
+    storyColor: string
+    footerBorder: string
+    footerTextColor: string
+}
+
+function parseTheme(rawValue: string | null | undefined): CardTheme | null {
+    if (!rawValue) return null
+    try { return JSON.parse(rawValue) } catch { return null }
+}
+
 function SearchControl() {
     const map = useMap()
     const [query, setQuery] = useState("")
@@ -178,47 +196,89 @@ export default function MapView({ memories }: MapViewProps) {
                         const lat = memory.latitude || 0
                         const lng = memory.longitude || 0
 
-                        return (
-                            <Marker
-                                key={memory.id}
-                                position={[lat, lng]}
-                                icon={createEmotionIcon(memory.emotion)}
-                            >
-                                <Popup className="memory-popup">
-                                    <Link
-                                        href={`/memories/${memory.id}`}
-                                        className="block w-64 sm:w-72 overflow-hidden bg-transparent text-neutral-100 p-0 text-left cursor-pointer group/popup"
-                                    >
-                                        {memory.photos?.length > 0 && (
-                                            <div className="w-full h-40 overflow-hidden relative">
-                                                <img src={memory.photos[0].url} alt="" className="w-full h-full object-cover transition-transform duration-700 group-hover/popup:scale-110" />
-                                                <div className="absolute inset-0 bg-gradient-to-t from-[#11111a] via-transparent to-transparent opacity-80" />
-                                            </div>
-                                        )}
-                                        <div className="p-5 pt-4">
-                                            <h4 className="font-bold font-[Outfit] text-lg text-white mb-2 leading-tight tracking-tight group-hover/popup:text-indigo-300 transition-colors">
-                                                {memory.title}
-                                            </h4>
+                        return (() => {
+                            const rawTheme = memory.user?.inventories?.[0]?.item?.value ?? null
+                            const theme = parseTheme(rawTheme)
+                            const footerBorderColor = theme ? (
+                                theme.footerBorder.includes("neutral-200") ? "rgba(200,200,200,0.3)" :
+                                theme.footerBorder.includes("amber-900") ? "rgba(100,60,10,0.4)" :
+                                theme.footerBorder.includes("indigo") ? "rgba(99,102,241,0.2)" :
+                                "rgba(255,255,255,0.08)"
+                            ) : "rgba(255,255,255,0.08)"
 
-                                            <p className="text-sm text-neutral-300 line-clamp-3 mb-5 leading-relaxed font-light opacity-90">
-                                                {memory.story}
-                                            </p>
+                            return (
+                                <Marker
+                                    key={memory.id}
+                                    position={[lat, lng]}
+                                    icon={createEmotionIcon(memory.emotion)}
+                                >
+                                    <Popup className="memory-popup">
+                                        <Link
+                                            href={`/memories/${memory.id}`}
+                                            className="block w-64 sm:w-72 overflow-hidden text-left cursor-pointer group/popup"
+                                            style={{
+                                                background: theme?.background ?? "#11111a",
+                                                border: "none",
+                                            }}
+                                        >
+                                            {(() => {
+                                                const photos = (memory.photos ?? []).map((p: any) => {
+                                                    try {
+                                                        const parsed = JSON.parse(p.url)
+                                                        return { ...p, url: parsed.url || parsed.path, bucket: parsed.bucket }
+                                                    } catch {
+                                                        return p // legacy fallback
+                                                    }
+                                                })
 
-                                            <div className="flex items-center justify-between py-3 border-t border-white/[0.08]">
-                                                <div className="flex items-center gap-2 text-[11px] text-neutral-400 font-medium">
-                                                    <Calendar className="w-3.5 h-3.5 text-indigo-400" />
-                                                    {new Date(memory.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}
-                                                </div>
-                                                <div className="flex items-center gap-2 text-[11px] text-neutral-200 font-semibold bg-white/[0.05] px-2 py-0.5 rounded-full">
-                                                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.8)]" />
-                                                    {memory.user?.name}
+                                                if (photos.length === 0) return null
+
+                                                return (
+                                                    <div className="w-full h-40 overflow-hidden relative">
+                                                        <img
+                                                            src={photos[0].url}
+                                                            alt=""
+                                                            className="w-full h-full object-cover transition-transform duration-700 group-hover/popup:scale-110"
+                                                            style={{ filter: theme?.imageFilter ?? "none" }}
+                                                        />
+                                                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                                                    </div>
+                                                )
+                                            })()}
+                                            <div className="p-5 pt-4">
+                                                <h4
+                                                    className="font-bold font-[Outfit] text-lg mb-2 leading-tight tracking-tight transition-colors"
+                                                    style={{ color: theme?.titleColor ?? "#ffffff" }}
+                                                >
+                                                    {memory.title}
+                                                </h4>
+
+                                                <p
+                                                    className="text-sm line-clamp-3 mb-5 leading-relaxed font-light opacity-90"
+                                                    style={{ color: theme?.storyColor ?? "#d4d4d4" }}
+                                                >
+                                                    {memory.story}
+                                                </p>
+
+                                                <div
+                                                    className="flex items-center justify-between py-3"
+                                                    style={{ borderTop: `1px solid ${footerBorderColor}` }}
+                                                >
+                                                    <div className="flex items-center gap-2 text-[11px] font-medium" style={{ color: theme?.storyColor ?? "#a3a3a3" }}>
+                                                        <Calendar className="w-3.5 h-3.5 text-indigo-400" />
+                                                        {new Date(memory.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}
+                                                    </div>
+                                                    <div className="flex items-center gap-2 text-[11px] font-semibold bg-white/[0.05] px-2 py-0.5 rounded-full" style={{ color: theme?.titleColor ?? "#e5e5e5" }}>
+                                                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.8)]" />
+                                                        {memory.user?.name}
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </Link>
-                                </Popup>
-                            </Marker>
-                        )
+                                        </Link>
+                                    </Popup>
+                                </Marker>
+                            )
+                        })()
                     })}
                 </MarkerClusterGroup>
             </MapContainer>

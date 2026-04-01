@@ -1,36 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🗺️ Memory Map
 
-## Getting Started
+Memory Map is a modern, full-stack web application built with Next.js that allows users to capture, share, and explore their memories on an interactive map. Discover the world through the stories and experiences of others, while keeping track of your own digital footprint.
 
-First, run the development server:
+## 🚀 Features
+
+- **📍 Interactive Geo-Tagging**: Pin your memories to specific geographical locations using our interactive map visualization (powered by Leaflet).
+- **🧑‍🤝‍🧑 Social Interaction**: Connect with the community through comments, and expressive reactions (Love, Wow, Sad, Laugh). Collaborate with friends on shared memories.
+- **🔥 Gamification**: Stay active to maintain your streaks and earn unique profile badges.
+- **🛡️ Robust Moderation System**: Built-in reporting for inappropriate content, integrated user feedback system, and a comprehensive Admin Dashboard.
+- **🔒 Secure Authentication**: Complete authentication flow (Login, Register, Forgot Password) powered by NextAuth and secure email verification.
+- **🎨 Modern UI/UX**: Sleek, responsive, and accessible interface crafted with Tailwind CSS, Shadcn UI, and Framer Motion.
+
+## 💻 Tech Stack
+
+- **Framework:** [Next.js (App Router)](https://nextjs.org/)
+- **Language:** TypeScript
+- **Database:** PostgreSQL
+- **ORM:** [Prisma](https://www.prisma.io/)
+- **Authentication:** [NextAuth.js (v5)](https://next-auth.js.org/)
+- **Styling:** [Tailwind CSS](https://tailwindcss.com/) & [Shadcn UI](https://ui.shadcn.com/)
+- **Maps:** [Leaflet](https://leafletjs.com/) & [React Leaflet](https://react-leaflet.js.org/)
+- **Forms & Validation:** [React Hook Form](https://react-hook-form.com/) & [Zod](https://zod.dev/)
+- **Animations:** [Framer Motion](https://www.framer.com/motion/) & Canvas Confetti
+
+## 📂 Project Structure
+
+- `app/(auth)`: Public routes for authentication (Login, Register, Password Reset).
+- `app/(main)`: The core application area (Dashboard, Interactive Map, Community, Profile, Settings).
+- `app/admin`: Secure portal for administrators to manage users, reports, and feedbacks.
+- `app/api`: Next.js Route Handlers strictly serving the API layer.
+- `components/`: Reusable React components structured cleanly via Radix UI/Shadcn.
+- `prisma/`: Database schema definitions and migrations.
+
+## 🛠️ Getting Started
+
+### Prerequisites
+
+You need [Node.js](https://nodejs.org/en/) (v18+) and a running instance of a **PostgreSQL** database.
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/your-username/memory-map.git
+cd memory-map
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+# or
+yarn install
+# or
+pnpm install
+```
+
+### 3. Set up environment variables
+
+Create a `.env` file in the root directory and configure the necessary environment variables based on the `.env.example` structure. You will need:
+- `DATABASE_URL` (PostgreSQL connection string)
+- NextAuth configurations (`AUTH_SECRET`, etc.)
+- SMTP/Email credentials (for Nodemailer)
+- Any other third-party API keys (e.g., Supabase storage if used)
+
+### 4. Setup Prisma Database
+
+Push the schema to your database and generate the Prisma client:
+
+```bash
+npx prisma db push
+npx prisma generate
+```
+
+### 5. Run the development server
 
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🤝 Contributing
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/your-username/memory-map/issues).
 
-## Learn More
+## 📝 License
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is open-source and available under the [MIT License](LICENSE).

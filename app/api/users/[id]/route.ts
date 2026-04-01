@@ -20,6 +20,14 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
                 streakBadges: {
                     select: { milestone: true }
                 },
+                inventories: {
+                    where: { isEquipped: true },
+                    select: {
+                        item: {
+                            select: { type: true, value: true, previewColor: true, name: true }
+                        }
+                    }
+                },
                 _count: {
                     select: {
                         memories: { where: { isPublic: true } },
@@ -34,7 +42,12 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
             return NextResponse.json({ error: "User not found" }, { status: 404 })
         }
 
-        return NextResponse.json(user)
+        // Reshape equipped items into a convenient map
+        const equippedFrame = user.inventories.find(inv => inv.item.type === "AVATAR_FRAME")?.item ?? null
+        const equippedBanner = user.inventories.find(inv => inv.item.type === "PROFILE_BANNER")?.item ?? null
+        const equippedDecoration = user.inventories.find(inv => inv.item.type === "USERNAME_DECORATION")?.item ?? null
+
+        return NextResponse.json({ ...user, equippedFrame, equippedBanner, equippedDecoration })
     } catch (error) {
         console.error("GET user error:", error)
         return NextResponse.json({ error: "Server error" }, { status: 500 })

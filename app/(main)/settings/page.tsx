@@ -59,6 +59,21 @@ const SOCIALS = [
 
 type SocialKey = "instagram" | "tiktok" | "facebook"
 
+// ─── Predefined avatars ───────────────────────────────────────────────────────
+const PREDEFINED_AVATARS = [
+    // 4 Laki-laki (Gaya Abstrak Karakter - mirip "Beam")
+    "https://api.dicebear.com/7.x/notionists/svg?seed=Stefan&backgroundColor=ffdfbf",
+    "https://api.dicebear.com/7.x/notionists/svg?seed=Felix&backgroundColor=c0aede",
+    "https://api.dicebear.com/7.x/notionists/svg?seed=Buster&backgroundColor=d1d4f9",
+    "https://api.dicebear.com/7.x/notionists/svg?seed=Jack&backgroundColor=b6e3f4",
+    
+    // 4 Perempuan (Gaya Abstrak Karakter - mirip "Beam")
+    "https://api.dicebear.com/7.x/notionists/svg?seed=Julia&backgroundColor=ffd5dc",
+    "https://api.dicebear.com/7.x/notionists/svg?seed=Aneka&backgroundColor=ffdfbf",
+    "https://api.dicebear.com/7.x/notionists/svg?seed=Mimi&backgroundColor=b6e3f4",
+    "https://api.dicebear.com/7.x/notionists/svg?seed=Bella&backgroundColor=c0aede",
+];
+
 // ─── Tab definitions ─────────────────────────────────────────────────────────
 const TABS = [
     { id: "profile", label: "Profile", icon: User },
@@ -69,7 +84,7 @@ type TabId = typeof TABS[number]["id"]
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function SettingsPage() {
-    const { data: session, status } = useSession()
+    const { data: session, status, update } = useSession()
     const router = useRouter()
     const avatarInputRef = useRef<HTMLInputElement>(null)
 
@@ -144,6 +159,7 @@ export default function SettingsPage() {
                 body: JSON.stringify({ name, bio, image, ...socials }),
             })
             if (!res.ok) throw new Error()
+            await update({ name, image })
             toast.success("Settings saved!")
         } catch {
             toast.error("Failed to save settings")
@@ -211,47 +227,78 @@ export default function SettingsPage() {
                 >
                     {/* Avatar */}
                     <div
-                        className="relative rounded-2xl border border-white/[0.06] p-6"
+                        className="relative rounded-2xl border border-white/[0.06] p-6 space-y-6"
                         style={{ background: "rgba(255,255,255,0.02)" }}
                     >
-                        <p className="text-xs font-semibold text-neutral-500 uppercase tracking-widest mb-4">Profile Photo</p>
-                        <div className="flex items-center gap-5">
-                            <div className="relative group shrink-0">
-                                <img
-                                    src={avatarSrc}
-                                    alt="Avatar"
-                                    className="w-20 h-20 rounded-full border-2 border-neutral-700 object-cover bg-neutral-800"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => avatarInputRef.current?.click()}
-                                    disabled={uploadingPhoto}
-                                    className="absolute inset-0 rounded-full bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-                                >
-                                    {uploadingPhoto
-                                        ? <Loader2 className="w-5 h-5 text-white animate-spin" />
-                                        : <Camera className="w-5 h-5 text-white" />
-                                    }
-                                </button>
-                                <input
-                                    ref={avatarInputRef}
-                                    type="file"
-                                    accept="image/*"
-                                    className="hidden"
-                                    onChange={handleAvatarUpload}
-                                />
+                        <div>
+                            <p className="text-xs font-semibold text-neutral-500 uppercase tracking-widest mb-4">Profile Photo</p>
+                            <div className="flex items-center gap-5">
+                                <div className="relative group shrink-0">
+                                    <img
+                                        src={avatarSrc}
+                                        alt="Avatar"
+                                        className="w-20 h-20 rounded-full border-2 border-neutral-700 object-cover bg-neutral-800"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => avatarInputRef.current?.click()}
+                                        disabled={uploadingPhoto}
+                                        className="absolute inset-0 rounded-full bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                                    >
+                                        {uploadingPhoto
+                                            ? <Loader2 className="w-5 h-5 text-white animate-spin" />
+                                            : <Camera className="w-5 h-5 text-white" />
+                                        }
+                                    </button>
+                                    <input
+                                        ref={avatarInputRef}
+                                        type="file"
+                                        accept="image/*"
+                                        className="hidden"
+                                        onChange={handleAvatarUpload}
+                                    />
+                                </div>
+                                <div>
+                                    <button
+                                        type="button"
+                                        onClick={() => avatarInputRef.current?.click()}
+                                        disabled={uploadingPhoto}
+                                        className="text-sm font-medium text-indigo-400 hover:text-indigo-300 transition-colors"
+                                    >
+                                        {uploadingPhoto ? "Uploading..." : "Upload photo"}
+                                    </button>
+                                    <p className="text-xs text-neutral-600 mt-1">JPG, PNG, GIF up to 5MB</p>
+                                </div>
                             </div>
-                            <div>
-                                <button
-                                    type="button"
-                                    onClick={() => avatarInputRef.current?.click()}
-                                    disabled={uploadingPhoto}
-                                    className="text-sm font-medium text-indigo-400 hover:text-indigo-300 transition-colors"
-                                >
-                                    {uploadingPhoto ? "Uploading..." : "Change photo"}
-                                </button>
-                                <p className="text-xs text-neutral-600 mt-1">JPG, PNG, GIF up to 5MB</p>
+                        </div>
+
+                        {/* Predefined Avatars */}
+                        <div className="pt-5 border-t border-white/[0.06]">
+                            <p className="text-xs font-semibold text-neutral-500 uppercase tracking-widest mb-3">Or Choose an Avatar</p>
+                            <div className="flex flex-wrap gap-2.5">
+                                {PREDEFINED_AVATARS.map((url, idx) => {
+                                    const isSelected = previewImage === url;
+                                    return (
+                                        <button
+                                            key={idx}
+                                            type="button"
+                                            onClick={() => {
+                                                setImage(url);
+                                                setPreviewImage(url);
+                                            }}
+                                            className="relative rounded-full overflow-hidden w-12 h-12 border transition-all hover:scale-110 active:scale-95 bg-neutral-800 shrink-0"
+                                            style={{
+                                                borderColor: isSelected ? "rgba(99,102,241,1)" : "rgba(255,255,255,0.08)",
+                                                boxShadow: isSelected ? "0 0 0 3px rgba(99,102,241,0.2)" : "none",
+                                            }}
+                                            title={`Avatar ${idx + 1}`}
+                                        >
+                                            <img src={url} alt={`Avatar ${idx + 1}`} className="w-full h-full object-cover" />
+                                        </button>
+                                    );
+                                })}
                             </div>
+                            <p className="text-[10px] text-neutral-600 mt-2">Pilih ikon karakter secara instan tanpa perlu unggah foto.</p>
                         </div>
                     </div>
 

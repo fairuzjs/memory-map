@@ -41,3 +41,8 @@ yarn-error.log*
 next-env.d.ts
 
 /app/generated/prisma
+
+# script debug
+fetch-error.js
+check-types.mjs
+/app/api/streak/debug

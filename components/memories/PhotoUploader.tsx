@@ -2,12 +2,20 @@ import { useState, useRef } from "react"
 import { ImagePlus, X, Loader2 } from "lucide-react"
 import toast from "react-hot-toast"
 
-interface PhotoUploaderProps {
-    photos: string[]
-    onChange: (photos: string[]) => void
+export interface PhotoData {
+    path: string
+    bucket: string
+    url?: string | null
+    previewUrl?: string // for local preview
 }
 
-export function PhotoUploader({ photos, onChange }: PhotoUploaderProps) {
+interface PhotoUploaderProps {
+    photos: PhotoData[]
+    onChange: (photos: PhotoData[]) => void
+    isPublic: boolean
+}
+
+export function PhotoUploader({ photos, onChange, isPublic }: PhotoUploaderProps) {
     const [isUploading, setIsUploading] = useState(false)
     const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -17,31 +25,61 @@ export function PhotoUploader({ photos, onChange }: PhotoUploaderProps) {
         setIsUploading(true)
         const newPhotos = [...photos]
 
-        for (let i = 0; i < e.target.files.length; i++) {
-            const file = e.target.files[i]
+        // Generate temporary local previews for all selected files immediately
+        const tempFiles = Array.from(e.target.files).map(file => {
+            const tempPhoto: PhotoData = {
+                path: "", // will be filled after upload
+                bucket: "",
+                previewUrl: URL.createObjectURL(file)
+            }
+            newPhotos.push(tempPhoto)
+            return { file, index: newPhotos.length - 1 }
+        })
+
+        onChange([...newPhotos]) // Show placeholders/previews immediately
+
+        // Upload files sequentially
+        for (const { file, index } of tempFiles) {
             const formData = new FormData()
             formData.append("file", file)
+            formData.append("isPublic", isPublic ? "true" : "false")
 
             try {
                 const res = await fetch("/api/upload", {
                     method: "POST",
                     body: formData,
                 })
-                if (!res.ok) throw new Error("Upload failed")
+                if (!res.ok) {
+                    const errorData = await res.json()
+                    throw new Error(errorData.error || "Upload failed")
+                }
                 const data = await res.json()
-                newPhotos.push(data.url)
-            } catch (error) {
-                toast.error("Failed to upload photo")
+
+                // Update the placeholder with actual backend data
+                newPhotos[index] = {
+                    path: data.path,
+                    bucket: data.bucket,
+                    url: data.url,
+                    previewUrl: newPhotos[index].previewUrl // keep local preview
+                }
+            } catch (error: any) {
+                toast.error(error.message || "Failed to upload photo")
+                // Remove the failed temp photo
+                newPhotos.splice(index, 1)
             }
         }
 
-        onChange(newPhotos)
+        onChange([...newPhotos])
         setIsUploading(false)
         if (fileInputRef.current) fileInputRef.current.value = ""
     }
 
     const removePhoto = (index: number) => {
         const newPhotos = [...photos]
+        // Free memory for object URL if it exists
+        if (newPhotos[index].previewUrl) {
+            URL.revokeObjectURL(newPhotos[index].previewUrl!)
+        }
         newPhotos.splice(index, 1)
         onChange(newPhotos)
     }
@@ -52,7 +90,18 @@ export function PhotoUploader({ photos, onChange }: PhotoUploaderProps) {
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                     {photos.map((photo, i) => (
                         <div key={i} className="relative group aspect-square rounded-xl overflow-hidden border border-neutral-700">
-                            <img src={photo} alt={`Memory ${i}`} className="w-full h-full object-cover" />
+                            {/* Fallback to path if url/previewUrl isn't available, but typically previewUrl is always there for new uploads */}
+                            <img
+                                src={photo.previewUrl || photo.url || ""}
+                                alt={`Memory ${i}`}
+                                className={`w-full h-full object-cover ${!photo.path && photo.previewUrl ? 'opacity-50 grayscale' : ''}`}
+                            />
+                            {/* Show loading spinner over image if it hasn't finished uploading yet */}
+                            {!photo.path && photo.previewUrl && (
+                                <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                                    <Loader2 className="w-6 h-6 text-white animate-spin drop-shadow-md" />
+                                </div>
+                            )}
                             <button
                                 type="button"
                                 onClick={() => removePhoto(i)}

@@ -2,19 +2,19 @@
 
 import Link from "next/link"
 import { motion, useInView, AnimatePresence } from "framer-motion"
-import { MapPin, Globe, BookOpen, Heart, ArrowRight, Loader2, Users, Star, Zap, Lock, Share2, UserPlus, PenLine, ImagePlus, Twitter, Instagram, Github, X, Menu } from "lucide-react"
+import { MapPin, Globe, BookOpen, Heart, ArrowRight, Loader2, Users, Star, Zap, Lock, Share2, UserPlus, PenLine, ImagePlus, Twitter, Instagram, Github, X, Menu, Mail, Phone, Send } from "lucide-react"
 import { useSession } from "next-auth/react"
 import { useEffect, useState, useRef } from "react"
 import dynamic from "next/dynamic"
 import { NotificationDropdown } from "@/components/layout/NotificationDropdown"
 
-const MapView = dynamic(() => import("@/components/map/MapView"), {
+const GlobeView = dynamic(() => import("@/components/map/GlobeView"), {
   ssr: false,
   loading: () => (
     <div className="h-full w-full bg-neutral-900 flex items-center justify-center">
       <div className="flex flex-col items-center gap-3">
         <Loader2 className="w-8 h-8 text-indigo-400 animate-spin" />
-        <span className="text-neutral-500 text-sm font-medium">Memuat peta...</span>
+        <span className="text-neutral-500 text-sm font-medium">Memuat globe...</span>
       </div>
     </div>
   )
@@ -505,6 +505,9 @@ export default function LandingPage() {
   // Modal states
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false)
   const [isTermsOpen, setIsTermsOpen] = useState(false)
+  const [isChangelogOpen, setIsChangelogOpen] = useState(false)
+  const [isContactOpen, setIsContactOpen] = useState(false)
+  const [isBlogOpen, setIsBlogOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   // Smooth scroll logic
@@ -851,7 +854,7 @@ export default function LandingPage() {
                 </div>
 
                 {/* Real Map */}
-                <div className="relative w-full" style={{ aspectRatio: "16/8.5" }}>
+                <div className="relative w-full" style={{ aspectRatio: "16/9" }}>
                   {loading ? (
                     <div className="absolute inset-0 flex flex-col items-center justify-center gap-4"
                       style={{ background: "rgba(8,8,16,0.8)" }}>
@@ -859,8 +862,8 @@ export default function LandingPage() {
                       <span className="text-neutral-500 text-sm">Memuat kenangan...</span>
                     </div>
                   ) : (
-                    <div className="absolute inset-0 cursor-grab active:cursor-grabbing">
-                      <MapView memories={memories} />
+                    <div className="absolute inset-0">
+                      <GlobeView memories={memories} />
                     </div>
                   )}
 
@@ -869,7 +872,7 @@ export default function LandingPage() {
                     <div className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-neutral-300 backdrop-blur-md border border-white/10"
                       style={{ background: "rgba(8,8,16,0.7)" }}>
                       <Globe className="w-3.5 h-3.5 text-indigo-400" />
-                      <span>Kenangan Publik</span>
+                      <span>{memories.length} Kenangan Publik</span>
                     </div>
                   </div>
 
@@ -1099,24 +1102,29 @@ export default function LandingPage() {
               {/* Links - Perusahaan */}
               <div>
                 <h4 className="font-bold text-white mb-6 uppercase tracking-wider text-[13px] font-[Outfit]">Perusahaan</h4>
-                <ul className="space-y-3.5">
-                  {['Tentang Kami', 'Blog', 'Kontak'].map((item) => (
-                    <li key={item}>
-                      <a href="#" className="text-[14px] text-neutral-500 hover:text-indigo-400 transition-colors block">{item}</a>
-                    </li>
-                  ))}
+                <ul className="space-y-3.5 flex flex-col items-start">
+                  <li className="w-full">
+                    <a href="#" className="text-[14px] text-neutral-500 hover:text-indigo-400 transition-colors block text-left">Tentang Kami</a>
+                  </li>
+                  <li className="w-full">
+                    <button onClick={(e) => { e.preventDefault(); setIsBlogOpen(true); }} className="text-[14px] text-neutral-500 hover:text-indigo-400 transition-colors block text-left">Blog</button>
+                  </li>
+                  <li className="w-full">
+                    <button onClick={(e) => { e.preventDefault(); setIsContactOpen(true); }} className="text-[14px] text-neutral-500 hover:text-indigo-400 transition-colors block text-left">Kontak</button>
+                  </li>
                 </ul>
               </div>
 
               {/* Links - Sumber Daya */}
               <div>
                 <h4 className="font-bold text-white mb-6 uppercase tracking-wider text-[13px] font-[Outfit]">Sumber Daya</h4>
-                <ul className="space-y-3.5">
-                  {['Pusat Bantuan', 'Komunitas', 'Status Sistem'].map((item) => (
-                    <li key={item}>
-                      <a href="#" className="text-[14px] text-neutral-500 hover:text-indigo-400 transition-colors block">{item}</a>
-                    </li>
-                  ))}
+                <ul className="space-y-3.5 flex flex-col items-start">
+                  <li className="w-full">
+                    <a href="#" className="text-[14px] text-neutral-500 hover:text-indigo-400 transition-colors block text-left">Komunitas</a>
+                  </li>
+                  <li className="w-full">
+                    <button onClick={(e) => { e.preventDefault(); setIsChangelogOpen(true); }} className="text-[14px] text-neutral-500 hover:text-indigo-400 transition-colors block text-left">Status Sistem</button>
+                  </li>
                 </ul>
               </div>
             </div>
@@ -1245,6 +1253,255 @@ export default function LandingPage() {
                   <p>Kami dapat menghentikan atau membekukan akun Anda segera, tanpa pemberitahuan sebelumnya, untuk alasan apa pun, termasuk tanpa batas jika Anda melanggar Ketentuan Layanan ini.</p>
                 </div>
                 <p className="text-neutral-500 text-xs mt-8">Pembaruan Terakhir: {new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {isChangelogOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsChangelogOpen(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-2xl max-h-[85vh] overflow-hidden rounded-2xl border border-white/10 shadow-2xl flex flex-col"
+              style={{ background: "rgba(12, 12, 22, 0.95)" }}
+            >
+              <div className="flex items-center justify-between p-6 border-b border-white/[0.06]">
+                <h3 className="text-xl font-bold text-white font-[Outfit]">Status Sistem & Changelog</h3>
+                <button
+                  onClick={() => setIsChangelogOpen(false)}
+                  className="p-2 -mr-2 text-neutral-500 hover:text-white hover:bg-white/5 rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="p-6 overflow-y-auto custom-scrollbar text-neutral-300 text-sm leading-relaxed space-y-6">
+                <div>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="flex h-3 w-3 relative shrink-0">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                    </div>
+                    <span className="font-semibold text-emerald-400 text-base">Semua Sistem Berjalan Normal</span>
+                  </div>
+                  <p className="text-neutral-400 mb-2">Layanan MemoryMap saat ini beroperasi dengan lancar tanpa ada gangguan yang dilaporkan. Kami terus memantau performa sistem secara real-time.</p>
+                </div>
+                
+                <div className="pt-6 border-t border-white/[0.06]">
+                  <h4 className="text-white font-bold text-lg mb-6 font-[Outfit]">Changelog Terbaru</h4>
+                  
+                  <div className="relative border-l border-white/10 ml-3 space-y-8 pb-4">
+                    {/* Item 1 */}
+                    <div className="relative pl-6">
+                      <div className="absolute w-3 h-3 bg-indigo-500 rounded-full -left-[6.5px] top-1.5 ring-4 ring-[#0c0c16]"></div>
+                      <span className="text-xs font-semibold text-indigo-400 mb-1 block uppercase tracking-wider">Maret 2026</span>
+                      <h5 className="text-white font-bold text-base mb-2">V2.1 - Fitur Komunitas & Peningkatan Performa</h5>
+                      <ul className="list-disc leading-relaxed pl-4 space-y-1.5 text-neutral-400 text-sm">
+                        <li>Penambahan halaman jelajah secara real-time untuk melihat kenangan dari komunitas global.</li>
+                        <li>Optimasi kecepatan rendering peta interaktif hingga 30% lebih cepat pada perangkat mobile.</li>
+                        <li>Perbaikan bug minor terkait sinkronisasi data profil pengguna.</li>
+                      </ul>
+                    </div>
+
+                    {/* Item 2 */}
+                    <div className="relative pl-6">
+                      <div className="absolute w-3 h-3 bg-neutral-600 rounded-full -left-[6.5px] top-1.5 ring-4 ring-[#0c0c16]"></div>
+                      <span className="text-xs font-semibold text-neutral-500 mb-1 block uppercase tracking-wider">Februari 2026</span>
+                      <h5 className="text-white font-bold text-base mb-2">V2.0 - Desain Ulang Dashboard</h5>
+                      <ul className="list-disc leading-relaxed pl-4 space-y-1.5 text-neutral-400 text-sm">
+                        <li>Pembaruan antarmuka pengguna secara menyeluruh dengan elemen glassmorphism.</li>
+                        <li>Penambahan mode gelap cerdas (smart dark mode) dengan kontras yang disempurnakan.</li>
+                        <li>Peluncuran sistem filter canggih untuk memilah memori berdasarkan kategori.</li>
+                      </ul>
+                    </div>
+
+                    {/* Item 3 */}
+                    <div className="relative pl-6">
+                      <div className="absolute w-3 h-3 bg-neutral-600 rounded-full -left-[6.5px] top-1.5 ring-4 ring-[#0c0c16]"></div>
+                      <span className="text-xs font-semibold text-neutral-500 mb-1 block uppercase tracking-wider">Januari 2026</span>
+                      <h5 className="text-white font-bold text-base mb-2">V1.5 - Rilis Utama</h5>
+                      <ul className="list-disc leading-relaxed pl-4 space-y-1.5 text-neutral-400 text-sm">
+                        <li>Fitur penanda lokasi interaktif yang otomatis menyinkronkan zona waktu.</li>
+                        <li>Profil pengguna dasar beserta fitur Single Sign-On (SSO) Google terintegrasi.</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {isContactOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsContactOpen(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-2xl max-h-[85vh] overflow-hidden rounded-2xl border border-white/10 shadow-2xl flex flex-col"
+              style={{ background: "rgba(12, 12, 22, 0.95)" }}
+            >
+              <div className="flex items-center justify-between p-6 border-b border-white/[0.06]">
+                <h3 className="text-xl font-bold text-white font-[Outfit]">Hubungi Kami</h3>
+                <button
+                  onClick={() => setIsContactOpen(false)}
+                  className="p-2 -mr-2 text-neutral-500 hover:text-white hover:bg-white/5 rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="p-6 overflow-y-auto custom-scrollbar text-neutral-300 text-sm leading-relaxed space-y-6">
+                <div>
+                  <p className="text-neutral-400 mb-6 text-base">Punya pertanyaan, masukkan, atau kendala terkait MemoryMap? Tim kami selalu siap membantu Anda. Silakan hubungi kami melalui salah satu saluran di bawah ini.</p>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Email Support */}
+                  <div className="relative p-5 rounded-2xl border border-white/[0.08] bg-white/[0.02] flex flex-col gap-3 group hover:bg-white/[0.04] transition-colors">
+                    <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition-all shadow-lg shadow-indigo-500/10">
+                      <Mail className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-white font-bold text-[15px] mb-1">Email Dukungan</h4>
+                      <a href="mailto:support@memorymap.app" className="text-indigo-400 hover:text-indigo-300 font-medium">support@memorymap.app</a>
+                    </div>
+                    <p className="text-xs text-neutral-500 mt-1">Estimasi balasan: 1x24 Jam kerja</p>
+                  </div>
+
+                  {/* Phone / WA */}
+                  <div className="relative p-5 rounded-2xl border border-white/[0.08] bg-white/[0.02] flex flex-col gap-3 group hover:bg-white/[0.04] transition-colors">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white transition-all shadow-lg shadow-emerald-500/10">
+                      <Phone className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-white font-bold text-[15px] mb-1">Telepon / WhatsApp</h4>
+                      <span className="text-neutral-300">+62 858 8391 7835</span>
+                    </div>
+                    <p className="text-xs text-neutral-500 mt-1">Senin - Jumat, 09:00 - 17:00 WIB</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {isBlogOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsBlogOpen(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-4xl max-h-[85vh] overflow-hidden rounded-2xl border border-white/10 shadow-2xl flex flex-col"
+              style={{ background: "rgba(12, 12, 22, 0.95)" }}
+            >
+              <div className="flex items-center justify-between p-6 border-b border-white/[0.06]">
+                <h3 className="text-xl font-bold text-white font-[Outfit]">Blog MemoryMap</h3>
+                <button
+                  onClick={() => setIsBlogOpen(false)}
+                  className="p-2 -mr-2 text-neutral-500 hover:text-white hover:bg-white/5 rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="p-6 overflow-y-auto custom-scrollbar">
+                {/* Featured Post */}
+                <div className="group relative rounded-2xl overflow-hidden mb-6 border border-white/[0.08]" style={{ background: "rgba(255,255,255,0.02)" }}>
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c16] via-[#0c0c16]/80 to-transparent z-10" />
+                  <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=2070&auto=format&fit=crop" alt="Featured Post" className="w-full h-[300px] object-cover group-hover:scale-105 transition-transform duration-700" />
+                  
+                  <div className="absolute bottom-0 left-0 p-6 sm:p-8 z-20 w-full">
+                    <div className="flex items-center gap-3 mb-3">
+                      <span className="px-3 py-1 bg-indigo-500/20 text-indigo-300 text-xs font-semibold rounded-full border border-indigo-500/30">Pengumuman</span>
+                      <span className="text-xs text-neutral-400">10 Maret 2026</span>
+                    </div>
+                    <h2 className="text-2xl sm:text-3xl font-bold font-[Outfit] text-white mb-2 leading-tight">Memperkenalkan MemoryMap V2: Jurnal Interaktif Era Baru</h2>
+                    <p className="text-neutral-300 text-sm sm:text-base max-w-2xl line-clamp-2 mb-4">Pembaruan terbesar kami menghadirkan tampilan antarmuka yang lebih segar, performa peta yang melesat, dan peluncuran portal komunitas real-time...</p>
+                    <button className="flex items-center gap-2 text-indigo-400 font-medium hover:text-indigo-300 transition-colors text-sm">
+                      Baca Selengkapnya <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* Post 1 */}
+                  <div className="group relative rounded-2xl overflow-hidden border border-white/[0.08] hover:border-white/20 transition-colors flex flex-col" style={{ background: "rgba(255,255,255,0.02)" }}>
+                    <div className="relative h-48 overflow-hidden">
+                      <img src="https://images.unsplash.com/photo-1522204523234-8729aa6e3d5f?q=80&w=2070&auto=format&fit=crop" alt="Post thumbnail" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    </div>
+                    <div className="p-5 flex-1 flex flex-col">
+                      <div className="flex items-center gap-3 mb-3">
+                        <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">Tips</span>
+                        <span className="text-[11px] text-neutral-500">5 Mar 2026</span>
+                      </div>
+                      <h4 className="text-white font-bold text-lg mb-2 leading-snug group-hover:text-indigo-400 transition-colors">7 Lokasi Tersembunyi di Peta Dunia</h4>
+                      <p className="text-neutral-400 text-sm line-clamp-3 mb-4 flex-1">Temukan spot-spot rahasia yang jarang diketahui orang untuk mengabadikan kenangan terbaik Anda musim liburan ini.</p>
+                      <button className="text-xs font-medium text-neutral-300 hover:text-white transition-colors flex items-center gap-1.5 self-start">Baca Artikel <ArrowRight className="w-3.5 h-3.5" /></button>
+                    </div>
+                  </div>
+
+                  {/* Post 2 */}
+                  <div className="group relative rounded-2xl overflow-hidden border border-white/[0.08] hover:border-white/20 transition-colors flex flex-col" style={{ background: "rgba(255,255,255,0.02)" }}>
+                    <div className="relative h-48 overflow-hidden">
+                      <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2073&auto=format&fit=crop" alt="Post thumbnail" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    </div>
+                    <div className="p-5 flex-1 flex flex-col">
+                      <div className="flex items-center gap-3 mb-3">
+                        <span className="text-xs font-semibold text-violet-400 uppercase tracking-wider">Cerita</span>
+                        <span className="text-[11px] text-neutral-500">28 Feb 2026</span>
+                      </div>
+                      <h4 className="text-white font-bold text-lg mb-2 leading-snug group-hover:text-indigo-400 transition-colors">Bagaimana MemoryMap Membantu Saya Mengingat</h4>
+                      <p className="text-neutral-400 text-sm line-clamp-3 mb-4 flex-1">Wawancara eksklusif bersama komunitas mengenai dampak menyimpan kenangan visual yang terikat pada lokasi.</p>
+                      <button className="text-xs font-medium text-neutral-300 hover:text-white transition-colors flex items-center gap-1.5 self-start">Baca Artikel <ArrowRight className="w-3.5 h-3.5" /></button>
+                    </div>
+                  </div>
+
+                  {/* Post 3 */}
+                  <div className="group relative rounded-2xl overflow-hidden border border-white/[0.08] hover:border-white/20 transition-colors flex flex-col" style={{ background: "rgba(255,255,255,0.02)" }}>
+                    <div className="relative h-48 overflow-hidden">
+                      <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=2072&auto=format&fit=crop" alt="Post thumbnail" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    </div>
+                    <div className="p-5 flex-1 flex flex-col">
+                      <div className="flex items-center gap-3 mb-3">
+                        <span className="text-xs font-semibold text-rose-400 uppercase tracking-wider">Teknologi</span>
+                        <span className="text-[11px] text-neutral-500">15 Feb 2026</span>
+                      </div>
+                      <h4 className="text-white font-bold text-lg mb-2 leading-snug group-hover:text-indigo-400 transition-colors">Arsitektur Dibalik Peta Interaktif Kami</h4>
+                      <p className="text-neutral-400 text-sm line-clamp-3 mb-4 flex-1">Membongkar stack teknologi dan trik rendering yang kami gunakan untuk membuat jutaan token memori tanpa lag.</p>
+                      <button className="text-xs font-medium text-neutral-300 hover:text-white transition-colors flex items-center gap-1.5 self-start">Baca Artikel <ArrowRight className="w-3.5 h-3.5" /></button>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="mt-8 flex justify-center">
+                  <button className="px-5 py-2.5 rounded-xl border border-white/10 text-neutral-300 hover:text-white hover:bg-white/[0.05] transition-colors text-sm font-semibold flex items-center gap-2">
+                    Muat Lebih Banyak Artikel <Loader2 className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             </motion.div>
           </div>

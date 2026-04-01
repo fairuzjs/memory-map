@@ -30,6 +30,18 @@ export default function MemoryDetailPage() {
                 return res.json()
             })
             .then(data => {
+                // Parse photo URLs if they are JSON strings
+                if (data.photos) {
+                    data.photos = data.photos.map((p: any) => {
+                        try {
+                            const parsed = JSON.parse(p.url)
+                            return { ...p, url: parsed.url || parsed.path, bucket: parsed.bucket }
+                        } catch {
+                            // Legacy raw string fallback
+                            return p
+                        }
+                    })
+                }
                 setMemory(data)
                 setLoading(false)
             })

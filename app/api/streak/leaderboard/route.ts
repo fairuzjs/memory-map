@@ -13,7 +13,7 @@ export async function GET() {
             longestStreak: { gt: 0 },
         },
         orderBy: { longestStreak: "desc" },
-        take: 5,
+        take: 50,
         include: {
             user: {
                 select: { id: true, name: true, image: true },

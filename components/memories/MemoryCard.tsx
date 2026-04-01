@@ -6,6 +6,19 @@ interface MemoryCardProps {
     isCollaboration?: boolean
 }
 
+type CardTheme = {
+    border: string
+    background: string
+    shadow: string
+    imageFilter: string
+    radius: string
+    contentPadding: string
+    titleColor: string
+    storyColor: string
+    footerBorder: string
+    footerTextColor: string
+}
+
 const emotionMap: Record<string, { icon: string; bg: string; border: string }> = {
     HAPPY: { icon: "🌟", bg: "bg-yellow-500/10", border: "border-yellow-500/20" },
     SAD: { icon: "💧", bg: "bg-blue-500/10", border: "border-blue-500/20" },
@@ -17,24 +30,55 @@ const emotionMap: Record<string, { icon: string; bg: string; border: string }> =
     ADVENTUROUS: { icon: "🏕️", bg: "bg-indigo-500/10", border: "border-indigo-500/20" },
 }
 
+function parseTheme(rawValue: string | null | undefined): CardTheme | null {
+    if (!rawValue) return null
+    try { return JSON.parse(rawValue) } catch { return null }
+}
+
 export function MemoryCard({ memory, isCollaboration }: MemoryCardProps) {
     const collab = isCollaboration ?? memory.isCollaboration ?? false
     const emotion = emotionMap[memory.emotion] ?? emotionMap.HAPPY
-    const photos = memory.photos ?? []
+
+    // Parse equipped card theme from user inventories (may come from API)
+    const rawThemeValue = memory.user?.inventories?.[0]?.item?.value ?? null
+    const theme = parseTheme(rawThemeValue)
+
+    // Safely parse photos that might be stringified JSON from the database
+    const photos = (memory.photos ?? []).map((p: any) => {
+        try {
+            const parsed = JSON.parse(p.url)
+            return { ...p, url: parsed.url || parsed.path, bucket: parsed.bucket }
+        } catch {
+            return p // legacy fallback
+        }
+    })
+
     const hasPhoto = photos.length > 0
 
     return (
-        <div className="group relative flex flex-col h-full bg-neutral-900/50 backdrop-blur-sm border border-neutral-800 hover:border-indigo-500/40 rounded-2xl overflow-hidden transition-all duration-300 shadow-xl shadow-neutral-900/50 hover:-translate-y-1">
-
+        <div
+            className="group relative flex flex-col h-full overflow-hidden transition-all duration-300 hover:-translate-y-1"
+            style={{
+                background: theme?.background ?? "rgba(23,23,28,0.5)",
+                border: theme?.border ?? "1px solid rgb(38,38,44)",
+                borderRadius: theme?.radius ?? "16px",
+                boxShadow: theme?.shadow ?? "0 20px 40px rgba(0,0,0,0.5)",
+                backdropFilter: "blur(8px)",
+            }}
+        >
             {/* ── Photo area ───────────────────────────────────────────────────── */}
             {hasPhoto && (
-                <div className="relative w-full h-48 shrink-0 overflow-hidden">
+                <div
+                    className="relative w-full h-48 shrink-0 overflow-hidden"
+                    style={{ borderRadius: theme ? `${theme.radius} ${theme.radius} 0 0` : "16px 16px 0 0" }}
+                >
                     <img
                         src={photos[0].url}
                         alt={memory.title}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        style={{ filter: theme?.imageFilter ?? "none" }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/90 via-neutral-900/20 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
                     {/* Collab badge — di atas foto */}
                     {collab && (
@@ -47,7 +91,7 @@ export function MemoryCard({ memory, isCollaboration }: MemoryCardProps) {
             )}
 
             {/* ── Content area ─────────────────────────────────────────────────── */}
-            <div className="relative flex flex-col flex-1 p-5">
+            <div className={`relative flex flex-col flex-1 ${theme?.contentPadding ?? "p-5"}`}>
 
                 {/* Collab badge — jika tidak ada foto, tampil di sini */}
                 {collab && !hasPhoto && (
@@ -65,10 +109,13 @@ export function MemoryCard({ memory, isCollaboration }: MemoryCardProps) {
                         <span className="text-lg leading-none">{emotion.icon}</span>
                     </div>
                     <div className="min-w-0">
-                        <p className="text-sm font-semibold text-neutral-100 line-clamp-1 leading-snug">
+                        <p
+                            className="text-sm font-semibold line-clamp-1 leading-snug"
+                            style={{ color: theme?.titleColor ?? "#f5f5f5" }}
+                        >
                             {memory.title}
                         </p>
-                        <div className="flex items-center gap-3 text-[11px] text-neutral-500 mt-1">
+                        <div className="flex items-center gap-3 text-[11px] mt-1" style={{ color: theme?.storyColor ?? "#737373" }}>
                             <span className="flex items-center gap-1">
                                 <Calendar className="w-3 h-3 shrink-0" />
                                 {new Date(memory.date).toLocaleDateString()}
@@ -84,12 +131,15 @@ export function MemoryCard({ memory, isCollaboration }: MemoryCardProps) {
                 </div>
 
                 {/* Story */}
-                <p className="flex-1 text-neutral-400 text-[13px] line-clamp-3 leading-relaxed mb-4">
+                <p
+                    className="flex-1 text-[13px] line-clamp-3 leading-relaxed mb-4"
+                    style={{ color: theme?.storyColor ?? "#a3a3a3" }}
+                >
                     {memory.story}
                 </p>
 
                 {/* Footer */}
-                <div className="flex items-center justify-between pt-3.5 border-t border-neutral-800/60">
+                <div className={`flex items-center justify-between pt-3.5 ${theme?.footerBorder ?? "border-t border-neutral-800/60"}`}>
                     <Link
                         href={`/profile/${memory.user.id}`}
                         className="relative z-30 flex items-center gap-2 group/author"
@@ -100,12 +150,12 @@ export function MemoryCard({ memory, isCollaboration }: MemoryCardProps) {
                             alt={memory.user.name}
                             className="w-6 h-6 rounded-full border border-neutral-700 group-hover/author:border-indigo-500 transition-colors object-cover"
                         />
-                        <span className="text-[11px] text-neutral-500 group-hover/author:text-indigo-400 transition-colors">
+                        <span className={`text-[11px] group-hover/author:text-indigo-400 transition-colors ${theme?.footerTextColor ?? "text-neutral-500"}`}>
                             {memory.user.name}
                         </span>
                     </Link>
 
-                    <div className="flex items-center gap-3 text-neutral-600">
+                    <div className={`flex items-center gap-3 ${theme?.footerTextColor ?? "text-neutral-600"}`}>
                         <span className="flex items-center gap-1 text-[11px]">
                             <Heart className="w-3.5 h-3.5" />
                             {memory._count?.reactions ?? 0}

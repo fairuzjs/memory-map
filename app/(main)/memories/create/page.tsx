@@ -48,10 +48,23 @@ export default function CreateMemoryPage() {
     async function onSubmit(data: MemoryInput) {
         setIsSubmitting(true)
         try {
+            // Map rich PhotoData objects to stringified JSON strings before sending to API 
+            // This ensures backend `photos.create: photos.map(url => ({ url }))` gracefully stores the full metadata
+            const formattedData = {
+                ...data,
+                photos: data.photos?.map((photo: any) =>
+                    JSON.stringify({
+                        path: photo.path,
+                        bucket: photo.bucket,
+                        url: photo.url || null
+                    })
+                ) || []
+            }
+
             const res = await fetch("/api/memories", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data),
+                body: JSON.stringify(formattedData),
             })
 
             if (!res.ok) throw new Error("Failed to create memory")
@@ -64,6 +77,9 @@ export default function CreateMemoryPage() {
             setIsSubmitting(false)
         }
     }
+
+    // We need to watch `isPublic` to tell PhotoUploader how to upload incoming files
+    const isPublic = control._formValues.isPublic !== undefined ? control._formValues.isPublic : true
 
     return (
         <div className="max-w-7xl mx-auto px-4 py-8 sm:py-12 w-full relative">
@@ -88,7 +104,7 @@ export default function CreateMemoryPage() {
                         {/* ── LEFT COLUMN ──────────────────────────── */}
                         <div className="lg:col-span-7 space-y-6">
 
-                            {/* The Story */}
+                            {/* ... */}
                             <div className="bg-neutral-900/40 backdrop-blur-xl p-6 sm:p-8 rounded-3xl border border-white/[0.05] shadow-2xl transition-all hover:border-white/[0.08]">
                                 <div className="flex items-center gap-3 mb-6">
                                     <div className="p-2 sm:p-3 bg-indigo-500/10 rounded-xl">
@@ -159,7 +175,13 @@ export default function CreateMemoryPage() {
                                 <Controller
                                     control={control}
                                     name="photos"
-                                    render={({ field }) => <PhotoUploader photos={field.value || []} onChange={field.onChange} />}
+                                    render={({ field }) => (
+                                        <PhotoUploader
+                                            photos={field.value || []}
+                                            onChange={field.onChange}
+                                            isPublic={isPublic}
+                                        />
+                                    )}
                                 />
                             </div>
 

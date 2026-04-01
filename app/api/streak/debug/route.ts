@@ -15,10 +15,20 @@ export async function POST(req: Request) {
 
     try {
         const body = await req.json()
-        const { setDays } = body
+        const { setDays, addPoints } = body
+
+        // ── Add points action ──────────────────────────────────────────
+        if (typeof addPoints === "number") {
+            const updated = await prisma.user.update({
+                where: { id: session.user.id },
+                data: { points: { increment: addPoints } },
+                select: { points: true },
+            })
+            return NextResponse.json({ success: true, newPoints: updated.points })
+        }
 
         if (typeof setDays !== "number") {
-            return NextResponse.json({ error: "Invalid payload" }, { status: 400 })
+            return NextResponse.json({ error: "Invalid payload — provide setDays or addPoints" }, { status: 400 })
         }
 
         const userId = session.user.id

@@ -7,7 +7,7 @@ import {
     Loader2, MapPin, Calendar, Heart, MessageCircle,
     Pencil, Camera, X, Check, Instagram, Facebook,
     Settings, Image as ImageIcon, BookOpen, Globe,
-    Flame, Zap, Medal, Crown
+    Flame, Zap, Medal, Crown, ShoppingBag
 } from "lucide-react"
 import Link from "next/link"
 import toast from "react-hot-toast"
@@ -19,6 +19,17 @@ function TikTokIcon({ className }: { className?: string }) {
             <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.61a8.18 8.18 0 0 0 4.78 1.52V6.7a4.85 4.85 0 0 1-1.01-.01Z" />
         </svg>
     )
+}
+
+function getDecorationClass(name?: string) {
+    if (!name) return "";
+    const n = name.toLowerCase();
+    if (n.includes("kristal")) return "anim-kristal";
+    if (n.includes("api")) return "anim-api";
+    if (n.includes("neon")) return "anim-neon";
+    if (n.includes("emas")) return "anim-emas";
+    if (n.includes("pelangi")) return "anim-pelangi";
+    return "";
 }
 
 export default function UserProfilePage() {
@@ -110,6 +121,7 @@ export default function UserProfilePage() {
             })
             .catch(() => router.push("/404"))
     }, [id, router])
+
 
     const openEdit = () => {
         setEditName(user.name || "")
@@ -212,13 +224,21 @@ export default function UserProfilePage() {
             >
                 {/* ── Cover Banner ── */}
                 <div className="relative h-32 sm:h-40 overflow-hidden">
-                    {/* Base gradient */}
-                    <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, #0f0f23 0%, #1a0a2e 40%, #0d1a3a 70%, #0a0f1e 100%)" }} />
+                    {/* Base gradient — uses equipped banner or default */}
+                    <div className="absolute inset-0" style={{
+                        background: user.equippedBanner
+                            ? user.equippedBanner.value
+                            : "linear-gradient(135deg, #0f0f23 0%, #1a0a2e 40%, #0d1a3a 70%, #0a0f1e 100%)"
+                    }} />
 
-                    {/* Vivid blobs */}
-                    <div className="absolute top-[-30%] left-[10%] w-72 h-72 rounded-full" style={{ background: "radial-gradient(circle, rgba(99,102,241,0.35) 0%, transparent 70%)", filter: "blur(48px)" }} />
-                    <div className="absolute top-[-20%] right-[10%] w-80 h-80 rounded-full" style={{ background: "radial-gradient(circle, rgba(139,92,246,0.25) 0%, transparent 70%)", filter: "blur(56px)" }} />
-                    <div className="absolute bottom-[-10%] left-[40%] w-60 h-60 rounded-full" style={{ background: "radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%)", filter: "blur(40px)" }} />
+                    {/* Vivid blobs — only shown when no custom banner */}
+                    {!user.equippedBanner && (
+                        <>
+                            <div className="absolute top-[-30%] left-[10%] w-72 h-72 rounded-full" style={{ background: "radial-gradient(circle, rgba(99,102,241,0.35) 0%, transparent 70%)", filter: "blur(48px)" }} />
+                            <div className="absolute top-[-20%] right-[10%] w-80 h-80 rounded-full" style={{ background: "radial-gradient(circle, rgba(139,92,246,0.25) 0%, transparent 70%)", filter: "blur(56px)" }} />
+                            <div className="absolute bottom-[-10%] left-[40%] w-60 h-60 rounded-full" style={{ background: "radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%)", filter: "blur(40px)" }} />
+                        </>
+                    )}
 
                     {/* Noise grain texture */}
                     <div className="absolute inset-0 opacity-[0.025]" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E")` }} />
@@ -246,8 +266,8 @@ export default function UserProfilePage() {
 
                         {/* Avatar */}
                         <div className="relative group shrink-0">
-                            <div className="absolute -inset-2 rounded-full animate-pulse" style={{ background: "linear-gradient(135deg, rgba(99,102,241,0.4), rgba(139,92,246,0.3))", filter: "blur(10px)" }} />
-                            <div className="absolute -inset-1 rounded-full p-[2px]" style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899)" }}>
+                            <div className="absolute -inset-2 rounded-full animate-pulse" style={{ background: user.equippedFrame ? user.equippedFrame.value : "linear-gradient(135deg, rgba(99,102,241,0.4), rgba(139,92,246,0.3))", filter: "blur(10px)" }} />
+                            <div className="absolute -inset-1 rounded-full p-[2px]" style={{ background: user.equippedFrame ? user.equippedFrame.value : "linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899)" }}>
                                 <div className="w-full h-full rounded-full" style={{ background: "rgba(10,10,16,1)" }} />
                             </div>
                             <img
@@ -272,7 +292,10 @@ export default function UserProfilePage() {
                         {/* Nama & Bio */}
                         <div className="text-center md:text-left md:pb-2 max-w-sm">
                             <div className="flex flex-col md:flex-row items-center gap-2 md:gap-3 mb-1.5 flex-wrap justify-center md:justify-start">
-                                <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
+                                <h1 
+                                    className={`text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight ${user.equippedDecoration ? getDecorationClass(user.equippedDecoration.name) : ""}`}
+                                    style={user.equippedDecoration ? (() => { try { return JSON.parse(user.equippedDecoration.value) } catch { return {} } })() : {}}
+                                >
                                     {user.name}
                                 </h1>
                                 {user.pinnedBadge !== null && user.pinnedBadge !== undefined && (() => {
@@ -366,6 +389,12 @@ export default function UserProfilePage() {
                             {/* Tombol Aksi */}
                             {isOwner && (
                                 <div className="flex items-center gap-2">
+                                    <Link href="/shop"
+                                        className="flex items-center justify-center w-9 h-9 rounded-lg transition-all relative overflow-hidden group"
+                                        style={{ background: "rgba(251,191,36,0.08)", border: "1px solid rgba(251,191,36,0.2)" }}
+                                        title="Memory Shop">
+                                        <ShoppingBag className="w-4 h-4 text-amber-400 group-hover:text-amber-300 transition-colors" />
+                                    </Link>
                                     <Link href="/settings"
                                         className="flex items-center justify-center w-9 h-9 rounded-lg text-neutral-400 hover:text-white transition-all bg-white/5 border border-white/10 hover:bg-white/10"
                                         title="Pengaturan">

@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react"
 import { useEffect, useState, useRef } from "react"
 import Link from "next/link"
 import {
-    Plus, Globe, Users, MapPin, Loader2, ArrowRight,
+    Plus, Globe, Users, MapPin, Loader2, ArrowRight, X,
     BookOpen, TrendingUp, Map, Heart, Image as ImageIcon, Sparkles, Flame, ChevronRight, CheckCircle2
 } from "lucide-react"
 import { motion, useInView } from "framer-motion"
@@ -65,7 +65,7 @@ const features = [
 
 // ─── Stat Card Component ──────────────────────────────────────────────────────
 interface StatCardProps {
-    icon: React.ElementType
+    icon: React.ElementType<{ className?: string }>
     label: string
     value: string | number
     iconBg: string
@@ -130,6 +130,7 @@ export default function DashboardPage() {
     })
     const [loading, setLoading] = useState(true)
     const [streakData, setStreakData] = useState<{ currentStreak: number; alreadyClaimed: boolean } | null>(null)
+    const [showStreakBanner, setShowStreakBanner] = useState(true)
 
     const firstName = session?.user?.name?.split(" ")[0] || "Penjelajah"
     const hour = new Date().getHours()
@@ -264,61 +265,80 @@ export default function DashboardPage() {
             </motion.div>
 
             {/* ── Feature Cards ──────────────────────────────────────────────── */}
-            {/* ── Streak Widget ──────────────────────────────────────────────── */}
-            {streakData !== null && (
-                <motion.div initial="hidden" animate="show" variants={stagger}>
-                    <motion.div
-                        variants={fadeUp}
-                        className="relative rounded-2xl overflow-hidden border px-5 py-4 flex items-center justify-between gap-4"
-                        style={{
-                            background: "linear-gradient(135deg, rgba(234,88,12,0.08) 0%, rgba(249,115,22,0.04) 100%)",
-                            borderColor: "rgba(234,88,12,0.18)",
-                        }}
-                    >
-                        {/* Left: icon + info */}
-                        <div className="flex items-center gap-3 min-w-0">
-                            <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                                style={{ background: "rgba(234,88,12,0.15)", border: "1px solid rgba(234,88,12,0.3)" }}>
-                                <Flame className="w-5 h-5 text-orange-400" />
-                            </div>
-                            <div className="min-w-0 flex-1">
-                                <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                                    <span className="text-lg font-black text-white leading-none whitespace-nowrap" style={{ fontFamily: "'Syne', sans-serif" }}>
-                                        {streakData.currentStreak}
-                                    </span>
-                                    <span className="text-xs text-neutral-400 whitespace-nowrap">hari streak</span>
-                                    {streakData.alreadyClaimed ? (
-                                        <span className="flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap"
-                                            style={{ background: "rgba(34,197,94,0.1)", color: "#4ade80", border: "1px solid rgba(34,197,94,0.2)" }}>
-                                            <CheckCircle2 className="w-3 h-3" />
-                                            Sudah klaim
-                                        </span>
-                                    ) : (
-                                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap"
-                                            style={{ background: "rgba(251,191,36,0.1)", color: "#fbbf24", border: "1px solid rgba(251,191,36,0.2)" }}>
-                                            Belum klaim
-                                        </span>
-                                    )}
-                                </div>
-                                <p className="text-[11px] text-neutral-600 mt-1 truncate">Daily Streak</p>
-                            </div>
-                        </div>
-
-                        {/* Right: CTA */}
-                        <Link
-                            href="/streak"
-                            className="flex items-center justify-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg transition-all flex-shrink-0 whitespace-nowrap min-w-[max-content]"
+            {/* ── Floating Streak Reminder ──────────────────────────────────── */}
+            {streakData !== null && showStreakBanner && (
+                <div className="fixed bottom-6 right-4 md:bottom-8 md:right-8 z-50 w-[calc(100%-2rem)] md:w-auto max-w-sm pointer-events-auto">
+                    <motion.div initial={{ opacity: 0, y: 50, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ type: "spring", stiffness: 300, damping: 25 }}>
+                        <div
+                            className="relative rounded-2xl border p-4 flex items-center justify-between gap-4 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.5)]"
                             style={{
-                                background: "rgba(234,88,12,0.12)",
-                                color: "#fb923c",
-                                border: "1px solid rgba(234,88,12,0.2)",
+                                background: "linear-gradient(135deg, rgba(20,20,20,0.95) 0%, rgba(10,10,10,0.98) 100%)",
+                                borderColor: streakData.alreadyClaimed ? "rgba(34,197,94,0.25)" : "rgba(234,88,12,0.25)",
+                                backdropFilter: "blur(12px)",
                             }}
                         >
-                            {streakData.alreadyClaimed ? "Lihat Detail" : "Klaim Sekarang"}
-                            <ChevronRight className="w-3.5 h-3.5" />
-                        </Link>
+                            {/* Close Button */}
+                            <button
+                                onClick={() => setShowStreakBanner(false)}
+                                className="absolute -top-2.5 -right-2.5 p-1 bg-neutral-900 border border-white/10 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded-full transition-colors z-10 shadow-lg"
+                            >
+                                <X className="w-3.5 h-3.5" />
+                            </button>
+
+                            {/* Left: icon + info */}
+                            <div className="flex items-center gap-3 min-w-0 pr-4">
+                                <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                                    style={{ 
+                                        background: streakData.alreadyClaimed ? "rgba(34,197,94,0.15)" : "rgba(234,88,12,0.15)", 
+                                        border: streakData.alreadyClaimed ? "1px solid rgba(34,197,94,0.3)" : "1px solid rgba(234,88,12,0.3)" 
+                                    }}>
+                                    <Flame className={`w-5 h-5 ${streakData.alreadyClaimed ? "text-green-400" : "text-orange-400"}`} />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                                        <span className="text-lg font-black text-white leading-none whitespace-nowrap" style={{ fontFamily: "'Syne', sans-serif" }}>
+                                            {streakData.currentStreak}
+                                        </span>
+                                        <span className="text-xs text-neutral-400 whitespace-nowrap">hari streak</span>
+                                        {streakData.alreadyClaimed ? (
+                                            <span className="flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap"
+                                                style={{ background: "rgba(34,197,94,0.1)", color: "#4ade80", border: "1px solid rgba(34,197,94,0.2)" }}>
+                                                <CheckCircle2 className="w-3 h-3" />
+                                                Sudah klaim
+                                            </span>
+                                        ) : (
+                                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap"
+                                                style={{ background: "rgba(251,191,36,0.1)", color: "#fbbf24", border: "1px solid rgba(251,191,36,0.2)" }}>
+                                                Belum klaim
+                                            </span>
+                                        )}
+                                    </div>
+                                    <p className="text-[11px] text-neutral-500 mt-1 truncate">
+                                        {streakData.alreadyClaimed ? "Streak Anda aman hari ini!" : "Jangan lewatkan streak Anda!"}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Right: CTA */}
+                            <Link
+                                href="/streak"
+                                className="flex items-center justify-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg transition-all flex-shrink-0 whitespace-nowrap min-w-[max-content]"
+                                style={streakData.alreadyClaimed ? {
+                                    background: "rgba(255,255,255,0.05)",
+                                    color: "#a3a3a3",
+                                    border: "1px solid rgba(255,255,255,0.1)",
+                                } : {
+                                    background: "linear-gradient(135deg, #ea580c, #f97316)",
+                                    color: "white",
+                                    boxShadow: "0 4px 14px rgba(234,88,12,0.3)",
+                                }}
+                            >
+                                {streakData.alreadyClaimed ? "Detail" : "Klaim"}
+                                <ChevronRight className="w-3.5 h-3.5" />
+                            </Link>
+                        </div>
                     </motion.div>
-                </motion.div>
+                </div>
             )}
 
             {/* ── Feature Cards ──────────────────────────────────────────────── */}

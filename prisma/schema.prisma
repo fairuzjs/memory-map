@@ -21,6 +21,7 @@ model User {
   instagram     String?
   tiktok        String?
   facebook      String?
+  points        Int        @default(0)
   createdAt     DateTime   @default(now())
   memories       Memory[]
   comments       Comment[]
@@ -33,6 +34,7 @@ model User {
   streakData     UserStreak?
   streakBadges   UserStreakBadge[]
   pinnedBadge    Int?
+  inventories    UserInventory[]
 }
 
 model Notification {
@@ -252,4 +254,40 @@ model PasswordResetToken {
   expires DateTime
 
   @@unique([email, token])
+}
+
+// ── Reward / Shop System ──────────────────────────────────────
+
+enum ItemType {
+  AVATAR_FRAME
+  PROFILE_BANNER
+  MEMORY_CARD_THEME
+  USERNAME_DECORATION
+}
+
+model ShopItem {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  price       Int
+  type        ItemType
+  value       String   // CSS gradient / identifier used by frontend
+  previewColor String? // Accent hex for card UI preview
+  createdAt   DateTime @default(now())
+
+  owners UserInventory[]
+}
+
+model UserInventory {
+  id         String   @id @default(cuid())
+  userId     String
+  itemId     String
+  isEquipped Boolean  @default(false)
+  acquiredAt DateTime @default(now())
+
+  user User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  item ShopItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, itemId])
+  @@index([userId])
 }

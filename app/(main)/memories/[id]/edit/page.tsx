@@ -70,7 +70,26 @@ export default function EditMemoryPage() {
                     latitude: data.latitude,
                     longitude: data.longitude,
                     locationName: data.locationName || "",
-                    photos: data.photos?.map((p: any) => p.url) || [],
+                    photos: data.photos?.map((p: any) => {
+                        // Support migrating old URL-only string versus new JSON structure string from DB
+                        try {
+                            const parsed = JSON.parse(p.url)
+                            return {
+                                path: parsed.path,
+                                bucket: parsed.bucket,
+                                url: parsed.url,
+                                previewUrl: parsed.url // fallback for preview UI
+                            }
+                        } catch {
+                            // Legacy: p.url was just a flat url string
+                            return {
+                                path: p.url, // we don't know the exact path for old ones
+                                bucket: data.isPublic ? "public_uploads" : "private_uploads",
+                                url: p.url,
+                                previewUrl: p.url
+                            }
+                        }
+                    }) || [],
                     tags: data.tags?.map((t: any) => t.name) || [],
                 })
                 setLoading(false)
@@ -89,10 +108,21 @@ export default function EditMemoryPage() {
     const onSubmit = async (data: MemoryInput) => {
         setIsSubmitting(true)
         try {
+            const formattedData = {
+                ...data,
+                photos: data.photos?.map((photo: any) =>
+                    JSON.stringify({
+                        path: photo.path,
+                        bucket: photo.bucket,
+                        url: photo.url || null
+                    })
+                ) || []
+            }
+
             const res = await fetch(`/api/memories/${id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data),
+                body: JSON.stringify(formattedData),
             })
 
             if (!res.ok) throw new Error("Gagal memperbarui")
@@ -113,6 +143,8 @@ export default function EditMemoryPage() {
             </div>
         )
     }
+
+    const isPublic = control._formValues.isPublic !== undefined ? control._formValues.isPublic : true
 
     return (
         <div className="max-w-7xl mx-auto px-4 py-8 sm:py-12 w-full relative">
@@ -137,7 +169,7 @@ export default function EditMemoryPage() {
                         {/* ── LEFT COLUMN ──────────────────────────── */}
                         <div className="lg:col-span-7 space-y-6">
 
-                            {/* The Story */}
+                            {/* ... */}
                             <div className="bg-neutral-900/40 backdrop-blur-xl p-6 sm:p-8 rounded-3xl border border-white/[0.05] shadow-2xl transition-all hover:border-white/[0.08]">
                                 <div className="flex items-center gap-3 mb-6">
                                     <div className="p-2 sm:p-3 bg-indigo-500/10 rounded-xl">
@@ -208,7 +240,13 @@ export default function EditMemoryPage() {
                                 <Controller
                                     control={control}
                                     name="photos"
-                                    render={({ field }) => <PhotoUploader photos={field.value || []} onChange={field.onChange} />}
+                                    render={({ field }) => (
+                                        <PhotoUploader
+                                            photos={field.value || []}
+                                            onChange={field.onChange}
+                                            isPublic={isPublic}
+                                        />
+                                    )}
                                 />
                             </div>
 

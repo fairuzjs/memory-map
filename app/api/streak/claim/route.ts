@@ -4,6 +4,13 @@ import { prisma } from "@/lib/prisma"
 
 const MILESTONES = [7, 30, 60, 90]
 
+// Points granted per streak day (capped at streak day 8+ → 50 pts)
+function calcPointsForStreak(streakDay: number): number {
+    const base = 10
+    const bonus = Math.min((streakDay - 1) * 5, 40)
+    return base + bonus
+}
+
 // Konversi Date (UTC) ke string WIB "YYYY-MM-DD"
 function getWIBDateString(date: Date): string {
     const wibTime = date.getTime() + 7 * 60 * 60 * 1000
@@ -52,16 +59,25 @@ export async function POST() {
     const newLongest = Math.max(newStreak, streak.longestStreak)
     const newTotalDays = streak.totalActiveDays + 1
 
-    // Update streak
-    const updatedStreak = await prisma.userStreak.update({
-        where: { userId },
-        data: {
-            currentStreak: newStreak,
-            longestStreak: newLongest,
-            totalActiveDays: newTotalDays,
-            lastClaimedAt: now,
-        },
-    })
+    // Calculate points
+    const pointsEarned = calcPointsForStreak(newStreak)
+
+    // Update streak + grant points atomically
+    const [updatedStreak] = await prisma.$transaction([
+        prisma.userStreak.update({
+            where: { userId },
+            data: {
+                currentStreak: newStreak,
+                longestStreak: newLongest,
+                totalActiveDays: newTotalDays,
+                lastClaimedAt: now,
+            },
+        }),
+        prisma.user.update({
+            where: { id: userId },
+            data: { points: { increment: pointsEarned } },
+        }),
+    ])
 
     // Cek & berikan badge milestone baru
     const newBadges: number[] = []
@@ -92,6 +108,7 @@ export async function POST() {
     return NextResponse.json({
         alreadyClaimed: false,
         streak: updatedStreak,
+        pointsEarned,
         newBadges,
         badges: badges.map((b) => ({ milestone: b.milestone, earnedAt: b.earnedAt })),
         nextMilestone,
