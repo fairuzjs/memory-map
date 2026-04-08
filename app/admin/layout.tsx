@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { signOut } from "next-auth/react"
-import { LayoutDashboard, MessageSquare, Flag, ArrowLeft, LogOut, Menu, X, Shield } from "lucide-react"
+import { LayoutDashboard, MessageSquare, Flag, ArrowLeft, LogOut, Menu, X, Shield, Coins, Zap } from "lucide-react"
 import { useState } from "react"
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -14,6 +14,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
         { label: "Saran & Kritik", href: "/admin/feedbacks", icon: MessageSquare },
         { label: "Laporan Postingan", href: "/admin/reports", icon: Flag },
+        { label: "Pesanan Topup", href: "/admin/topup", icon: Coins },
+        { label: "Proses Topup", href: "/admin/topup/process", icon: Zap },
     ]
 
     if (pathname === "/admin/login") {

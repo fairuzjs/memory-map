@@ -35,6 +35,7 @@ model User {
   streakBadges   UserStreakBadge[]
   pinnedBadge    Int?
   inventories    UserInventory[]
+  topupOrders    TopupOrder[]
 }
 
 model Notification {
@@ -290,4 +291,29 @@ model UserInventory {
 
   @@unique([userId, itemId])
   @@index([userId])
+}
+
+// ── Topup System ──────────────────────────────────────────────
+
+model TopupOrder {
+  id         String      @id @default(cuid())
+  userId     String
+  amount     Int         // nominal point yang dibeli
+  price      Int         // harga dalam rupiah
+  status     TopupStatus @default(PENDING)
+  note       String?     // catatan dari admin
+  proofImage String?     // URL bukti transfer dari user
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+}
+
+enum TopupStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
 }

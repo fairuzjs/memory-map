@@ -3,9 +3,10 @@
 import { useEffect, useState, useCallback } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
-import { Loader2, ShoppingBag, Sparkles, CheckCircle2, Star, User, Image as ImageIcon, Coins, Grid2x2, Type, Eye, X } from "lucide-react"
+import { Loader2, ShoppingBag, Sparkles, CheckCircle2, Star, User, Image as ImageIcon, Coins, Grid2x2, Type, Eye, X, Zap } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import toast from "react-hot-toast"
+import Link from "next/link"
 
 function getDecorationClass(name?: string) {
     if (!name) return "";
@@ -158,6 +159,27 @@ export default function ShopPage() {
                     </div>
                     <p className="text-[13px] sm:text-sm text-neutral-500 ml-13 sm:ml-16 leading-relaxed mt-1 sm:mt-1.5">Tukarkan poin kamu dengan dekorasi profil eksklusif</p>
                 </div>
+
+                {/* Topup Banner */}
+                <Link
+                    href="/topup"
+                    className="flex items-center gap-3 mt-5 px-4 py-3 rounded-2xl group transition-all"
+                    style={{
+                        background: "linear-gradient(135deg, rgba(251,191,36,0.07), rgba(245,158,11,0.03))",
+                        border: "1px solid rgba(251,191,36,0.2)",
+                    }}
+                >
+                    <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0" style={{ background: "rgba(251,191,36,0.1)" }}>
+                        <Zap className="w-4 h-4 text-amber-400" />
+                    </div>
+                    <div className="flex-1">
+                        <p className="text-sm font-bold text-amber-300">Topup Memory Point</p>
+                        <p className="text-xs text-neutral-500">Butuh lebih banyak poin? Topup sekarang secara instan</p>
+                    </div>
+                    <div className="text-amber-500/50 group-hover:text-amber-400 transition-colors text-xs font-bold">
+                        Topup →
+                    </div>
+                </Link>
 
                 {/* Type filter tabs */}
                 <div className="flex gap-2 mt-5 sm:mt-6 overflow-x-auto pb-2 flex-nowrap [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden -mx-4 px-4 sm:mx-0 sm:px-0">

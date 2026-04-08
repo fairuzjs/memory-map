@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import {
     Loader2, MessageSquare, Flag, ChevronRight,
-    TrendingUp, Clock, CheckCircle2, AlertCircle, Shield
+    TrendingUp, Clock, CheckCircle2, AlertCircle, Shield, Coins, Zap
 } from "lucide-react"
 import Link from "next/link"
 
@@ -73,6 +73,28 @@ export default function AdminDashboardPage() {
                 { icon: CheckCircle2, label: "Sudah diselesaikan" },
             ],
         },
+        {
+            title: "Pesanan Topup",
+            description: "Kelola dan verifikasi pesanan topup poin dari pengguna",
+            href: "/admin/topup",
+            icon: Coins,
+            accentColor: "amber",
+            stats: [
+                { icon: Clock, label: "Menunggu verifikasi" },
+                { icon: CheckCircle2, label: "Sudah diproses" },
+            ],
+        },
+        {
+            title: "Proses Topup",
+            description: "Tambah poin langsung ke akun user berdasarkan email atau username",
+            href: "/admin/topup/process",
+            icon: Zap,
+            accentColor: "amber",
+            stats: [
+                { icon: Zap, label: "Topup instan" },
+                { icon: CheckCircle2, label: "Riwayat topup" },
+            ],
+        },
     ]
 
     const colorMap: Record<string, {
@@ -100,6 +122,17 @@ export default function AdminDashboardPage() {
             chevron: "text-rose-500/50 group-hover:text-rose-400",
             hover: "hover:border-rose-500/40",
             statText: "text-rose-300/70",
+        },
+        amber: {
+            bg: "bg-amber-500/[0.06]",
+            border: "border-amber-500/20",
+            iconBg: "bg-amber-500/10",
+            iconText: "text-amber-400",
+            badge: "bg-amber-500/10",
+            badgeText: "text-amber-400",
+            chevron: "text-amber-500/50 group-hover:text-amber-400",
+            hover: "hover:border-amber-500/40",
+            statText: "text-amber-300/70",
         },
     }
 
