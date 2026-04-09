@@ -21,19 +21,13 @@ export async function GET(req: Request) {
                 AND: [
                     // Jangan tampilkan user yang sedang login
                     { id: { not: session.user.id } },
-                    {
-                        OR: [
-                            { name: { contains: q, mode: "insensitive" } },
-                            { email: { contains: q, mode: "insensitive" } },
-                        ]
-                    }
+                    { name: { contains: q, mode: "insensitive" } }
                 ]
             },
             select: {
                 id: true,
                 name: true,
                 image: true,
-                email: true,
             },
             take: 8,
         })

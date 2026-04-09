@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import { writeFile, mkdir } from "fs/promises"
-import path from "path"
+import { createClient } from "@supabase/supabase-js"
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
 
 export async function POST(
     req: Request,
@@ -44,16 +48,24 @@ export async function POST(
             return NextResponse.json({ error: "Ukuran file maksimal 5MB" }, { status: 400 })
         }
 
-        // Simpan ke public/uploads/proofs/
-        const buffer = Buffer.from(await file.arrayBuffer())
-        const ext = file.type.split("/")[1].replace("jpeg", "jpg")
-        const filename = `proof_${id}_${Date.now()}.${ext}`
-        const uploadDir = path.join(process.cwd(), "public", "uploads", "proofs")
+        // Upload to Supabase public_uploads bucket
+        const ext = file.name.split(".").pop() || file.type.split("/")[1].replace("jpeg", "jpg")
+        const filename = `proofs/${id}_${Date.now()}.${ext}`
 
-        await mkdir(uploadDir, { recursive: true })
-        await writeFile(path.join(uploadDir, filename), buffer)
+        const { data, error: uploadError } = await supabase.storage
+            .from("public_uploads")
+            .upload(filename, file)
 
-        const proofUrl = `/uploads/proofs/${filename}`
+        if (uploadError) {
+            console.error("Supabase upload error:", uploadError)
+            return NextResponse.json({ error: "Gagal menyimpan file" }, { status: 500 })
+        }
+
+        const { data: publicData } = supabase.storage
+            .from("public_uploads")
+            .getPublicUrl(data.path)
+
+        const proofUrl = publicData.publicUrl
 
         // Update order dengan URL bukti
         const updated = await prisma.topupOrder.update({

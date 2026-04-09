@@ -1300,10 +1300,21 @@ export default function LandingPage() {
                   <h4 className="text-white font-bold text-lg mb-6 font-[Outfit]">Changelog Terbaru</h4>
                   
                   <div className="relative border-l border-white/10 ml-3 space-y-8 pb-4">
-                    {/* Item 1 */}
+                    {/* Item 0 */}
                     <div className="relative pl-6">
                       <div className="absolute w-3 h-3 bg-indigo-500 rounded-full -left-[6.5px] top-1.5 ring-4 ring-[#0c0c16]"></div>
-                      <span className="text-xs font-semibold text-indigo-400 mb-1 block uppercase tracking-wider">Maret 2026</span>
+                      <span className="text-xs font-semibold text-indigo-400 mb-1 block uppercase tracking-wider">April 2026</span>
+                      <h5 className="text-white font-bold text-base mb-2">V2.2 - Sistem Memory Point</h5>
+                      <ul className="list-disc leading-relaxed pl-4 space-y-1.5 text-neutral-400 text-sm">
+                        <li>Integrasi fitur Exchange Memory Point untuk menukar poin.</li>
+                        <li>Peluncuran fitur Topup Memory Point secara manual.</li>
+                      </ul>
+                    </div>
+
+                    {/* Item 1 */}
+                    <div className="relative pl-6">
+                      <div className="absolute w-3 h-3 bg-neutral-600 rounded-full -left-[6.5px] top-1.5 ring-4 ring-[#0c0c16]"></div>
+                      <span className="text-xs font-semibold text-neutral-500 mb-1 block uppercase tracking-wider">Maret 2026</span>
                       <h5 className="text-white font-bold text-base mb-2">V2.1 - Fitur Komunitas & Peningkatan Performa</h5>
                       <ul className="list-disc leading-relaxed pl-4 space-y-1.5 text-neutral-400 text-sm">
                         <li>Penambahan halaman jelajah secara real-time untuk melihat kenangan dari komunitas global.</li>

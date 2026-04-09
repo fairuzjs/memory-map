@@ -81,7 +81,6 @@ function UserCard({ user, index }: { user: any; index: number }) {
                     <p className="text-[13px] font-semibold text-white/90 group-hover:text-indigo-300 transition-colors truncate leading-tight">
                         {user.name}
                     </p>
-                    <p className="text-[11px] text-neutral-600 truncate mt-0.5">{user.email}</p>
                 </div>
                 <ChevronRight className="w-3.5 h-3.5 text-neutral-700 group-hover:text-indigo-400 group-hover:translate-x-0.5 transition-all shrink-0" />
             </Link>
@@ -136,7 +135,7 @@ function ExplorersTab() {
                     type="text"
                     value={query}
                     onChange={handleChange}
-                    placeholder="Cari nama atau email explorer…"
+                    placeholder="Cari nama explorer…"
                     autoFocus
                     className="w-full py-3 pl-10 pr-10 text-sm text-white placeholder:text-neutral-600 focus:outline-none rounded-xl transition-all duration-200"
                     style={{
