@@ -136,6 +136,7 @@ export default function SettingsPage() {
         try {
             const form = new FormData()
             form.append("file", file)
+            form.append("isPublic", "true")
             const res = await fetch("/api/upload", { method: "POST", body: form })
             if (!res.ok) throw new Error()
             const { url } = await res.json()

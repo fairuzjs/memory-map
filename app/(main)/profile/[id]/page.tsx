@@ -159,6 +159,7 @@ export default function UserProfilePage() {
             if (!file) throw new Error("Gagal crop")
             const formData = new FormData()
             formData.append("file", file)
+            formData.append("isPublic", "true")
             const res = await fetch("/api/upload", { method: "POST", body: formData })
             if (!res.ok) throw new Error("Upload failed")
             const { url } = await res.json()
