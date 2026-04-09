@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useState, useCallback, useEffect } from "react"
-import { X } from "lucide-react"
+import { X, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, RotateCcw, RotateCw, ZoomIn, ZoomOut, Save } from "lucide-react"
 import { StickerRenderer, StickerConfig } from "./StickerRenderer"
 
 export type StickerPlacement = {
@@ -140,6 +140,30 @@ export function StickerLayer({
         touchState.current = null
     }, [transforms, onPlacementUpdate])
 
+    // ── Button Controls (D-Pad / Analog) ──────────────────────
+    const adjustTransform = useCallback((id: string, dx: number, dy: number, dr: number, ds: number) => {
+        setTransforms(prev => {
+            const t = prev[id]
+            if (!t) return prev
+            return {
+                ...prev,
+                [id]: {
+                    ...t,
+                    x: Math.max(0, Math.min(100, t.x + dx)),
+                    y: Math.max(0, Math.min(100, t.y + dy)),
+                    r: t.r + dr,
+                    s: Math.max(0.5, Math.min(2.5, t.s + ds))
+                }
+            }
+        })
+    }, [])
+
+    const handleSaveAdjustment = useCallback((id: string) => {
+        const t = transforms[id]
+        if (t) onPlacementUpdate(id, t.x, t.y, t.r, t.s)
+        setSelected(null)
+    }, [transforms, onPlacementUpdate])
+
     return (
         <div
             ref={containerRef}
@@ -159,6 +183,7 @@ export function StickerLayer({
                         key={placement.id}
                         className="absolute pointer-events-auto select-none cursor-grab active:cursor-grabbing"
                         style={{
+                            touchAction: "none",
                             left: `${t.x}%`,
                             top: `${t.y}%`,
                             transform: `translate(-50%, -50%) rotate(${t.r}deg) scale(${t.s})`,
@@ -199,6 +224,90 @@ export function StickerLayer({
                     </div>
                 )
             })}
+
+            {/* Controller Dock / Alat Bantu Analog Khusus Mobile */}
+            {selected && isOwner && (
+                <div
+                    className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[70] bg-neutral-950/90 backdrop-blur-xl p-4 rounded-3xl border border-white/10 shadow-2xl pointer-events-auto flex items-center gap-6"
+                    onClick={e => e.stopPropagation()}
+                >
+                    {/* D-Pad */}
+                    <div className="grid grid-cols-3 gap-1.5">
+                        <div />
+                        <button
+                            onClick={() => adjustTransform(selected, 0, -1, 0, 0)}
+                            className="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/70 hover:text-white transition-colors"
+                        >
+                            <ArrowUp className="w-5 h-5" />
+                        </button>
+                        <div />
+                        <button
+                            onClick={() => adjustTransform(selected, -1, 0, 0, 0)}
+                            className="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/70 hover:text-white transition-colors"
+                        >
+                            <ArrowLeft className="w-5 h-5" />
+                        </button>
+                        <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-xs text-white/30 font-bold shrink-0">
+                            Move
+                        </div>
+                        <button
+                            onClick={() => adjustTransform(selected, 1, 0, 0, 0)}
+                            className="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/70 hover:text-white transition-colors"
+                        >
+                            <ArrowRight className="w-5 h-5" />
+                        </button>
+                        <div />
+                        <button
+                            onClick={() => adjustTransform(selected, 0, 1, 0, 0)}
+                            className="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/70 hover:text-white transition-colors"
+                        >
+                            <ArrowDown className="w-5 h-5" />
+                        </button>
+                        <div />
+                    </div>
+
+                    <div className="w-px h-24 bg-white/10" />
+
+                    {/* Scale & Rotate & Save */}
+                    <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => adjustTransform(selected, 0, 0, -5, 0)}
+                                className="w-12 h-10 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/70 hover:text-indigo-400 transition-colors"
+                            >
+                                <RotateCcw className="w-4 h-4" />
+                            </button>
+                            <button
+                                onClick={() => adjustTransform(selected, 0, 0, 5, 0)}
+                                className="w-12 h-10 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/70 hover:text-indigo-400 transition-colors"
+                            >
+                                <RotateCw className="w-4 h-4" />
+                            </button>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => adjustTransform(selected, 0, 0, 0, -0.05)}
+                                className="w-12 h-10 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/70 hover:text-emerald-400 transition-colors"
+                            >
+                                <ZoomOut className="w-4 h-4" />
+                            </button>
+                            <button
+                                onClick={() => adjustTransform(selected, 0, 0, 0, 0.05)}
+                                className="w-12 h-10 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/70 hover:text-emerald-400 transition-colors"
+                            >
+                                <ZoomIn className="w-4 h-4" />
+                            </button>
+                        </div>
+                        <button
+                            onClick={() => handleSaveAdjustment(selected)}
+                            className="w-full h-10 mt-1 rounded-xl bg-indigo-500 hover:bg-indigo-600 flex items-center justify-center gap-2 text-white text-xs font-bold transition-colors"
+                        >
+                            <Save className="w-3.5 h-3.5" />
+                            Simpan
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
