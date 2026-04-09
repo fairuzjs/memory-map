@@ -1,11 +1,11 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import {
     ArrowLeft, Edit, Trash2, Calendar, MapPin, Loader2,
-    Globe, Lock, ExternalLink, Images
+    Globe, Lock, ExternalLink, Images, Sticker
 } from "lucide-react"
 import Link from "next/link"
 import toast from "react-hot-toast"
@@ -13,6 +13,8 @@ import { Button } from "@/components/ui/Button"
 import { Reactions } from "@/components/memories/Reactions"
 import { Comments } from "@/components/memories/Comments"
 import { ReportDialog } from "@/components/ui/ReportDialog"
+import { StickerLayer, StickerPlacement } from "@/components/memories/StickerLayer"
+import { StickerPanel } from "@/components/memories/StickerPanel"
 
 export default function MemoryDetailPage() {
     const { id } = useParams()
@@ -22,6 +24,8 @@ export default function MemoryDetailPage() {
     const [loading, setLoading] = useState(true)
     const [isDeleting, setIsDeleting] = useState(false)
     const [lightbox, setLightbox] = useState<string | null>(null)
+    const [placements, setPlacements] = useState<StickerPlacement[]>([])
+    const [showStickerPanel, setShowStickerPanel] = useState(false)
 
     useEffect(() => {
         fetch(`/api/memories/${id}`)
@@ -49,6 +53,12 @@ export default function MemoryDetailPage() {
                 toast.error("Kenangan tidak ditemukan")
                 router.push("/memories")
             })
+
+        // Load sticker placements
+        fetch(`/api/memories/${id}/stickers`)
+            .then(r => r.json())
+            .then(data => { if (Array.isArray(data)) setPlacements(data) })
+            .catch(() => {})
     }, [id, router])
 
     const handleDelete = async () => {
@@ -64,6 +74,20 @@ export default function MemoryDetailPage() {
             setIsDeleting(false)
         }
     }
+
+    const handleStickerUpdate = useCallback(async (placementId: string, posX: number, posY: number, rotation: number, scale: number) => {
+        setPlacements(prev => prev.map(p => p.id === placementId ? { ...p, posX, posY, rotation, scale } : p))
+        await fetch(`/api/memories/${id}/stickers`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ placementId, posX, posY, rotation, scale }),
+        })
+    }, [id])
+
+    const handleStickerDelete = useCallback(async (placementId: string) => {
+        setPlacements(prev => prev.filter(p => p.id !== placementId))
+        await fetch(`/api/memories/${id}/stickers?placementId=${placementId}`, { method: "DELETE" })
+    }, [id])
 
     if (loading) {
         return (
@@ -110,6 +134,16 @@ export default function MemoryDetailPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent" />
 
+                {/* ─── Sticker Layer ─── */}
+                <StickerLayer
+                    memoryId={memory.id}
+                    memoryDate={memory.date}
+                    placements={placements}
+                    isOwner={isOwner}
+                    onPlacementUpdate={handleStickerUpdate}
+                    onPlacementDelete={handleStickerDelete}
+                />
+
                 {/* Top bar — back button + action buttons */}
                 <div className="absolute top-0 left-0 right-0 px-5 md:px-10 py-5 flex items-center justify-between z-10">
                     <button
@@ -123,6 +157,19 @@ export default function MemoryDetailPage() {
                     <div className="flex items-center gap-2">
                         {isOwner && (
                             <>
+                                <button
+                                    onClick={() => setShowStickerPanel(true)}
+                                    className="flex items-center gap-2 text-white/70 hover:text-amber-300 transition-colors backdrop-blur-sm bg-black/20 border border-white/10 rounded-full px-4 py-2 text-sm font-medium"
+                                    title="Tambah Stiker"
+                                >
+                                    <Sticker className="w-3.5 h-3.5" />
+                                    <span className="hidden sm:inline">Stiker</span>
+                                    {placements.length > 0 && (
+                                        <span className="w-4 h-4 rounded-full bg-amber-400/20 border border-amber-400/40 text-[10px] font-black text-amber-300 flex items-center justify-center">
+                                            {placements.length}
+                                        </span>
+                                    )}
+                                </button>
                                 <Link href={`/memories/${id}/edit`}>
                                     <button className="flex items-center gap-2 text-white/70 hover:text-indigo-300 transition-colors backdrop-blur-sm bg-black/20 border border-white/10 rounded-full px-4 py-2 text-sm font-medium">
                                         <Edit className="w-3.5 h-3.5" />
@@ -378,6 +425,17 @@ export default function MemoryDetailPage() {
                         </button>
                     </div>
                 </div>
+            )}
+
+            {/* ─── Sticker Panel ─── */}
+            {showStickerPanel && (
+                <StickerPanel
+                    memoryId={memory.id}
+                    memoryDate={memory.date}
+                    currentCount={placements.length}
+                    onStickerAdded={placement => setPlacements(prev => [...prev, placement])}
+                    onClose={() => setShowStickerPanel(false)}
+                />
             )}
         </div>
     )

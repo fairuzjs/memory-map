@@ -1,9 +1,19 @@
 import Link from "next/link"
 import { MapPin, Calendar, Heart, MessageCircle, Users } from "lucide-react"
+import { StickerRenderer, StickerConfig } from "./StickerRenderer"
 
 interface MemoryCardProps {
     memory: any
     isCollaboration?: boolean
+    placements?: Array<{
+        id: string
+        posX: number
+        posY: number
+        rotation: number
+        scale: number
+        customText?: string | null
+        item: { id: string; name: string; value: string; previewColor: string | null }
+    }>
 }
 
 type CardTheme = {
@@ -35,7 +45,7 @@ function parseTheme(rawValue: string | null | undefined): CardTheme | null {
     try { return JSON.parse(rawValue) } catch { return null }
 }
 
-export function MemoryCard({ memory, isCollaboration }: MemoryCardProps) {
+export function MemoryCard({ memory, isCollaboration, placements = [] }: MemoryCardProps) {
     const collab = isCollaboration ?? memory.isCollaboration ?? false
     const emotion = emotionMap[memory.emotion] ?? emotionMap.HAPPY
 
@@ -79,6 +89,33 @@ export function MemoryCard({ memory, isCollaboration }: MemoryCardProps) {
                         style={{ filter: theme?.imageFilter ?? "none" }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
+                    {/* Sticker placements */}
+                    {placements.map(p => {
+                        let cfg: StickerConfig | null = null
+                        try { cfg = JSON.parse(p.item.value) } catch { return null }
+                        if (!cfg) return null
+                        return (
+                            <div
+                                key={p.id}
+                                className="absolute pointer-events-none select-none"
+                                style={{
+                                    left: `${p.posX}%`,
+                                    top: `${p.posY}%`,
+                                    transform: `translate(-50%, -50%) rotate(${p.rotation}deg) scale(${p.scale})`,
+                                    transformOrigin: "center",
+                                    zIndex: 10,
+                                    filter: "drop-shadow(1px 2px 4px rgba(0,0,0,0.35))",
+                                }}
+                            >
+                                <StickerRenderer
+                                    config={cfg}
+                                    memoryDate={memory.date}
+                                    customText={p.customText}
+                                />
+                            </div>
+                        )
+                    })}
 
                     {/* Collab badge — di atas foto */}
                     {collab && (

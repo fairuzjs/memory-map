@@ -30,6 +30,12 @@ export async function GET(req: Request) {
                 }
             },
             photos: true,
+            stickerPlacements: {
+                include: {
+                    item: { select: { id: true, name: true, value: true, previewColor: true } }
+                },
+                orderBy: { createdAt: "asc" as const }
+            },
             _count: { select: { reactions: true, comments: true } }
         }
 

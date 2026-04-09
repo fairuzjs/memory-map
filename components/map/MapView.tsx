@@ -7,6 +7,7 @@ import { createEmotionIcon, setupLeafletDefaultIcon } from "./MapIcons"
 import MarkerClusterGroup from "./MarkerClusterGroup"
 import Link from "next/link"
 import { Calendar, MapPin, Search, Loader2 } from "lucide-react"
+import { StickerRenderer, StickerConfig } from "@/components/memories/StickerRenderer"
 
 interface MapViewProps {
     memories: any[]
@@ -242,6 +243,33 @@ export default function MapView({ memories }: MapViewProps) {
                                                             style={{ filter: theme?.imageFilter ?? "none" }}
                                                         />
                                                         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+
+                                                        {/* Sticker placements */}
+                                                        {(memory.stickerPlacements ?? []).map((p: any) => {
+                                                            let cfg: StickerConfig | null = null
+                                                            try { cfg = JSON.parse(p.item.value) } catch { return null }
+                                                            if (!cfg) return null
+                                                            return (
+                                                                <div
+                                                                    key={p.id}
+                                                                    className="absolute pointer-events-none select-none"
+                                                                    style={{
+                                                                        left: `${p.posX}%`,
+                                                                        top: `${p.posY}%`,
+                                                                        transform: `translate(-50%, -50%) rotate(${p.rotation}deg) scale(${p.scale * 0.75})`,
+                                                                        transformOrigin: "center",
+                                                                        zIndex: 10,
+                                                                        filter: "drop-shadow(1px 2px 3px rgba(0,0,0,0.4))",
+                                                                    }}
+                                                                >
+                                                                    <StickerRenderer
+                                                                        config={cfg}
+                                                                        memoryDate={memory.date}
+                                                                        customText={p.customText}
+                                                                    />
+                                                                </div>
+                                                            )
+                                                        })}
                                                     </div>
                                                 )
                                             })()}

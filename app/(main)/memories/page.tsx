@@ -305,7 +305,11 @@ export default function MemoriesPage() {
                                 >
                                     {withPhotos.map((memory: any) => (
                                         <motion.div key={memory.id} variants={fadeUp}>
-                                            <MemoryCard memory={memory} isCollaboration={memory.isCollaboration} />
+                                            <MemoryCard
+                                                memory={memory}
+                                                isCollaboration={memory.isCollaboration}
+                                                placements={memory.stickerPlacements ?? []}
+                                            />
                                         </motion.div>
                                     ))}
                                 </motion.div>
@@ -334,7 +338,11 @@ export default function MemoriesPage() {
                                 >
                                     {withoutPhotos.map((memory: any) => (
                                         <motion.div key={memory.id} variants={fadeUp}>
-                                            <MemoryCard memory={memory} isCollaboration={memory.isCollaboration} />
+                                            <MemoryCard
+                                                memory={memory}
+                                                isCollaboration={memory.isCollaboration}
+                                                placements={memory.stickerPlacements ?? []}
+                                            />
                                         </motion.div>
                                     ))}
                                 </motion.div>

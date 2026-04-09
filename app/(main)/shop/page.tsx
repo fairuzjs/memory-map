@@ -3,10 +3,11 @@
 import { useEffect, useState, useCallback } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
-import { Loader2, ShoppingBag, Sparkles, CheckCircle2, Star, User, Image as ImageIcon, Coins, Grid2x2, Type, Eye, X, Zap } from "lucide-react"
+import { Loader2, ShoppingBag, Sparkles, CheckCircle2, Star, User, Image as ImageIcon, Coins, Grid2x2, Type, Eye, X, Zap, Sticker } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import toast from "react-hot-toast"
 import Link from "next/link"
+import { StickerRenderer, StickerConfig } from "@/components/memories/StickerRenderer"
 
 function getDecorationClass(name?: string) {
     if (!name) return "";
@@ -34,7 +35,7 @@ type ShopItem = {
     name: string
     description: string
     price: number
-    type: "AVATAR_FRAME" | "PROFILE_BANNER" | "MEMORY_CARD_THEME" | "USERNAME_DECORATION"
+    type: "AVATAR_FRAME" | "PROFILE_BANNER" | "MEMORY_CARD_THEME" | "USERNAME_DECORATION" | "MEMORY_STICKER"
     value: string
     previewColor: string | null
     owned: boolean
@@ -46,12 +47,14 @@ const TYPE_LABELS: Record<string, string> = {
     PROFILE_BANNER: "Banner Profil",
     MEMORY_CARD_THEME: "Tema Kartu",
     USERNAME_DECORATION: "Dekorasi Nama",
+    MEMORY_STICKER: "Stiker Kenangan",
 }
 const TYPE_ICONS: Record<string, React.FC<any>> = {
     AVATAR_FRAME: User,
     PROFILE_BANNER: ImageIcon,
     MEMORY_CARD_THEME: Grid2x2,
     USERNAME_DECORATION: Type,
+    MEMORY_STICKER: Sticker,
 }
 
 export default function ShopPage() {
@@ -61,7 +64,7 @@ export default function ShopPage() {
     const [items, setItems] = useState<ShopItem[]>([])
     const [points, setPoints] = useState(0)
     const [loading, setLoading] = useState(true)
-    const [activeType, setActiveType] = useState<"ALL" | "AVATAR_FRAME" | "PROFILE_BANNER" | "MEMORY_CARD_THEME" | "USERNAME_DECORATION">("ALL")
+    const [activeType, setActiveType] = useState<"ALL" | "AVATAR_FRAME" | "PROFILE_BANNER" | "MEMORY_CARD_THEME" | "USERNAME_DECORATION" | "MEMORY_STICKER">("ALL")
     const [purchasing, setPurchasing] = useState<string | null>(null)
     const [equipping, setEquipping] = useState<string | null>(null)
     const [previewItem, setPreviewItem] = useState<ShopItem | null>(null)
@@ -183,7 +186,7 @@ export default function ShopPage() {
 
                 {/* Type filter tabs */}
                 <div className="flex gap-2 mt-5 sm:mt-6 overflow-x-auto pb-2 flex-nowrap [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden -mx-4 px-4 sm:mx-0 sm:px-0">
-                    {(["ALL", "AVATAR_FRAME", "PROFILE_BANNER", "MEMORY_CARD_THEME", "USERNAME_DECORATION"] as const).map((tab) => (
+                    {(["ALL", "AVATAR_FRAME", "PROFILE_BANNER", "MEMORY_CARD_THEME", "USERNAME_DECORATION", "MEMORY_STICKER"] as const).map((tab) => (
                         <button
                             key={tab}
                             onClick={() => setActiveType(tab)}
@@ -252,6 +255,21 @@ export default function ShopPage() {
                                     ) : (
                                         /* Card theme preview */
                                         (() => {
+                                            if (item.type === "MEMORY_STICKER") {
+                                                let cfg: StickerConfig | null = null
+                                                try { cfg = JSON.parse(item.value) } catch { }
+                                                return (
+                                                    <div className="absolute inset-0 flex items-center justify-center">
+                                                        {cfg ? (
+                                                            <div style={{ transform: `rotate(${cfg.defaultRotation ?? 0}deg)` }}>
+                                                                <StickerRenderer config={cfg} />
+                                                            </div>
+                                                        ) : (
+                                                            <div className="w-12 h-12 rounded-xl" style={{ background: accent }} />
+                                                        )}
+                                                    </div>
+                                                )
+                                            }
                                             const t = (() => { try { return JSON.parse(item.value) } catch { return null } })()
                                             return (
                                                 <div className="absolute inset-0 flex items-center justify-center p-3">
@@ -338,6 +356,19 @@ export default function ShopPage() {
                                                         {isBuying ? "Membeli..." : points < item.price ? "Poin kurang" : "Beli Sekarang"}
                                                     </span>
                                                 </button>
+                                            ) : item.type === "MEMORY_STICKER" ? (
+                                                /* Stiker tidak perlu tombol Pakai — ditempel langsung di halaman kenangan */
+                                                <div
+                                                    className="w-full py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5"
+                                                    style={{
+                                                        background: "rgba(74,222,128,0.06)",
+                                                        border: "1px solid rgba(74,222,128,0.2)",
+                                                        color: "#4ade80",
+                                                    }}
+                                                >
+                                                    <CheckCircle2 className="w-3.5 h-3.5" />
+                                                    Dimiliki
+                                                </div>
                                             ) : (
                                                 <button
                                                     onClick={() => handleEquip(item)}
@@ -445,6 +476,25 @@ export default function ShopPage() {
                                             {session?.user?.name || "Username"}
                                         </span>
                                     </div>
+                                ) : previewItem.type === "MEMORY_STICKER" ? (
+                                    (() => {
+                                        let cfg: StickerConfig | null = null
+                                        try { cfg = JSON.parse(previewItem.value) } catch { }
+                                        return (
+                                            <div className="flex flex-col items-center gap-6 z-10">
+                                                {cfg ? (
+                                                    <div style={{ transform: `rotate(${cfg.defaultRotation ?? 0}deg)`, filter: "drop-shadow(0 8px 20px rgba(0,0,0,0.4))" }}>
+                                                        <StickerRenderer config={cfg} />
+                                                    </div>
+                                                ) : (
+                                                    <div className="w-24 h-24 rounded-2xl" style={{ background: previewItem.previewColor ?? "#6366f1" }} />
+                                                )}
+                                                <p className="text-sm text-neutral-400 text-center max-w-[200px]">
+                                                    Stiker ini bisa ditempel di atas foto kenangan kamu
+                                                </p>
+                                            </div>
+                                        )
+                                    })()
                                 ) : (
                                     (() => {
                                         const t = (() => { try { return JSON.parse(previewItem.value) } catch { return null } })()

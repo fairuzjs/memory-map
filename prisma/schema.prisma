@@ -23,19 +23,20 @@ model User {
   facebook      String?
   points        Int        @default(0)
   createdAt     DateTime   @default(now())
-  memories       Memory[]
-  comments       Comment[]
-  reactions      Reaction[]
-  feedbacks      Feedback[]
-  reports        Report[]
-  notifications  Notification[] @relation("ReceivedNotifications")
-  actions        Notification[] @relation("TriggeredNotifications")
-  collaborations MemoryCollaborator[]
-  streakData     UserStreak?
-  streakBadges   UserStreakBadge[]
-  pinnedBadge    Int?
-  inventories    UserInventory[]
-  topupOrders    TopupOrder[]
+  memories          Memory[]
+  comments          Comment[]
+  reactions         Reaction[]
+  feedbacks         Feedback[]
+  reports           Report[]
+  notifications     Notification[] @relation("ReceivedNotifications")
+  actions           Notification[] @relation("TriggeredNotifications")
+  collaborations    MemoryCollaborator[]
+  streakData        UserStreak?
+  streakBadges      UserStreakBadge[]
+  pinnedBadge       Int?
+  inventories       UserInventory[]
+  topupOrders       TopupOrder[]
+  stickerPlacements MemoryStickerPlacement[]
 }
 
 model Notification {
@@ -81,13 +82,14 @@ model Memory {
   updatedAt    DateTime   @updatedAt
   userId       String
   user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  photos        Photo[]
-  comments      Comment[]
-  reactions     Reaction[]
-  tags          Tag[]
-  reports       Report[]
-  notifications Notification[]
-  collaborators MemoryCollaborator[]
+  photos            Photo[]
+  comments          Comment[]
+  reactions         Reaction[]
+  tags              Tag[]
+  reports           Report[]
+  notifications     Notification[]
+  collaborators     MemoryCollaborator[]
+  stickerPlacements MemoryStickerPlacement[]
 }
 
 enum Emotion {
@@ -264,6 +266,7 @@ enum ItemType {
   PROFILE_BANNER
   MEMORY_CARD_THEME
   USERNAME_DECORATION
+  MEMORY_STICKER
 }
 
 model ShopItem {
@@ -276,7 +279,8 @@ model ShopItem {
   previewColor String? // Accent hex for card UI preview
   createdAt   DateTime @default(now())
 
-  owners UserInventory[]
+  owners            UserInventory[]
+  stickerPlacements MemoryStickerPlacement[]
 }
 
 model UserInventory {
@@ -316,4 +320,27 @@ enum TopupStatus {
   PENDING
   COMPLETED
   CANCELLED
+}
+
+// ── Memory Sticker Placements ──────────────────────────────────────
+
+model MemoryStickerPlacement {
+  id         String   @id @default(cuid())
+  memoryId   String   @map("memory_id")
+  userId     String   @map("user_id")
+  itemId     String   @map("item_id")
+  posX       Float    @default(50)   // % dari lebar area foto (0-100)
+  posY       Float    @default(50)   // % dari tinggi area foto (0-100)
+  rotation   Float    @default(0)    // derajat
+  scale      Float    @default(1.0)  // 0.5 - 2.0
+  zIndex     Int      @default(10)
+  customText String?                 // teks kustom user (maks 20 karakter)
+  createdAt  DateTime @default(now())
+
+  memory Memory   @relation(fields: [memoryId], references: [id], onDelete: Cascade)
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  item   ShopItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@index([memoryId])
+  @@index([userId])
 }

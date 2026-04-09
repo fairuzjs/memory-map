@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { signOut, useSession } from "next-auth/react"
-import { MapPin, Map, Plus, LogOut, LayoutDashboard, User as UserIcon, ArrowRight, Globe, Shield, MessageSquareText, Menu, X, Flame } from "lucide-react"
+import { MapPin, Map, Plus, LogOut, LayoutDashboard, User as UserIcon, ArrowRight, Globe, Shield, MessageSquareText, Menu, X, Flame, Package } from "lucide-react"
 import { useState, useEffect } from "react"
 import { NotificationDropdown } from "./NotificationDropdown"
 import { motion, AnimatePresence } from "framer-motion"
@@ -118,6 +118,21 @@ export function Navbar() {
                                 <NotificationDropdown />
 
                                 <div className="flex items-center gap-2 pl-3 border-l border-white/[0.08]">
+                                    {/* Inventory shortcut - Desktop */}
+                                    <Link
+                                        href="/inventory"
+                                        className={`hidden md:flex items-center justify-center w-9 h-9 rounded-lg transition-all ${
+                                            pathname === '/inventory'
+                                                ? 'bg-indigo-500/15 border border-indigo-500/30'
+                                                : 'bg-white/[0.03] border border-white/[0.08] hover:bg-white/[0.08]'
+                                        }`}
+                                        title="Inventori Dekorasi"
+                                    >
+                                        <Package className={`w-4 h-4 transition-colors ${
+                                            pathname === '/inventory' ? 'text-indigo-400' : 'text-neutral-400 hover:text-white'
+                                        }`} />
+                                    </Link>
+
                                     {/* Profile avatar */}
                                     <Link
                                         href={`/profile/${session.user.id}`}
@@ -135,7 +150,7 @@ export function Navbar() {
                                         )}
                                     </Link>
 
-                                    {/* Sign out - Desktop only (will add to mobile menu) */}
+                                    {/* Sign out - Desktop only */}
                                     <button
                                         onClick={() => signOut({ callbackUrl: "/login" })}
                                         className="hidden md:block p-2 text-neutral-500 hover:text-red-400 transition-colors rounded-lg hover:bg-white/[0.05]"
@@ -232,6 +247,20 @@ export function Navbar() {
                                 >
                                     <UserIcon className="w-5 h-5 flex-shrink-0" />
                                     Profile
+                                </Link>
+                            )}
+
+                            {session?.user && (
+                                <Link
+                                    href="/inventory"
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-[15px] font-medium transition-all ${pathname === '/inventory'
+                                        ? "bg-indigo-500/10 text-indigo-300"
+                                        : "text-neutral-300 hover:text-white hover:bg-white/[0.06]"
+                                        }`}
+                                >
+                                    <Package className="w-5 h-5 flex-shrink-0" />
+                                    Inventori
                                 </Link>
                             )}
 

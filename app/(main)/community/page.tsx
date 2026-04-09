@@ -412,7 +412,10 @@ function MemoriesFeedTab() {
                                 >
                                     {withPhotos.map(m => (
                                         <motion.div key={m.id} variants={fadeUp}>
-                                            <MemoryCard memory={m} />
+                                            <MemoryCard
+                                                memory={m}
+                                                placements={m.stickerPlacements ?? []}
+                                            />
                                         </motion.div>
                                     ))}
                                 </motion.div>
@@ -436,7 +439,10 @@ function MemoriesFeedTab() {
                                 >
                                     {textOnly.map(m => (
                                         <motion.div key={m.id} variants={fadeUp}>
-                                            <MemoryCard memory={m} />
+                                            <MemoryCard
+                                                memory={m}
+                                                placements={m.stickerPlacements ?? []}
+                                            />
                                         </motion.div>
                                     ))}
                                 </motion.div>
