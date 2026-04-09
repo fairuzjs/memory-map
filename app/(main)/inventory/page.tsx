@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import {
     Loader2, Package, CheckCircle2, Sparkles,
     User, Image as ImageIcon, Grid2x2, Type, Sticker,
-    ShoppingBag, ChevronRight, Eye, X
+    ShoppingBag, ChevronRight, Eye, X, Star
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import toast from "react-hot-toast"
@@ -40,6 +40,14 @@ const TYPE_LABELS: Record<ItemType, string> = {
     MEMORY_STICKER:     "Stiker Kenangan",
 }
 
+const TYPE_SHORT_LABELS: Record<ItemType, string> = {
+    AVATAR_FRAME:       "Bingkai Avatar",
+    PROFILE_BANNER:     "Banner Profil",
+    MEMORY_CARD_THEME:  "Tema Kartu",
+    USERNAME_DECORATION:"Dekorasi Nama",
+    MEMORY_STICKER:     "Stiker",
+}
+
 const TYPE_ICONS: Record<ItemType, React.FC<any>> = {
     AVATAR_FRAME:       User,
     PROFILE_BANNER:     ImageIcon,
@@ -48,12 +56,12 @@ const TYPE_ICONS: Record<ItemType, React.FC<any>> = {
     MEMORY_STICKER:     Sticker,
 }
 
-const TYPE_COLORS: Record<ItemType, { bg: string; border: string; text: string; accent: string }> = {
-    AVATAR_FRAME:       { bg: "rgba(99,102,241,0.1)",  border: "rgba(99,102,241,0.2)",  text: "#818cf8", accent: "#6366f1" },
-    PROFILE_BANNER:     { bg: "rgba(244,114,182,0.1)", border: "rgba(244,114,182,0.2)", text: "#f472b6", accent: "#ec4899" },
-    MEMORY_CARD_THEME:  { bg: "rgba(52,211,153,0.1)",  border: "rgba(52,211,153,0.2)",  text: "#34d399", accent: "#10b981" },
-    USERNAME_DECORATION:{ bg: "rgba(251,191,36,0.1)",  border: "rgba(251,191,36,0.2)",  text: "#fbbf24", accent: "#f59e0b" },
-    MEMORY_STICKER:     { bg: "rgba(139,92,246,0.1)",  border: "rgba(139,92,246,0.2)",  text: "#a78bfa", accent: "#8b5cf6" },
+const TYPE_COLORS: Record<ItemType, { bg: string; border: string; text: string; accent: string; pill: string; pillText: string }> = {
+    AVATAR_FRAME:       { bg: "rgba(99,102,241,0.1)",  border: "rgba(99,102,241,0.2)",  text: "#818cf8", accent: "#6366f1", pill: "rgba(99,102,241,0.18)", pillText: "#a5b4fc" },
+    PROFILE_BANNER:     { bg: "rgba(244,114,182,0.1)", border: "rgba(244,114,182,0.2)", text: "#f472b6", accent: "#ec4899", pill: "rgba(244,114,182,0.18)", pillText: "#f9a8d4" },
+    MEMORY_CARD_THEME:  { bg: "rgba(52,211,153,0.1)",  border: "rgba(52,211,153,0.2)",  text: "#34d399", accent: "#10b981", pill: "rgba(52,211,153,0.18)", pillText: "#6ee7b7" },
+    USERNAME_DECORATION:{ bg: "rgba(251,191,36,0.1)",  border: "rgba(251,191,36,0.2)",  text: "#fbbf24", accent: "#f59e0b", pill: "rgba(251,191,36,0.18)", pillText: "#fcd34d" },
+    MEMORY_STICKER:     { bg: "rgba(139,92,246,0.1)",  border: "rgba(139,92,246,0.2)",  text: "#a78bfa", accent: "#8b5cf6", pill: "rgba(139,92,246,0.18)", pillText: "#c4b5fd" },
 }
 
 const ALL_TYPES: ItemType[] = [
@@ -165,6 +173,28 @@ function StickerPreview({ item }: { item: InventoryItem["item"] }) {
     )
 }
 
+// ─── Section Divider ────────────────────────────────────────────────────────────
+
+function SectionDivider({ label, count, color }: { label: string; count: number; color: string }) {
+    return (
+        <div className="flex items-center gap-3 w-full col-span-full mb-1">
+            <span
+                className="text-[11px] font-black uppercase tracking-[0.15em] shrink-0"
+                style={{ color }}
+            >
+                {label}
+            </span>
+            <div className="flex-1 h-px" style={{ background: `linear-gradient(90deg, ${color}40, transparent)` }} />
+            <span
+                className="text-[11px] font-bold px-2 py-0.5 rounded-full shrink-0"
+                style={{ background: `${color}18`, color }}
+            >
+                {count}
+            </span>
+        </div>
+    )
+}
+
 // ─── Inventory Card ─────────────────────────────────────────────────────────────
 
 function InventoryCard({
@@ -188,7 +218,7 @@ function InventoryCard({
             layout
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            className="relative flex flex-col rounded-2xl overflow-hidden group"
+            className="relative flex flex-col rounded-2xl overflow-hidden group inventory-card"
             style={{
                 background: isEquipped
                     ? `linear-gradient(160deg, ${color.bg}, rgba(10,10,16,0.9))`
@@ -197,17 +227,21 @@ function InventoryCard({
                     ? `1px solid ${color.border}`
                     : "1px solid rgba(255,255,255,0.07)",
                 boxShadow: isEquipped ? `0 0 20px -5px ${color.accent}30` : "none",
-                transition: "all 0.2s ease",
+                transition: "all 0.25s cubic-bezier(0.22,1,0.36,1)",
             }}
         >
-            {/* Equipped badge */}
+            {/* Equipped badge — compact, type-colored */}
             {isEquipped && (
                 <div
-                    className="absolute top-2.5 right-2.5 z-10 flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wide"
-                    style={{ background: color.bg, border: `1px solid ${color.border}`, color: color.text }}
+                    className="absolute top-2.5 right-2.5 z-10 flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider"
+                    style={{
+                        background: `linear-gradient(135deg, ${color.accent}cc, ${color.accent}99)`,
+                        color: "#fff",
+                        boxShadow: `0 2px 8px ${color.accent}40`,
+                    }}
                 >
                     <CheckCircle2 className="w-2.5 h-2.5" />
-                    Dipakai
+                    DIPAKAI
                 </div>
             )}
 
@@ -221,6 +255,24 @@ function InventoryCard({
                 {item.type === "MEMORY_CARD_THEME"   && <CardThemePreview value={item.value} />}
                 {item.type === "USERNAME_DECORATION" && <DecorationPreview item={item} />}
                 {item.type === "MEMORY_STICKER"      && <StickerPreview item={item} />}
+            </div>
+
+            {/* Type badge pill */}
+            <div className="px-4 pb-1.5">
+                <span
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold"
+                    style={{
+                        background: color.pill,
+                        color: color.pillText,
+                        border: `1px solid ${color.border}`,
+                    }}
+                >
+                    {(() => {
+                        const Icon = TYPE_ICONS[item.type]
+                        return <Icon className="w-2.5 h-2.5" />
+                    })()}
+                    {TYPE_SHORT_LABELS[item.type]}
+                </span>
             </div>
 
             {/* Info */}
@@ -256,12 +308,12 @@ function InventoryCard({
                             className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-bold transition-all disabled:opacity-50 relative overflow-hidden group/btn"
                             style={{
                                 background: isEquipped
-                                    ? "rgba(74,222,128,0.08)"
+                                    ? `${color.accent}14`
                                     : "rgba(255,255,255,0.04)",
                                 border: isEquipped
-                                    ? "1px solid rgba(74,222,128,0.3)"
+                                    ? `1px solid ${color.accent}40`
                                     : "1px solid rgba(255,255,255,0.08)",
-                                color: isEquipped ? "#4ade80" : "#9ca3af",
+                                color: isEquipped ? color.text : "#9ca3af",
                             }}
                         >
                             {!isEquipped && (
@@ -274,8 +326,8 @@ function InventoryCard({
                                 {isEquipping
                                     ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
                                     : isEquipped
-                                        ? <><CheckCircle2 className="w-3.5 h-3.5" /> Sedang Dipakai</>
-                                        : <><Sparkles className="w-3.5 h-3.5" /> Pakai</>
+                                        ? <><CheckCircle2 className="w-3.5 h-3.5" /> Dipakai</>
+                                        : <><Star className="w-3.5 h-3.5" /> Pakai</>
                                 }
                             </span>
                         </button>
@@ -473,6 +525,9 @@ export default function InventoryPage() {
         ? inventory
         : inventory.filter(e => e.item.type === activeType)
 
+    const equippedItems = filtered.filter(e => e.isEquipped)
+    const collectionItems = filtered.filter(e => !e.isEquipped)
+
     const countByType = (type: ItemType) => inventory.filter(e => e.item.type === type).length
     const equippedCount = inventory.filter(e => e.isEquipped).length
 
@@ -487,6 +542,18 @@ export default function InventoryPage() {
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full" style={{ fontFamily: "Outfit, sans-serif" }}>
 
+            {/* ── Hover lift style ── */}
+            <style jsx global>{`
+                .inventory-card {
+                    transform: translateY(0);
+                }
+                .inventory-card:hover {
+                    transform: translateY(-3px);
+                    box-shadow: 0 8px 24px rgba(0,0,0,0.4) !important;
+                    border-color: rgba(255,255,255,0.12) !important;
+                }
+            `}</style>
+
             {/* ── Header ── */}
             <motion.div
                 initial={{ opacity: 0, y: 16 }}
@@ -494,7 +561,7 @@ export default function InventoryPage() {
                 transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                 className="mb-8"
             >
-                <div className="flex items-center justify-between flex-wrap gap-4">
+                <div className="flex items-start sm:items-center justify-between gap-4">
                     <div className="flex items-center gap-3 sm:gap-4">
                         <div
                             className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0"
@@ -503,16 +570,32 @@ export default function InventoryPage() {
                             <Package className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-400" />
                         </div>
                         <div>
-                            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-none">Inventori</h1>
+                            <div className="flex items-center gap-3">
+                                <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-none">Inventori</h1>
+                                {/* Mobile Shop Button */}
+                                <Link
+                                    href="/shop"
+                                    className="sm:hidden flex items-center justify-center w-7 h-7 rounded-lg transition-all active:scale-95"
+                                    style={{
+                                        background: "rgba(251,191,36,0.1)",
+                                        border: "1px solid rgba(251,191,36,0.2)",
+                                        color: "#fbbf24",
+                                    }}
+                                    title="Ke Memory Shop"
+                                >
+                                    <ShoppingBag className="w-3.5 h-3.5" />
+                                </Link>
+                            </div>
                             <p className="text-[13px] text-neutral-500 mt-1">
-                                {inventory.length} item dimiliki · {equippedCount} sedang dipakai
+                                Koleksi dekorasi profil kamu
                             </p>
                         </div>
                     </div>
 
+                    {/* Desktop Shop Button */}
                     <Link
                         href="/shop"
-                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all hover:scale-[1.02]"
+                        className="hidden sm:flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all hover:scale-[1.02]"
                         style={{
                             background: "rgba(251,191,36,0.08)",
                             border: "1px solid rgba(251,191,36,0.2)",
@@ -523,6 +606,32 @@ export default function InventoryPage() {
                         Ke Memory Shop
                         <ChevronRight className="w-3.5 h-3.5 opacity-60" />
                     </Link>
+                </div>
+
+                {/* Stat pills */}
+                <div className="flex items-center gap-3 mt-3 flex-wrap">
+                    <span
+                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold"
+                        style={{
+                            background: "rgba(99,102,241,0.12)",
+                            border: "1px solid rgba(99,102,241,0.25)",
+                            color: "#a5b4fc",
+                        }}
+                    >
+                        <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#6366f1" }} />
+                        {inventory.length} item dimiliki
+                    </span>
+                    <span
+                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold"
+                        style={{
+                            background: "rgba(74,222,128,0.1)",
+                            border: "1px solid rgba(74,222,128,0.25)",
+                            color: "#6ee7b7",
+                        }}
+                    >
+                        <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#22c55e" }} />
+                        {equippedCount} sedang dipakai
+                    </span>
                 </div>
             </motion.div>
 
@@ -629,19 +738,52 @@ export default function InventoryPage() {
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 sm:gap-6"
                 >
-                    <AnimatePresence mode="popLayout">
-                        {filtered.map(entry => (
-                            <InventoryCard
-                                key={entry.id}
-                                entry={entry}
-                                onEquip={handleEquip}
-                                onPreview={setPreviewEntry}
-                                equipping={equipping}
+                    {/* Sedang Dipakai Section */}
+                    {equippedItems.length > 0 && (
+                        <>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 sm:gap-6 mb-8">
+                                <SectionDivider
+                                    label="Sedang Dipakai"
+                                    count={equippedItems.length}
+                                    color="#4ade80"
+                                />
+                                <AnimatePresence mode="popLayout">
+                                    {equippedItems.map(entry => (
+                                        <InventoryCard
+                                            key={entry.id}
+                                            entry={entry}
+                                            onEquip={handleEquip}
+                                            onPreview={setPreviewEntry}
+                                            equipping={equipping}
+                                        />
+                                    ))}
+                                </AnimatePresence>
+                            </div>
+                        </>
+                    )}
+
+                    {/* Koleksi Lainnya Section */}
+                    {collectionItems.length > 0 && (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 sm:gap-6">
+                            <SectionDivider
+                                label="Koleksi Lainnya"
+                                count={collectionItems.length}
+                                color="#818cf8"
                             />
-                        ))}
-                    </AnimatePresence>
+                            <AnimatePresence mode="popLayout">
+                                {collectionItems.map(entry => (
+                                    <InventoryCard
+                                        key={entry.id}
+                                        entry={entry}
+                                        onEquip={handleEquip}
+                                        onPreview={setPreviewEntry}
+                                        equipping={equipping}
+                                    />
+                                ))}
+                            </AnimatePresence>
+                        </div>
+                    )}
                 </motion.div>
             )}
 

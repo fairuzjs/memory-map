@@ -332,7 +332,7 @@ export function NotificationDropdown() {
                                                 {/* Clickable link — only for non-collaboration notifications */}
                                                 {n.type !== "COLLABORATION_INVITE" && (
                                                     <Link
-                                                        href={n.memory ? `/map?id=${n.memory.id}` : "/map"}
+                                                        href={n.memory ? `/memories/${n.memory.id}` : "/map"}
                                                         onClick={() => {
                                                             if (!n.isRead) markAsRead(n.id)
                                                             setIsOpen(false)
