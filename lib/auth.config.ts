@@ -7,7 +7,7 @@ export const authConfig = {
     callbacks: {
         authorized({ auth, request: { nextUrl } }) {
             const isLoggedIn = !!auth?.user
-            const isAuthRoute = nextUrl.pathname === "/login" || nextUrl.pathname === "/register" || nextUrl.pathname === "/forgot-password"
+            const isAuthRoute = nextUrl.pathname === "/login" || nextUrl.pathname === "/register" || nextUrl.pathname === "/forgot-password" || nextUrl.pathname === "/reset-password"
 
             // Allow accessing /admin/login even if logged in as a normal USER (so they can switch accounts)
             if (nextUrl.pathname === "/admin/login") {
@@ -16,7 +16,6 @@ export const authConfig = {
                 }
                 return true
             }
-        
 
             if (isAuthRoute) {
                 if (isLoggedIn) {

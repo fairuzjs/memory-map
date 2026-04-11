@@ -130,7 +130,7 @@ model Reaction {
   userId   String
   memoryId String
   user     User         @relation(fields: [userId], references: [id])
-  memory   Memory       @relation(fields: [memoryId], references: [id], onDelete: Cascade)
+  memory    Memory       @relation(fields: [memoryId], references: [id], onDelete: Cascade)
   
   @@unique([userId, memoryId])
 }
