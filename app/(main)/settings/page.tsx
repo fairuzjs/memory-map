@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import {
     Instagram, Facebook, Settings, Loader2, Check, AlertCircle,
-    Camera, User, FileText, Share2, ArrowLeft
+    Camera, User, FileText, Share2, ArrowLeft, Mail
 } from "lucide-react"
 import Link from "next/link"
 import toast from "react-hot-toast"
@@ -303,9 +303,21 @@ export default function SettingsPage() {
                         </div>
                     </div>
 
-                    {/* Name */}
+                    {/* Basic Info */}
                     <div className="rounded-2xl border border-white/[0.06] p-6 space-y-4" style={{ background: "rgba(255,255,255,0.02)" }}>
                         <p className="text-xs font-semibold text-neutral-500 uppercase tracking-widest">Basic Info</p>
+                        <div>
+                            <label className="block text-sm font-medium text-neutral-400 mb-1.5 flex items-center gap-1.5">
+                                <Mail className="w-3.5 h-3.5" /> Email Address
+                            </label>
+                            <input
+                                type="email"
+                                value={session?.user?.email || ""}
+                                readOnly
+                                className="w-full bg-neutral-900/50 border border-neutral-800 rounded-xl px-4 py-3 text-neutral-500 cursor-not-allowed focus:outline-none text-sm transition-all"
+                            />
+                            <p className="text-[10px] text-neutral-600 mt-1">Alamat email yang terdaftar (tidak dapat diubah).</p>
+                        </div>
                         <div>
                             <label className="block text-sm font-medium text-neutral-400 mb-1.5">Display Name</label>
                             <input

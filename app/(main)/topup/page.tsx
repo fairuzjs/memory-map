@@ -195,9 +195,6 @@ export default function TopupPage() {
                             className="mb-8 rounded-2xl p-4 flex items-start gap-3"
                             style={{ background: "rgba(99,102,241,0.05)", border: "1px solid rgba(99,102,241,0.15)" }}
                         >
-                            <div className="mt-0.5 shrink-0 w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: "rgba(99,102,241,0.1)" }}>
-                                <ShieldCheck className="w-4 h-4 text-indigo-400" />
-                            </div>
                             <div>
                                 <p className="text-sm font-semibold text-indigo-300">Cara Kerja Topup</p>
                                 <ol className="text-xs text-neutral-400 mt-1.5 space-y-1 list-decimal list-inside">
@@ -206,6 +203,7 @@ export default function TopupPage() {
                                     <li>Admin akan memverifikasi pembayaran secara manual</li>
                                     <li>Poin akan ditambahkan dalam 1×24 jam setelah konfirmasi</li>
                                 </ol>
+
                             </div>
                         </motion.div>
 
@@ -323,7 +321,7 @@ export default function TopupPage() {
                                 <span className="relative flex items-center gap-2">
                                     {submitting
                                         ? <><Loader2 className="w-4 h-4 animate-spin" /> Memproses...</>
-                                        : <><Sparkles className="w-4 h-4" /> {selected ? "Lanjut ke Pembayaran" : "Pilih nominal terlebih dahulu"}</>
+                                        : <>{selected ? "Lanjut ke Pembayaran" : "Pilih nominal terlebih dahulu"}</>
                                     }
                                     {!submitting && selected && (
                                         <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
