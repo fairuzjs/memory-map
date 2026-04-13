@@ -35,8 +35,35 @@ export function MemoryMusicPlayer({
     const waveformRef = useRef<HTMLDivElement>(null)
     const wavesurferRef = useRef<any>(null)
     const clipBlobRef = useRef<Blob | null>(null)
+    const fadeIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
     const endTime = startTime + duration
+
+    const fadeVolume = useCallback((ws: any, targetVolume: number, durationMs: number = 800, onComplete?: () => void) => {
+        if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current)
+        
+        let startVolume = 1
+        try { startVolume = ws.getVolume() } catch {}
+        
+        const steps = 20
+        const stepTime = durationMs / steps
+        const volumeStep = (targetVolume - startVolume) / steps
+        let currentStep = 0
+
+        fadeIntervalRef.current = setInterval(() => {
+            currentStep++
+            const nextVol = startVolume + (volumeStep * currentStep)
+            ws.setVolume(Math.max(0, Math.min(1, nextVol)))
+            
+            if (currentStep >= steps) {
+                if (fadeIntervalRef.current) {
+                    clearInterval(fadeIntervalRef.current)
+                    fadeIntervalRef.current = null
+                }
+                if (onComplete) onComplete()
+            }
+        }, stepTime)
+    }, [])
 
     // Extract clip portion and initialize wavesurfer with only that portion
     useEffect(() => {
@@ -111,7 +138,9 @@ export function MemoryMusicPlayer({
 
                 // Auto-play on load
                 if (autoPlay && !hasAutoPlayed) {
+                    ws.setVolume(0)
                     ws.play()
+                    fadeVolume(ws, 1, 1000)
                     setIsPlaying(true)
                     setHasAutoPlayed(true)
                 }
@@ -123,13 +152,26 @@ export function MemoryMusicPlayer({
                 const clipDuration = ws.getDuration()
                 setElapsedTime(ct)
 
+                const timeLeft = clipDuration - ct
+                let currentVol = 1
+                try { currentVol = ws.getVolume() } catch {}
+
+                if (timeLeft <= 1.0 && timeLeft > 0 && currentVol > 0.1 && !fadeIntervalRef.current) {
+                    fadeVolume(ws, 0, 1000)
+                }
+
                 if (ct >= clipDuration - 0.05) {
+                    if (fadeIntervalRef.current) {
+                        clearInterval(fadeIntervalRef.current)
+                        fadeIntervalRef.current = null
+                    }
                     ws.pause()
                     ws.seekTo(0)
                     setIsPlaying(false)
                     setIsPaused(false)
                     setProgress(0)
                     setElapsedTime(0)
+                    ws.setVolume(1) // reset
                     return
                 }
 
@@ -139,10 +181,15 @@ export function MemoryMusicPlayer({
 
             ws.on("finish", () => {
                 if (destroyed) return
+                if (fadeIntervalRef.current) {
+                    clearInterval(fadeIntervalRef.current)
+                    fadeIntervalRef.current = null
+                }
                 setIsPlaying(false)
                 setIsPaused(false)
                 setProgress(0)
                 setElapsedTime(0)
+                ws.setVolume(1)
             })
         }
 
@@ -150,6 +197,7 @@ export function MemoryMusicPlayer({
 
         return () => {
             destroyed = true
+            if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current)
             if (ws) {
                 try { ws.destroy() } catch {}
             }
@@ -163,31 +211,45 @@ export function MemoryMusicPlayer({
         const ws = wavesurferRef.current
         if (!ws) return
 
-        if (isPaused) {
-            // Resume from current position
-            ws.play()
-        } else {
-            // Fresh play from start
+        if (!isPaused) {
             ws.seekTo(0)
-            ws.play()
+            ws.setVolume(0)
         }
+        
+        if (fadeIntervalRef.current) {
+            clearInterval(fadeIntervalRef.current)
+            fadeIntervalRef.current = null
+        }
+
+        ws.play()
+        fadeVolume(ws, 1, 800)
         setIsPlaying(true)
         setIsPaused(false)
-    }, [isPaused])
+    }, [isPaused, fadeVolume])
 
     const handlePause = useCallback(() => {
         const ws = wavesurferRef.current
         if (!ws) return
-        ws.pause()
+        
         setIsPlaying(false)
         setIsPaused(true)
-    }, [])
+        fadeVolume(ws, 0, 600, () => {
+            ws.pause()
+        })
+    }, [fadeVolume])
 
     const handleStop = useCallback(() => {
         const ws = wavesurferRef.current
         if (!ws) return
+        
+        if (fadeIntervalRef.current) {
+            clearInterval(fadeIntervalRef.current)
+            fadeIntervalRef.current = null
+        }
+
         ws.pause()
         ws.seekTo(0)
+        ws.setVolume(1)
         setIsPlaying(false)
         setIsPaused(false)
         setProgress(0)

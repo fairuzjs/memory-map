@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect, useCallback } from "react"
-import { Music, Upload, X, Play, Pause, Square, Loader2, RotateCcw } from "lucide-react"
+import { Music, Upload, X, Play, Pause, Square, Loader2, RotateCcw, PencilLine } from "lucide-react"
 import toast from "react-hot-toast"
 
 export interface AudioClipData {
@@ -174,7 +174,7 @@ export function MusicUploader({ value, onChange, isPublic }: MusicUploaderProps)
             })
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [startTime, selectedDuration, uploadedData, waveformReady])
+    }, [startTime, selectedDuration, uploadedData, waveformReady, fileName])
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
@@ -335,13 +335,22 @@ export function MusicUploader({ value, onChange, isPublic }: MusicUploaderProps)
                 <div className="space-y-4">
                     {/* File Info Bar */}
                     <div className="flex items-center justify-between bg-black/30 rounded-xl px-4 py-3 border border-white/[0.05]">
-                        <div className="flex items-center gap-3 min-w-0">
+                        <div className="flex items-center gap-3 min-w-0 flex-1 mr-4">
                             <div className="w-9 h-9 rounded-lg bg-fuchsia-500/15 flex items-center justify-center shrink-0">
                                 <Music className="w-4 h-4 text-fuchsia-400" />
                             </div>
-                            <div className="min-w-0">
-                                <p className="text-sm font-medium text-neutral-200 truncate">{fileName}</p>
-                                <p className="text-xs text-neutral-500">
+                            <div className="min-w-0 flex-1 group/input">
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="text"
+                                        value={fileName}
+                                        onChange={(e) => setFileName(e.target.value)}
+                                        className="w-full bg-transparent border-b border-transparent focus:border-fuchsia-500/50 p-0 text-sm font-medium text-neutral-200 focus:ring-0 focus:outline-none transition-colors truncate"
+                                        placeholder="Nama lagu..."
+                                    />
+                                    <PencilLine className="w-3.5 h-3.5 text-neutral-500 shrink-0 opacity-0 group-hover/input:opacity-100 transition-opacity pointer-events-none" />
+                                </div>
+                                <p className="text-xs text-neutral-500 mt-0.5">
                                     {totalDuration > 0 ? `${formatTime(totalDuration)} total` : "Memuat..."}
                                     {isUploading && " · Uploading..."}
                                 </p>

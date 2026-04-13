@@ -21,8 +21,33 @@ export function PopupMiniPlayer({ audioUrl, startTime, duration, fileName }: Pop
     const [progress, setProgress] = useState(0)
     const [isPaused, setIsPaused] = useState(false)
     const audioRef = useRef<HTMLAudioElement | null>(null)
+    const fadeIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
     const endTime = startTime + duration
+
+    const fadeAudio = useCallback((audio: HTMLAudioElement, targetVolume: number, durationMs: number = 800, onComplete?: () => void) => {
+        if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current)
+        
+        const startVolume = audio.volume
+        const steps = 20
+        const stepTime = durationMs / steps
+        const volumeStep = (targetVolume - startVolume) / steps
+        let currentStep = 0
+
+        fadeIntervalRef.current = setInterval(() => {
+            currentStep++
+            const nextVol = startVolume + (volumeStep * currentStep)
+            audio.volume = Math.max(0, Math.min(1, nextVol))
+            
+            if (currentStep >= steps) {
+                if (fadeIntervalRef.current) {
+                    clearInterval(fadeIntervalRef.current)
+                    fadeIntervalRef.current = null
+                }
+                if (onComplete) onComplete()
+            }
+        }, stepTime)
+    }, [])
 
     // Create audio element
     useEffect(() => {
@@ -39,13 +64,24 @@ export function PopupMiniPlayer({ audioUrl, startTime, duration, fileName }: Pop
         const handleTimeUpdate = () => {
             if (!audio) return
             const ct = audio.currentTime
+            const timeLeft = endTime - ct
+
+            // Start fading out when 1 second is left
+            if (timeLeft <= 1.0 && timeLeft > 0 && audio.volume > 0.1 && !fadeIntervalRef.current) {
+                fadeAudio(audio, 0, 1000)
+            }
 
             if (ct >= endTime) {
+                if (fadeIntervalRef.current) {
+                    clearInterval(fadeIntervalRef.current)
+                    fadeIntervalRef.current = null
+                }
                 audio.pause()
                 audio.currentTime = startTime
                 setIsPlaying(false)
                 setIsPaused(false)
                 setProgress(0)
+                audio.volume = 1 // reset
                 return
             }
 
@@ -56,6 +92,7 @@ export function PopupMiniPlayer({ audioUrl, startTime, duration, fileName }: Pop
         audio.addEventListener("timeupdate", handleTimeUpdate)
 
         return () => {
+            if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current)
             audio.pause()
             audio.removeEventListener("timeupdate", handleTimeUpdate)
             audio.src = ""
@@ -71,16 +108,24 @@ export function PopupMiniPlayer({ audioUrl, startTime, duration, fileName }: Pop
         if (!audio) return
 
         if (isPlaying) {
-            // Pause
-            audio.pause()
+            // Fade out before pause
             setIsPlaying(false)
             setIsPaused(true)
+            fadeAudio(audio, 0, 600, () => {
+                audio.pause()
+            })
         } else {
-            // Play or resume
+            // Play or resume with fade in
             if (!isPaused) {
                 audio.currentTime = startTime
             }
+            if (fadeIntervalRef.current) {
+                clearInterval(fadeIntervalRef.current)
+                fadeIntervalRef.current = null
+            }
+            audio.volume = 0
             audio.play().catch(() => {})
+            fadeAudio(audio, 1, 800)
             setIsPlaying(true)
             setIsPaused(false)
         }
