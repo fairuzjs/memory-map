@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { motion, useInView, AnimatePresence } from "framer-motion"
-import { MapPin, Globe, BookOpen, Heart, ArrowRight, Loader2, Users, Star, Zap, Lock, Share2, UserPlus, PenLine, ImagePlus, Twitter, Instagram, Github, X, Menu, Mail, Phone, Send } from "lucide-react"
+import { MapPin, Globe, BookOpen, Heart, ArrowRight, Loader2, Users, Star, Zap, Lock, Share2, UserPlus, PenLine, ImagePlus, Twitter, Instagram, Github, X, Menu, Mail, Phone, Send, Smartphone, Bell, Construction, Activity, Shield, Clock, Server, Sparkles, Bug, Palette, GitBranch, MessageCircle, Headphones, Music, Coins, ChevronLeft, ChevronRight, Play, Pause, SkipForward, Volume2 } from "lucide-react"
 import { useSession } from "next-auth/react"
 import { useEffect, useState, useRef } from "react"
 import dynamic from "next/dynamic"
@@ -496,6 +496,35 @@ function HowItWorksTimeline() {
   )
 }
 
+// ─── Animated Counter ──────────────────────────────────────────────────────────
+function AnimatedCounter({ value, suffix = "" }: { value: number, suffix?: string }) {
+  const [displayValue, setDisplayValue] = useState(0)
+
+  useEffect(() => {
+    let startTime: number
+    const duration = 2000
+
+    const animate = (timestamp: number) => {
+      if (!startTime) startTime = timestamp
+      const progress = Math.min((timestamp - startTime) / duration, 1)
+      const easeOut = 1 - Math.pow(1 - progress, 4) // easeOutQuart
+
+      setDisplayValue(value * easeOut)
+
+      if (progress < 1) {
+        requestAnimationFrame(animate)
+      } else {
+        setDisplayValue(value)
+      }
+    }
+
+    requestAnimationFrame(animate)
+  }, [value])
+
+  const formatted = value % 1 !== 0 ? displayValue.toFixed(1) : Math.round(displayValue).toString()
+  return <>{formatted}{suffix}</>
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function LandingPage() {
   const { data: session } = useSession()
@@ -508,7 +537,45 @@ export default function LandingPage() {
   const [isChangelogOpen, setIsChangelogOpen] = useState(false)
   const [isContactOpen, setIsContactOpen] = useState(false)
   const [isBlogOpen, setIsBlogOpen] = useState(false)
+  const [isMobileAppOpen, setIsMobileAppOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
+  // Welcome popup states
+  const [isWelcomeOpen, setIsWelcomeOpen] = useState(false)
+  const [welcomeSlide, setWelcomeSlide] = useState(0)
+
+  // Show welcome popup unless user explicitly clicked "Jangan tampilkan" (valid for 1 hour)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const dontShowUntilStr = localStorage.getItem("mm_welcome_hide_until")
+      let shouldShow = true
+
+      if (dontShowUntilStr) {
+        const dontShowUntil = parseInt(dontShowUntilStr, 10)
+        if (Date.now() < dontShowUntil) {
+          shouldShow = false
+        } else {
+          localStorage.removeItem("mm_welcome_hide_until")
+        }
+      }
+
+      if (shouldShow) {
+        const timer = setTimeout(() => setIsWelcomeOpen(true), 1500)
+        return () => clearTimeout(timer)
+      }
+    }
+  }, [])
+
+  const closeWelcome = () => {
+    setIsWelcomeOpen(false)
+  }
+
+  const dontShowAgain = () => {
+    setIsWelcomeOpen(false)
+    // Hide for 1 hour
+    const oneHourFromNow = Date.now() + 60 * 60 * 1000
+    localStorage.setItem("mm_welcome_hide_until", oneHourFromNow.toString())
+  }
 
   // Smooth scroll logic
   const scrollToSection = (e: React.MouseEvent, id: string) => {
@@ -1094,7 +1161,7 @@ export default function LandingPage() {
                     <button onClick={(e) => scrollToSection(e, "map")} className="text-[14px] text-neutral-500 hover:text-indigo-400 transition-colors text-left">Jelajahi Peta</button>
                   </li>
                   <li>
-                    <a href="#" className="text-[14px] text-neutral-500 hover:text-indigo-400 transition-colors block">Aplikasi Mobile</a>
+                    <button onClick={(e) => { e.preventDefault(); setIsMobileAppOpen(true); }} className="text-[14px] text-neutral-500 hover:text-indigo-400 transition-colors block text-left">Aplikasi Mobile</button>
                   </li>
                 </ul>
               </div>
@@ -1271,11 +1338,17 @@ export default function LandingPage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-2xl max-h-[85vh] overflow-hidden rounded-2xl border border-white/10 shadow-2xl flex flex-col"
+              className="relative w-full max-w-3xl max-h-[90vh] overflow-hidden rounded-2xl border border-white/10 shadow-2xl flex flex-col"
               style={{ background: "rgba(12, 12, 22, 0.95)" }}
             >
+              {/* Header */}
               <div className="flex items-center justify-between p-6 border-b border-white/[0.06]">
-                <h3 className="text-xl font-bold text-white font-[Outfit]">Status Sistem & Changelog</h3>
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                    <Activity className="w-4.5 h-4.5 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-white font-[Outfit]">Status Sistem & Changelog</h3>
+                </div>
                 <button
                   onClick={() => setIsChangelogOpen(false)}
                   className="p-2 -mr-2 text-neutral-500 hover:text-white hover:bg-white/5 rounded-full transition-colors"
@@ -1284,68 +1357,161 @@ export default function LandingPage() {
                 </button>
               </div>
 
-              <div className="p-6 overflow-y-auto custom-scrollbar text-neutral-300 text-sm leading-relaxed space-y-6">
-                <div>
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="flex h-3 w-3 relative shrink-0">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+              {/* Content */}
+              <div className="p-6 overflow-y-auto custom-scrollbar">
+                {/* System Status Banner */}
+                <div className="relative overflow-hidden rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.06] p-5 mb-6">
+                  <div className="absolute top-0 right-0 w-32 h-32 pointer-events-none" style={{ background: "radial-gradient(circle at top right, rgba(52,211,153,0.15), transparent 70%)" }} />
+                  <div className="flex items-start gap-4">
+                    <div className="w-11 h-11 rounded-xl bg-emerald-500/15 flex items-center justify-center shrink-0 border border-emerald-500/20">
+                      <div className="relative">
+                        <span className="animate-ping absolute inset-0 rounded-full bg-emerald-400 opacity-40"></span>
+                        <Shield className="relative w-5 h-5 text-emerald-400" />
+                      </div>
                     </div>
-                    <span className="font-semibold text-emerald-400 text-base">Semua Sistem Berjalan Normal</span>
+                    <div>
+                      <h4 className="text-emerald-300 font-bold text-[15px] mb-1.5 font-[Outfit]">Semua Sistem Berjalan Normal</h4>
+                      <p className="text-neutral-400 text-sm leading-relaxed">
+                        Layanan MemoryMap saat ini beroperasi dengan lancar tanpa ada gangguan yang dilaporkan. Kami terus memantau performa sistem secara real-time.
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-neutral-400 mb-2">Layanan MemoryMap saat ini beroperasi dengan lancar tanpa ada gangguan yang dilaporkan. Kami terus memantau performa sistem secara real-time.</p>
                 </div>
-                
-                <div className="pt-6 border-t border-white/[0.06]">
-                  <h4 className="text-white font-bold text-lg mb-6 font-[Outfit]">Changelog Terbaru</h4>
-                  
-                  <div className="relative border-l border-white/10 ml-3 space-y-8 pb-4">
-                    {/* Item 0 */}
-                    <div className="relative pl-6">
-                      <div className="absolute w-3 h-3 bg-indigo-500 rounded-full -left-[6.5px] top-1.5 ring-4 ring-[#0c0c16]"></div>
-                      <span className="text-xs font-semibold text-indigo-400 mb-1 block uppercase tracking-wider">April 2026</span>
-                      <h5 className="text-white font-bold text-base mb-2">V2.2 - Sistem Memory Point</h5>
-                      <ul className="list-disc leading-relaxed pl-4 space-y-1.5 text-neutral-400 text-sm">
-                        <li>Integrasi fitur Exchange Memory Point untuk menukar poin.</li>
-                        <li>Peluncuran fitur Topup Memory Point secara manual.</li>
-                      </ul>
+
+                {/* Service Metrics Grid */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+                  {[
+                    { icon: Server, label: "Uptime", value: 99.9, isNumber: true, suffix: "%", color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/15" },
+                    { icon: Zap, label: "Respons", value: 42, isNumber: true, suffix: "ms", color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/15" },
+                    { icon: Globe, label: "API", value: "Aktif", isNumber: false, suffix: "", color: "text-sky-400", bg: "bg-sky-500/10", border: "border-sky-500/15" },
+                    { icon: Users, label: "Pengguna", value: "Online", isNumber: false, suffix: "", color: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/15" },
+                  ].map((metric, i) => {
+                    const Icon = metric.icon
+                    return (
+                      <div key={i} className={`p-3.5 rounded-xl border ${metric.border} bg-white/[0.02] text-center hover:bg-white/[0.04] transition-colors`}>
+                        <div className={`w-8 h-8 rounded-lg ${metric.bg} flex items-center justify-center mx-auto mb-2`}>
+                          <Icon className={`w-4 h-4 ${metric.color}`} />
+                        </div>
+                        <p className={`text-lg font-bold ${metric.color} font-[Outfit]`}>
+                          {metric.isNumber ? (
+                            <AnimatedCounter value={metric.value as number} suffix={metric.suffix} />
+                          ) : (
+                            metric.value
+                          )}
+                        </p>
+                        <p className="text-[11px] text-neutral-500 mt-0.5 uppercase tracking-wider font-medium">{metric.label}</p>
+                      </div>
+                    )
+                  })}
+                </div>
+
+                {/* Changelog Section */}
+                <div className="border-t border-white/[0.06] pt-6">
+                  <div className="flex items-center gap-2 mb-6">
+                    <GitBranch className="w-4.5 h-4.5 text-indigo-400" />
+                    <h4 className="text-white font-bold text-lg font-[Outfit]">Changelog Terbaru</h4>
+                  </div>
+
+                  <div className="space-y-4">
+                    {/* V2.2 - Latest */}
+                    <div className="relative overflow-hidden rounded-xl border border-indigo-500/20 bg-indigo-500/[0.04] p-5">
+                      <div className="absolute top-0 right-0 w-24 h-24 pointer-events-none" style={{ background: "radial-gradient(circle at top right, rgba(99,102,241,0.12), transparent 70%)" }} />
+                      <div className="flex items-center gap-2.5 mb-3">
+                        <span className="px-2.5 py-1 bg-indigo-500/20 text-indigo-300 text-[10px] font-bold rounded-full border border-indigo-500/25 uppercase tracking-wider">Terbaru</span>
+                        <span className="px-2.5 py-1 bg-white/[0.05] text-neutral-400 text-[10px] font-semibold rounded-full border border-white/[0.08] uppercase tracking-wider">v2.2</span>
+                        <span className="text-[11px] text-neutral-500 ml-auto">April 2026</span>
+                      </div>
+                      <h5 className="text-white font-bold text-[15px] mb-3 font-[Outfit]">Sistem Memory Point</h5>
+                      <div className="space-y-2">
+                        {[
+                          { icon: Sparkles, text: "Integrasi fitur Exchange Memory Point untuk menukar poin.", type: "Fitur Baru" },
+                          { icon: Sparkles, text: "Peluncuran fitur Topup Memory Point secara manual.", type: "Fitur Baru" },
+                          { icon: Music, text: "Menambahkan fitur upload musik pada kenangan untuk membuat momen lebih hidup.", type: "Fitur Baru" },
+                        ].map((item, i) => (
+                          <div key={i} className="flex items-start gap-2.5">
+                            <div className="w-5 h-5 rounded-md bg-indigo-500/15 flex items-center justify-center shrink-0 mt-0.5">
+                              <item.icon className="w-3 h-3 text-indigo-400" />
+                            </div>
+                            <span className="text-sm text-neutral-300 leading-relaxed">{item.text}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
 
-                    {/* Item 1 */}
-                    <div className="relative pl-6">
-                      <div className="absolute w-3 h-3 bg-neutral-600 rounded-full -left-[6.5px] top-1.5 ring-4 ring-[#0c0c16]"></div>
-                      <span className="text-xs font-semibold text-neutral-500 mb-1 block uppercase tracking-wider">Maret 2026</span>
-                      <h5 className="text-white font-bold text-base mb-2">V2.1 - Fitur Komunitas & Peningkatan Performa</h5>
-                      <ul className="list-disc leading-relaxed pl-4 space-y-1.5 text-neutral-400 text-sm">
-                        <li>Penambahan halaman jelajah secara real-time untuk melihat kenangan dari komunitas global.</li>
-                        <li>Optimasi kecepatan rendering peta interaktif hingga 30% lebih cepat pada perangkat mobile.</li>
-                        <li>Perbaikan bug minor terkait sinkronisasi data profil pengguna.</li>
-                      </ul>
+                    {/* V2.1 */}
+                    <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-5 hover:bg-white/[0.03] transition-colors">
+                      <div className="flex items-center gap-2.5 mb-3">
+                        <span className="px-2.5 py-1 bg-white/[0.05] text-neutral-400 text-[10px] font-semibold rounded-full border border-white/[0.08] uppercase tracking-wider">v2.1</span>
+                        <span className="text-[11px] text-neutral-500 ml-auto">Maret 2026</span>
+                      </div>
+                      <h5 className="text-white font-bold text-[15px] mb-3 font-[Outfit]">Fitur Komunitas & Peningkatan Performa</h5>
+                      <div className="space-y-2">
+                        {[
+                          { icon: Sparkles, text: "Penambahan halaman jelajah secara real-time untuk melihat kenangan dari komunitas global." },
+                          { icon: Zap, text: "Optimasi kecepatan rendering peta interaktif hingga 30% lebih cepat pada perangkat mobile." },
+                          { icon: Bug, text: "Perbaikan bug minor terkait sinkronisasi data profil pengguna." },
+                        ].map((item, i) => (
+                          <div key={i} className="flex items-start gap-2.5">
+                            <div className="w-5 h-5 rounded-md bg-white/[0.06] flex items-center justify-center shrink-0 mt-0.5">
+                              <item.icon className="w-3 h-3 text-neutral-500" />
+                            </div>
+                            <span className="text-sm text-neutral-400 leading-relaxed">{item.text}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
 
-                    {/* Item 2 */}
-                    <div className="relative pl-6">
-                      <div className="absolute w-3 h-3 bg-neutral-600 rounded-full -left-[6.5px] top-1.5 ring-4 ring-[#0c0c16]"></div>
-                      <span className="text-xs font-semibold text-neutral-500 mb-1 block uppercase tracking-wider">Februari 2026</span>
-                      <h5 className="text-white font-bold text-base mb-2">V2.0 - Desain Ulang Dashboard</h5>
-                      <ul className="list-disc leading-relaxed pl-4 space-y-1.5 text-neutral-400 text-sm">
-                        <li>Pembaruan antarmuka pengguna secara menyeluruh dengan elemen glassmorphism.</li>
-                        <li>Penambahan mode gelap cerdas (smart dark mode) dengan kontras yang disempurnakan.</li>
-                        <li>Peluncuran sistem filter canggih untuk memilah memori berdasarkan kategori.</li>
-                      </ul>
+                    {/* V2.0 */}
+                    <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-5 hover:bg-white/[0.03] transition-colors">
+                      <div className="flex items-center gap-2.5 mb-3">
+                        <span className="px-2.5 py-1 bg-white/[0.05] text-neutral-400 text-[10px] font-semibold rounded-full border border-white/[0.08] uppercase tracking-wider">v2.0</span>
+                        <span className="text-[11px] text-neutral-500 ml-auto">Februari 2026</span>
+                      </div>
+                      <h5 className="text-white font-bold text-[15px] mb-3 font-[Outfit]">Desain Ulang Dashboard</h5>
+                      <div className="space-y-2">
+                        {[
+                          { icon: Palette, text: "Pembaruan antarmuka pengguna secara menyeluruh dengan elemen glassmorphism." },
+                          { icon: Sparkles, text: "Penambahan mode gelap cerdas (smart dark mode) dengan kontras yang disempurnakan." },
+                          { icon: Sparkles, text: "Peluncuran sistem filter canggih untuk memilah memori berdasarkan kategori." },
+                        ].map((item, i) => (
+                          <div key={i} className="flex items-start gap-2.5">
+                            <div className="w-5 h-5 rounded-md bg-white/[0.06] flex items-center justify-center shrink-0 mt-0.5">
+                              <item.icon className="w-3 h-3 text-neutral-500" />
+                            </div>
+                            <span className="text-sm text-neutral-400 leading-relaxed">{item.text}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
 
-                    {/* Item 3 */}
-                    <div className="relative pl-6">
-                      <div className="absolute w-3 h-3 bg-neutral-600 rounded-full -left-[6.5px] top-1.5 ring-4 ring-[#0c0c16]"></div>
-                      <span className="text-xs font-semibold text-neutral-500 mb-1 block uppercase tracking-wider">Januari 2026</span>
-                      <h5 className="text-white font-bold text-base mb-2">V1.5 - Rilis Utama</h5>
-                      <ul className="list-disc leading-relaxed pl-4 space-y-1.5 text-neutral-400 text-sm">
-                        <li>Fitur penanda lokasi interaktif yang otomatis menyinkronkan zona waktu.</li>
-                        <li>Profil pengguna dasar beserta fitur Single Sign-On (SSO) Google terintegrasi.</li>
-                      </ul>
+                    {/* V1.5 */}
+                    <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-5 hover:bg-white/[0.03] transition-colors">
+                      <div className="flex items-center gap-2.5 mb-3">
+                        <span className="px-2.5 py-1 bg-white/[0.05] text-neutral-400 text-[10px] font-semibold rounded-full border border-white/[0.08] uppercase tracking-wider">v1.5</span>
+                        <span className="text-[11px] text-neutral-500 ml-auto">Januari 2026</span>
+                      </div>
+                      <h5 className="text-white font-bold text-[15px] mb-3 font-[Outfit]">Rilis Utama</h5>
+                      <div className="space-y-2">
+                        {[
+                          { icon: MapPin, text: "Fitur penanda lokasi interaktif yang otomatis menyinkronkan zona waktu." },
+                          { icon: Lock, text: "Profil pengguna dasar beserta fitur Single Sign-On (SSO) Google terintegrasi." },
+                        ].map((item, i) => (
+                          <div key={i} className="flex items-start gap-2.5">
+                            <div className="w-5 h-5 rounded-md bg-white/[0.06] flex items-center justify-center shrink-0 mt-0.5">
+                              <item.icon className="w-3 h-3 text-neutral-500" />
+                            </div>
+                            <span className="text-sm text-neutral-400 leading-relaxed">{item.text}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
+                </div>
+
+                {/* Footer Info */}
+                <div className="mt-6 p-4 rounded-xl border border-indigo-500/15 bg-indigo-500/[0.04] text-center">
+                  <p className="text-sm text-neutral-300 mb-1">Ada kendala atau saran?</p>
+                  <p className="text-xs text-neutral-500">Hubungi tim dukungan kami melalui halaman Kontak untuk melaporkan masalah atau memberikan masukan.</p>
                 </div>
               </div>
             </motion.div>
@@ -1365,11 +1531,17 @@ export default function LandingPage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-2xl max-h-[85vh] overflow-hidden rounded-2xl border border-white/10 shadow-2xl flex flex-col"
+              className="relative w-full max-w-3xl max-h-[90vh] overflow-hidden rounded-2xl border border-white/10 shadow-2xl flex flex-col"
               style={{ background: "rgba(12, 12, 22, 0.95)" }}
             >
+              {/* Header */}
               <div className="flex items-center justify-between p-6 border-b border-white/[0.06]">
-                <h3 className="text-xl font-bold text-white font-[Outfit]">Hubungi Kami</h3>
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center shadow-lg shadow-sky-500/20">
+                    <Headphones className="w-4.5 h-4.5 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-white font-[Outfit]">Hubungi Kami</h3>
+                </div>
                 <button
                   onClick={() => setIsContactOpen(false)}
                   className="p-2 -mr-2 text-neutral-500 hover:text-white hover:bg-white/5 rounded-full transition-colors"
@@ -1378,34 +1550,88 @@ export default function LandingPage() {
                 </button>
               </div>
 
-              <div className="p-6 overflow-y-auto custom-scrollbar text-neutral-300 text-sm leading-relaxed space-y-6">
-                <div>
-                  <p className="text-neutral-400 mb-6 text-base">Punya pertanyaan, masukkan, atau kendala terkait MemoryMap? Tim kami selalu siap membantu Anda. Silakan hubungi kami melalui salah satu saluran di bawah ini.</p>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Email Support */}
-                  <div className="relative p-5 rounded-2xl border border-white/[0.08] bg-white/[0.02] flex flex-col gap-3 group hover:bg-white/[0.04] transition-colors">
-                    <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition-all shadow-lg shadow-indigo-500/10">
-                      <Mail className="w-5 h-5" />
+              {/* Content */}
+              <div className="p-6 overflow-y-auto custom-scrollbar">
+                {/* Welcome Banner */}
+                <div className="relative overflow-hidden rounded-2xl border border-sky-500/20 bg-sky-500/[0.06] p-5 mb-6">
+                  <div className="absolute top-0 right-0 w-32 h-32 pointer-events-none" style={{ background: "radial-gradient(circle at top right, rgba(14,165,233,0.15), transparent 70%)" }} />
+                  <div className="flex items-start gap-4">
+                    <div className="w-11 h-11 rounded-xl bg-sky-500/15 flex items-center justify-center shrink-0 border border-sky-500/20">
+                      <MessageCircle className="w-5 h-5 text-sky-400" />
                     </div>
                     <div>
-                      <h4 className="text-white font-bold text-[15px] mb-1">Email Dukungan</h4>
-                      <a href="mailto:support@memorymap.app" className="text-indigo-400 hover:text-indigo-300 font-medium">support@memorymap.app</a>
+                      <h4 className="text-sky-300 font-bold text-[15px] mb-1.5 font-[Outfit]">Kami Siap Membantu Anda</h4>
+                      <p className="text-neutral-400 text-sm leading-relaxed">
+                        Punya pertanyaan, masukan, atau kendala terkait MemoryMap? Tim dukungan kami siap membantu melalui berbagai saluran komunikasi di bawah ini.
+                      </p>
                     </div>
-                    <p className="text-xs text-neutral-500 mt-1">Estimasi balasan: 1x24 Jam kerja</p>
                   </div>
+                </div>
 
-                  {/* Phone / WA */}
-                  <div className="relative p-5 rounded-2xl border border-white/[0.08] bg-white/[0.02] flex flex-col gap-3 group hover:bg-white/[0.04] transition-colors">
-                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white transition-all shadow-lg shadow-emerald-500/10">
-                      <Phone className="w-5 h-5" />
+                {/* Contact Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                  {/* Email Support */}
+                  <a href="mailto:support@memorymap.app" className="group relative overflow-hidden p-5 rounded-xl border border-indigo-500/15 bg-white/[0.02] hover:bg-indigo-500/[0.06] hover:border-indigo-500/25 transition-all cursor-pointer">
+                    <div className="absolute top-0 right-0 w-24 h-24 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "radial-gradient(circle at top right, rgba(99,102,241,0.12), transparent 70%)" }} />
+                    <div className="flex items-start gap-4">
+                      <div className="w-11 h-11 rounded-xl bg-indigo-500/10 flex items-center justify-center shrink-0 border border-indigo-500/15 group-hover:bg-indigo-500 group-hover:border-indigo-500 transition-all shadow-lg shadow-indigo-500/5 group-hover:shadow-indigo-500/20">
+                        <Mail className="w-5 h-5 text-indigo-400 group-hover:text-white transition-colors" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-white font-bold text-[15px] mb-1 font-[Outfit]">Email Dukungan</h4>
+                        <p className="text-indigo-400 text-sm font-medium truncate group-hover:text-indigo-300 transition-colors">support@memorymap.app</p>
+                        <div className="flex items-center gap-1.5 mt-2.5">
+                          <Clock className="w-3 h-3 text-neutral-500" />
+                          <span className="text-[11px] text-neutral-500">Balasan dalam 1x24 jam kerja</span>
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="text-white font-bold text-[15px] mb-1">Telepon / WhatsApp</h4>
-                      <span className="text-neutral-300">+62 858 8391 7835</span>
+                  </a>
+
+                  {/* WhatsApp */}
+                  <a href="https://wa.me/6285883917835" target="_blank" rel="noopener noreferrer" className="group relative overflow-hidden p-5 rounded-xl border border-emerald-500/15 bg-white/[0.02] hover:bg-emerald-500/[0.06] hover:border-emerald-500/25 transition-all cursor-pointer">
+                    <div className="absolute top-0 right-0 w-24 h-24 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "radial-gradient(circle at top right, rgba(52,211,153,0.12), transparent 70%)" }} />
+                    <div className="flex items-start gap-4">
+                      <div className="w-11 h-11 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0 border border-emerald-500/15 group-hover:bg-emerald-500 group-hover:border-emerald-500 transition-all shadow-lg shadow-emerald-500/5 group-hover:shadow-emerald-500/20">
+                        <Phone className="w-5 h-5 text-emerald-400 group-hover:text-white transition-colors" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-white font-bold text-[15px] mb-1 font-[Outfit]">WhatsApp</h4>
+                        <p className="text-emerald-400 text-sm font-medium group-hover:text-emerald-300 transition-colors">+62 858 8391 7835</p>
+                        <div className="flex items-center gap-1.5 mt-2.5">
+                          <Clock className="w-3 h-3 text-neutral-500" />
+                          <span className="text-[11px] text-neutral-500">Senin - Jumat, 09:00 - 17:00 WIB</span>
+                        </div>
+                      </div>
                     </div>
-                    <p className="text-xs text-neutral-500 mt-1">Senin - Jumat, 09:00 - 17:00 WIB</p>
+                  </a>
+                </div>
+
+                {/* Social Media Section */}
+                <div className="border-t border-white/[0.06] pt-6 mb-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Share2 className="w-4 h-4 text-violet-400" />
+                    <h4 className="text-white font-bold text-sm font-[Outfit] uppercase tracking-wider">Media Sosial</h4>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    {[
+                      { icon: Twitter, label: "Twitter", handle: "@memorymap_id", color: "text-sky-400", bg: "bg-sky-500/10", border: "border-sky-500/15", hoverBg: "hover:bg-sky-500/[0.08]" },
+                      { icon: Instagram, label: "Instagram", handle: "@memorymap.app", color: "text-pink-400", bg: "bg-pink-500/10", border: "border-pink-500/15", hoverBg: "hover:bg-pink-500/[0.08]" },
+                      { icon: Github, label: "GitHub", handle: "memorymap", color: "text-neutral-300", bg: "bg-white/[0.08]", border: "border-white/[0.1]", hoverBg: "hover:bg-white/[0.06]" },
+                    ].map((social, i) => {
+                      const Icon = social.icon
+                      return (
+                        <a key={i} href="#" className={`group flex flex-col items-center gap-2.5 p-4 rounded-xl border ${social.border} bg-white/[0.02] ${social.hoverBg} hover:border-opacity-40 transition-all text-center`}>
+                          <div className={`w-10 h-10 rounded-xl ${social.bg} flex items-center justify-center`}>
+                            <Icon className={`w-5 h-5 ${social.color}`} />
+                          </div>
+                          <div>
+                            <p className="text-xs font-bold text-white">{social.label}</p>
+                            <p className={`text-[11px] ${social.color} mt-0.5`}>{social.handle}</p>
+                          </div>
+                        </a>
+                      )
+                    })}
                   </div>
                 </div>
               </div>
@@ -1511,6 +1737,476 @@ export default function LandingPage() {
                 <div className="mt-8 flex justify-center">
                   <button className="px-5 py-2.5 rounded-xl border border-white/10 text-neutral-300 hover:text-white hover:bg-white/[0.05] transition-colors text-sm font-semibold flex items-center gap-2">
                     Muat Lebih Banyak Artikel <Loader2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {isMobileAppOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMobileAppOpen(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-3xl max-h-[90vh] overflow-hidden rounded-2xl border border-white/10 shadow-2xl flex flex-col"
+              style={{ background: "rgba(12, 12, 22, 0.95)" }}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between p-6 border-b border-white/[0.06]">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                    <Smartphone className="w-4.5 h-4.5 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-white font-[Outfit]">Aplikasi Mobile</h3>
+                </div>
+                <button
+                  onClick={() => setIsMobileAppOpen(false)}
+                  className="p-2 -mr-2 text-neutral-500 hover:text-white hover:bg-white/5 rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="p-6 overflow-y-auto custom-scrollbar">
+                {/* Under Development Banner */}
+                <div className="relative overflow-hidden rounded-2xl border border-amber-500/20 bg-amber-500/[0.06] p-5 mb-8">
+                  <div className="absolute top-0 right-0 w-32 h-32 pointer-events-none" style={{ background: "radial-gradient(circle at top right, rgba(245,158,11,0.15), transparent 70%)" }} />
+                  <div className="flex items-start gap-4">
+                    <div>
+                      <h4 className="text-amber-300 font-bold text-[15px] mb-1.5 font-[Outfit]">Sedang Dalam Tahap Pengembangan</h4>
+                      <p className="text-neutral-400 text-sm leading-relaxed">
+                        Aplikasi mobile MemoryMap saat ini sedang dalam proses pengembangan aktif oleh tim kami. Kami akan menghadirkan pengalaman terbaik dalam mengabadikan kenangan langsung dari genggaman tangan Anda.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Mobile Preview Section */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center mb-8">
+                  {/* Phone Mockup */}
+                  <div className="flex justify-center">
+                    <div className="relative">
+                      {/* Ambient glow behind phone */}
+                      <div className="absolute inset-0 bg-indigo-500/20 rounded-[3rem] blur-[60px] scale-90" />
+                      <div className="absolute inset-0 bg-violet-500/10 rounded-[3rem] blur-[80px] scale-75" />
+                      {/* Phone frame */}
+                      <div className="relative w-[240px] h-[490px] rounded-[2.5rem] border-[3px] border-white/[0.15] bg-[#0a0a14] shadow-2xl shadow-indigo-500/10 overflow-hidden">
+                        {/* Notch */}
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[100px] h-[28px] bg-[#0a0a14] rounded-b-2xl z-20 flex items-center justify-center">
+                          <div className="w-[50px] h-[5px] bg-white/10 rounded-full" />
+                        </div>
+                        {/* Screen content */}
+                        <div className="relative w-full h-full overflow-hidden">
+                          <img src="/mobile-preview.png" alt="MemoryMap Mobile Preview" className="w-full h-full object-cover" />
+                          {/* Overlay gradient */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a14] via-transparent to-[#0a0a14]/30" />
+                          {/* Status bar mockup */}
+                          <div className="absolute top-[32px] left-0 right-0 px-5 flex items-center justify-between z-10">
+                            <span className="text-[10px] text-white/70 font-semibold">9:41</span>
+                            <div className="flex items-center gap-1.5">
+                              <div className="w-3.5 h-2 border border-white/40 rounded-[2px] relative"><div className="absolute inset-[1px] right-[2px] bg-white/40 rounded-[1px]" /></div>
+                            </div>
+                          </div>
+                          {/* App header mockup */}
+                          <div className="absolute top-[54px] left-0 right-0 px-4 flex items-center justify-between z-10">
+                            <div className="flex items-center gap-2">
+                              <div className="w-6 h-6 rounded-lg bg-indigo-500 flex items-center justify-center">
+                                <MapPin className="w-3 h-3 text-white" />
+                              </div>
+                              <span className="text-[11px] font-bold text-white font-[Outfit]">MemoryMap</span>
+                            </div>
+                            <Bell className="w-3.5 h-3.5 text-white/50" />
+                          </div>
+                          {/* Bottom nav mockup */}
+                          <div className="absolute bottom-0 left-0 right-0 bg-[#0c0c16]/95 backdrop-blur-xl border-t border-white/[0.06] px-4 py-2.5 flex items-center justify-around z-10">
+                            <div className="flex flex-col items-center gap-0.5">
+                              <Globe className="w-4 h-4 text-indigo-400" />
+                              <span className="text-[8px] text-indigo-400 font-medium">Peta</span>
+                            </div>
+                            <div className="flex flex-col items-center gap-0.5">
+                              <BookOpen className="w-4 h-4 text-white/30" />
+                              <span className="text-[8px] text-white/30 font-medium">Jurnal</span>
+                            </div>
+                            <div className="w-10 h-10 -mt-5 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                              <span className="text-white text-lg font-bold">+</span>
+                            </div>
+                            <div className="flex flex-col items-center gap-0.5">
+                              <Heart className="w-4 h-4 text-white/30" />
+                              <span className="text-[8px] text-white/30 font-medium">Favorit</span>
+                            </div>
+                            <div className="flex flex-col items-center gap-0.5">
+                              <Users className="w-4 h-4 text-white/30" />
+                              <span className="text-[8px] text-white/30 font-medium">Profil</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* App Info */}
+                  <div className="space-y-6">
+                    <div>
+                      <h4 className="text-2xl font-bold text-white font-[Outfit] mb-3 leading-tight">
+                        Kenangan di 
+                        <span style={{ WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundImage: "linear-gradient(135deg, #818cf8 0%, #c084fc 100%)", backgroundClip: "text" }}> Genggamanmu</span>
+                      </h4>
+                      <p className="text-neutral-400 text-sm leading-relaxed">
+                        Nikmati semua fitur MemoryMap langsung dari smartphone. Tandai kenangan di mana pun, kapan pun, bahkan saat offline.
+                      </p>
+                    </div>
+
+                    {/* Feature highlights */}
+                    <div className="space-y-3">
+                      {[
+                        { icon: MapPin, text: "Tandai lokasi dengan GPS real-time", color: "text-indigo-400", bg: "bg-indigo-500/10" },
+                        { icon: ImagePlus, text: "Ambil foto langsung dari kamera", color: "text-violet-400", bg: "bg-violet-500/10" },
+                        { icon: Bell, text: "Notifikasi push untuk interaksi", color: "text-sky-400", bg: "bg-sky-500/10" },
+                        { icon: Zap, text: "Mode offline — simpan lalu sync", color: "text-amber-400", bg: "bg-amber-500/10" },
+                      ].map((feature, i) => {
+                        const Icon = feature.icon
+                        return (
+                          <div key={i} className="flex items-center gap-3 p-3 rounded-xl border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
+                            <div className={`w-8 h-8 rounded-lg ${feature.bg} flex items-center justify-center shrink-0`}>
+                              <Icon className={`w-4 h-4 ${feature.color}`} />
+                            </div>
+                            <span className="text-sm text-neutral-300">{feature.text}</span>
+                          </div>
+                        )
+                      })}
+                    </div>
+
+                    {/* Progress indicator */}
+                    <div className="p-4 rounded-xl border border-white/[0.06] bg-white/[0.02]">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-semibold text-neutral-300 uppercase tracking-wider">Progress Pengembangan</span>
+                        <span className="text-xs font-bold text-indigo-400">20%</span>
+                      </div>
+                      <div className="w-full h-2 bg-white/[0.06] rounded-full overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: "20%" }}
+                          transition={{ duration: 1.5, ease: "easeOut", delay: 0.3 }}
+                          className="h-full rounded-full"
+                          style={{ background: "linear-gradient(90deg, #6366f1, #8b5cf6, #a855f7)" }}
+                        />
+                      </div>
+                      <p className="text-[11px] text-neutral-500 mt-2">Estimasi rilis: Q4 2026</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Store Badges */}
+                <div className="border-t border-white/[0.06] pt-6">
+                  <p className="text-center text-neutral-500 text-sm mb-5">Segera tersedia di platform favoritmu</p>
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    {/* Google Play Store Badge */}
+                    <button className="group relative flex items-center gap-3 px-6 py-3.5 rounded-xl border border-white/[0.1] bg-white/[0.03] hover:bg-white/[0.06] hover:border-white/[0.18] transition-all w-full sm:w-auto">
+                      <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "linear-gradient(135deg, rgba(52,168,83,0.06), rgba(66,133,244,0.06))" }} />
+                      {/* Google Play Icon */}
+                      <svg className="w-8 h-8 shrink-0 relative z-10" viewBox="0 0 512 512" fill="none">
+                        <path d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.2 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z" fill="url(#play_gradient)"/>
+                        <defs>
+                          <linearGradient id="play_gradient" x1="25.3" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stopColor="#4285F4"/>
+                            <stop offset="25%" stopColor="#34A853"/>
+                            <stop offset="50%" stopColor="#FBBC04"/>
+                            <stop offset="100%" stopColor="#EA4335"/>
+                          </linearGradient>
+                        </defs>
+                      </svg>
+                      <div className="text-left relative z-10">
+                        <p className="text-[10px] text-neutral-500 uppercase tracking-wider leading-none">Segera di</p>
+                        <p className="text-[15px] font-bold text-white leading-tight mt-0.5">Google Play</p>
+                      </div>
+                    </button>
+
+                    {/* Apple App Store Badge */}
+                    <button className="group relative flex items-center gap-3 px-6 py-3.5 rounded-xl border border-white/[0.1] bg-white/[0.03] hover:bg-white/[0.06] hover:border-white/[0.18] transition-all w-full sm:w-auto">
+                      <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.04), rgba(200,200,200,0.04))" }} />
+                      {/* Apple Icon */}
+                      <svg className="w-8 h-8 shrink-0 relative z-10 text-white" viewBox="0 0 384 512" fill="currentColor">
+                        <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-27.1-46.8-42.3-83.6-45.8-35.3-3.5-73.8 20.6-88 20.6-15.2 0-48-19.4-73.4-19.4C76.4 140.5 0 186 0 273.5c0 26.2 4.8 53.3 14.4 81.2 12.8 36.9 59 127.2 107.2 125.7 25-0.6 42.7-18 75.3-18s46.3 18 77.8 17.4c49.1-0.8 89.7-82.3 101.9-119.3-65.2-30.7-96.9-90.4-97-91.8zM257.2 76.3c27.1-32.7 24.4-62.6 23.6-73.3-23.6 1.5-51 15.8-66.9 34.3-17.4 19.8-27.6 44.4-25.4 71.1 25.6 1.8 51.7-12.3 68.7-32.1z"/>
+                      </svg>
+                      <div className="text-left relative z-10">
+                        <p className="text-[10px] text-neutral-500 uppercase tracking-wider leading-none">Segera di</p>
+                        <p className="text-[15px] font-bold text-white leading-tight mt-0.5">App Store</p>
+                      </div>
+                    </button>
+                  </div>
+
+                  {/* Newsletter signup for mobile app */}
+                  <div className="mt-6 p-4 rounded-xl border border-indigo-500/15 bg-indigo-500/[0.04] text-center">
+                    <p className="text-sm text-neutral-300 mb-1">Ingin jadi yang pertama tahu saat aplikasi rilis?</p>
+                    <p className="text-xs text-neutral-500">Ikuti akun sosial media kami untuk mendapatkan notifikasi peluncuran terbaru.</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {isWelcomeOpen && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={closeWelcome}
+              className="absolute inset-0 bg-black/70 backdrop-blur-md"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 30 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 30 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-white/[0.12] shadow-2xl flex flex-col"
+              style={{ background: "linear-gradient(180deg, rgba(14,14,24,0.98), rgba(8,8,16,0.99))" }}
+            >
+              {/* Top accent line */}
+              <div className="h-[2px] w-full" style={{ background: "linear-gradient(90deg, transparent, #818cf8, #c084fc, #818cf8, transparent)" }} />
+
+              {/* Header */}
+              <div className="flex items-center justify-between px-6 pt-5 pb-3">
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-indigo-500/30 rounded-xl blur-lg" />
+                    <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/25">
+                      <Sparkles className="w-5 h-5 text-white" />
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-white font-[Outfit] leading-tight">Yang Baru di MemoryMap</h3>
+                    <p className="text-[11px] text-neutral-500 mt-0.5">Fitur terbaru untuk pengalamanmu</p>
+                  </div>
+                </div>
+                <button
+                  onClick={closeWelcome}
+                  className="p-2 -mr-1 text-neutral-500 hover:text-white hover:bg-white/5 rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Slide content */}
+              <div className="px-6 pb-2 overflow-hidden">
+                <AnimatePresence mode="wait">
+                  {welcomeSlide === 0 && (
+                    <motion.div
+                      key="slide-0"
+                      initial={{ opacity: 0, x: 60 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -60 }}
+                      transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+                    >
+                      {/* Slide 1: Upload Music */}
+                      <div className="relative overflow-hidden rounded-2xl border border-fuchsia-500/20 bg-fuchsia-500/[0.04] p-5 mb-4">
+                        <div className="absolute top-0 right-0 w-40 h-40 pointer-events-none" style={{ background: "radial-gradient(circle at top right, rgba(217,70,239,0.12), transparent 70%)" }} />
+
+                        {/* Music Player Mockup */}
+                        <div className="relative rounded-xl border border-white/[0.08] bg-[#0c0c16]/80 p-4 mb-4 overflow-hidden">
+                          <div className="absolute inset-0 opacity-30" style={{ background: "linear-gradient(135deg, rgba(217,70,239,0.15), rgba(99,102,241,0.1), transparent)" }} />
+                          <div className="relative flex items-center gap-4">
+                            {/* Album art mockup */}
+                            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-fuchsia-500 to-violet-600 flex items-center justify-center shadow-lg shadow-fuchsia-500/20 shrink-0">
+                              <Music className="w-7 h-7 text-white" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-bold text-white truncate">The 1975 - About You</p>
+                              <p className="text-[11px] text-neutral-500 mt-0.5">Matthew Healy, George Daniel</p>
+                              {/* Progress bar mockup */}
+                              <div className="mt-2.5 w-full h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
+                                <motion.div
+                                  initial={{ width: "0%" }}
+                                  animate={{ width: "62%" }}
+                                  transition={{ duration: 2, ease: "easeOut", delay: 0.5 }}
+                                  className="h-full rounded-full"
+                                  style={{ background: "linear-gradient(90deg, #d946ef, #8b5cf6)" }}
+                                />
+                              </div>
+                              <div className="flex items-center justify-between mt-1">
+                                <span className="text-[9px] text-neutral-600">2:14</span>
+                                <span className="text-[9px] text-neutral-600">3:42</span>
+                              </div>
+                            </div>
+                          </div>
+                          {/* Controls */}
+                          <div className="relative flex items-center justify-center gap-5 mt-3">
+                            <SkipForward className="w-4 h-4 text-neutral-600 rotate-180" />
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-fuchsia-500 to-violet-600 flex items-center justify-center shadow-lg shadow-fuchsia-500/30">
+                              <Play className="w-4.5 h-4.5 text-white ml-0.5" />
+                            </div>
+                            <SkipForward className="w-4 h-4 text-neutral-600" />
+                          </div>
+                        </div>
+
+                        <div className="relative">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="px-2 py-0.5 bg-fuchsia-500/20 text-fuchsia-300 text-[10px] font-bold rounded-full border border-fuchsia-500/25 uppercase tracking-wider">Baru</span>
+                            <span className="text-[11px] text-neutral-500">v2.2</span>
+                          </div>
+                          <h4 className="text-white font-bold text-lg font-[Outfit] mb-1.5 leading-tight">Upload Musik</h4>
+                          <p className="text-neutral-400 text-sm leading-relaxed">
+                            Kini kamu bisa menambahkan lagu ke setiap kenanganmu. Upload musik favoritmu dan biarkan musik menghidupkan kembali momen-momen berharga itu.
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {welcomeSlide === 1 && (
+                    <motion.div
+                      key="slide-1"
+                      initial={{ opacity: 0, x: 60 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -60 }}
+                      transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+                    >
+                      {/* Slide 2: Exchange Memory Points */}
+                      <div className="relative overflow-hidden rounded-2xl border border-amber-500/20 bg-amber-500/[0.04] p-5 mb-4">
+                        <div className="absolute top-0 right-0 w-40 h-40 pointer-events-none" style={{ background: "radial-gradient(circle at top right, rgba(245,158,11,0.12), transparent 70%)" }} />
+
+                        {/* Shop/Exchange Mockup */}
+                        <div className="relative rounded-xl border border-white/[0.08] bg-[#0c0c16]/80 p-4 mb-4 overflow-hidden">
+                          <div className="absolute inset-0 opacity-30" style={{ background: "linear-gradient(135deg, rgba(245,158,11,0.15), rgba(234,88,12,0.08), transparent)" }} />
+                          
+                          {/* Balance */}
+                          <div className="relative flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 rounded-lg bg-amber-500/15 flex items-center justify-center border border-amber-500/20">
+                                <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
+                              </div>
+                              <div>
+                                <p className="text-[10px] text-neutral-500 uppercase tracking-wider">Saldo Poin</p>
+                                <p className="text-base font-bold text-amber-400 font-[Outfit] leading-tight">2.500 MP</p>
+                              </div>
+                            </div>
+                            <div className="px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                              <span className="text-[10px] font-bold text-amber-300 uppercase tracking-wider">Topup</span>
+                            </div>
+                          </div>
+
+                          {/* Item cards mockup */}
+                          <div className="relative grid grid-cols-3 gap-2">
+                            {[
+                              { name: "Bingkai Neon", price: "500", gradient: "from-indigo-500 to-violet-600", icon: "✨" },
+                              { name: "Banner Sunset", price: "800", gradient: "from-rose-500 to-orange-500", icon: "🌅" },
+                              { name: "Tema Galaxy", price: "1.2rb", gradient: "from-purple-500 to-blue-600", icon: "🌌" },
+                            ].map((item, i) => (
+                              <div key={i} className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-2 text-center">
+                                <div className={`w-full h-10 rounded-lg bg-gradient-to-br ${item.gradient} flex items-center justify-center mb-1.5 text-lg`}>
+                                  {item.icon}
+                                </div>
+                                <p className="text-[9px] font-bold text-white truncate">{item.name}</p>
+                                <div className="flex items-center justify-center gap-0.5 mt-0.5">
+                                  <Star className="w-2 h-2 text-amber-400 fill-amber-400" />
+                                  <span className="text-[8px] font-bold text-amber-400">{item.price}</span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="relative">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="px-2 py-0.5 bg-amber-500/20 text-amber-300 text-[10px] font-bold rounded-full border border-amber-500/25 uppercase tracking-wider">Baru</span>
+                            <span className="text-[11px] text-neutral-500">v2.2</span>
+                          </div>
+                          <h4 className="text-white font-bold text-lg font-[Outfit] mb-1.5 leading-tight">Exchange Memory Points</h4>
+                          <p className="text-neutral-400 text-sm leading-relaxed">
+                            Tukarkan Memory Point-mu dengan dekorasi profil eksklusif! Bingkai avatar, banner profil, tema kartu, dan masih banyak item premium lainnya.
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Footer with navigation */}
+              <div className="px-6 pb-6 pt-2">
+                {/* Dot indicators */}
+                <div className="flex items-center justify-center gap-2 mb-4">
+                  {[0, 1].map((i) => (
+                    <button
+                      key={i}
+                      onClick={() => setWelcomeSlide(i)}
+                      className="transition-all"
+                    >
+                      <motion.div
+                        animate={{
+                          width: welcomeSlide === i ? 24 : 8,
+                          backgroundColor: welcomeSlide === i ? (i === 0 ? "#d946ef" : "#f59e0b") : "rgba(255,255,255,0.15)",
+                        }}
+                        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                        className="h-2 rounded-full"
+                      />
+                    </button>
+                  ))}
+                </div>
+
+                {/* Navigation buttons */}
+                <div className="flex items-center gap-3">
+                  {welcomeSlide === 0 ? (
+                    <>
+                      <button
+                        onClick={closeWelcome}
+                        className="flex-1 py-3 rounded-xl text-sm font-semibold text-neutral-400 border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.05] transition-all"
+                      >
+                        Lewati
+                      </button>
+                      <button
+                        onClick={() => setWelcomeSlide(1)}
+                        className="flex-1 py-3 rounded-xl text-sm font-bold text-white relative overflow-hidden group"
+                        style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
+                      >
+                        <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "linear-gradient(135deg, #818cf8, #a78bfa)" }} />
+                        <span className="relative flex items-center justify-center gap-1.5">
+                          Selanjutnya
+                          <ChevronRight className="w-4 h-4" />
+                        </span>
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => setWelcomeSlide(0)}
+                        className="w-11 h-11 shrink-0 rounded-xl flex items-center justify-center text-neutral-400 border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.05] transition-all"
+                      >
+                        <ChevronLeft className="w-4.5 h-4.5" />
+                      </button>
+                      <button
+                        onClick={closeWelcome}
+                        className="flex-1 py-3 rounded-xl text-sm font-bold text-white relative overflow-hidden group"
+                        style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
+                      >
+                        <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "linear-gradient(135deg, #818cf8, #a78bfa)" }} />
+                        <span className="relative flex items-center justify-center gap-1.5">
+                          Mulai Jelajahi
+                          <ArrowRight className="w-4 h-4" />
+                        </span>
+                      </button>
+                    </>
+                  )}
+                </div>
+
+                {/* Don't show again link */}
+                <div className="mt-4 text-center">
+                  <button 
+                    onClick={dontShowAgain}
+                    className="text-[11px] font-medium text-neutral-500 hover:text-white transition-colors underline-offset-2 hover:underline"
+                  >
+                    Jangan tampilkan lagi
                   </button>
                 </div>
               </div>

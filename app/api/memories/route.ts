@@ -167,7 +167,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Invalid data", details: result.error.flatten() }, { status: 400 })
         }
 
-        const { photos, tags, date, collaborators, ...data } = result.data
+        const { photos, tags, date, collaborators, audio, ...data } = result.data
 
         // Buat memory dalam transaction sekaligus dengan collaborators + notifikasi
         const memory = await prisma.$transaction(async (tx) => {
@@ -184,7 +184,16 @@ export async function POST(req: Request) {
                             where: { name: tag },
                             create: { name: tag }
                         })) || []
-                    }
+                    },
+                    // Audio clip data
+                    ...(audio ? {
+                        audioUrl: audio.url,
+                        audioBucket: audio.bucket,
+                        audioPath: audio.path,
+                        audioStartTime: audio.startTime,
+                        audioDuration: audio.duration,
+                        audioFileName: audio.fileName,
+                    } : {}),
                 },
                 include: {
                     photos: true,

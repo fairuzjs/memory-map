@@ -46,6 +46,15 @@ export const memorySchema = z.object({
     photos: z.array(z.any()).optional(), // array of anything (we will store rich objects and stringify before sending)
     tags: z.array(z.string()).optional(),
     collaborators: z.array(z.string()).max(5, { message: "Maximum 5 collaborators allowed" }).optional().default([]),
+    // Audio clip fields (optional)
+    audio: z.object({
+        url: z.string(),
+        bucket: z.string(),
+        path: z.string(),
+        startTime: z.number().min(0),
+        duration: z.number().refine(v => [10, 15, 30].includes(v)),
+        fileName: z.string(),
+    }).optional().nullable(),
 })
 
 export type LoginInput = z.infer<typeof loginSchema>

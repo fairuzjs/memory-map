@@ -90,6 +90,14 @@ model Memory {
   notifications     Notification[]
   collaborators     MemoryCollaborator[]
   stickerPlacements MemoryStickerPlacement[]
+
+  // Audio clip fields
+  audioUrl       String?   // URL file MP3 di Supabase Storage
+  audioBucket    String?   // "public_uploads" / "private_uploads"
+  audioPath      String?   // Storage path untuk management
+  audioStartTime Float?    // Detik mulai clip
+  audioDuration  Int?      // Durasi clip dalam detik (10, 15, atau 30)
+  audioFileName  String?   // Nama file asli untuk display
 }
 
 enum Emotion {

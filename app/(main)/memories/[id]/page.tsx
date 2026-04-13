@@ -15,6 +15,7 @@ import { Comments } from "@/components/memories/Comments"
 import { ReportDialog } from "@/components/ui/ReportDialog"
 import { StickerLayer, StickerPlacement } from "@/components/memories/StickerLayer"
 import { StickerPanel } from "@/components/memories/StickerPanel"
+import { MemoryMusicPlayer } from "@/components/memories/MemoryMusicPlayer"
 
 export default function MemoryDetailPage() {
     const { id } = useParams()
@@ -26,6 +27,14 @@ export default function MemoryDetailPage() {
     const [lightbox, setLightbox] = useState<string | null>(null)
     const [placements, setPlacements] = useState<StickerPlacement[]>([])
     const [showStickerPanel, setShowStickerPanel] = useState(false)
+    const [isMobile, setIsMobile] = useState(false)
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 1024)
+        handleResize()
+        window.addEventListener("resize", handleResize)
+        return () => window.removeEventListener("resize", handleResize)
+    }, [])
 
     useEffect(() => {
         fetch(`/api/memories/${id}`)
@@ -34,14 +43,12 @@ export default function MemoryDetailPage() {
                 return res.json()
             })
             .then(data => {
-                // Parse photo URLs if they are JSON strings
                 if (data.photos) {
                     data.photos = data.photos.map((p: any) => {
                         try {
                             const parsed = JSON.parse(p.url)
                             return { ...p, url: parsed.url || parsed.path, bucket: parsed.bucket }
                         } catch {
-                            // Legacy raw string fallback
                             return p
                         }
                     })
@@ -54,7 +61,6 @@ export default function MemoryDetailPage() {
                 router.push("/memories")
             })
 
-        // Load sticker placements
         fetch(`/api/memories/${id}/stickers`)
             .then(r => r.json())
             .then(data => { if (Array.isArray(data)) setPlacements(data) })
@@ -93,8 +99,10 @@ export default function MemoryDetailPage() {
         return (
             <div className="flex-1 flex items-center justify-center min-h-[60vh]">
                 <div className="flex flex-col items-center gap-3">
-                    <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
-                    <p className="text-sm text-neutral-500 animate-pulse">Memuat kenangan...</p>
+                    <Loader2 className="w-7 h-7 text-indigo-500 animate-spin" />
+                    <p className="text-xs tracking-widest uppercase text-neutral-600 animate-pulse">
+                        Memuat kenangan...
+                    </p>
                 </div>
             </div>
         )
@@ -103,14 +111,15 @@ export default function MemoryDetailPage() {
     const isOwner = session?.user?.id === memory?.userId || session?.user?.role === "ADMIN"
     const heroPhoto = memory.photos?.[0]
     const galleryPhotos = memory.photos?.slice(1) || []
+    const allPhotos = memory.photos || []
     const formattedDate = new Date(memory.date).toLocaleDateString("en-US", {
         year: "numeric", month: "long", day: "numeric"
     })
 
     return (
-        <div className="w-full pb-20">
+        <div className="w-full pb-24 bg-[#0a0a0f]">
 
-            {/* ─── HERO SECTION ─────────────────────────────────── */}
+            {/* ─── HERO — Single Photo ──────────────────────────── */}
             <div className="relative w-full h-[70vh] min-h-[420px] max-h-[680px] overflow-hidden bg-neutral-900">
 
                 {/* Background image */}
@@ -130,11 +139,11 @@ export default function MemoryDetailPage() {
                     <div className="absolute inset-0 bg-gradient-to-br from-indigo-950 via-neutral-900 to-violet-950" />
                 )}
 
-                {/* Gradient overlay — bottom heavy for text legibility */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent" />
+                {/* Gradient overlays */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] via-black/50 to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent pointer-events-none" />
 
-                {/* ─── Sticker Layer ─── */}
+                {/* Sticker Layer */}
                 <StickerLayer
                     memoryId={memory.id}
                     memoryDate={memory.date}
@@ -144,13 +153,13 @@ export default function MemoryDetailPage() {
                     onPlacementDelete={handleStickerDelete}
                 />
 
-                {/* Top bar — back button + action buttons */}
+                {/* ── Top action bar ── */}
                 <div className="absolute top-0 left-0 right-0 px-5 md:px-10 py-5 flex items-center justify-between z-10">
                     <button
                         onClick={() => router.back()}
-                        className="flex items-center gap-2 text-white/70 hover:text-white transition-colors group backdrop-blur-sm bg-black/20 border border-white/10 rounded-full px-4 py-2 text-sm font-medium"
+                        className="flex items-center gap-2 text-white/60 hover:text-white transition-colors group backdrop-blur-md bg-white/5 border border-white/10 rounded-full px-4 py-2 text-sm"
                     >
-                        <ArrowLeft className="w-4 h-4 transform group-hover:-translate-x-1 transition-transform" />
+                        <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
                         Kembali
                     </button>
 
@@ -159,19 +168,19 @@ export default function MemoryDetailPage() {
                             <>
                                 <button
                                     onClick={() => setShowStickerPanel(true)}
-                                    className="flex items-center gap-2 text-white/70 hover:text-amber-300 transition-colors backdrop-blur-sm bg-black/20 border border-white/10 rounded-full px-4 py-2 text-sm font-medium"
+                                    className="flex items-center gap-1.5 text-white/60 hover:text-amber-300 transition-colors backdrop-blur-md bg-white/5 border border-white/10 rounded-full px-4 py-2 text-sm"
                                     title="Tambah Stiker"
                                 >
                                     <Sticker className="w-3.5 h-3.5" />
                                     <span className="hidden sm:inline">Stiker</span>
                                     {placements.length > 0 && (
-                                        <span className="w-4 h-4 rounded-full bg-amber-400/20 border border-amber-400/40 text-[10px] font-black text-amber-300 flex items-center justify-center">
+                                        <span className="w-4 h-4 rounded-full bg-amber-400/20 border border-amber-400/40 text-[10px] font-bold text-amber-300 flex items-center justify-center">
                                             {placements.length}
                                         </span>
                                     )}
                                 </button>
                                 <Link href={`/memories/${id}/edit`}>
-                                    <button className="flex items-center gap-2 text-white/70 hover:text-indigo-300 transition-colors backdrop-blur-sm bg-black/20 border border-white/10 rounded-full px-4 py-2 text-sm font-medium">
+                                    <button className="flex items-center gap-1.5 text-white/60 hover:text-indigo-300 transition-colors backdrop-blur-md bg-white/5 border border-white/10 rounded-full px-4 py-2 text-sm">
                                         <Edit className="w-3.5 h-3.5" />
                                         Edit
                                     </button>
@@ -179,7 +188,7 @@ export default function MemoryDetailPage() {
                                 <button
                                     onClick={handleDelete}
                                     disabled={isDeleting}
-                                    className="flex items-center gap-2 text-white/70 hover:text-red-400 transition-colors backdrop-blur-sm bg-black/20 border border-white/10 rounded-full px-4 py-2 text-sm font-medium disabled:opacity-50"
+                                    className="flex items-center gap-1.5 text-white/60 hover:text-red-400 transition-colors backdrop-blur-md bg-white/5 border border-white/10 rounded-full px-4 py-2 text-sm disabled:opacity-40"
                                 >
                                     <Trash2 className="w-3.5 h-3.5" />
                                     {isDeleting ? "Menghapus..." : "Hapus"}
@@ -187,46 +196,46 @@ export default function MemoryDetailPage() {
                             </>
                         )}
                         {!isOwner && session?.user && (
-                            <div className="backdrop-blur-sm bg-black/20 border border-white/10 rounded-full px-1 py-1">
+                            <div className="backdrop-blur-md bg-white/5 border border-white/10 rounded-full px-1 py-1">
                                 <ReportDialog memoryId={memory.id} />
                             </div>
                         )}
                     </div>
                 </div>
 
-                {/* Hero content — bottom left */}
-                <div className="absolute bottom-0 left-0 right-0 px-5 md:px-14 pb-10 z-10">
-                    {/* Tags / visibility badge */}
+                {/* ── Hero content — bottom left ── */}
+                <div className="absolute bottom-0 left-0 px-5 md:px-12 pb-10 z-10 max-w-2xl">
+                    {/* Badges */}
                     <div className="flex items-center gap-2 mb-4">
-                        <span className={`inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest px-3 py-1 rounded-full border ${memory.isPublic
-                            ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
-                            : "bg-neutral-700/40 border-neutral-600/40 text-neutral-400"
+                        <span className={`inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.1em] px-3 py-1 rounded-full border ${memory.isPublic
+                            ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-400"
+                            : "bg-white/5 border-white/10 text-neutral-400"
                             }`}>
-                            {memory.isPublic ? <Globe className="w-3 h-3" /> : <Lock className="w-3 h-3" />}
+                            {memory.isPublic ? <Globe className="w-2.5 h-2.5" /> : <Lock className="w-2.5 h-2.5" />}
                             {memory.isPublic ? "Publik" : "Privat"}
                         </span>
-                        {galleryPhotos.length > 0 && (
-                            <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest px-3 py-1 rounded-full border bg-black/30 border-white/10 text-neutral-300">
-                                <Images className="w-3 h-3" />
-                                {galleryPhotos.length + 1} Foto
+                        {allPhotos.length > 0 && (
+                            <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.1em] px-3 py-1 rounded-full border bg-white/5 border-white/10 text-neutral-400">
+                                <Images className="w-2.5 h-2.5" />
+                                {allPhotos.length} Foto
                             </span>
                         )}
                     </div>
 
                     {/* Title */}
-                    <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold font-[Outfit] text-white leading-tight tracking-tight max-w-4xl drop-shadow-2xl mb-5">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold font-[Outfit] text-white leading-[1.08] tracking-tight mb-5 drop-shadow-lg">
                         {memory.title}
                     </h1>
 
-                    {/* Meta row */}
-                    <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-white/60 font-medium">
-                        <span className="flex items-center gap-2">
-                            <Calendar className="w-4 h-4 text-indigo-400" />
+                    {/* Meta */}
+                    <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[13px] text-white/50">
+                        <span className="flex items-center gap-1.5">
+                            <Calendar className="w-3.5 h-3.5 text-indigo-400" />
                             {formattedDate}
                         </span>
                         {memory.locationName && (
-                            <span className="flex items-center gap-2">
-                                <MapPin className="w-4 h-4 text-violet-400" />
+                            <span className="flex items-center gap-1.5">
+                                <MapPin className="w-3.5 h-3.5 text-violet-400" />
                                 {memory.locationName}
                             </span>
                         )}
@@ -235,55 +244,63 @@ export default function MemoryDetailPage() {
             </div>
 
             {/* ─── MAIN CONTENT ─────────────────────────────────── */}
-            <div className="max-w-6xl mx-auto px-4 md:px-8 mt-10">
+            <div className="max-w-[1120px] mx-auto px-4 md:px-8 mt-12">
                 <div className="flex flex-col lg:flex-row gap-10 lg:gap-14">
 
-                    {/* ── LEFT / STORY COLUMN (2/3) ── */}
+                    {/* ── LEFT / STORY COLUMN ── */}
                     <main className="flex-1 min-w-0">
 
-                        {/* Author Card */}
+                        {/* Author strip — slim & inline */}
                         <Link
                             href={`/profile/${memory.user.id}`}
-                            className="flex items-center gap-4 mb-10 p-4 rounded-2xl bg-neutral-900/60 border border-neutral-800/60 hover:border-indigo-500/40 hover:bg-neutral-900/80 transition-all group w-fit"
+                            className="flex items-center gap-3 mb-9 group w-fit"
                         >
                             <div className="relative shrink-0">
                                 <img
                                     src={memory.user.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${memory.user.id}`}
                                     alt={memory.user.name}
-                                    className="w-12 h-12 rounded-full border-2 border-neutral-700 group-hover:border-indigo-500 transition-colors object-cover bg-neutral-800"
+                                    className="w-10 h-10 rounded-full border border-neutral-700/80 group-hover:border-indigo-500/60 transition-colors object-cover bg-neutral-800"
                                 />
-                                <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-neutral-900" />
+                                <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-[#0a0a0f]" />
                             </div>
                             <div>
-                                <p className="font-semibold text-neutral-100 group-hover:text-indigo-400 transition-colors flex items-center gap-1.5 text-sm">
+                                <p className="text-[13px] font-semibold text-neutral-200 group-hover:text-indigo-400 transition-colors flex items-center gap-1">
                                     {memory.user.name}
-                                    <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-60 transition-opacity" />
+                                    <ExternalLink className="w-2.5 h-2.5 opacity-0 group-hover:opacity-50 transition-opacity" />
                                 </p>
-                                <p className="text-xs text-neutral-500 mt-0.5">
+                                <p className="text-[11px] text-neutral-600 mt-0.5">
                                     {memory.isPublic ? "Dibagikan publik" : "Kenangan privat"} · {formattedDate}
                                 </p>
                             </div>
                         </Link>
 
                         {/* Story / Prose */}
-                        <div className="prose prose-invert max-w-none text-neutral-300 leading-relaxed space-y-5 text-[1.0625rem] font-sans mb-10
-                            prose-p:text-neutral-300 prose-p:leading-[1.85] prose-p:text-[1.0625rem]">
+                        <div className="text-neutral-400 leading-[1.9] text-[1.0rem] font-sans mb-12 space-y-5">
                             {memory.story.split("\n").map((para: string, i: number) => (
                                 para.trim() ? <p key={i}>{para}</p> : <br key={i} />
                             ))}
                         </div>
 
-                        {/* Reactions Bar */}
-                        <div className="mb-10 bg-neutral-900/60 border border-neutral-800/60 rounded-2xl px-5 py-4">
-                            <p className="text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-3">Reaksi</p>
-                            <Reactions memoryId={memory.id} initialReactions={memory.reactions || []} />
-                        </div>
+                        {/* Music Player — MOBILE ONLY (above gallery) */}
+                        {memory.audioUrl && isMobile && (
+                            <div className="mb-10 lg:hidden">
+                                <MemoryMusicPlayer
+                                    audioUrl={memory.audioUrl}
+                                    startTime={memory.audioStartTime || 0}
+                                    duration={memory.audioDuration || 15}
+                                    fileName={memory.audioFileName || "Audio"}
+                                    autoPlay={true}
+                                />
+                            </div>
+                        )}
 
-                        {/* Photo Gallery */}
+                        {/* Photo Gallery — only secondary photos */}
                         {galleryPhotos.length > 0 && (
-                            <div className="mb-10">
-                                <p className="text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-4">Galeri</p>
-                                <div className={`grid gap-3 ${galleryPhotos.length === 1 ? "grid-cols-1" :
+                            <div className="mb-12">
+                                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-neutral-600 mb-4">
+                                    Galeri Foto
+                                </p>
+                                <div className={`grid gap-2 ${galleryPhotos.length === 1 ? "grid-cols-1" :
                                     galleryPhotos.length === 2 ? "grid-cols-2" :
                                         galleryPhotos.length === 3 ? "grid-cols-3" :
                                             "grid-cols-2 md:grid-cols-3"
@@ -292,75 +309,106 @@ export default function MemoryDetailPage() {
                                         <button
                                             key={photo.id}
                                             onClick={() => setLightbox(photo.url)}
-                                            className={`group relative overflow-hidden rounded-2xl border border-neutral-800 hover:border-indigo-500/50 transition-all ${idx === 0 && galleryPhotos.length >= 4 ? "col-span-2 row-span-2 aspect-square" : "aspect-square"
+                                            className={`group relative overflow-hidden rounded-xl border border-neutral-800/80 hover:border-indigo-500/40 transition-all ${idx === 0 && galleryPhotos.length >= 4 ? "col-span-2 row-span-2 aspect-square" : "aspect-square"
                                                 }`}
                                         >
                                             <img
                                                 src={photo.url}
                                                 alt=""
-                                                className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                                                className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-500"
                                             />
-                                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
+                                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-colors" />
                                         </button>
                                     ))}
                                 </div>
                             </div>
                         )}
 
+                        {/* Reactions */}
+                        <div className="mb-10 bg-white/[0.03] border border-white/[0.06] rounded-2xl px-5 py-4">
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-neutral-600 mb-3">
+                                Reaksi
+                            </p>
+                            <Reactions memoryId={memory.id} initialReactions={memory.reactions || []} />
+                        </div>
+
                         {/* Comments */}
                         <Comments memoryId={memory.id} initialComments={memory.comments || []} />
                     </main>
 
-                    {/* ── RIGHT / SIDEBAR (1/3) ── */}
-                    <aside className="w-full lg:w-72 xl:w-80 shrink-0">
-                        <div className="lg:sticky lg:top-24 space-y-4">
+                    {/* ── RIGHT / SIDEBAR ── */}
+                    <aside className="w-full lg:w-[280px] xl:w-[300px] shrink-0">
+                        <div className="lg:sticky lg:top-24 space-y-3">
+
+                            {/* Music Player — DESKTOP ONLY (sidebar) */}
+                            {memory.audioUrl && !isMobile && (
+                                <div className="hidden lg:block relative overflow-hidden rounded-2xl border border-white/[0.07] bg-[#13111e]">
+                                        <MemoryMusicPlayer
+                                            audioUrl={memory.audioUrl}
+                                            startTime={memory.audioStartTime || 0}
+                                            duration={memory.audioDuration || 15}
+                                            fileName={memory.audioFileName || "Audio"}
+                                            autoPlay={true}
+                                        />
+                                </div>
+                            )}
 
                             {/* Memory Info Card */}
-                            <div className="bg-neutral-900/60 border border-neutral-800/60 rounded-2xl p-5">
-                                <p className="text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-4">Detail Kenangan</p>
-                                <ul className="space-y-3">
+                            <div className="bg-[#13111e] border border-white/[0.07] rounded-2xl p-5">
+                                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-neutral-600 mb-5">
+                                    Detail Kenangan
+                                </p>
+                                <ul className="space-y-4">
                                     <li className="flex items-start gap-3">
-                                        <Calendar className="w-4 h-4 text-indigo-400 mt-0.5 shrink-0" />
+                                        <div className="w-7 h-7 rounded-lg bg-indigo-500/10 flex items-center justify-center shrink-0 mt-0.5">
+                                            <Calendar className="w-3.5 h-3.5 text-indigo-400" />
+                                        </div>
                                         <div>
-                                            <p className="text-[11px] text-neutral-500 uppercase tracking-wider font-medium">Tanggal</p>
-                                            <p className="text-sm text-neutral-200 font-medium">{formattedDate}</p>
+                                            <p className="text-[10px] text-neutral-600 uppercase tracking-wider font-medium mb-0.5">Tanggal</p>
+                                            <p className="text-[13px] text-neutral-300">{formattedDate}</p>
                                         </div>
                                     </li>
                                     {memory.locationName && (
                                         <li className="flex items-start gap-3">
-                                            <MapPin className="w-4 h-4 text-violet-400 mt-0.5 shrink-0" />
+                                            <div className="w-7 h-7 rounded-lg bg-violet-500/10 flex items-center justify-center shrink-0 mt-0.5">
+                                                <MapPin className="w-3.5 h-3.5 text-violet-400" />
+                                            </div>
                                             <div>
-                                                <p className="text-[11px] text-neutral-500 uppercase tracking-wider font-medium">Lokasi</p>
-                                                <p className="text-sm text-neutral-200 font-medium">{memory.locationName}</p>
+                                                <p className="text-[10px] text-neutral-600 uppercase tracking-wider font-medium mb-0.5">Lokasi</p>
+                                                <p className="text-[13px] text-neutral-300">{memory.locationName}</p>
                                             </div>
                                         </li>
                                     )}
                                     <li className="flex items-start gap-3">
-                                        {memory.isPublic
-                                            ? <Globe className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
-                                            : <Lock className="w-4 h-4 text-neutral-400 mt-0.5 shrink-0" />
-                                        }
+                                        <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${memory.isPublic ? "bg-emerald-500/10" : "bg-neutral-700/30"}`}>
+                                            {memory.isPublic
+                                                ? <Globe className="w-3.5 h-3.5 text-emerald-400" />
+                                                : <Lock className="w-3.5 h-3.5 text-neutral-500" />
+                                            }
+                                        </div>
                                         <div>
-                                            <p className="text-[11px] text-neutral-500 uppercase tracking-wider font-medium">Visibilitas</p>
-                                            <p className="text-sm text-neutral-200 font-medium">{memory.isPublic ? "Publik" : "Privat"}</p>
+                                            <p className="text-[10px] text-neutral-600 uppercase tracking-wider font-medium mb-0.5">Visibilitas</p>
+                                            <p className="text-[13px] text-neutral-300">{memory.isPublic ? "Publik" : "Privat"}</p>
                                         </div>
                                     </li>
                                     {memory.photos?.length > 0 && (
                                         <li className="flex items-start gap-3">
-                                            <Images className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" />
+                                            <div className="w-7 h-7 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0 mt-0.5">
+                                                <Images className="w-3.5 h-3.5 text-amber-400" />
+                                            </div>
                                             <div>
-                                                <p className="text-[11px] text-neutral-500 uppercase tracking-wider font-medium">Foto</p>
-                                                <p className="text-sm text-neutral-200 font-medium">{memory.photos.length} terlampir</p>
+                                                <p className="text-[10px] text-neutral-600 uppercase tracking-wider font-medium mb-0.5">Foto</p>
+                                                <p className="text-[13px] text-neutral-300">{memory.photos.length} terlampir</p>
                                             </div>
                                         </li>
                                     )}
                                 </ul>
                             </div>
 
-                            {/* Collaborators Card — hanya tampil jika ada kolaborator yang accepted */}
+                            {/* Collaborators Card */}
                             {memory.collaborators && memory.collaborators.length > 0 && (
-                                <div className="bg-neutral-900/60 border border-neutral-800/60 rounded-2xl p-5">
-                                    <p className="text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-4">
+                                <div className="bg-[#13111e] border border-white/[0.07] rounded-2xl p-5">
+                                    <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-neutral-600 mb-4">
                                         Bersama ({memory.collaborators.length})
                                     </p>
                                     <div className="space-y-3">
@@ -373,9 +421,9 @@ export default function MemoryDetailPage() {
                                                 <img
                                                     src={collab.user.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${collab.user.id}`}
                                                     alt={collab.user.name}
-                                                    className="w-9 h-9 rounded-full border border-neutral-700 group-hover:border-violet-500 transition-colors object-cover bg-neutral-800 shrink-0"
+                                                    className="w-8 h-8 rounded-full border border-neutral-700/80 group-hover:border-violet-500/60 transition-colors object-cover bg-neutral-800 shrink-0"
                                                 />
-                                                <p className="text-sm font-medium text-neutral-300 group-hover:text-violet-400 transition-colors truncate">
+                                                <p className="text-[13px] text-neutral-400 group-hover:text-violet-400 transition-colors truncate">
                                                     {collab.user.name}
                                                 </p>
                                             </Link>
@@ -384,18 +432,20 @@ export default function MemoryDetailPage() {
                                 </div>
                             )}
 
-                            {/* Map Preview — if lat/lng exist */}
+                            {/* Map Preview */}
                             {memory.latitude && memory.longitude && (
-                                <div className="bg-neutral-900/60 border border-neutral-800/60 rounded-2xl overflow-hidden">
+                                <div className="bg-[#13111e] border border-white/[0.07] rounded-2xl overflow-hidden">
                                     <div className="px-5 pt-4 pb-3">
-                                        <p className="text-xs font-semibold uppercase tracking-widest text-neutral-500">Lokasi pada Peta</p>
+                                        <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-neutral-600">
+                                            Lokasi pada Peta
+                                        </p>
                                     </div>
                                     <iframe
                                         title="Memory location"
                                         width="100%"
-                                        height="180"
+                                        height="170"
                                         loading="lazy"
-                                        className="grayscale opacity-80"
+                                        className="grayscale opacity-60 hover:opacity-80 transition-opacity"
                                         src={`https://maps.google.com/maps?q=${memory.latitude},${memory.longitude}&z=13&output=embed&hl=en`}
                                     />
                                 </div>
@@ -408,18 +458,18 @@ export default function MemoryDetailPage() {
             {/* ─── LIGHTBOX ─────────────────────────────────────── */}
             {lightbox && (
                 <div
-                    className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 cursor-zoom-out"
+                    className="fixed inset-0 z-50 bg-black/95 backdrop-blur-sm flex items-center justify-center p-4 cursor-zoom-out"
                     onClick={() => setLightbox(null)}
                 >
                     <div className="relative max-w-5xl max-h-full" onClick={e => e.stopPropagation()}>
                         <img
                             src={lightbox}
                             alt=""
-                            className="max-w-full max-h-[90vh] rounded-2xl object-contain shadow-2xl"
+                            className="max-w-full max-h-[90vh] rounded-xl object-contain"
                         />
                         <button
                             onClick={() => setLightbox(null)}
-                            className="absolute -top-4 -right-4 w-9 h-9 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center text-neutral-400 hover:text-white transition-colors text-lg font-bold"
+                            className="absolute -top-3.5 -right-3.5 w-8 h-8 rounded-full bg-neutral-800 border border-neutral-700/80 flex items-center justify-center text-neutral-400 hover:text-white transition-colors text-base"
                         >
                             ×
                         </button>

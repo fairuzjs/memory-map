@@ -59,7 +59,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         const result = memorySchema.safeParse(body)
         if (!result.success) return NextResponse.json({ error: "Invalid data", details: result.error.flatten() }, { status: 400 })
 
-        const { photos, tags, date, collaborators, ...data } = result.data
+        const { photos, tags, date, collaborators, audio, ...data } = result.data
 
         await prisma.photo.deleteMany({ where: { memoryId: id } })
 
@@ -76,7 +76,14 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
                         where: { name: tag },
                         create: { name: tag }
                     })) || []
-                }
+                },
+                // Audio clip data — clear if null/undefined
+                audioUrl: audio?.url ?? null,
+                audioBucket: audio?.bucket ?? null,
+                audioPath: audio?.path ?? null,
+                audioStartTime: audio?.startTime ?? null,
+                audioDuration: audio?.duration ?? null,
+                audioFileName: audio?.fileName ?? null,
             },
             include: { photos: true, tags: true }
         })

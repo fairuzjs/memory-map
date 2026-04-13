@@ -56,6 +56,7 @@ export async function GET(req: Request) {
         const page = parseInt(searchParams.get("page") ?? "1")
         const limit = parseInt(searchParams.get("limit") ?? "20")
         const skip = (page - 1) * limit
+        const search = searchParams.get("search")
 
         const isAdmin = session.user.role === "ADMIN"
 
@@ -63,6 +64,10 @@ export async function GET(req: Request) {
         const where: Record<string, unknown> = isAdmin
             ? status ? { status } : {}
             : { userId: session.user.id, ...(status ? { status } : {}) }
+
+        if (search) {
+            where.id = { contains: search }
+        }
 
         const [orders, total] = await Promise.all([
             prisma.topupOrder.findMany({

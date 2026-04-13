@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import {
     Zap, Star, ChevronRight, Sparkles, ShieldCheck,
     Clock, Loader2, Coins, ArrowLeft, CheckCircle2,
-    XCircle, History, ExternalLink, RefreshCw
+    XCircle, History, ExternalLink, RefreshCw, Search, X
 } from "lucide-react"
 import Link from "next/link"
 import toast from "react-hot-toast"
@@ -87,6 +87,14 @@ export default function TopupPage() {
     const [hasMore, setHasMore] = useState(false)
     const HISTORY_LIMIT = 5
 
+    const [searchInput, setSearchInput] = useState("")
+    const [searchQuery, setSearchQuery] = useState("")
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault()
+        setSearchQuery(searchInput)
+    }
+
     useEffect(() => {
         if (status === "unauthenticated") {
             router.push("/login")
@@ -101,7 +109,12 @@ export default function TopupPage() {
         if (append) setLoadingMore(true)
         else setHistoryLoading(true)
         try {
-            const res = await fetch(`/api/topup?page=${page}&limit=${HISTORY_LIMIT}`)
+            const params = new URLSearchParams()
+            params.set("page", page.toString())
+            params.set("limit", HISTORY_LIMIT.toString())
+            if (searchQuery) params.set("search", searchQuery)
+
+            const res = await fetch(`/api/topup?${params.toString()}`)
             if (!res.ok) return
             const data = await res.json()
             const newOrders: HistoryOrder[] = data.orders ?? []
@@ -113,7 +126,7 @@ export default function TopupPage() {
             setHistoryLoading(false)
             setLoadingMore(false)
         }
-    }, [])
+    }, [searchQuery])
 
     useEffect(() => {
         if (status === "authenticated") fetchHistory()
@@ -364,6 +377,35 @@ export default function TopupPage() {
                                     <RefreshCw className={`w-3.5 h-3.5 ${historyLoading ? "animate-spin" : ""}`} />
                                 </button>
                             </div>
+
+                            {/* Search Bar */}
+                            <form onSubmit={handleSearch} className="mb-4 relative">
+                                <Search className="w-4 h-4 text-neutral-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                                <input
+                                    type="text"
+                                    value={searchInput}
+                                    onChange={(e) => {
+                                        setSearchInput(e.target.value)
+                                        if (e.target.value === "") {
+                                            setSearchQuery("")
+                                        }
+                                    }}
+                                    placeholder="Cari ID Order..."
+                                    className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl py-2.5 pl-10 pr-10 text-sm text-white placeholder:text-neutral-500 focus:outline-none focus:border-amber-400/50 focus:bg-white/[0.05] transition-all"
+                                />
+                                {searchInput && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setSearchInput("")
+                                            setSearchQuery("")
+                                        }}
+                                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-300 transition-colors p-1"
+                                    >
+                                        <X className="w-4 h-4" />
+                                    </button>
+                                )}
+                            </form>
 
                             {/* History List */}
                             <div

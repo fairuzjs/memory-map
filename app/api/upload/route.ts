@@ -8,8 +8,10 @@ const supabase = createClient(
 )
 
 // Konfigurasi Validasi File
-const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
-const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"]
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024 // 5MB
+const MAX_AUDIO_SIZE = 4 * 1024 * 1024 // 4MB
+const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"]
+const ALLOWED_AUDIO_TYPES = ["audio/mpeg"]
 
 export async function POST(req: Request) {
   try {
@@ -28,14 +30,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 })
     }
 
-    // SECURITY CHECK 3: Hanya Izinkan Image
-    if (!ALLOWED_MIME_TYPES.includes(file.type)) {
-      return NextResponse.json({ error: "Invalid file type. Only JPG, PNG, WEBP, and GIF are allowed." }, { status: 400 })
+    // SECURITY CHECK 3: Hanya Izinkan Image atau Audio
+    const isImage = ALLOWED_IMAGE_TYPES.includes(file.type)
+    const isAudio = ALLOWED_AUDIO_TYPES.includes(file.type)
+    if (!isImage && !isAudio) {
+      return NextResponse.json({ error: "Invalid file type. Only JPG, PNG, WEBP, GIF, and MP3 are allowed." }, { status: 400 })
     }
 
-    // SECURITY CHECK 4: Batasi Ukuran File (5MB)
-    if (file.size > MAX_FILE_SIZE) {
-      return NextResponse.json({ error: "File size exceeds 5MB limit" }, { status: 400 })
+    // SECURITY CHECK 4: Batasi Ukuran File (5MB image, 4MB audio)
+    const maxSize = isAudio ? MAX_AUDIO_SIZE : MAX_IMAGE_SIZE
+    if (file.size > maxSize) {
+      return NextResponse.json({ error: `File size exceeds ${isAudio ? "4MB" : "5MB"} limit` }, { status: 400 })
     }
 
     // SECURITY CHECK 5: Gunakan Nama File Acak (UUID) untuk mencegah directory traversal / tebakan nama

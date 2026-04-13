@@ -6,8 +6,9 @@ import "leaflet/dist/leaflet.css"
 import { createEmotionIcon, setupLeafletDefaultIcon } from "./MapIcons"
 import MarkerClusterGroup from "./MarkerClusterGroup"
 import Link from "next/link"
-import { Calendar, MapPin, Search, Loader2 } from "lucide-react"
+import { Calendar, MapPin, Search, Loader2, Music } from "lucide-react"
 import { StickerRenderer, StickerConfig } from "@/components/memories/StickerRenderer"
+import { PopupMiniPlayer } from "@/components/memories/PopupMiniPlayer"
 
 interface MapViewProps {
     memories: any[]
@@ -287,6 +288,16 @@ export default function MapView({ memories }: MapViewProps) {
                                                 >
                                                     {memory.story}
                                                 </p>
+
+                                                {/* Mini music player */}
+                                                {memory.audioUrl && (
+                                                    <PopupMiniPlayer
+                                                        audioUrl={memory.audioUrl}
+                                                        startTime={memory.audioStartTime || 0}
+                                                        duration={memory.audioDuration || 15}
+                                                        fileName={memory.audioFileName || "Audio"}
+                                                    />
+                                                )}
 
                                                 <div
                                                     className="flex items-center justify-between py-3"

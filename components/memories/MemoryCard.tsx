@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { MapPin, Calendar, Heart, MessageCircle, Users } from "lucide-react"
+import { MapPin, Calendar, Heart, MessageCircle, Users, Music } from "lucide-react"
 import { StickerRenderer, StickerConfig } from "./StickerRenderer"
 
 interface MemoryCardProps {
@@ -122,6 +122,13 @@ export function MemoryCard({ memory, isCollaboration, placements = [] }: MemoryC
                         <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-violet-600/90 backdrop-blur-sm border border-violet-400/30 shadow-lg">
                             <Users className="w-3 h-3 text-white" />
                             <span className="text-[11px] font-bold text-white tracking-wide">Collab</span>
+                        </div>
+                    )}
+
+                    {/* Music badge */}
+                    {memory.audioUrl && (
+                        <div className="absolute top-3 left-3 z-10 flex items-center gap-1 px-2 py-1 rounded-full bg-fuchsia-600/85 backdrop-blur-sm border border-fuchsia-400/30 shadow-lg" title="Memiliki musik">
+                            <Music className="w-3 h-3 text-white" />
                         </div>
                     )}
                 </div>
