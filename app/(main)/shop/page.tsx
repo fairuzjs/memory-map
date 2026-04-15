@@ -79,6 +79,90 @@ const ALL_TYPES: ItemType[] = [
 
 const NON_EQUIPPABLE: ItemType[] = ["MEMORY_STICKER", "PREMIUM_FEATURE"]
 
+// ─── Tier System ───────────────────────────────────────────────────────────────
+
+type TierName = "BASIC" | "ELITE" | "EPIC" | "LEGEND"
+
+const TIER_CONFIG: Record<TierName, {
+    label: string
+    icon: string
+    color: string
+    glow: string
+    bg: string
+    border: string
+    shimmer: string
+}> = {
+    BASIC: {
+        label: "Basic",
+        icon: "◆",
+        color: "#94a3b8",
+        glow: "rgba(148,163,184,0.25)",
+        bg: "rgba(148,163,184,0.08)",
+        border: "rgba(148,163,184,0.2)",
+        shimmer: "#cbd5e1",
+    },
+    ELITE: {
+        label: "Elite",
+        icon: "◈",
+        color: "#818cf8",
+        glow: "rgba(99,102,241,0.3)",
+        bg: "rgba(99,102,241,0.1)",
+        border: "rgba(99,102,241,0.25)",
+        shimmer: "#a5b4fc",
+    },
+    EPIC: {
+        label: "Epic",
+        icon: "✦",
+        color: "#f472b6",
+        glow: "rgba(236,72,153,0.35)",
+        bg: "rgba(236,72,153,0.1)",
+        border: "rgba(236,72,153,0.25)",
+        shimmer: "#f9a8d4",
+    },
+    LEGEND: {
+        label: "Legend",
+        icon: "★",
+        color: "#fbbf24",
+        glow: "rgba(245,158,11,0.4)",
+        bg: "rgba(245,158,11,0.1)",
+        border: "rgba(245,158,11,0.3)",
+        shimmer: "#fde68a",
+    },
+}
+
+function getTier(price: number): TierName {
+    if (price <= 100) return "BASIC"
+    if (price <= 175) return "ELITE"
+    if (price <= 275) return "EPIC"
+    return "LEGEND"
+}
+
+function TierBadge({ price, size = "sm" }: { price: number; size?: "sm" | "md" }) {
+    const tier = getTier(price)
+    const cfg = TIER_CONFIG[tier]
+    const isLegend = tier === "LEGEND"
+
+    return (
+        <span
+            className="inline-flex items-center gap-0.5 font-black uppercase tracking-wider relative overflow-hidden"
+            style={{
+                fontSize: size === "md" ? "10px" : "9px",
+                padding: size === "md" ? "3px 8px" : "2px 6px",
+                borderRadius: "6px",
+                background: isLegend
+                    ? "linear-gradient(135deg, rgba(251,191,36,0.18), rgba(245,158,11,0.08))"
+                    : cfg.bg,
+                border: `1px solid ${cfg.border}`,
+                color: cfg.color,
+                boxShadow: isLegend ? `0 0 8px -2px ${cfg.glow}` : "none",
+            }}
+        >
+            <span style={{ fontSize: size === "md" ? "9px" : "8px" }}>{cfg.icon}</span>
+            {cfg.label}
+        </span>
+    )
+}
+
 function getDecorationClass(name?: string) {
     if (!name) return ""
     const n = name.toLowerCase()
@@ -107,7 +191,7 @@ function CardThemePreview({ value }: { value: string }) {
     try { theme = JSON.parse(value) } catch { }
     return (
         <div
-            className="relative w-full h-28 rounded-xl overflow-hidden flex flex-col justify-end"
+            className="relative w-full h-full rounded-xl overflow-hidden flex flex-col justify-end"
             style={{
                 background: theme?.background ?? "#11111a",
                 border: theme?.border ?? "1px solid rgba(255,255,255,0.08)",
@@ -131,7 +215,7 @@ function CardThemePreview({ value }: { value: string }) {
 function BannerPreview({ value }: { value: string }) {
     return (
         <div
-            className="w-full h-16 rounded-xl overflow-hidden relative"
+            className="w-full h-full rounded-xl overflow-hidden relative"
             style={{ background: value }}
         >
             <div className="absolute inset-0 opacity-[0.06]"
@@ -144,7 +228,7 @@ function BannerPreview({ value }: { value: string }) {
 
 function FramePreview({ value }: { value: string }) {
     return (
-        <div className="flex items-center justify-center py-3">
+        <div className="flex items-center justify-center">
             <div className="relative w-16 h-16">
                 <div className="absolute -inset-1 rounded-full p-[2px]" style={{ background: value }}>
                     <div className="w-full h-full rounded-full" style={{ background: "rgba(14,14,24,1)" }} />
@@ -164,7 +248,7 @@ function DecorationPreview({ item }: { item: ShopItem }) {
     let style: React.CSSProperties = {}
     try { style = JSON.parse(item.value) } catch { }
     return (
-        <div className="flex items-center justify-center py-3">
+        <div className="flex items-center justify-center">
             <span
                 className={`text-xl font-black ${getDecorationClass(item.name)}`}
                 style={style}
@@ -182,7 +266,7 @@ function StickerPreview({ item }: { item: ShopItem }) {
     try { cfg = JSON.parse(item.value) } catch { }
     if (!cfg) return <div className="w-10 h-10 rounded-xl" style={{ background: item.previewColor ?? "#6366f1" }} />
     return (
-        <div className="flex items-center justify-center py-3" style={{ transform: `rotate(${cfg.defaultRotation}deg)` }}>
+        <div className="flex items-center justify-center" style={{ transform: `rotate(${cfg.defaultRotation}deg)` }}>
             <StickerRenderer config={cfg} />
         </div>
     )
@@ -191,7 +275,7 @@ function StickerPreview({ item }: { item: ShopItem }) {
 
 function PremiumFeaturePreview({ item }: { item: ShopItem }) {
     return (
-        <div className="flex items-center justify-center py-3">
+        <div className="flex items-center justify-center">
             <div className="relative">
                 <div className="absolute inset-0 bg-[#1DB954]/20 rounded-xl blur-lg" />
                 <div
@@ -301,17 +385,19 @@ function ShopCard({
                 </div>
             )}
 
-            {/* Preview area */}
+            {/* Preview area — fixed height so all cards align */}
             <div
-                className="px-4 pt-4 pb-2 cursor-pointer"
+                className="px-4 pt-4 pb-2 cursor-pointer h-32 flex items-center justify-center"
                 onClick={() => onPreview(item)}
             >
-                {item.type === "AVATAR_FRAME"        && <FramePreview value={item.value} />}
-                {item.type === "PROFILE_BANNER"      && <BannerPreview value={item.value} />}
-                {item.type === "MEMORY_CARD_THEME"   && <CardThemePreview value={item.value} />}
-                {item.type === "USERNAME_DECORATION" && <DecorationPreview item={item} />}
-                {item.type === "MEMORY_STICKER"      && <StickerPreview item={item} />}
-                {item.type === "PREMIUM_FEATURE"     && <PremiumFeaturePreview item={item} />}
+                <div className="w-full h-full flex items-center justify-center">
+                    {item.type === "AVATAR_FRAME"        && <FramePreview value={item.value} />}
+                    {item.type === "PROFILE_BANNER"      && <BannerPreview value={item.value} />}
+                    {item.type === "MEMORY_CARD_THEME"   && <CardThemePreview value={item.value} />}
+                    {item.type === "USERNAME_DECORATION" && <DecorationPreview item={item} />}
+                    {item.type === "MEMORY_STICKER"      && <StickerPreview item={item} />}
+                    {item.type === "PREMIUM_FEATURE"     && <PremiumFeaturePreview item={item} />}
+                </div>
             </div>
 
             {/* Type badge pill */}
@@ -335,7 +421,10 @@ function ShopCard({
             {/* Info */}
             <div className="px-4 pb-4 flex flex-col gap-3 flex-1">
                 <div>
-                    <p className="text-sm font-bold text-white leading-tight">{item.name}</p>
+                    <div className="flex items-center justify-between gap-2 mb-0.5">
+                        <p className="text-sm font-bold text-white leading-tight flex-1 min-w-0 truncate">{item.name}</p>
+                        <TierBadge price={item.price} size="sm" />
+                    </div>
                     <p className="text-[11px] text-neutral-600 mt-0.5 leading-relaxed line-clamp-2">{item.description}</p>
                 </div>
 
@@ -480,9 +569,12 @@ function ShopPreviewModal({
                             <TypeIcon className="w-4 h-4" style={{ color: color.text }} />
                         </div>
                         <div>
-                            <p className="text-xs font-bold uppercase tracking-wider" style={{ color: color.text }}>
-                                {TYPE_LABELS[item.type]}
-                            </p>
+                            <div className="flex items-center gap-2">
+                                <p className="text-xs font-bold uppercase tracking-wider" style={{ color: color.text }}>
+                                    {TYPE_LABELS[item.type]}
+                                </p>
+                                <TierBadge price={item.price} size="md" />
+                            </div>
                             <p className="text-base font-black text-white leading-tight">{item.name}</p>
                         </div>
                     </div>
@@ -818,26 +910,53 @@ export default function ShopPage() {
                     </span>
                 </div>
 
-                {/* Topup Banner */}
-                <Link
-                    href="/topup"
-                    className="flex items-center gap-3 mt-5 px-4 py-3 rounded-2xl group transition-all"
-                    style={{
-                        background: "linear-gradient(135deg, rgba(251,191,36,0.07), rgba(245,158,11,0.03))",
-                        border: "1px solid rgba(251,191,36,0.2)",
-                    }}
-                >
-                    <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0" style={{ background: "rgba(251,191,36,0.1)" }}>
-                        <Zap className="w-4 h-4 text-amber-400" />
-                    </div>
-                    <div className="flex-1">
-                        <p className="text-sm font-bold text-amber-300">Topup Memory Point</p>
-                        <p className="text-xs text-neutral-500">Butuh lebih banyak poin? Topup sekarang secara instan</p>
-                    </div>
-                    <div className="text-amber-500/50 group-hover:text-amber-400 transition-colors text-xs font-bold">
-                        Topup →
-                    </div>
-                </Link>
+                {/* Promo / Action Banners */}
+                {/* Promo / Action Banners */}
+                <div className="grid grid-cols-2 gap-2.5 sm:gap-4 mt-6">
+                    {/* Topup Banner */}
+                    <Link
+                        href="/topup"
+                        className="flex items-center gap-2.5 sm:gap-3 p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl group transition-all relative overflow-hidden"
+                        style={{
+                            background: "linear-gradient(135deg, rgba(251,191,36,0.07), rgba(245,158,11,0.03))",
+                            border: "1px solid rgba(251,191,36,0.2)",
+                        }}
+                    >
+                        <div className="absolute right-0 top-0 bottom-0 w-24 sm:w-32 bg-gradient-to-l from-amber-500/10 to-transparent pointer-events-none" />
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0 border" style={{ background: "rgba(251,191,36,0.15)", borderColor: "rgba(251,191,36,0.3)" }}>
+                            <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400 group-hover:scale-110 transition-transform" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <p className="text-[11px] sm:text-sm font-black text-amber-400 truncate">Topup <span className="hidden sm:inline">Poin</span></p>
+                            <p className="hidden sm:block text-xs text-neutral-500 truncate mt-0.5">Tambah poin mu disini</p>
+                        </div>
+                        <div className="hidden sm:flex w-8 h-8 rounded-full items-center justify-center bg-white/5 text-amber-500/50 group-hover:text-amber-400 group-hover:bg-amber-400/20 transition-all shrink-0">
+                            <ChevronRight className="w-1.5 h-1.5 sm:w-2 sm:h-2" style={{ transform: "scale(2.5)" }} />
+                        </div>
+                    </Link>
+
+                    {/* Mystery Box Banner */}
+                    <Link
+                        href="/gacha"
+                        className="flex items-center gap-2.5 sm:gap-3 p-3 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl group transition-all relative overflow-hidden"
+                        style={{
+                            background: "linear-gradient(135deg, rgba(139,92,246,0.1), rgba(99,102,241,0.05))",
+                            border: "1px solid rgba(139,92,246,0.25)",
+                        }}
+                    >
+                        <div className="absolute right-0 top-0 bottom-0 w-24 sm:w-32 bg-gradient-to-l from-purple-500/10 to-transparent pointer-events-none" />
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0 border" style={{ background: "rgba(139,92,246,0.2)", borderColor: "rgba(139,92,246,0.3)" }}>
+                            <span className="text-base sm:text-lg group-hover:rotate-12 transition-transform">🎲</span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <p className="text-[11px] sm:text-sm font-black text-purple-400 truncate">Gacha <span className="hidden sm:inline">Box</span></p>
+                            <p className="hidden sm:block text-xs text-neutral-500 truncate mt-0.5">Uji keberuntunganmu untuk mendapatkan item langka</p>
+                        </div>
+                        <div className="hidden sm:flex w-8 h-8 rounded-full items-center justify-center bg-white/5 text-purple-500/50 group-hover:text-purple-400 group-hover:bg-purple-400/20 transition-all shrink-0">
+                            <ChevronRight className="w-1.5 h-1.5 sm:w-2 sm:h-2" style={{ transform: "scale(2.5)" }} />
+                        </div>
+                    </Link>
+                </div>
             </motion.div>
 
             {/* ── Filter Tabs ── */}

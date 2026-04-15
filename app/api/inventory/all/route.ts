@@ -19,6 +19,7 @@ export async function GET() {
                     id: true,
                     name: true,
                     description: true,
+                    price: true,
                     type: true,
                     value: true,
                     previewColor: true,

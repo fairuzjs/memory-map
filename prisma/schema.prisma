@@ -37,6 +37,7 @@ model User {
   inventories       UserInventory[]
   topupOrders       TopupOrder[]
   stickerPlacements MemoryStickerPlacement[]
+  gachaLogs         GachaLog[]
 }
 
 model Notification {
@@ -293,6 +294,7 @@ model ShopItem {
 
   owners            UserInventory[]
   stickerPlacements MemoryStickerPlacement[]
+  gachaLogs         GachaLog[]
 }
 
 model UserInventory {
@@ -354,5 +356,22 @@ model MemoryStickerPlacement {
   item   ShopItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
 
   @@index([memoryId])
+  @@index([userId])
+}
+
+// ── Gacha / Mystery Box System ─────────────────────────────────
+
+model GachaLog {
+  id           String   @id @default(cuid())
+  userId       String
+  itemId       String
+  tier         String   // "BASIC" | "ELITE" | "EPIC" | "LEGEND"
+  isDuplicate  Boolean  @default(false)
+  refundAmount Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  user User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  item ShopItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
   @@index([userId])
 }

@@ -25,6 +25,7 @@ type InventoryItem = {
         id: string
         name: string
         description: string
+        price: number
         type: ItemType
         value: string
         previewColor: string | null
@@ -80,6 +81,85 @@ const ALL_TYPES: ItemType[] = [
 
 const NON_EQUIPPABLE: ItemType[] = ["MEMORY_STICKER", "PREMIUM_FEATURE"]
 
+// ─── Tier System ───────────────────────────────────────────────────────────────
+
+type TierName = "BASIC" | "ELITE" | "EPIC" | "LEGEND"
+
+const TIER_CONFIG: Record<TierName, {
+    label: string
+    icon: string
+    color: string
+    glow: string
+    bg: string
+    border: string
+}> = {
+    BASIC: {
+        label: "Basic",
+        icon: "◆",
+        color: "#94a3b8",
+        glow: "rgba(148,163,184,0.25)",
+        bg: "rgba(148,163,184,0.08)",
+        border: "rgba(148,163,184,0.2)",
+    },
+    ELITE: {
+        label: "Elite",
+        icon: "◈",
+        color: "#818cf8",
+        glow: "rgba(99,102,241,0.3)",
+        bg: "rgba(99,102,241,0.1)",
+        border: "rgba(99,102,241,0.25)",
+    },
+    EPIC: {
+        label: "Epic",
+        icon: "✦",
+        color: "#f472b6",
+        glow: "rgba(236,72,153,0.35)",
+        bg: "rgba(236,72,153,0.1)",
+        border: "rgba(236,72,153,0.25)",
+    },
+    LEGEND: {
+        label: "Legend",
+        icon: "★",
+        color: "#fbbf24",
+        glow: "rgba(245,158,11,0.4)",
+        bg: "rgba(245,158,11,0.1)",
+        border: "rgba(245,158,11,0.3)",
+    },
+}
+
+function getTier(price: number): TierName {
+    if (price <= 100) return "BASIC"
+    if (price <= 175) return "ELITE"
+    if (price <= 275) return "EPIC"
+    return "LEGEND"
+}
+
+function TierBadge({ price, size = "sm" }: { price: number; size?: "sm" | "md" }) {
+    const tier = getTier(price)
+    const cfg = TIER_CONFIG[tier]
+    const isLegend = tier === "LEGEND"
+
+    return (
+        <span
+            className="inline-flex items-center gap-0.5 font-black uppercase tracking-wider"
+            style={{
+                fontSize: size === "md" ? "10px" : "9px",
+                padding: size === "md" ? "3px 8px" : "2px 6px",
+                borderRadius: "6px",
+                background: isLegend
+                    ? "linear-gradient(135deg, rgba(251,191,36,0.18), rgba(245,158,11,0.08))"
+                    : cfg.bg,
+                border: `1px solid ${cfg.border}`,
+                color: cfg.color,
+                boxShadow: isLegend ? `0 0 8px -2px ${cfg.glow}` : "none",
+            }}
+        >
+            <span style={{ fontSize: size === "md" ? "9px" : "8px" }}>{cfg.icon}</span>
+            {cfg.label}
+        </span>
+    )
+}
+
 function getDecorationClass(name?: string) {
     if (!name) return ""
     const n = name.toLowerCase()
@@ -98,7 +178,7 @@ function CardThemePreview({ value }: { value: string }) {
     try { theme = JSON.parse(value) } catch { }
     return (
         <div
-            className="relative w-full h-28 rounded-xl overflow-hidden flex flex-col justify-end"
+            className="relative w-full h-full rounded-xl overflow-hidden flex flex-col justify-end"
             style={{
                 background: theme?.background ?? "#11111a",
                 border: theme?.border ?? "1px solid rgba(255,255,255,0.08)",
@@ -122,7 +202,7 @@ function CardThemePreview({ value }: { value: string }) {
 function BannerPreview({ value }: { value: string }) {
     return (
         <div
-            className="w-full h-16 rounded-xl overflow-hidden relative"
+            className="w-full h-full rounded-xl overflow-hidden relative"
             style={{ background: value }}
         >
             <div className="absolute inset-0 opacity-[0.06]"
@@ -135,7 +215,7 @@ function BannerPreview({ value }: { value: string }) {
 
 function FramePreview({ value }: { value: string }) {
     return (
-        <div className="flex items-center justify-center py-3">
+        <div className="flex items-center justify-center">
             <div className="relative w-16 h-16">
                 <div className="absolute -inset-1 rounded-full p-[2px]" style={{ background: value }}>
                     <div className="w-full h-full rounded-full" style={{ background: "rgba(14,14,24,1)" }} />
@@ -155,7 +235,7 @@ function DecorationPreview({ item }: { item: InventoryItem["item"] }) {
     let style: React.CSSProperties = {}
     try { style = JSON.parse(item.value) } catch { }
     return (
-        <div className="flex items-center justify-center py-3">
+        <div className="flex items-center justify-center">
             <span
                 className={`text-xl font-black ${getDecorationClass(item.name)}`}
                 style={style}
@@ -173,7 +253,7 @@ function StickerPreview({ item }: { item: InventoryItem["item"] }) {
     try { cfg = JSON.parse(item.value) } catch { }
     if (!cfg) return <div className="w-10 h-10 rounded-xl" style={{ background: item.previewColor ?? "#6366f1" }} />
     return (
-        <div className="flex items-center justify-center py-3" style={{ transform: `rotate(${cfg.defaultRotation}deg)` }}>
+        <div className="flex items-center justify-center" style={{ transform: `rotate(${cfg.defaultRotation}deg)` }}>
             <StickerRenderer config={cfg} />
         </div>
     )
@@ -183,7 +263,7 @@ function StickerPreview({ item }: { item: InventoryItem["item"] }) {
 
 function PremiumFeaturePreview({ item }: { item: InventoryItem["item"] }) {
     return (
-        <div className="flex items-center justify-center py-6">
+        <div className="flex items-center justify-center">
             <div className="relative">
                 <div className="absolute inset-0 bg-[#1DB954]/20 rounded-2xl blur-lg" />
                 <div className="relative w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg"
@@ -270,17 +350,19 @@ function InventoryCard({
                 </div>
             )}
 
-            {/* Preview area */}
+            {/* Preview area — fixed height so all cards align */}
             <div
-                className="px-4 pt-4 pb-2 cursor-pointer"
+                className="px-4 pt-4 pb-2 cursor-pointer h-32 flex items-center justify-center"
                 onClick={() => onPreview(entry)}
             >
-                {item.type === "AVATAR_FRAME"        && <FramePreview value={item.value} />}
-                {item.type === "PROFILE_BANNER"      && <BannerPreview value={item.value} />}
-                {item.type === "MEMORY_CARD_THEME"   && <CardThemePreview value={item.value} />}
-                {item.type === "USERNAME_DECORATION" && <DecorationPreview item={item} />}
-                {item.type === "MEMORY_STICKER"      && <StickerPreview item={item} />}
-                {item.type === "PREMIUM_FEATURE"     && <PremiumFeaturePreview item={item} />}
+                <div className="w-full h-full flex items-center justify-center">
+                    {item.type === "AVATAR_FRAME"        && <FramePreview value={item.value} />}
+                    {item.type === "PROFILE_BANNER"      && <BannerPreview value={item.value} />}
+                    {item.type === "MEMORY_CARD_THEME"   && <CardThemePreview value={item.value} />}
+                    {item.type === "USERNAME_DECORATION" && <DecorationPreview item={item} />}
+                    {item.type === "MEMORY_STICKER"      && <StickerPreview item={item} />}
+                    {item.type === "PREMIUM_FEATURE"     && <PremiumFeaturePreview item={item} />}
+                </div>
             </div>
 
             {/* Type badge pill */}
@@ -304,7 +386,10 @@ function InventoryCard({
             {/* Info */}
             <div className="px-4 pb-4 flex flex-col gap-3 flex-1">
                 <div>
-                    <p className="text-sm font-bold text-white leading-tight">{item.name}</p>
+                    <div className="flex items-center justify-between gap-2 mb-0.5">
+                        <p className="text-sm font-bold text-white leading-tight flex-1 min-w-0 truncate">{item.name}</p>
+                        <TierBadge price={item.price} size="sm" />
+                    </div>
                     <p className="text-[11px] text-neutral-600 mt-0.5 leading-relaxed line-clamp-2">{item.description}</p>
                 </div>
 
@@ -416,9 +501,12 @@ function PreviewModal({
                             <TypeIcon className="w-4 h-4" style={{ color: color.text }} />
                         </div>
                         <div>
-                            <p className="text-xs font-bold uppercase tracking-wider" style={{ color: color.text }}>
-                                {TYPE_LABELS[item.type]}
-                            </p>
+                            <div className="flex items-center gap-2">
+                                <p className="text-xs font-bold uppercase tracking-wider" style={{ color: color.text }}>
+                                    {TYPE_LABELS[item.type]}
+                                </p>
+                                <TierBadge price={item.price} size="md" />
+                            </div>
                             <p className="text-base font-black text-white leading-tight">{item.name}</p>
                         </div>
                     </div>
