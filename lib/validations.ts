@@ -55,6 +55,7 @@ export const memorySchema = z.object({
         duration: z.number().refine(v => [10, 15, 30].includes(v)),
         fileName: z.string(),
     }).optional().nullable(),
+    spotifyTrackId: z.string().optional().nullable(),
 })
 
 export type LoginInput = z.infer<typeof loginSchema>

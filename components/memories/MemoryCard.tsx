@@ -126,8 +126,15 @@ export function MemoryCard({ memory, isCollaboration, placements = [] }: MemoryC
                     )}
 
                     {/* Music badge */}
-                    {memory.audioUrl && (
-                        <div className="absolute top-3 left-3 z-10 flex items-center gap-1 px-2 py-1 rounded-full bg-fuchsia-600/85 backdrop-blur-sm border border-fuchsia-400/30 shadow-lg" title="Memiliki musik">
+                    {(memory.audioUrl || memory.spotifyTrackId) && (
+                        <div 
+                            className={`absolute top-3 left-3 z-10 flex items-center gap-1 px-2 py-1 rounded-full backdrop-blur-sm border shadow-lg ${
+                                memory.spotifyTrackId 
+                                    ? "bg-[#1DB954]/85 border-[#1DB954]/30" 
+                                    : "bg-fuchsia-600/85 border-fuchsia-400/30"
+                            }`} 
+                            title={memory.spotifyTrackId ? "Mempunyai lagu Spotify" : "Memiliki musik"}
+                        >
                             <Music className="w-3 h-3 text-white" />
                         </div>
                     )}

@@ -12,10 +12,11 @@ import { motion, AnimatePresence } from "framer-motion"
 import toast from "react-hot-toast"
 import Link from "next/link"
 import { StickerRenderer, StickerConfig } from "@/components/memories/StickerRenderer"
+import { SpotifyIcon } from "@/components/icons/SpotifyIcon"
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
-type ItemType = "AVATAR_FRAME" | "PROFILE_BANNER" | "MEMORY_CARD_THEME" | "USERNAME_DECORATION" | "MEMORY_STICKER"
+type ItemType = "AVATAR_FRAME" | "PROFILE_BANNER" | "MEMORY_CARD_THEME" | "USERNAME_DECORATION" | "MEMORY_STICKER" | "PREMIUM_FEATURE"
 
 type InventoryItem = {
     id: string          // inventory record id
@@ -38,6 +39,7 @@ const TYPE_LABELS: Record<ItemType, string> = {
     MEMORY_CARD_THEME:  "Tema Kartu Kenangan",
     USERNAME_DECORATION:"Dekorasi Nama",
     MEMORY_STICKER:     "Stiker Kenangan",
+    PREMIUM_FEATURE:    "Fitur Premium",
 }
 
 const TYPE_SHORT_LABELS: Record<ItemType, string> = {
@@ -46,6 +48,7 @@ const TYPE_SHORT_LABELS: Record<ItemType, string> = {
     MEMORY_CARD_THEME:  "Tema Kartu",
     USERNAME_DECORATION:"Dekorasi Nama",
     MEMORY_STICKER:     "Stiker",
+    PREMIUM_FEATURE:    "Premium",
 }
 
 const TYPE_ICONS: Record<ItemType, React.FC<any>> = {
@@ -54,6 +57,7 @@ const TYPE_ICONS: Record<ItemType, React.FC<any>> = {
     MEMORY_CARD_THEME:  Grid2x2,
     USERNAME_DECORATION:Type,
     MEMORY_STICKER:     Sticker,
+    PREMIUM_FEATURE:    SpotifyIcon,
 }
 
 const TYPE_COLORS: Record<ItemType, { bg: string; border: string; text: string; accent: string; pill: string; pillText: string }> = {
@@ -62,6 +66,7 @@ const TYPE_COLORS: Record<ItemType, { bg: string; border: string; text: string; 
     MEMORY_CARD_THEME:  { bg: "rgba(52,211,153,0.1)",  border: "rgba(52,211,153,0.2)",  text: "#34d399", accent: "#10b981", pill: "rgba(52,211,153,0.18)", pillText: "#6ee7b7" },
     USERNAME_DECORATION:{ bg: "rgba(251,191,36,0.1)",  border: "rgba(251,191,36,0.2)",  text: "#fbbf24", accent: "#f59e0b", pill: "rgba(251,191,36,0.18)", pillText: "#fcd34d" },
     MEMORY_STICKER:     { bg: "rgba(139,92,246,0.1)",  border: "rgba(139,92,246,0.2)",  text: "#a78bfa", accent: "#8b5cf6", pill: "rgba(139,92,246,0.18)", pillText: "#c4b5fd" },
+    PREMIUM_FEATURE:    { bg: "rgba(29,185,84,0.1)",   border: "rgba(29,185,84,0.2)",   text: "#1DB954", accent: "#1DB954", pill: "rgba(29,185,84,0.18)",  pillText: "#4ade80" },
 }
 
 const ALL_TYPES: ItemType[] = [
@@ -70,9 +75,10 @@ const ALL_TYPES: ItemType[] = [
     "MEMORY_CARD_THEME",
     "USERNAME_DECORATION",
     "MEMORY_STICKER",
+    "PREMIUM_FEATURE",
 ]
 
-const NON_EQUIPPABLE: ItemType[] = ["MEMORY_STICKER"]
+const NON_EQUIPPABLE: ItemType[] = ["MEMORY_STICKER", "PREMIUM_FEATURE"]
 
 function getDecorationClass(name?: string) {
     if (!name) return ""
@@ -173,6 +179,25 @@ function StickerPreview({ item }: { item: InventoryItem["item"] }) {
     )
 }
 
+// ─── Premium Feature Preview ───────────────────────────────────────────────────
+
+function PremiumFeaturePreview({ item }: { item: InventoryItem["item"] }) {
+    return (
+        <div className="flex items-center justify-center py-6">
+            <div className="relative">
+                <div className="absolute inset-0 bg-[#1DB954]/20 rounded-2xl blur-lg" />
+                <div className="relative w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg"
+                    style={{
+                        background: "linear-gradient(135deg, rgba(29,185,84,0.2), rgba(29,185,84,0.05))",
+                        border: "1px solid rgba(29,185,84,0.3)"
+                    }}>
+                    <SpotifyIcon className="w-8 h-8 text-[#1DB954]" />
+                </div>
+            </div>
+        </div>
+    )
+}
+
 // ─── Section Divider ────────────────────────────────────────────────────────────
 
 function SectionDivider({ label, count, color }: { label: string; count: number; color: string }) {
@@ -255,6 +280,7 @@ function InventoryCard({
                 {item.type === "MEMORY_CARD_THEME"   && <CardThemePreview value={item.value} />}
                 {item.type === "USERNAME_DECORATION" && <DecorationPreview item={item} />}
                 {item.type === "MEMORY_STICKER"      && <StickerPreview item={item} />}
+                {item.type === "PREMIUM_FEATURE"     && <PremiumFeaturePreview item={item} />}
             </div>
 
             {/* Type badge pill */}
@@ -413,6 +439,7 @@ function PreviewModal({
                         {item.type === "MEMORY_CARD_THEME"   && <div className="w-full px-4"><CardThemePreview value={item.value} /></div>}
                         {item.type === "USERNAME_DECORATION" && <DecorationPreview item={item} />}
                         {item.type === "MEMORY_STICKER"      && <StickerPreview item={item} />}
+                        {item.type === "PREMIUM_FEATURE"     && <PremiumFeaturePreview item={item} />}
                     </div>
                 </div>
 
@@ -429,7 +456,7 @@ function PreviewModal({
                             style={{ background: "rgba(74,222,128,0.06)", border: "1px solid rgba(74,222,128,0.2)", color: "#4ade80" }}
                         >
                             <CheckCircle2 className="w-4 h-4" />
-                            Stiker bisa ditempel langsung di kenangan
+                            {item.type === "PREMIUM_FEATURE" ? "Fitur Premium Aktif" : "Stiker bisa ditempel langsung di kenangan"}
                         </div>
                     ) : (
                         <button

@@ -98,6 +98,9 @@ model Memory {
   audioStartTime Float?    // Detik mulai clip
   audioDuration  Int?      // Durasi clip dalam detik (10, 15, atau 30)
   audioFileName  String?   // Nama file asli untuk display
+
+  // Spotify integration
+  spotifyTrackId String?   // Spotify Track ID
 }
 
 enum Emotion {
@@ -275,6 +278,7 @@ enum ItemType {
   MEMORY_CARD_THEME
   USERNAME_DECORATION
   MEMORY_STICKER
+  PREMIUM_FEATURE
 }
 
 model ShopItem {

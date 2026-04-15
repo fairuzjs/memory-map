@@ -61,6 +61,22 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
         const { photos, tags, date, collaborators, audio, ...data } = result.data
 
+        // ── Premium feature gate: Spotify integration ──
+        if (data.spotifyTrackId) {
+            const hasSpotifyPremium = await prisma.userInventory.findFirst({
+                where: {
+                    userId: session.user.id,
+                    item: { type: "PREMIUM_FEATURE", value: "spotify_integration" },
+                },
+            })
+            if (!hasSpotifyPremium) {
+                return NextResponse.json(
+                    { error: "Fitur Spotify adalah fitur premium. Silakan beli di Memory Shop terlebih dahulu." },
+                    { status: 403 }
+                )
+            }
+        }
+
         await prisma.photo.deleteMany({ where: { memoryId: id } })
 
         const updated = await prisma.memory.update({
@@ -84,6 +100,9 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
                 audioStartTime: audio?.startTime ?? null,
                 audioDuration: audio?.duration ?? null,
                 audioFileName: audio?.fileName ?? null,
+                
+                // Spotify integration
+                spotifyTrackId: data.spotifyTrackId ?? null,
             },
             include: { photos: true, tags: true }
         })

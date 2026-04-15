@@ -169,6 +169,22 @@ export async function POST(req: Request) {
 
         const { photos, tags, date, collaborators, audio, ...data } = result.data
 
+        // ── Premium feature gate: Spotify integration ──
+        if (data.spotifyTrackId) {
+            const hasSpotifyPremium = await prisma.userInventory.findFirst({
+                where: {
+                    userId: session.user.id,
+                    item: { type: "PREMIUM_FEATURE", value: "spotify_integration" },
+                },
+            })
+            if (!hasSpotifyPremium) {
+                return NextResponse.json(
+                    { error: "Fitur Spotify adalah fitur premium. Silakan beli di Memory Shop terlebih dahulu." },
+                    { status: 403 }
+                )
+            }
+        }
+
         // Buat memory dalam transaction sekaligus dengan collaborators + notifikasi
         const memory = await prisma.$transaction(async (tx) => {
             const newMemory = await tx.memory.create({
@@ -185,7 +201,7 @@ export async function POST(req: Request) {
                             create: { name: tag }
                         })) || []
                     },
-                    // Audio clip data
+                    // Audio clip fields
                     ...(audio ? {
                         audioUrl: audio.url,
                         audioBucket: audio.bucket,
@@ -194,6 +210,8 @@ export async function POST(req: Request) {
                         audioDuration: audio.duration,
                         audioFileName: audio.fileName,
                     } : {}),
+                    // Spotify integration
+                    spotifyTrackId: data.spotifyTrackId || null,
                 },
                 include: {
                     photos: true,

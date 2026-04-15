@@ -282,15 +282,28 @@ export default function MemoryDetailPage() {
                         </div>
 
                         {/* Music Player — MOBILE ONLY (above gallery) */}
-                        {memory.audioUrl && isMobile && (
+                        {(memory.audioUrl || memory.spotifyTrackId) && isMobile && (
                             <div className="mb-10 lg:hidden">
-                                <MemoryMusicPlayer
-                                    audioUrl={memory.audioUrl}
-                                    startTime={memory.audioStartTime || 0}
-                                    duration={memory.audioDuration || 15}
-                                    fileName={memory.audioFileName || "Audio"}
-                                    autoPlay={true}
-                                />
+                                {memory.spotifyTrackId ? (
+                                    <iframe
+                                        style={{ borderRadius: '12px' }}
+                                        src={`https://open.spotify.com/embed/track/${memory.spotifyTrackId}?utm_source=generator&theme=0`}
+                                        width="100%"
+                                        height="152"
+                                        frameBorder="0"
+                                        allowFullScreen={false}
+                                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                                        loading="lazy"
+                                    ></iframe>
+                                ) : (
+                                    <MemoryMusicPlayer
+                                        audioUrl={memory.audioUrl}
+                                        startTime={memory.audioStartTime || 0}
+                                        duration={memory.audioDuration || 15}
+                                        fileName={memory.audioFileName || "Audio"}
+                                        autoPlay={true}
+                                    />
+                                )}
                             </div>
                         )}
 
@@ -341,15 +354,30 @@ export default function MemoryDetailPage() {
                         <div className="lg:sticky lg:top-24 space-y-3">
 
                             {/* Music Player — DESKTOP ONLY (sidebar) */}
-                            {memory.audioUrl && !isMobile && (
-                                <div className="hidden lg:block relative overflow-hidden rounded-2xl border border-white/[0.07] bg-[#13111e]">
-                                        <MemoryMusicPlayer
-                                            audioUrl={memory.audioUrl}
-                                            startTime={memory.audioStartTime || 0}
-                                            duration={memory.audioDuration || 15}
-                                            fileName={memory.audioFileName || "Audio"}
-                                            autoPlay={true}
-                                        />
+                            {(memory.audioUrl || memory.spotifyTrackId) && !isMobile && (
+                                <div className="hidden lg:block relative overflow-hidden rounded-2xl border border-white/[0.07] bg-[#0a0a0f]">
+                                    {memory.spotifyTrackId ? (
+                                        <iframe
+                                            style={{ borderRadius: '16px' }}
+                                            src={`https://open.spotify.com/embed/track/${memory.spotifyTrackId}?utm_source=generator&theme=0`}
+                                            width="100%"
+                                            height="152"
+                                            frameBorder="0"
+                                            allowFullScreen={false}
+                                            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                                            loading="lazy"
+                                        ></iframe>
+                                    ) : (
+                                        <div className="bg-[#13111e]">
+                                            <MemoryMusicPlayer
+                                                audioUrl={memory.audioUrl}
+                                                startTime={memory.audioStartTime || 0}
+                                                duration={memory.audioDuration || 15}
+                                                fileName={memory.audioFileName || "Audio"}
+                                                autoPlay={true}
+                                            />
+                                        </div>
+                                    )}
                                 </div>
                             )}
 

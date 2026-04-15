@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -11,11 +11,13 @@ import { Button } from "@/components/ui/Button"
 import { EmotionPicker } from "@/components/memories/EmotionPicker"
 import { PhotoUploader } from "@/components/memories/PhotoUploader"
 import { MusicUploader } from "@/components/memories/MusicUploader"
+import { SpotifySearch } from "@/components/memories/SpotifySearch"
+import { PremiumLockedState } from "@/components/memories/PremiumLockedState"
 import { CollaboratorPicker } from "@/components/memories/CollaboratorPicker"
 import { motion, AnimatePresence } from "framer-motion"
 import {
     BookText, MapPin, Smile, ImagePlus, Users, Globe, Music,
-    ArrowRight, ArrowLeft, Sparkles, Save, ChevronRight
+    ArrowRight, ArrowLeft, Sparkles, Save, ChevronRight, Crown
 } from "lucide-react"
 
 import dynamic from "next/dynamic"
@@ -53,6 +55,26 @@ export default function CreateMemoryPage() {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [currentStep, setCurrentStep] = useState(0)
     const [direction, setDirection] = useState(0)
+    const [musicTab, setMusicTab] = useState<"upload" | "spotify">("upload")
+    const [hasSpotifyPremium, setHasSpotifyPremium] = useState(false)
+    const [premiumPoints, setPremiumPoints] = useState(0)
+    const [premiumLoading, setPremiumLoading] = useState(true)
+
+    // Check premium feature access
+    useEffect(() => {
+        const checkPremium = async () => {
+            try {
+                const res = await fetch("/api/inventory/premium")
+                if (res.ok) {
+                    const data = await res.json()
+                    setHasSpotifyPremium(data.features?.includes("spotify_integration") ?? false)
+                    setPremiumPoints(data.points ?? 0)
+                }
+            } catch {}
+            setPremiumLoading(false)
+        }
+        checkPremium()
+    }, [])
 
     const {
         register,
@@ -69,6 +91,7 @@ export default function CreateMemoryPage() {
             tags: [],
             collaborators: [],
             audio: null,
+            spotifyTrackId: null,
             latitude: -2.5489,
             longitude: 118.0149,
             locationName: "Indonesia",
@@ -91,6 +114,7 @@ export default function CreateMemoryPage() {
                     })
                 ) || [],
                 audio: data.audio || null,
+                spotifyTrackId: data.spotifyTrackId || null,
             }
 
             const res = await fetch("/api/memories", {
@@ -382,27 +406,97 @@ export default function CreateMemoryPage() {
                                     </div>
 
                                     {/* Music */}
-                                    <div className="bg-neutral-900/40 backdrop-blur-xl p-6 sm:p-8 rounded-3xl border border-white/[0.05] shadow-2xl transition-all hover:border-white/[0.08]">
-                                        <div className="flex items-center gap-3 mb-6">
-                                            <div className="p-2.5 bg-fuchsia-500/10 rounded-xl">
-                                                <Music className="w-5 h-5 text-fuchsia-400" />
-                                            </div>
-                                            <div>
-                                                <h2 className="text-lg font-semibold font-[Outfit] text-white">Musik</h2>
-                                                <p className="text-xs text-neutral-500">Tambahkan lagu untuk kenangan</p>
+                                    <div className="bg-neutral-900/40 backdrop-blur-xl p-6 sm:p-8 rounded-3xl border border-white/[0.05] shadow-2xl transition-all hover:border-white/[0.08] flex flex-col h-full">
+                                        <div className="flex items-center justify-between mb-6">
+                                            <div className="flex items-center gap-3">
+                                                <div className="p-2.5 bg-fuchsia-500/10 rounded-xl">
+                                                    <Music className="w-5 h-5 text-fuchsia-400" />
+                                                </div>
+                                                <div>
+                                                    <h2 className="text-lg font-semibold font-[Outfit] text-white">Musik</h2>
+                                                    <p className="text-xs text-neutral-500">Tambahkan lagu</p>
+                                                </div>
                                             </div>
                                         </div>
-                                        <Controller
-                                            control={control}
-                                            name="audio"
-                                            render={({ field }) => (
-                                                <MusicUploader
-                                                    value={field.value}
-                                                    onChange={field.onChange}
-                                                    isPublic={isPublic}
-                                                />
-                                            )}
-                                        />
+
+                                        {/* Music Source Tabs */}
+                                        <div className="flex-1 rounded-2xl flex flex-col gap-4">
+                                            <div className="flex bg-neutral-900/50 p-1 rounded-xl border border-white/5">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setMusicTab("upload")}
+                                                    className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
+                                                        musicTab === "upload" 
+                                                            ? "bg-fuchsia-500/20 text-fuchsia-300 shadow-sm" 
+                                                            : "text-neutral-500 hover:text-neutral-300"
+                                                    }`}
+                                                >
+                                                    Upload MP3
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setMusicTab("spotify")}
+                                                    className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+                                                        musicTab === "spotify" 
+                                                            ? "bg-[#1DB954]/20 text-[#1DB954] shadow-sm" 
+                                                            : "text-neutral-500 hover:text-neutral-300"
+                                                    }`}
+                                                >
+                                                    Spotify
+                                                    {!hasSpotifyPremium && (
+                                                        <Crown className="w-3 h-3 text-amber-400" />
+                                                    )}
+                                                </button>
+                                            </div>
+
+                                            <div className="flex-1 bg-black/20 rounded-2xl border border-white/5 p-4">
+                                                {musicTab === "upload" ? (
+                                                    <Controller
+                                                        control={control}
+                                                        name="audio"
+                                                        render={({ field }) => (
+                                                            <MusicUploader
+                                                                value={field.value}
+                                                                onChange={(val) => {
+                                                                    field.onChange(val)
+                                                                    if (val) {
+                                                                        // Clear spotify if upload is chosen
+                                                                        control._formValues.spotifyTrackId = null
+                                                                    }
+                                                                }}
+                                                                isPublic={isPublic}
+                                                            />
+                                                        )}
+                                                    />
+                                                ) : hasSpotifyPremium ? (
+                                                    <Controller
+                                                        control={control}
+                                                        name="spotifyTrackId"
+                                                        render={({ field }) => (
+                                                            <SpotifySearch
+                                                                value={field.value || null}
+                                                                onChange={(val) => {
+                                                                    field.onChange(val)
+                                                                    if (val) {
+                                                                        // Clear upload if spotify is chosen
+                                                                        control._formValues.audio = null
+                                                                    }
+                                                                }}
+                                                            />
+                                                        )}
+                                                    />
+                                                ) : (
+                                                    <PremiumLockedState
+                                                        featureName="Integrasi Spotify"
+                                                        price={500}
+                                                        userPoints={premiumPoints}
+                                                        onUnlocked={() => {
+                                                            setHasSpotifyPremium(true)
+                                                        }}
+                                                    />
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 

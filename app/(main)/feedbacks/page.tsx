@@ -7,12 +7,12 @@ import {
     MessageSquareText, Image as ImageIcon, X, Send,
     Loader2, Sparkles, History, ChevronRight,
     Lightbulb, Bug, HelpCircle, Star, Clock, CheckCircle2,
-    MessageCircleReply, ArrowUpRight, TicketCheck, Inbox
+    MessageCircleReply, ArrowUpRight, TicketCheck, Inbox, Flag
 } from "lucide-react"
 import { timeAgo } from "@/lib/utils"
 import toast from "react-hot-toast"
 
-type Tab = "create" | "history"
+type Tab = "create" | "history" | "reports"
 
 const CATEGORIES = [
     { id: "suggestion", label: "Saran", icon: Lightbulb, color: "#f59e0b", bg: "rgba(245,158,11,0.1)", border: "rgba(245,158,11,0.2)" },
@@ -31,10 +31,27 @@ export default function FeedbacksPage() {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [tickets, setTickets] = useState<any[]>([])
     const [isLoading, setIsLoading] = useState(true)
+    const [reports, setReports] = useState<any[]>([])
+    const [isLoadingReports, setIsLoadingReports] = useState(true)
     const [expandedTicket, setExpandedTicket] = useState<string | null>(null)
+    const [expandedReport, setExpandedReport] = useState<string | null>(null)
     const fileInputRef = useRef<HTMLInputElement>(null)
 
-    useEffect(() => { fetchTickets() }, [])
+    useEffect(() => { fetchTickets(); fetchReports() }, [])
+
+    const fetchReports = async () => {
+        try {
+            const res = await fetch("/api/reports")
+            if (res.ok) {
+                const data = await res.json()
+                setReports(data)
+            }
+        } catch (error) {
+            console.error("Failed to fetch reports:", error)
+        } finally {
+            setIsLoadingReports(false)
+        }
+    }
 
     const fetchTickets = async () => {
         try {
@@ -113,6 +130,31 @@ export default function FeedbacksPage() {
                 text: "Menunggu", color: "text-neutral-400", bg: "bg-neutral-800",
                 dot: "bg-neutral-500", borderColor: "rgba(115,115,115,0.2)",
                 Icon: Clock, glow: "rgba(115,115,115,0.1)"
+            }
+        }
+    }
+
+    const getReportStatusConfig = (status: string) => {
+        switch (status) {
+            case "PENDING": return {
+                text: "Menunggu", color: "text-amber-400", bg: "bg-amber-400/10",
+                borderColor: "rgba(251,191,36,0.25)", Icon: Clock
+            }
+            case "REVIEWED": return {
+                text: "Ditinjau", color: "text-sky-400", bg: "bg-sky-400/10",
+                borderColor: "rgba(56,189,248,0.25)", Icon: History
+            }
+            case "RESOLVED": return {
+                text: "Selesai", color: "text-emerald-400", bg: "bg-emerald-400/10",
+                borderColor: "rgba(52,211,153,0.25)", Icon: CheckCircle2
+            }
+            case "DISMISSED": return {
+                text: "Ditolak", color: "text-red-400", bg: "bg-red-400/10",
+                borderColor: "rgba(248,113,113,0.25)", Icon: X
+            }
+            default: return {
+                text: "Menunggu", color: "text-neutral-400", bg: "bg-neutral-800",
+                borderColor: "rgba(115,115,115,0.2)", Icon: Clock
             }
         }
     }
@@ -207,9 +249,10 @@ export default function FeedbacksPage() {
                             border: "1px solid rgba(255,255,255,0.07)",
                         }}>
                         {[
-                            { id: "create" as Tab, label: "Buat Tiket", Icon: Sparkles },
-                            { id: "history" as Tab, label: "Riwayat", Icon: TicketCheck, count: tickets.length },
-                        ].map(({ id, label, Icon, count }) => (
+                            { id: "create" as Tab, label: "Buat Tiket" },
+                            { id: "history" as Tab, label: "Riwayat Tiket", count: tickets.length },
+                            { id: "reports" as Tab, label: "Laporan", count: reports.length },
+                        ].map(({ id, label, count }) => (
                             <button
                                 key={id}
                                 onClick={() => setActiveTab(id)}
@@ -227,7 +270,6 @@ export default function FeedbacksPage() {
                                     />
                                 )}
                                 <span className="relative flex items-center gap-2">
-                                    <Icon className="w-3.5 h-3.5" />
                                     {label}
                                     {count !== undefined && count > 0 && (
                                         <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold"
@@ -471,7 +513,7 @@ export default function FeedbacksPage() {
                                     transition={{ delay: 0.3 }}
                                     className="text-center text-[11px] text-neutral-700 mt-4"
                                 >
-                                    🔒 Tiket bersifat pribadi dan hanya dapat dilihat oleh kamu dan admin
+                                    Tiket bersifat pribadi dan hanya dapat dilihat oleh kamu dan admin
                                 </motion.p>
                             </motion.div>
                         )}
@@ -672,6 +714,142 @@ export default function FeedbacksPage() {
                                                                         </p>
                                                                     </motion.div>
                                                                 )}
+                                                            </motion.div>
+                                                        )}
+                                                    </AnimatePresence>
+                                                </motion.div>
+                                            )
+                                        })}
+                                    </div>
+                                )}
+                            </motion.div>
+                        )}
+
+                        {/* ── REPORTS TAB ── */}
+                        {activeTab === "reports" && (
+                            <motion.div
+                                key="reports"
+                                initial={{ opacity: 0, y: 12 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -12 }}
+                                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                            >
+                                {/* Header row */}
+                                <div className="flex items-center justify-between mb-5">
+                                    <div>
+                                        <h2 className="text-base font-bold text-white">Laporan Memory</h2>
+                                        <p className="text-xs text-neutral-600 mt-0.5">Riwayat laporan memory yang kamu buat</p>
+                                    </div>
+                                    <span className="px-3 py-1.5 rounded-full text-xs font-bold text-indigo-300"
+                                        style={{ background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.2)" }}>
+                                        {reports.length} laporan
+                                    </span>
+                                </div>
+
+                                {isLoadingReports ? (
+                                    <div className="flex flex-col items-center justify-center py-28 gap-4">
+                                        <div className="relative">
+                                            <div className="w-12 h-12 rounded-2xl flex items-center justify-center"
+                                                style={{ background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.15)" }}>
+                                                <Loader2 className="w-5 h-5 text-indigo-400 animate-spin" />
+                                            </div>
+                                        </div>
+                                        <span className="text-xs text-neutral-600">Memuat laporan...</span>
+                                    </div>
+                                ) : reports.length === 0 ? (
+                                    <motion.div
+                                        initial={{ opacity: 0, scale: 0.97 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        className="rounded-3xl py-20 px-8 text-center"
+                                        style={{
+                                            background: "linear-gradient(160deg, rgba(20,20,30,0.6), rgba(10,10,15,0.8))",
+                                            border: "1.5px dashed rgba(255,255,255,0.06)"
+                                        }}
+                                    >
+                                        <div className="w-16 h-16 rounded-3xl mx-auto mb-5 flex items-center justify-center"
+                                            style={{
+                                                background: "linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.05))",
+                                                border: "1px solid rgba(99,102,241,0.15)"
+                                            }}>
+                                            <Flag className="w-7 h-7" style={{ color: "rgba(99,102,241,0.5)" }} />
+                                        </div>
+                                        <p className="text-base font-semibold text-neutral-400">Belum ada laporan</p>
+                                        <p className="text-xs text-neutral-600 mt-2 max-w-xs mx-auto leading-relaxed">
+                                            Kamu belum pernah melaporkan memory.
+                                        </p>
+                                    </motion.div>
+                                ) : (
+                                    <div className="space-y-3">
+                                        {reports.map((report, i) => {
+                                            const status = getReportStatusConfig(report.status)
+                                            const StatusIcon = status.Icon
+                                            const isExpanded = expandedReport === report.id
+
+                                            return (
+                                                <motion.div
+                                                    key={report.id}
+                                                    initial={{ opacity: 0, y: 12 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    transition={{ delay: i * 0.05, ease: [0.22, 1, 0.36, 1] }}
+                                                    className="rounded-2xl overflow-hidden cursor-pointer group transition-all duration-200"
+                                                    style={{
+                                                        background: "linear-gradient(160deg, rgba(18,18,25,0.9), rgba(10,10,15,0.95))",
+                                                        border: `1px solid ${isExpanded ? "rgba(99,102,241,0.2)" : "rgba(255,255,255,0.05)"}`,
+                                                        backdropFilter: "blur(16px)",
+                                                        boxShadow: isExpanded ? "0 0 0 1px rgba(99,102,241,0.08), 0 8px 32px rgba(0,0,0,0.3)" : "none"
+                                                    }}
+                                                    onClick={() => setExpandedReport(isExpanded ? null : report.id)}
+                                                >
+                                                    <div className="px-5 py-4 flex items-center justify-between">
+                                                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                                                            <div className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold ${status.bg} ${status.color} shrink-0`}
+                                                                style={{ border: `1px solid ${status.borderColor}` }}>
+                                                                <StatusIcon className="w-3 h-3" />
+                                                                {status.text}
+                                                            </div>
+                                                            <div className="min-w-0">
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className="text-xs font-bold text-white truncate">
+                                                                        Memory: {report.memory?.title || "Memory Dihapus"}
+                                                                    </span>
+                                                                </div>
+                                                                <p className="text-[10px] text-neutral-500 mt-0.5">{timeAgo(report.createdAt)} &bull; Alasan: {report.reason}</p>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="flex items-center gap-2">
+                                                            <motion.div
+                                                                animate={{ rotate: isExpanded ? 90 : 0 }}
+                                                                transition={{ duration: 0.2 }}
+                                                            >
+                                                                <ChevronRight className="w-4 h-4 text-neutral-600 group-hover:text-neutral-400 transition-colors" />
+                                                            </motion.div>
+                                                        </div>
+                                                    </div>
+
+                                                    {!isExpanded && report.details && (
+                                                        <div className="px-5 pb-4">
+                                                            <p className="text-sm text-neutral-500 line-clamp-1 leading-relaxed">
+                                                                {report.details}
+                                                            </p>
+                                                        </div>
+                                                    )}
+
+                                                    <AnimatePresence>
+                                                        {isExpanded && (
+                                                            <motion.div
+                                                                initial={{ opacity: 0, height: 0 }}
+                                                                animate={{ opacity: 1, height: "auto" }}
+                                                                exit={{ opacity: 0, height: 0 }}
+                                                                transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                                                                style={{ overflow: "hidden" }}
+                                                            >
+                                                                <div className="mx-4 mb-4 rounded-2xl p-4"
+                                                                    style={{ background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.04)" }}>
+                                                                    <p className="text-sm text-neutral-300 whitespace-pre-wrap leading-relaxed">
+                                                                        {report.details ? report.details : "Tidak ada detail tambahan"}
+                                                                    </p>
+                                                                </div>
                                                             </motion.div>
                                                         )}
                                                     </AnimatePresence>

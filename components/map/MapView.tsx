@@ -217,7 +217,7 @@ export default function MapView({ memories }: MapViewProps) {
                                     <Popup className="memory-popup">
                                         <Link
                                             href={`/memories/${memory.id}`}
-                                            className="block w-64 sm:w-72 overflow-hidden text-left cursor-pointer group/popup"
+                                            className="block w-[280px] sm:w-[320px] overflow-hidden text-left cursor-pointer group/popup"
                                             style={{
                                                 background: theme?.background ?? "#11111a",
                                                 border: "none",
@@ -290,14 +290,28 @@ export default function MapView({ memories }: MapViewProps) {
                                                 </p>
 
                                                 {/* Mini music player */}
-                                                {memory.audioUrl && (
+                                                {memory.spotifyTrackId ? (
+                                                    <div className="mt-3 mb-1 overflow-hidden" onClick={e => e.stopPropagation()}>
+                                                        <iframe
+                                                            style={{ borderRadius: '12px', background: 'transparent' }}
+                                                            src={`https://open.spotify.com/embed/track/${memory.spotifyTrackId}?utm_source=generator&theme=0`}
+                                                            width="100%"
+                                                            height="82"
+                                                            frameBorder="0"
+                                                            scrolling="no"
+                                                            allowFullScreen={false}
+                                                            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                                                            loading="lazy"
+                                                        ></iframe>
+                                                    </div>
+                                                ) : memory.audioUrl ? (
                                                     <PopupMiniPlayer
                                                         audioUrl={memory.audioUrl}
                                                         startTime={memory.audioStartTime || 0}
                                                         duration={memory.audioDuration || 15}
                                                         fileName={memory.audioFileName || "Audio"}
                                                     />
-                                                )}
+                                                ) : null}
 
                                                 <div
                                                     className="flex items-center justify-between py-3"
