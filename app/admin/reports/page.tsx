@@ -10,6 +10,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import toast from "react-hot-toast"
+import { ConfirmDialog, useConfirm } from "@/components/ui/ConfirmDialog"
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; border: string; icon: LucideIcon }> = {
     PENDING: {
@@ -52,6 +53,7 @@ export default function AdminReportsPage() {
     const [searchQuery, setSearchQuery] = useState("")
     const [filterStatus, setFilterStatus] = useState("ALL")
     const [updatingId, setUpdatingId] = useState<string | null>(null)
+    const { confirmProps, openConfirm } = useConfirm()
 
     useEffect(() => {
         if (status === "unauthenticated" || (session?.user && session.user.role !== "ADMIN")) {
@@ -95,27 +97,35 @@ export default function AdminReportsPage() {
     }
 
     const handleDeleteReport = async (id: string) => {
-        if (!confirm("Hapus catatan laporan ini? (Memory tidak akan dihapus)")) return
-        try {
-            const res = await fetch(`/api/admin/reports/${id}`, { method: "DELETE" })
-            if (!res.ok) throw new Error("Failed")
-            setReports(prev => prev.filter(r => r.id !== id))
-            toast.success("Catatan laporan dihapus")
-        } catch {
-            toast.error("Gagal menghapus laporan")
-        }
+        openConfirm({
+            title: "Hapus Catatan Laporan?",
+            description: "Catatan laporan ini akan dihapus. Memory yang dilaporkan tidak akan terpengaruh.",
+            confirmLabel: "Hapus Catatan",
+            cancelLabel: "Batal",
+            variant: "warning",
+            onConfirm: async () => {
+                const res = await fetch(`/api/admin/reports/${id}`, { method: "DELETE" })
+                if (!res.ok) throw new Error("Failed")
+                setReports(prev => prev.filter(r => r.id !== id))
+                toast.success("Catatan laporan dihapus")
+            }
+        })
     }
 
     const handleDeleteMemory = async (memoryId: string, title: string) => {
-        if (!confirm(`Hapus memory "${title}" secara permanen?\n\nTindakan ini tidak dapat dibatalkan dan dilakukan karena pelanggaran berat.`)) return
-        try {
-            const res = await fetch(`/api/memories/${memoryId}`, { method: "DELETE" })
-            if (!res.ok) throw new Error("Failed")
-            toast.success("Memory berhasil dihapus")
-            fetchReports()
-        } catch {
-            toast.error("Gagal menghapus memory")
-        }
+        openConfirm({
+            title: "Hapus Memory Secara Permanen?",
+            description: `Memory "${title}" akan dihapus karena pelanggaran berat. Tindakan ini tidak dapat dibatalkan.`,
+            confirmLabel: "Ya, Hapus Permanen",
+            cancelLabel: "Batal",
+            variant: "danger",
+            onConfirm: async () => {
+                const res = await fetch(`/api/memories/${memoryId}`, { method: "DELETE" })
+                if (!res.ok) throw new Error("Failed")
+                toast.success("Memory berhasil dihapus")
+                fetchReports()
+            }
+        })
     }
 
     const filtered = reports.filter(r => {
@@ -144,6 +154,7 @@ export default function AdminReportsPage() {
     }
 
     return (
+        <>
         <div className="space-y-6">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -445,5 +456,7 @@ export default function AdminReportsPage() {
                 </>
             )}
         </div>
+        <ConfirmDialog {...confirmProps} />
+        </>
     )
 }

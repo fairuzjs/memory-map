@@ -1407,30 +1407,82 @@ export default function LandingPage() {
 
                 {/* Changelog Section */}
                 <div className="border-t border-white/[0.06] pt-6">
-                  <div className="flex items-center gap-2 mb-6">
-                    <GitBranch className="w-4.5 h-4.5 text-indigo-400" />
+                  <div className="flex items-center gap-2.5 mb-6">
+                    <div className="w-7 h-7 rounded-lg bg-indigo-500/15 border border-indigo-500/20 flex items-center justify-center">
+                      <GitBranch className="w-3.5 h-3.5 text-indigo-400" />
+                    </div>
                     <h4 className="text-white font-bold text-lg font-[Outfit]">Changelog Terbaru</h4>
+                    <span className="ml-auto px-2.5 py-1 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold rounded-full border border-emerald-500/20 uppercase tracking-wider">Live</span>
                   </div>
 
-                  <div className="space-y-4">
-                    {/* V2.2 - Latest */}
-                    <div className="relative overflow-hidden rounded-xl border border-indigo-500/20 bg-indigo-500/[0.04] p-5">
-                      <div className="absolute top-0 right-0 w-24 h-24 pointer-events-none" style={{ background: "radial-gradient(circle at top right, rgba(99,102,241,0.12), transparent 70%)" }} />
-                      <div className="flex items-center gap-2.5 mb-3">
-                        <span className="px-2.5 py-1 bg-indigo-500/20 text-indigo-300 text-[10px] font-bold rounded-full border border-indigo-500/25 uppercase tracking-wider">Terbaru</span>
+                  <div className="relative space-y-3">
+                    {/* Timeline connector */}
+                    <div className="absolute left-[19px] top-8 bottom-8 w-[1px] bg-gradient-to-b from-[#1DB954]/40 via-indigo-500/20 to-transparent pointer-events-none" />
+
+                    {/* V2.3 — Spotify Integration (NEW) */}
+                    <div className="relative overflow-hidden rounded-2xl border border-[#1DB954]/30 p-5" style={{ background: "linear-gradient(135deg, rgba(29,185,84,0.06), rgba(0,0,0,0), rgba(29,185,84,0.03))" }}>
+                      {/* Spotify glow */}
+                      <div className="absolute top-0 right-0 w-32 h-32 pointer-events-none" style={{ background: "radial-gradient(circle at top right, rgba(29,185,84,0.15), transparent 70%)" }} />
+                      <div className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-2xl" style={{ background: "linear-gradient(180deg, #1DB954, rgba(29,185,84,0.2))" }} />
+
+                      <div className="flex items-center gap-2.5 mb-3 pl-1">
+                        {/* Spotify dot on timeline */}
+                        <div className="absolute left-[14px] w-[11px] h-[11px] rounded-full border-2 border-[#1DB954] bg-[#0a0f0a] shadow-[0_0_8px_rgba(29,185,84,0.6)]" />
+                        <span className="px-2.5 py-1 text-[10px] font-bold rounded-full uppercase tracking-wider border" style={{ backgroundColor: "rgba(29,185,84,0.15)", color: "#1DB954", borderColor: "rgba(29,185,84,0.35)" }}>Terbaru</span>
+                        <span className="px-2.5 py-1 bg-white/[0.05] text-neutral-400 text-[10px] font-semibold rounded-full border border-white/[0.08] uppercase tracking-wider">v2.3</span>
+                        <span className="text-[11px] text-neutral-500 ml-auto">April 2026</span>
+                      </div>
+
+                      <div className="flex items-center gap-2.5 mb-3 pl-1">
+                        <svg viewBox="0 0 24 24" className="w-4 h-4 shrink-0" fill="#1DB954">
+                          <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+                        </svg>
+                        <h5 className="text-white font-bold text-[15px] font-[Outfit]">Spotify Music Integration</h5>
+                      </div>
+
+                      <div className="space-y-2 pl-1">
+                        {[
+                          { text: "Integrasi Spotify API untuk mencari dan memilih lagu langsung dari platform.", tag: "Integrasi" },
+                          { text: "Lampirkan lagu Spotify ke setiap kenangan untuk menciptakan soundtrack memorimu.", tag: "Fitur Baru" },
+                          { text: "Pemutar Spotify Embed terintegrasi pada detail kenangan dan peta interaktif.", tag: "Fitur Baru" },
+                        ].map((item, i) => (
+                          <div key={i} className="flex items-start gap-2.5">
+                            <div className="w-5 h-5 rounded-md flex items-center justify-center shrink-0 mt-0.5" style={{ backgroundColor: "rgba(29,185,84,0.12)", border: "1px solid rgba(29,185,84,0.25)" }}>
+                              <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "#1DB954" }} />
+                            </div>
+                            <div className="flex-1">
+                              <span className="text-sm text-neutral-300 leading-relaxed">{item.text}</span>
+                              <span className="ml-2 px-1.5 py-0.5 text-[9px] font-bold rounded uppercase tracking-wider" style={{ backgroundColor: "rgba(29,185,84,0.1)", color: "#1DB954" }}>{item.tag}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* V2.2 — Memory Points */}
+                    <div className="relative overflow-hidden rounded-2xl border border-amber-500/20 bg-amber-500/[0.03] p-5 hover:bg-amber-500/[0.05] transition-colors">
+                      <div className="absolute top-0 right-0 w-28 h-28 pointer-events-none" style={{ background: "radial-gradient(circle at top right, rgba(245,158,11,0.1), transparent 70%)" }} />
+                      <div className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-2xl bg-amber-500/40" />
+
+                      <div className="flex items-center gap-2.5 mb-3 pl-1">
+                        <div className="absolute left-[14px] w-[11px] h-[11px] rounded-full border-2 border-amber-500/60 bg-[#0c0a06]" />
                         <span className="px-2.5 py-1 bg-white/[0.05] text-neutral-400 text-[10px] font-semibold rounded-full border border-white/[0.08] uppercase tracking-wider">v2.2</span>
                         <span className="text-[11px] text-neutral-500 ml-auto">April 2026</span>
                       </div>
-                      <h5 className="text-white font-bold text-[15px] mb-3 font-[Outfit]">Sistem Memory Point</h5>
-                      <div className="space-y-2">
+
+                      <div className="flex items-center gap-2.5 mb-3 pl-1">
+                        <Star className="w-4 h-4 text-amber-400 shrink-0" />
+                        <h5 className="text-white font-bold text-[15px] font-[Outfit]">Sistem Memory Point</h5>
+                      </div>
+
+                      <div className="space-y-2 pl-1">
                         {[
-                          { icon: Sparkles, text: "Integrasi fitur Exchange Memory Point untuk menukar poin.", type: "Fitur Baru" },
-                          { icon: Sparkles, text: "Peluncuran fitur Topup Memory Point secara manual.", type: "Fitur Baru" },
-                          { icon: Music, text: "Menambahkan fitur upload musik pada kenangan untuk membuat momen lebih hidup.", type: "Fitur Baru" },
+                          { icon: Sparkles, text: "Integrasi fitur Exchange Memory Point untuk menukar poin dengan item eksklusif.", color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20" },
+                          { icon: Sparkles, text: "Peluncuran fitur Topup Memory Point secara manual dengan konfirmasi admin.", color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20" },
                         ].map((item, i) => (
                           <div key={i} className="flex items-start gap-2.5">
-                            <div className="w-5 h-5 rounded-md bg-indigo-500/15 flex items-center justify-center shrink-0 mt-0.5">
-                              <item.icon className="w-3 h-3 text-indigo-400" />
+                            <div className={`w-5 h-5 rounded-md ${item.bg} border ${item.border} flex items-center justify-center shrink-0 mt-0.5`}>
+                              <item.icon className={`w-3 h-3 ${item.color}`} />
                             </div>
                             <span className="text-sm text-neutral-300 leading-relaxed">{item.text}</span>
                           </div>
@@ -1438,22 +1490,30 @@ export default function LandingPage() {
                       </div>
                     </div>
 
-                    {/* V2.1 */}
-                    <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-5 hover:bg-white/[0.03] transition-colors">
-                      <div className="flex items-center gap-2.5 mb-3">
+                    {/* V2.1 — Community */}
+                    <div className="relative overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.015] p-5 hover:bg-white/[0.03] transition-colors">
+                      <div className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-2xl bg-sky-500/30" />
+
+                      <div className="flex items-center gap-2.5 mb-3 pl-1">
+                        <div className="absolute left-[14px] w-[11px] h-[11px] rounded-full border-2 border-sky-500/40 bg-[#06090c]" />
                         <span className="px-2.5 py-1 bg-white/[0.05] text-neutral-400 text-[10px] font-semibold rounded-full border border-white/[0.08] uppercase tracking-wider">v2.1</span>
                         <span className="text-[11px] text-neutral-500 ml-auto">Maret 2026</span>
                       </div>
-                      <h5 className="text-white font-bold text-[15px] mb-3 font-[Outfit]">Fitur Komunitas & Peningkatan Performa</h5>
-                      <div className="space-y-2">
+
+                      <div className="flex items-center gap-2.5 mb-3 pl-1">
+                        <Users className="w-4 h-4 text-sky-400 shrink-0" />
+                        <h5 className="text-white font-bold text-[15px] font-[Outfit]">Fitur Komunitas & Peningkatan Performa</h5>
+                      </div>
+
+                      <div className="space-y-2 pl-1">
                         {[
-                          { icon: Sparkles, text: "Penambahan halaman jelajah secara real-time untuk melihat kenangan dari komunitas global." },
-                          { icon: Zap, text: "Optimasi kecepatan rendering peta interaktif hingga 30% lebih cepat pada perangkat mobile." },
-                          { icon: Bug, text: "Perbaikan bug minor terkait sinkronisasi data profil pengguna." },
+                          { icon: Globe, text: "Penambahan halaman jelajah real-time untuk melihat kenangan dari komunitas global.", color: "text-sky-400", bg: "bg-sky-500/10", border: "border-sky-500/20" },
+                          { icon: Zap, text: "Optimasi kecepatan rendering peta interaktif hingga 30% lebih cepat pada perangkat mobile.", color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
+                          { icon: Bug, text: "Perbaikan bug minor terkait sinkronisasi data profil pengguna.", color: "text-neutral-400", bg: "bg-white/[0.06]", border: "border-white/[0.08]" },
                         ].map((item, i) => (
                           <div key={i} className="flex items-start gap-2.5">
-                            <div className="w-5 h-5 rounded-md bg-white/[0.06] flex items-center justify-center shrink-0 mt-0.5">
-                              <item.icon className="w-3 h-3 text-neutral-500" />
+                            <div className={`w-5 h-5 rounded-md ${item.bg} border ${item.border} flex items-center justify-center shrink-0 mt-0.5`}>
+                              <item.icon className={`w-3 h-3 ${item.color}`} />
                             </div>
                             <span className="text-sm text-neutral-400 leading-relaxed">{item.text}</span>
                           </div>
@@ -1461,22 +1521,30 @@ export default function LandingPage() {
                       </div>
                     </div>
 
-                    {/* V2.0 */}
-                    <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-5 hover:bg-white/[0.03] transition-colors">
-                      <div className="flex items-center gap-2.5 mb-3">
+                    {/* V2.0 — Dashboard Redesign */}
+                    <div className="relative overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.015] p-5 hover:bg-white/[0.03] transition-colors">
+                      <div className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-2xl bg-violet-500/30" />
+
+                      <div className="flex items-center gap-2.5 mb-3 pl-1">
+                        <div className="absolute left-[14px] w-[11px] h-[11px] rounded-full border-2 border-violet-500/40 bg-[#09060c]" />
                         <span className="px-2.5 py-1 bg-white/[0.05] text-neutral-400 text-[10px] font-semibold rounded-full border border-white/[0.08] uppercase tracking-wider">v2.0</span>
                         <span className="text-[11px] text-neutral-500 ml-auto">Februari 2026</span>
                       </div>
-                      <h5 className="text-white font-bold text-[15px] mb-3 font-[Outfit]">Desain Ulang Dashboard</h5>
-                      <div className="space-y-2">
+
+                      <div className="flex items-center gap-2.5 mb-3 pl-1">
+                        <Palette className="w-4 h-4 text-violet-400 shrink-0" />
+                        <h5 className="text-white font-bold text-[15px] font-[Outfit]">Desain Ulang Dashboard</h5>
+                      </div>
+
+                      <div className="space-y-2 pl-1">
                         {[
-                          { icon: Palette, text: "Pembaruan antarmuka pengguna secara menyeluruh dengan elemen glassmorphism." },
-                          { icon: Sparkles, text: "Penambahan mode gelap cerdas (smart dark mode) dengan kontras yang disempurnakan." },
-                          { icon: Sparkles, text: "Peluncuran sistem filter canggih untuk memilah memori berdasarkan kategori." },
+                          { icon: Palette, text: "Pembaruan antarmuka pengguna secara menyeluruh dengan elemen glassmorphism.", color: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/20" },
+                          { icon: Sparkles, text: "Mode gelap cerdas (smart dark mode) dengan kontras yang disempurnakan.", color: "text-indigo-400", bg: "bg-indigo-500/10", border: "border-indigo-500/20" },
+                          { icon: Sparkles, text: "Sistem filter canggih untuk memilah memori berdasarkan kategori.", color: "text-indigo-400", bg: "bg-indigo-500/10", border: "border-indigo-500/20" },
                         ].map((item, i) => (
                           <div key={i} className="flex items-start gap-2.5">
-                            <div className="w-5 h-5 rounded-md bg-white/[0.06] flex items-center justify-center shrink-0 mt-0.5">
-                              <item.icon className="w-3 h-3 text-neutral-500" />
+                            <div className={`w-5 h-5 rounded-md ${item.bg} border ${item.border} flex items-center justify-center shrink-0 mt-0.5`}>
+                              <item.icon className={`w-3 h-3 ${item.color}`} />
                             </div>
                             <span className="text-sm text-neutral-400 leading-relaxed">{item.text}</span>
                           </div>
@@ -1484,23 +1552,31 @@ export default function LandingPage() {
                       </div>
                     </div>
 
-                    {/* V1.5 */}
-                    <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-5 hover:bg-white/[0.03] transition-colors">
-                      <div className="flex items-center gap-2.5 mb-3">
+                    {/* V1.5 — Initial Release */}
+                    <div className="relative overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.015] p-5 hover:bg-white/[0.03] transition-colors">
+                      <div className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-2xl bg-white/10" />
+
+                      <div className="flex items-center gap-2.5 mb-3 pl-1">
+                        <div className="absolute left-[14px] w-[11px] h-[11px] rounded-full border-2 border-white/20 bg-[#0c0c16]" />
                         <span className="px-2.5 py-1 bg-white/[0.05] text-neutral-400 text-[10px] font-semibold rounded-full border border-white/[0.08] uppercase tracking-wider">v1.5</span>
                         <span className="text-[11px] text-neutral-500 ml-auto">Januari 2026</span>
                       </div>
-                      <h5 className="text-white font-bold text-[15px] mb-3 font-[Outfit]">Rilis Utama</h5>
-                      <div className="space-y-2">
+
+                      <div className="flex items-center gap-2.5 mb-3 pl-1">
+                        <MapPin className="w-4 h-4 text-neutral-400 shrink-0" />
+                        <h5 className="text-white font-bold text-[15px] font-[Outfit]">Rilis Utama</h5>
+                      </div>
+
+                      <div className="space-y-2 pl-1">
                         {[
-                          { icon: MapPin, text: "Fitur penanda lokasi interaktif yang otomatis menyinkronkan zona waktu." },
-                          { icon: Lock, text: "Profil pengguna dasar beserta fitur Single Sign-On (SSO) Google terintegrasi." },
+                          { icon: MapPin, text: "Fitur penanda lokasi interaktif yang otomatis menyinkronkan zona waktu.", color: "text-neutral-400", bg: "bg-white/[0.06]", border: "border-white/[0.08]" },
+                          { icon: Lock, text: "Profil pengguna dasar beserta fitur Single Sign-On (SSO) Google terintegrasi.", color: "text-neutral-400", bg: "bg-white/[0.06]", border: "border-white/[0.08]" },
                         ].map((item, i) => (
                           <div key={i} className="flex items-start gap-2.5">
-                            <div className="w-5 h-5 rounded-md bg-white/[0.06] flex items-center justify-center shrink-0 mt-0.5">
-                              <item.icon className="w-3 h-3 text-neutral-500" />
+                            <div className={`w-5 h-5 rounded-md ${item.bg} border ${item.border} flex items-center justify-center shrink-0 mt-0.5`}>
+                              <item.icon className={`w-3 h-3 ${item.color}`} />
                             </div>
-                            <span className="text-sm text-neutral-400 leading-relaxed">{item.text}</span>
+                            <span className="text-sm text-neutral-500 leading-relaxed">{item.text}</span>
                           </div>
                         ))}
                       </div>
@@ -1973,21 +2049,49 @@ export default function LandingPage() {
               className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-white/[0.12] shadow-2xl flex flex-col"
               style={{ background: "linear-gradient(180deg, rgba(14,14,24,0.98), rgba(8,8,16,0.99))" }}
             >
-              {/* Top accent line */}
-              <div className="h-[2px] w-full" style={{ background: "linear-gradient(90deg, transparent, #818cf8, #c084fc, #818cf8, transparent)" }} />
+              {/* Top accent line — Spotify green on slide 0, amber on slide 1 */}
+              <motion.div
+                animate={{ background: welcomeSlide === 0
+                  ? "linear-gradient(90deg, transparent, #1DB954, #16c454, #1DB954, transparent)"
+                  : "linear-gradient(90deg, transparent, #f59e0b, #fbbf24, #f59e0b, transparent)"
+                }}
+                transition={{ duration: 0.4 }}
+                className="h-[2px] w-full"
+              />
 
               {/* Header */}
               <div className="flex items-center justify-between px-6 pt-5 pb-3">
                 <div className="flex items-center gap-3">
                   <div className="relative">
-                    <div className="absolute inset-0 bg-indigo-500/30 rounded-xl blur-lg" />
-                    <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/25">
-                      <Sparkles className="w-5 h-5 text-white" />
-                    </div>
+                    <motion.div
+                      animate={{ boxShadow: welcomeSlide === 0 ? "0 0 24px rgba(29,185,84,0.4)" : "0 0 24px rgba(245,158,11,0.4)" }}
+                      className="absolute inset-0 rounded-xl blur-lg"
+                      style={{ backgroundColor: welcomeSlide === 0 ? "rgba(29,185,84,0.25)" : "rgba(245,158,11,0.25)" }}
+                    />
+                    <motion.div
+                      animate={{ background: welcomeSlide === 0
+                        ? "linear-gradient(135deg, #1a9e4a, #1DB954)"
+                        : "linear-gradient(135deg, #d97706, #f59e0b)"
+                      }}
+                      className="relative w-10 h-10 rounded-xl flex items-center justify-center shadow-lg"
+                    >
+                      {welcomeSlide === 0 ? (
+                        <svg viewBox="0 0 24 24" className="w-5 h-5" fill="white">
+                          <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+                        </svg>
+                      ) : (
+                        <Star className="w-5 h-5 text-white fill-white" />
+                      )}
+                    </motion.div>
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-white font-[Outfit] leading-tight">Yang Baru di MemoryMap</h3>
-                    <p className="text-[11px] text-neutral-500 mt-0.5">Fitur terbaru untuk pengalamanmu</p>
+                    <motion.p
+                      animate={{ color: welcomeSlide === 0 ? "#1DB954" : "#f59e0b" }}
+                      className="text-[11px] mt-0.5 font-medium"
+                    >
+                      {welcomeSlide === 0 ? "✦ Spotify Music Integration" : "✦ Memory Point Exchange"}
+                    </motion.p>
                   </div>
                 </div>
                 <button
@@ -2009,55 +2113,87 @@ export default function LandingPage() {
                       exit={{ opacity: 0, x: -60 }}
                       transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
                     >
-                      {/* Slide 1: Upload Music */}
-                      <div className="relative overflow-hidden rounded-2xl border border-fuchsia-500/20 bg-fuchsia-500/[0.04] p-5 mb-4">
-                        <div className="absolute top-0 right-0 w-40 h-40 pointer-events-none" style={{ background: "radial-gradient(circle at top right, rgba(217,70,239,0.12), transparent 70%)" }} />
+                      {/* Slide 1: Spotify Integration */}
+                      <div className="relative overflow-hidden rounded-2xl border border-[#1DB954]/25 bg-[#1DB954]/[0.04] p-5 mb-4">
+                        {/* Spotify ambient glow */}
+                        <div className="absolute top-0 right-0 w-48 h-48 pointer-events-none" style={{ background: "radial-gradient(circle at top right, rgba(29,185,84,0.15), transparent 70%)" }} />
+                        <div className="absolute bottom-0 left-0 w-32 h-32 pointer-events-none" style={{ background: "radial-gradient(circle at bottom left, rgba(29,185,84,0.08), transparent 70%)" }} />
 
-                        {/* Music Player Mockup */}
-                        <div className="relative rounded-xl border border-white/[0.08] bg-[#0c0c16]/80 p-4 mb-4 overflow-hidden">
-                          <div className="absolute inset-0 opacity-30" style={{ background: "linear-gradient(135deg, rgba(217,70,239,0.15), rgba(99,102,241,0.1), transparent)" }} />
+                        {/* Spotify Player Mockup */}
+                        <div className="relative rounded-xl border border-[#1DB954]/20 bg-[#0a0a0f]/90 p-4 mb-4 overflow-hidden">
+                          <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(29,185,84,0.06), rgba(0,0,0,0), rgba(29,185,84,0.03))" }} />
+
+                          {/* Now Playing label */}
+                          <div className="flex items-center gap-1.5 mb-3 relative">
+                            <div className="flex gap-[3px] items-end h-3">
+                              {[1, 2, 3].map((_, i) => (
+                                <motion.div
+                                  key={i}
+                                  className="w-[3px] rounded-full"
+                                  style={{ backgroundColor: "#1DB954" }}
+                                  animate={{ height: ["40%", "100%", "60%", "90%", "40%"] }}
+                                  transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.2, ease: "easeInOut" }}
+                                />
+                              ))}
+                            </div>
+                            <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "#1DB954" }}>Now Playing</span>
+                          </div>
+
                           <div className="relative flex items-center gap-4">
-                            {/* Album art mockup */}
-                            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-fuchsia-500 to-violet-600 flex items-center justify-center shadow-lg shadow-fuchsia-500/20 shrink-0">
-                              <Music className="w-7 h-7 text-white" />
+                            {/* Album art with Spotify logo watermark */}
+                            <div className="relative w-16 h-16 rounded-xl overflow-hidden shrink-0 shadow-lg shadow-black/40">
+                              <div className="absolute inset-0 bg-gradient-to-br from-[#1DB954]/40 to-[#191414]" />
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                {/* Spotify logo SVG */}
+                                <svg viewBox="0 0 24 24" className="w-8 h-8" fill="#1DB954">
+                                  <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+                                </svg>
+                              </div>
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-bold text-white truncate">The 1975 - About You</p>
-                              <p className="text-[11px] text-neutral-500 mt-0.5">Matthew Healy, George Daniel</p>
-                              {/* Progress bar mockup */}
-                              <div className="mt-2.5 w-full h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
-                                <motion.div
-                                  initial={{ width: "0%" }}
-                                  animate={{ width: "62%" }}
-                                  transition={{ duration: 2, ease: "easeOut", delay: 0.5 }}
-                                  className="h-full rounded-full"
-                                  style={{ background: "linear-gradient(90deg, #d946ef, #8b5cf6)" }}
-                                />
-                              </div>
-                              <div className="flex items-center justify-between mt-1">
-                                <span className="text-[9px] text-neutral-600">2:14</span>
-                                <span className="text-[9px] text-neutral-600">3:42</span>
+                              <p className="text-sm font-bold text-white truncate">Kicau Mania</p>
+                              <p className="text-[11px] text-neutral-400 mt-0.5 truncate">Ndayboy Genk · BoyCord Music</p>
+                              {/* Spotify-style progress bar */}
+                              <div className="mt-2.5 relative">
+                                <div className="w-full h-1 bg-white/[0.1] rounded-full overflow-hidden">
+                                  <motion.div
+                                    initial={{ width: "0%" }}
+                                    animate={{ width: "45%" }}
+                                    transition={{ duration: 2.5, ease: "easeOut", delay: 0.4 }}
+                                    className="h-full rounded-full"
+                                    style={{ backgroundColor: "#1DB954" }}
+                                  />
+                                </div>
+                                <div className="flex items-center justify-between mt-1">
+                                  <span className="text-[9px] text-neutral-500">1:57</span>
+                                  <span className="text-[9px] text-neutral-500">4:41</span>
+                                </div>
                               </div>
                             </div>
                           </div>
+
                           {/* Controls */}
-                          <div className="relative flex items-center justify-center gap-5 mt-3">
-                            <SkipForward className="w-4 h-4 text-neutral-600 rotate-180" />
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-fuchsia-500 to-violet-600 flex items-center justify-center shadow-lg shadow-fuchsia-500/30">
-                              <Play className="w-4.5 h-4.5 text-white ml-0.5" />
+                          <div className="relative flex items-center justify-center gap-6 mt-3">
+                            <SkipForward className="w-4 h-4 text-neutral-500 rotate-180 hover:text-white transition-colors" />
+                            <div
+                              className="w-10 h-10 rounded-full flex items-center justify-center shadow-lg"
+                              style={{ backgroundColor: "#1DB954", boxShadow: "0 0 20px rgba(29,185,84,0.35)" }}
+                            >
+                              <Play className="w-4 h-4 text-black ml-0.5" fill="black" />
                             </div>
-                            <SkipForward className="w-4 h-4 text-neutral-600" />
+                            <SkipForward className="w-4 h-4 text-neutral-500 hover:text-white transition-colors" />
                           </div>
                         </div>
 
+                        {/* Description */}
                         <div className="relative">
                           <div className="flex items-center gap-2 mb-2">
-                            <span className="px-2 py-0.5 bg-fuchsia-500/20 text-fuchsia-300 text-[10px] font-bold rounded-full border border-fuchsia-500/25 uppercase tracking-wider">Baru</span>
-                            <span className="text-[11px] text-neutral-500">v2.2</span>
+                            <span className="px-2 py-0.5 text-[10px] font-bold rounded-full uppercase tracking-wider border" style={{ backgroundColor: "rgba(29,185,84,0.15)", color: "#1DB954", borderColor: "rgba(29,185,84,0.3)" }}>Baru</span>
+                            <span className="text-[11px] text-neutral-500">v2.3</span>
                           </div>
-                          <h4 className="text-white font-bold text-lg font-[Outfit] mb-1.5 leading-tight">Upload Musik</h4>
+                          <h4 className="text-white font-bold text-lg font-[Outfit] mb-1.5 leading-tight">Spotify Integration</h4>
                           <p className="text-neutral-400 text-sm leading-relaxed">
-                            Kini kamu bisa menambahkan lagu ke setiap kenanganmu. Upload musik favoritmu dan biarkan musik menghidupkan kembali momen-momen berharga itu.
+                            Hubungkan kenanganmu dengan musik dari Spotify. Cari lagu favoritmu dan jadikan setiap memori lebih hidup dengan musik yang tepat.
                           </p>
                         </div>
                       </div>
@@ -2146,7 +2282,7 @@ export default function LandingPage() {
                       <motion.div
                         animate={{
                           width: welcomeSlide === i ? 24 : 8,
-                          backgroundColor: welcomeSlide === i ? (i === 0 ? "#d946ef" : "#f59e0b") : "rgba(255,255,255,0.15)",
+                          backgroundColor: welcomeSlide === i ? (i === 0 ? "#1DB954" : "#f59e0b") : "rgba(255,255,255,0.15)",
                         }}
                         transition={{ type: "spring", stiffness: 300, damping: 25 }}
                         className="h-2 rounded-full"
@@ -2167,10 +2303,10 @@ export default function LandingPage() {
                       </button>
                       <button
                         onClick={() => setWelcomeSlide(1)}
-                        className="flex-1 py-3 rounded-xl text-sm font-bold text-white relative overflow-hidden group"
-                        style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
+                        className="flex-1 py-3 rounded-xl text-sm font-bold text-black relative overflow-hidden group"
+                        style={{ background: "#1DB954", boxShadow: "0 0 20px rgba(29,185,84,0.3)" }}
                       >
-                        <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "linear-gradient(135deg, #818cf8, #a78bfa)" }} />
+                        <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "#17a349" }} />
                         <span className="relative flex items-center justify-center gap-1.5">
                           Selanjutnya
                           <ChevronRight className="w-4 h-4" />

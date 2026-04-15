@@ -16,6 +16,7 @@ import { ReportDialog } from "@/components/ui/ReportDialog"
 import { StickerLayer, StickerPlacement } from "@/components/memories/StickerLayer"
 import { StickerPanel } from "@/components/memories/StickerPanel"
 import { MemoryMusicPlayer } from "@/components/memories/MemoryMusicPlayer"
+import { ConfirmDialog, useConfirm } from "@/components/ui/ConfirmDialog"
 
 export default function MemoryDetailPage() {
     const { id } = useParams()
@@ -67,18 +68,28 @@ export default function MemoryDetailPage() {
             .catch(() => {})
     }, [id, router])
 
+    const { confirmProps, openConfirm } = useConfirm()
+
     const handleDelete = async () => {
-        if (!confirm("Apakah Anda yakin ingin menghapus kenangan ini?")) return
-        setIsDeleting(true)
-        try {
-            const res = await fetch(`/api/memories/${id}`, { method: "DELETE" })
-            if (!res.ok) throw new Error("Gagal")
-            toast.success("Kenangan berhasil dihapus")
-            router.push("/memories")
-        } catch {
-            toast.error("Gagal menghapus")
-            setIsDeleting(false)
-        }
+        openConfirm({
+            title: "Hapus Kenangan Ini?",
+            description: "Tindakan ini tidak dapat dibatalkan. Kenangan, foto, dan semua datanya akan dihapus secara permanen.",
+            confirmLabel: "Ya, Hapus",
+            cancelLabel: "Batal",
+            variant: "danger",
+            onConfirm: async () => {
+                setIsDeleting(true)
+                try {
+                    const res = await fetch(`/api/memories/${id}`, { method: "DELETE" })
+                    if (!res.ok) throw new Error("Gagal")
+                    toast.success("Kenangan berhasil dihapus")
+                    router.push("/memories")
+                } catch {
+                    toast.error("Gagal menghapus")
+                    setIsDeleting(false)
+                }
+            }
+        })
     }
 
     const handleStickerUpdate = useCallback(async (placementId: string, posX: number, posY: number, rotation: number, scale: number) => {
@@ -515,6 +526,9 @@ export default function MemoryDetailPage() {
                     onClose={() => setShowStickerPanel(false)}
                 />
             )}
+
+            {/* ─── Confirm Dialog ─── */}
+            <ConfirmDialog {...confirmProps} />
         </div>
     )
 }

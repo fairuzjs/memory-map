@@ -11,6 +11,7 @@ import {
 } from "lucide-react"
 import { timeAgo } from "@/lib/utils"
 import toast from "react-hot-toast"
+import { ConfirmDialog, useConfirm } from "@/components/ui/ConfirmDialog"
 
 type CategoryFilter = "ALL" | "SUGGESTION" | "BUG" | "QUESTION" | "OTHER"
 
@@ -48,6 +49,7 @@ export default function AdminFeedbacksPage() {
     const [replyingTo, setReplyingTo]         = useState<string | null>(null)
     const [replyText, setReplyText]           = useState("")
     const [isSubmittingReply, setIsSubmittingReply] = useState(false)
+    const { confirmProps, openConfirm } = useConfirm()
 
     useEffect(() => {
         if (status === "unauthenticated" || (session?.user && session.user.role !== "ADMIN")) {
@@ -84,15 +86,21 @@ export default function AdminFeedbacksPage() {
     }
 
     const handleDelete = async (id: string) => {
-        if (!confirm("Hapus tiket ini permanen?")) return
-        try {
-            const res = await fetch(`/api/admin/feedbacks/${id}`, { method: "DELETE" })
-            if (!res.ok) throw new Error("Failed")
-            setFeedbacks(prev => prev.filter(f => f.id !== id))
-            if (selectedId === id) setSelectedId(null)
-            if (expandedId === id) setExpandedId(null)
-            toast.success("Tiket dihapus")
-        } catch { toast.error("Gagal menghapus") }
+        openConfirm({
+            title: "Hapus Tiket Ini?",
+            description: "Tiket feedback ini akan dihapus secara permanen beserta semua balasan di dalamnya.",
+            confirmLabel: "Hapus Tiket",
+            cancelLabel: "Batal",
+            variant: "danger",
+            onConfirm: async () => {
+                const res = await fetch(`/api/admin/feedbacks/${id}`, { method: "DELETE" })
+                if (!res.ok) throw new Error("Failed")
+                setFeedbacks(prev => prev.filter(f => f.id !== id))
+                if (selectedId === id) setSelectedId(null)
+                if (expandedId === id) setExpandedId(null)
+                toast.success("Tiket dihapus")
+            }
+        })
     }
 
     const filtered = categoryFilter === "ALL"
@@ -264,6 +272,7 @@ export default function AdminFeedbacksPage() {
     }
 
     return (
+        <>
         <div className="space-y-6 pb-10">
 
             {/* ── Page Header ── */}
@@ -518,5 +527,7 @@ export default function AdminFeedbacksPage() {
                 </>
             )}
         </div>
+        <ConfirmDialog {...confirmProps} />
+        </>
     )
 }

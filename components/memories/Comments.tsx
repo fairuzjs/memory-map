@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react"
 import toast from "react-hot-toast"
 import Link from "next/link"
 import { Button } from "@/components/ui/Button"
+import { ConfirmDialog, useConfirm } from "@/components/ui/ConfirmDialog"
 
 export function Comments({ memoryId, initialComments }: { memoryId: string, initialComments: any[] }) {
     const { data: session } = useSession()
@@ -53,33 +54,38 @@ export function Comments({ memoryId, initialComments }: { memoryId: string, init
         }
     }
 
-    const handleDelete = async (commentId: string, parentId: string | null = null) => {
-        if (!confirm("Delete this comment?")) return
-        try {
-            const res = await fetch(`/api/memories/${memoryId}/comments/${commentId}`, { method: "DELETE" })
-            if (!res.ok) throw new Error("Failed to delete")
+    const { confirmProps, openConfirm } = useConfirm()
 
-            if (parentId) {
-                // Remove from replies
-                setComments(comments.map((c: any) => {
-                    if (c.id === parentId) {
-                        return { ...c, replies: c.replies.filter((r: any) => r.id !== commentId) }
-                    }
-                    return c
-                }))
-            } else {
-                // Remove from main comments
-                setComments(comments.filter((c: any) => c.id !== commentId))
+    const handleDelete = async (commentId: string, parentId: string | null = null) => {
+        openConfirm({
+            title: "Hapus Komentar?",
+            description: "Komentar ini akan dihapus secara permanen dan tidak dapat dikembalikan.",
+            confirmLabel: "Hapus",
+            cancelLabel: "Batal",
+            variant: "danger",
+            onConfirm: async () => {
+                const res = await fetch(`/api/memories/${memoryId}/comments/${commentId}`, { method: "DELETE" })
+                if (!res.ok) throw new Error("Failed to delete")
+
+                if (parentId) {
+                    setComments(comments.map((c: any) => {
+                        if (c.id === parentId) {
+                            return { ...c, replies: c.replies.filter((r: any) => r.id !== commentId) }
+                        }
+                        return c
+                    }))
+                } else {
+                    setComments(comments.filter((c: any) => c.id !== commentId))
+                }
+                toast.success("Comment deleted")
             }
-            toast.success("Comment deleted")
-        } catch (e) {
-            toast.error("Failed to delete comment")
-        }
+        })
     }
 
     const totalCount = comments.reduce((acc, c) => acc + 1 + (c.replies?.length || 0), 0)
 
     return (
+        <>
         <div className="mt-8 pt-8 border-t border-neutral-800">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
@@ -208,5 +214,7 @@ export function Comments({ memoryId, initialComments }: { memoryId: string, init
                 ))}
             </div>
         </div>
+        <ConfirmDialog {...confirmProps} />
+        </>
     )
 }

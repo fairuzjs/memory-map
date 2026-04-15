@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { Bell, MessageCircle, Heart, Loader2, X, Users, CheckCircle2, XCircle } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
+import { ConfirmDialog, useConfirm } from "@/components/ui/ConfirmDialog"
 
 const timeAgo = (date: string) => {
     const diff = new Date().getTime() - new Date(date).getTime()
@@ -41,6 +42,7 @@ export function NotificationDropdown() {
     const [loading, setLoading] = useState(false)
     const [unreadCount, setUnreadCount] = useState(0)
     const [respondingId, setRespondingId] = useState<string | null>(null)
+    const { confirmProps, openConfirm } = useConfirm()
 
     const fetchNotifications = async () => {
         setLoading(true)
@@ -112,18 +114,22 @@ export function NotificationDropdown() {
     }
 
     const deleteAllNotifications = async () => {
-        if (!confirm("Are you sure you want to delete all notifications?")) return
-        try {
-            await fetch("/api/notifications", {
-                method: "DELETE",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ deleteAll: true })
-            })
-            setNotifications([])
-            setUnreadCount(0)
-        } catch (error) {
-            console.error("Failed to delete all notifications")
-        }
+        openConfirm({
+            title: "Hapus Semua Notifikasi?",
+            description: "Seluruh riwayat notifikasi akan dihapus permanen. Tindakan ini tidak dapat dibatalkan.",
+            confirmLabel: "Hapus Semua",
+            cancelLabel: "Batal",
+            variant: "warning",
+            onConfirm: async () => {
+                await fetch("/api/notifications", {
+                    method: "DELETE",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ deleteAll: true })
+                })
+                setNotifications([])
+                setUnreadCount(0)
+            }
+        })
     }
 
     // Handle accept / decline collaboration invite
@@ -170,8 +176,9 @@ export function NotificationDropdown() {
 
 
     return (
-        <div className="relative">
-            <button
+        <>
+            <div className="relative">
+                <button
                 onClick={() => {
                     setIsOpen(!isOpen)
                     if (!isOpen) fetchNotifications()
@@ -361,5 +368,7 @@ export function NotificationDropdown() {
                 )}
             </AnimatePresence>
         </div>
+        <ConfirmDialog {...confirmProps} />
+        </>
     )
 }
