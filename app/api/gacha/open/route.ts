@@ -5,21 +5,28 @@ import { auth } from "@/lib/auth"
 // ── Tier Configuration ──────────────────────────────────────────
 // Drop rates must sum to 100
 const TIER_CONFIG = {
-    BASIC:  { minPrice: 0,   maxPrice: 100, dropRate: 55 },
-    ELITE:  { minPrice: 101, maxPrice: 175, dropRate: 30 },
-    EPIC:   { minPrice: 176, maxPrice: 275, dropRate: 12 },
-    LEGEND: { minPrice: 276, maxPrice: Infinity, dropRate: 3 },
+    BASIC:  { minPrice: 0,   maxPrice: 100 },
+    ELITE:  { minPrice: 101, maxPrice: 175 },
+    EPIC:   { minPrice: 176, maxPrice: 275 },
+    LEGEND: { minPrice: 276, maxPrice: Infinity },
 } as const
 
 type TierName = keyof typeof TIER_CONFIG
 
-const BOX_PRICE_SINGLE = 20
-const BOX_PRICE_MULTI = 85 // 5x box, discount (saves 15 poin)
-const MULTI_COUNT = 5
+export type BoosterLevel = 0 | 1 | 2 | 3;
+
+export const BOOSTER_CONFIGS: Record<BoosterLevel, { name: string, single: number, multi: number, rates: Record<TierName, number> }> = {
+    0: { name: "Default", single: 20, multi: 85, rates: { BASIC: 55, ELITE: 30, EPIC: 12, LEGEND: 3 } },
+    1: { name: "Biasa Aja", single: 40, multi: 185, rates: { BASIC: 50, ELITE: 25, EPIC: 15, LEGEND: 10 } },
+    2: { name: "Cacing Naga", single: 60, multi: 285, rates: { BASIC: 35, ELITE: 30, EPIC: 20, LEGEND: 15 } },
+    3: { name: "Aura 999+", single: 80, multi: 385, rates: { BASIC: 10, ELITE: 35, EPIC: 35, LEGEND: 20 } },
+}
+
 const DUPLICATE_REFUND = 5
 
 // Exclude PREMIUM_FEATURE from pool
 const EXCLUDED_TYPES = ["PREMIUM_FEATURE"]
+const EXCLUDED_NAMES = ["Cuddlysun", "Shape Coquette", "Grape Blossom", "Soft Bubble Tea"]
 
 function getTierForPrice(price: number): TierName {
     if (price <= 100) return "BASIC"
@@ -28,12 +35,13 @@ function getTierForPrice(price: number): TierName {
     return "LEGEND"
 }
 
-function rollTier(): TierName {
+function rollTier(booster: BoosterLevel): TierName {
     const roll = Math.random() * 100
     let cumulative = 0
-    for (const [tier, cfg] of Object.entries(TIER_CONFIG)) {
-        cumulative += cfg.dropRate
-        if (roll < cumulative) return tier as TierName
+    const rates = BOOSTER_CONFIGS[booster].rates
+    for (const tier of ["BASIC", "ELITE", "EPIC", "LEGEND"] as TierName[]) {
+        cumulative += rates[tier]
+        if (roll < cumulative) return tier
     }
     return "BASIC" // fallback
 }
@@ -52,7 +60,11 @@ export async function POST(req: Request) {
     const userId = session.user.id
     const body = await req.json()
     const count: number = body.count === 5 ? 5 : 1
-    const totalCost = count === 5 ? BOX_PRICE_MULTI : BOX_PRICE_SINGLE
+    const boosterId = parseInt(body.booster)
+    const boosterLevel: BoosterLevel = (boosterId === 1 || boosterId === 2 || boosterId === 3) ? boosterId : 0
+    
+    const boosterConfig = BOOSTER_CONFIGS[boosterLevel]
+    const totalCost = count === 5 ? boosterConfig.multi : boosterConfig.single
 
     // 1. Fetch user points
     const user = await prisma.user.findUnique({
@@ -67,9 +79,12 @@ export async function POST(req: Request) {
         )
     }
 
-    // 2. Fetch all shop items excluding PREMIUM_FEATURE
+    // 2. Fetch all shop items excluding PREMIUM_FEATURE and SPECIAL items
     const allItems = await prisma.shopItem.findMany({
-        where: { type: { notIn: EXCLUDED_TYPES as any } },
+        where: { 
+            type: { notIn: EXCLUDED_TYPES as any },
+            name: { notIn: EXCLUDED_NAMES },
+        },
     })
 
     if (allItems.length === 0) {
@@ -116,12 +131,12 @@ export async function POST(req: Request) {
 
     for (let i = 0; i < count; i++) {
         // Roll tier
-        let tier = rollTier()
+        let tier = rollTier(boosterLevel)
 
         // If rolled tier has no items, fallback to another tier
         let attempts = 0
         while (itemsByTier[tier].length === 0 && attempts < 10) {
-            tier = rollTier()
+            tier = rollTier(boosterLevel)
             attempts++
         }
         if (itemsByTier[tier].length === 0) {

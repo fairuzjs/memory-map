@@ -83,7 +83,7 @@ const NON_EQUIPPABLE: ItemType[] = ["MEMORY_STICKER", "PREMIUM_FEATURE"]
 
 // ─── Tier System ───────────────────────────────────────────────────────────────
 
-type TierName = "BASIC" | "ELITE" | "EPIC" | "LEGEND"
+type TierName = "BASIC" | "ELITE" | "EPIC" | "LEGEND" | "SPECIAL"
 
 const TIER_CONFIG: Record<TierName, {
     label: string
@@ -125,19 +125,31 @@ const TIER_CONFIG: Record<TierName, {
         bg: "rgba(245,158,11,0.1)",
         border: "rgba(245,158,11,0.3)",
     },
+    SPECIAL: {
+        label: "Special",
+        icon: "✧",
+        color: "#2dd4bf",
+        glow: "rgba(45,212,191,0.4)",
+        bg: "rgba(45,212,191,0.1)",
+        border: "rgba(45,212,191,0.3)",
+    },
 }
 
-function getTier(price: number): TierName {
+const SPECIAL_ITEM_NAMES = new Set(["Cuddlysun", "Shape Coquette", "Grape Blossom", "Soft Bubble Tea"])
+
+function getTier(price: number, name?: string): TierName {
+    if (name && SPECIAL_ITEM_NAMES.has(name)) return "SPECIAL"
     if (price <= 100) return "BASIC"
     if (price <= 175) return "ELITE"
     if (price <= 275) return "EPIC"
     return "LEGEND"
 }
 
-function TierBadge({ price, size = "sm" }: { price: number; size?: "sm" | "md" }) {
-    const tier = getTier(price)
+function TierBadge({ price, size = "sm", name }: { price: number; size?: "sm" | "md"; name?: string }) {
+    const tier = getTier(price, name)
     const cfg = TIER_CONFIG[tier]
     const isLegend = tier === "LEGEND"
+    const isSpecial = tier === "SPECIAL"
 
     return (
         <span
@@ -146,12 +158,14 @@ function TierBadge({ price, size = "sm" }: { price: number; size?: "sm" | "md" }
                 fontSize: size === "md" ? "10px" : "9px",
                 padding: size === "md" ? "3px 8px" : "2px 6px",
                 borderRadius: "6px",
-                background: isLegend
-                    ? "linear-gradient(135deg, rgba(251,191,36,0.18), rgba(245,158,11,0.08))"
-                    : cfg.bg,
+                background: isSpecial
+                    ? "linear-gradient(135deg, rgba(45,212,191,0.18), rgba(20,184,166,0.08))"
+                    : isLegend
+                        ? "linear-gradient(135deg, rgba(251,191,36,0.18), rgba(245,158,11,0.08))"
+                        : cfg.bg,
                 border: `1px solid ${cfg.border}`,
                 color: cfg.color,
-                boxShadow: isLegend ? `0 0 8px -2px ${cfg.glow}` : "none",
+                boxShadow: (isLegend || isSpecial) ? `0 0 8px -2px ${cfg.glow}` : "none",
             }}
         >
             <span style={{ fontSize: size === "md" ? "9px" : "8px" }}>{cfg.icon}</span>
@@ -168,17 +182,51 @@ function getDecorationClass(name?: string) {
     if (n.includes("neon")) return "anim-neon"
     if (n.includes("emas")) return "anim-emas"
     if (n.includes("pelangi")) return "anim-pelangi"
+    // Epic
+    if (n.includes("glitch")) return "anim-glitch"
+    if (n.includes("quasar")) return "anim-quasar"
+    // Legend
+    if (n.includes("celestial")) return "anim-celestial"
+    if (n.includes("supernova")) return "anim-supernova"
+    if (n.includes("rune")) return "anim-rune"
+    return ""
+}
+
+function getFrameClass(name?: string) {
+    if (!name) return ""
+    const n = name.toLowerCase()
+    // Epic
+    if (n.includes("orbit")) return "anim-frame-orbit"
+    if (n.includes("fraktur")) return "anim-frame-fraktur"
+    // Legend
+    if (n.includes("singularitas")) return "anim-frame-singularitas"
+    if (n.includes("cakra")) return "anim-frame-cakra"
+    if (n.includes("eternum")) return "anim-frame-eternum"
+    return ""
+}
+
+function getCardThemeClass(name?: string) {
+    if (!name) return ""
+    const n = name.toLowerCase()
+    // Epic
+    if (n.includes("perkamen")) return "anim-card-perkamen"
+    if (n.includes("neon")) return "anim-card-neon"
+    if (n.includes("mistik")) return "anim-card-mistik"
+    // Legend
+    if (n.includes("void")) return "anim-card-void"
+    if (n.includes("eter")) return "anim-card-eter"
     return ""
 }
 
 // ─── Card Theme Preview ─────────────────────────────────────────────────────────
 
-function CardThemePreview({ value }: { value: string }) {
+function CardThemePreview({ value, name }: { value: string; name?: string }) {
     let theme: any = null
     try { theme = JSON.parse(value) } catch { }
+    const cc = getCardThemeClass(name)
     return (
         <div
-            className="relative w-full h-full rounded-xl overflow-hidden flex flex-col justify-end"
+            className={`relative w-full h-full rounded-xl overflow-hidden flex flex-col justify-end ${cc}`}
             style={{
                 background: theme?.background ?? "#11111a",
                 border: theme?.border ?? "1px solid rgba(255,255,255,0.08)",
@@ -213,11 +261,16 @@ function BannerPreview({ value }: { value: string }) {
 
 // ─── Frame Preview ──────────────────────────────────────────────────────────────
 
-function FramePreview({ value }: { value: string }) {
+function FramePreview({ value, name }: { value: string; name?: string }) {
+    const fc = getFrameClass(name)
     return (
         <div className="flex items-center justify-center">
             <div className="relative w-16 h-16">
-                <div className="absolute -inset-1 rounded-full p-[2px]" style={{ background: value }}>
+                {fc && (
+                    <div className={`absolute -inset-3 rounded-full ${fc}-glow`}
+                        style={{ background: value, filter: "blur(14px)", opacity: 0.4 }} />
+                )}
+                <div className={`absolute -inset-1 rounded-full p-[2px] ${fc}`} style={{ background: value }}>
                     <div className="w-full h-full rounded-full" style={{ background: "rgba(14,14,24,1)" }} />
                 </div>
                 <div className="relative w-16 h-16 rounded-full z-10 flex items-center justify-center"
@@ -356,9 +409,9 @@ function InventoryCard({
                 onClick={() => onPreview(entry)}
             >
                 <div className="w-full h-full flex items-center justify-center">
-                    {item.type === "AVATAR_FRAME"        && <FramePreview value={item.value} />}
+                    {item.type === "AVATAR_FRAME"        && <FramePreview value={item.value} name={item.name} />}
                     {item.type === "PROFILE_BANNER"      && <BannerPreview value={item.value} />}
-                    {item.type === "MEMORY_CARD_THEME"   && <CardThemePreview value={item.value} />}
+                    {item.type === "MEMORY_CARD_THEME"   && <CardThemePreview value={item.value} name={item.name} />}
                     {item.type === "USERNAME_DECORATION" && <DecorationPreview item={item} />}
                     {item.type === "MEMORY_STICKER"      && <StickerPreview item={item} />}
                     {item.type === "PREMIUM_FEATURE"     && <PremiumFeaturePreview item={item} />}
@@ -388,7 +441,7 @@ function InventoryCard({
                 <div>
                     <div className="flex items-center justify-between gap-2 mb-0.5">
                         <p className="text-sm font-bold text-white leading-tight flex-1 min-w-0 truncate">{item.name}</p>
-                        <TierBadge price={item.price} size="sm" />
+                        <TierBadge price={item.price} size="sm" name={item.name} />
                     </div>
                     <p className="text-[11px] text-neutral-600 mt-0.5 leading-relaxed line-clamp-2">{item.description}</p>
                 </div>
@@ -505,7 +558,7 @@ function PreviewModal({
                                 <p className="text-xs font-bold uppercase tracking-wider" style={{ color: color.text }}>
                                     {TYPE_LABELS[item.type]}
                                 </p>
-                                <TierBadge price={item.price} size="md" />
+                                <TierBadge price={item.price} size="md" name={item.name} />
                             </div>
                             <p className="text-base font-black text-white leading-tight">{item.name}</p>
                         </div>
@@ -522,9 +575,9 @@ function PreviewModal({
                 <div className="px-6 pb-4">
                     <div className="rounded-2xl flex items-center justify-center py-8 overflow-hidden"
                         style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
-                        {item.type === "AVATAR_FRAME"        && <div className="scale-150"><FramePreview value={item.value} /></div>}
+                        {item.type === "AVATAR_FRAME"        && <div className="scale-150"><FramePreview value={item.value} name={item.name} /></div>}
                         {item.type === "PROFILE_BANNER"      && <div className="w-full px-4"><BannerPreview value={item.value} /></div>}
-                        {item.type === "MEMORY_CARD_THEME"   && <div className="w-full px-4"><CardThemePreview value={item.value} /></div>}
+                        {item.type === "MEMORY_CARD_THEME"   && <div className="w-full px-4"><CardThemePreview value={item.value} name={item.name} /></div>}
                         {item.type === "USERNAME_DECORATION" && <DecorationPreview item={item} />}
                         {item.type === "MEMORY_STICKER"      && <StickerPreview item={item} />}
                         {item.type === "PREMIUM_FEATURE"     && <PremiumFeaturePreview item={item} />}

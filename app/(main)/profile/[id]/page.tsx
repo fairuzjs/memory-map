@@ -31,6 +31,26 @@ function getDecorationClass(name?: string) {
     if (n.includes("neon")) return "anim-neon";
     if (n.includes("emas")) return "anim-emas";
     if (n.includes("pelangi")) return "anim-pelangi";
+    // Epic
+    if (n.includes("glitch")) return "anim-glitch";
+    if (n.includes("quasar")) return "anim-quasar";
+    // Legend
+    if (n.includes("celestial")) return "anim-celestial";
+    if (n.includes("supernova")) return "anim-supernova";
+    if (n.includes("rune")) return "anim-rune";
+    return "";
+}
+
+function getFrameClass(name?: string) {
+    if (!name) return "";
+    const n = name.toLowerCase();
+    // Epic
+    if (n.includes("orbit")) return "anim-frame-orbit";
+    if (n.includes("fraktur")) return "anim-frame-fraktur";
+    // Legend
+    if (n.includes("singularitas")) return "anim-frame-singularitas";
+    if (n.includes("cakra")) return "anim-frame-cakra";
+    if (n.includes("eternum")) return "anim-frame-eternum";
     return "";
 }
 
@@ -287,8 +307,8 @@ export default function UserProfilePage() {
 
                         {/* Avatar */}
                         <div className="relative group shrink-0">
-                            <div className="absolute -inset-2 rounded-full animate-pulse" style={{ background: user.equippedFrame ? user.equippedFrame.value : "linear-gradient(135deg, rgba(99,102,241,0.4), rgba(139,92,246,0.3))", filter: "blur(10px)" }} />
-                            <div className="absolute -inset-1 rounded-full p-[2px]" style={{ background: user.equippedFrame ? user.equippedFrame.value : "linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899)" }}>
+                            <div className={`absolute -inset-2 rounded-full ${user.equippedFrame && getFrameClass(user.equippedFrame.name) ? `${getFrameClass(user.equippedFrame.name)}-glow` : 'animate-pulse'}`} style={{ background: user.equippedFrame ? user.equippedFrame.value : "linear-gradient(135deg, rgba(99,102,241,0.4), rgba(139,92,246,0.3))", filter: "blur(10px)" }} />
+                            <div className={`absolute -inset-1 rounded-full p-[2px] ${user.equippedFrame ? getFrameClass(user.equippedFrame.name) : ''}`} style={{ background: user.equippedFrame ? user.equippedFrame.value : "linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899)" }}>
                                 <div className="w-full h-full rounded-full" style={{ background: "rgba(10,10,16,1)" }} />
                             </div>
                             <img

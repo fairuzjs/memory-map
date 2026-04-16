@@ -241,7 +241,6 @@ export default function MapView({ memories }: MapViewProps) {
                                                             src={photos[0].url}
                                                             alt=""
                                                             className="w-full h-full object-cover transition-transform duration-700 group-hover/popup:scale-110"
-                                                            style={{ filter: theme?.imageFilter ?? "none" }}
                                                         />
                                                         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
 

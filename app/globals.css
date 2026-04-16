@@ -243,3 +243,328 @@
   0% { background-position: 0% center; }
   100% { background-position: 300% center; }
 }
+
+/* ── Epic Decoration Animations ─────────────────────────── */
+
+.anim-glitch {
+  background-size: 200% auto !important;
+  animation: glitchShift 0.8s steps(4) infinite, glitchFlash 3s ease-in-out infinite !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+  display: inline-block !important;
+}
+@keyframes glitchShift {
+  0%, 100% { filter: drop-shadow(0 0 10px rgba(255,0,64,0.6)); background-position: 0% center; transform: translate(0, 0); }
+  25% { filter: drop-shadow(2px -1px 0 rgba(0,255,255,0.5)) drop-shadow(-2px 1px 0 rgba(255,0,64,0.5)); background-position: 50% center; transform: translate(-1px, 0); }
+  50% { filter: drop-shadow(-1px 2px 0 rgba(0,255,255,0.6)) drop-shadow(1px -1px 0 rgba(255,0,64,0.6)); background-position: 100% center; transform: translate(1px, 0); }
+  75% { filter: drop-shadow(1px 0 0 rgba(0,255,255,0.4)) drop-shadow(-1px 0 0 rgba(255,0,64,0.4)); background-position: 150% center; transform: translate(0, 1px); }
+}
+@keyframes glitchFlash {
+  0%, 92%, 100% { opacity: 1; }
+  93% { opacity: 0.8; }
+  94% { opacity: 1; }
+  95% { opacity: 0.7; }
+  96% { opacity: 1; }
+}
+
+.anim-quasar {
+  background-size: 300% auto !important;
+  animation: quasarPulse 2s ease-in-out infinite, quasarSweep 3s linear infinite !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+  display: inline-block !important;
+}
+@keyframes quasarPulse {
+  0%, 100% { filter: drop-shadow(0 0 12px rgba(0,255,135,0.5)) drop-shadow(0 0 24px rgba(96,239,255,0.25)); }
+  50% { filter: drop-shadow(0 0 20px rgba(0,255,135,0.85)) drop-shadow(0 0 40px rgba(96,239,255,0.5)) drop-shadow(0 0 60px rgba(0,210,255,0.2)); }
+}
+@keyframes quasarSweep {
+  0% { background-position: 0% center; }
+  100% { background-position: 300% center; }
+}
+
+/* ── Legend Decoration Animations ───────────────────────── */
+
+.anim-celestial {
+  background-size: 400% auto !important;
+  animation: celestialRadiance 3s ease-in-out infinite, celestialSweep 4s linear infinite !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+  display: inline-block !important;
+}
+@keyframes celestialRadiance {
+  0%, 100% { filter: drop-shadow(0 0 16px rgba(255,215,0,0.7)) drop-shadow(0 0 32px rgba(255,215,0,0.35)) drop-shadow(0 0 6px rgba(255,255,255,0.5)); transform: scale(1); }
+  50% { filter: drop-shadow(0 0 24px rgba(255,215,0,1)) drop-shadow(0 0 48px rgba(255,215,0,0.6)) drop-shadow(0 0 80px rgba(255,250,205,0.3)) drop-shadow(0 0 10px rgba(255,255,255,0.8)); transform: scale(1.03); }
+}
+@keyframes celestialSweep {
+  0% { background-position: 0% center; }
+  100% { background-position: 400% center; }
+}
+
+.anim-supernova {
+  background-size: 400% auto !important;
+  animation: supernovaExplode 2.5s ease-in-out infinite, supernovaSweep 3s linear infinite !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+  display: inline-block !important;
+}
+@keyframes supernovaExplode {
+  0%, 100% { filter: drop-shadow(0 0 12px rgba(255,0,170,0.6)) drop-shadow(0 0 24px rgba(255,136,0,0.3)); transform: scale(1); }
+  30% { filter: drop-shadow(0 0 20px rgba(255,68,68,0.8)) drop-shadow(0 0 40px rgba(255,0,170,0.6)) drop-shadow(0 0 60px rgba(68,136,255,0.3)); transform: scale(1.04); }
+  60% { filter: drop-shadow(0 0 18px rgba(255,136,0,0.7)) drop-shadow(0 0 36px rgba(255,68,68,0.5)) drop-shadow(0 0 56px rgba(255,0,170,0.25)); transform: scale(1.02); }
+}
+@keyframes supernovaSweep {
+  0% { background-position: 0% center; }
+  100% { background-position: 400% center; }
+}
+
+.anim-rune {
+  background-size: 300% auto !important;
+  animation: runePulse 2s ease-in-out infinite, runeSweep 5s linear infinite !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+  display: inline-block !important;
+}
+@keyframes runePulse {
+  0%, 100% { filter: drop-shadow(0 0 14px rgba(124,58,237,0.6)) drop-shadow(0 0 28px rgba(168,85,247,0.3)); transform: scale(1); }
+  25% { filter: drop-shadow(0 0 22px rgba(124,58,237,0.9)) drop-shadow(0 0 44px rgba(168,85,247,0.55)) drop-shadow(0 0 70px rgba(233,213,255,0.25)); transform: scale(1.03); }
+  50% { filter: drop-shadow(0 0 16px rgba(124,58,237,0.65)) drop-shadow(0 0 32px rgba(168,85,247,0.35)); transform: scale(1.01); }
+  75% { filter: drop-shadow(0 0 24px rgba(124,58,237,0.95)) drop-shadow(0 0 48px rgba(168,85,247,0.6)) drop-shadow(0 0 76px rgba(233,213,255,0.3)); transform: scale(1.04); }
+}
+@keyframes runeSweep {
+  0% { background-position: 0% center; }
+  100% { background-position: 300% center; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   FRAME (Avatar Border) Animations
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* Shared keyframe: spin */
+@keyframes frameSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ── Epic Frame: Orbit Void ──────────────────────────── */
+.anim-frame-orbit {
+  animation: frameSpin 8s linear infinite !important;
+}
+.anim-frame-orbit-glow {
+  animation: frameGlowEpic 3s ease-in-out infinite !important;
+}
+@keyframes frameGlowEpic {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(1.08); }
+}
+
+/* ── Epic Frame: Fraktur Waktu ───────────────────────── */
+.anim-frame-fraktur {
+  animation: frameFrakturJitter 0.6s steps(6) infinite !important;
+}
+.anim-frame-fraktur-glow {
+  animation: frameFrakturGlow 2.5s ease-in-out infinite !important;
+}
+@keyframes frameFrakturJitter {
+  0%, 100% { transform: translate(0, 0); }
+  16% { transform: translate(-1px, 0.5px); }
+  33% { transform: translate(1px, -0.5px); }
+  50% { transform: translate(0.5px, 1px); }
+  66% { transform: translate(-0.5px, -1px); }
+  83% { transform: translate(1px, 0); }
+}
+@keyframes frameFrakturGlow {
+  0%, 84%, 100% { opacity: 0.35; }
+  86% { opacity: 0.12; }
+  88% { opacity: 0.4; }
+  90% { opacity: 0.08; }
+  92% { opacity: 0.38; }
+}
+
+/* ── Legend Frame: Singularitas ───────────────────────── */
+.anim-frame-singularitas {
+  animation: frameSpin 6s linear infinite !important;
+  filter: drop-shadow(0 0 6px rgba(59,130,246,0.5)) !important;
+}
+.anim-frame-singularitas-glow {
+  animation: frameGlowBreatheLegend 3s ease-in-out infinite !important;
+}
+@keyframes frameGlowBreatheLegend {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.2); }
+}
+
+/* ── Legend Frame: Cakra Nebula ───────────────────────── */
+.anim-frame-cakra {
+  animation: frameSpin 4s linear infinite !important;
+}
+.anim-frame-cakra-glow {
+  animation: frameCakraGlowShift 2.5s ease-in-out infinite !important;
+}
+@keyframes frameCakraGlowShift {
+  0%, 100% { opacity: 0.4; transform: scale(1); filter: hue-rotate(0deg); }
+  33% { opacity: 0.65; transform: scale(1.15); filter: hue-rotate(30deg); }
+  66% { opacity: 0.5; transform: scale(1.1); filter: hue-rotate(-20deg); }
+}
+
+/* ── Legend Frame: Mata Eternum ───────────────────────── */
+.anim-frame-eternum {
+  animation: frameEternumRadiance 3s ease-in-out infinite !important;
+}
+.anim-frame-eternum-glow {
+  animation: frameEternumGlowPulse 3s ease-in-out infinite !important;
+}
+@keyframes frameEternumRadiance {
+  0%, 100% { filter: brightness(1) drop-shadow(0 0 4px rgba(251,191,36,0.3)); transform: scale(1); }
+  50% { filter: brightness(1.4) drop-shadow(0 0 12px rgba(251,191,36,0.8)) drop-shadow(0 0 24px rgba(255,255,255,0.2)); transform: scale(1.03); }
+}
+@keyframes frameEternumGlowPulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.75; transform: scale(1.25); }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   CARD THEME Animations
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Epic Card Theme: Perkamen Emas ──────────────────── */
+.anim-card-perkamen {
+  animation: cardShimmerEpic 3s ease-in-out infinite !important;
+}
+@keyframes cardShimmerEpic {
+  0%, 100% { box-shadow: 0 0 8px rgba(196,160,96,0.2), 0 4px 16px rgba(0,0,0,0.4); }
+  50% { box-shadow: 0 0 16px rgba(196,160,96,0.45), 0 0 32px rgba(196,160,96,0.15), 0 4px 16px rgba(0,0,0,0.4); }
+}
+
+/* ── Epic Card Theme: Neon Merah Malam ───────────────── */
+.anim-card-neon {
+  animation: cardNeonPulse 2s ease-in-out infinite !important;
+}
+@keyframes cardNeonPulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(255,0,102,0.2), 0 4px 16px rgba(0,0,0,0.5); }
+  50% { box-shadow: 0 0 18px rgba(255,0,102,0.5), 0 0 36px rgba(255,0,102,0.15), 0 4px 16px rgba(0,0,0,0.5); }
+}
+
+/* ── Epic Card Theme: Mistik Ungu ────────────────────── */
+.anim-card-mistik {
+  animation: cardMistikPulse 2.5s ease-in-out infinite !important;
+}
+@keyframes cardMistikPulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(127,119,221,0.2), 0 4px 16px rgba(0,0,0,0.5); }
+  50% { box-shadow: 0 0 16px rgba(127,119,221,0.45), 0 0 32px rgba(127,119,221,0.15), 0 4px 16px rgba(0,0,0,0.5); }
+}
+
+/* ── Legend Card Theme: Void Kristal ─────────────────── */
+.anim-card-void {
+  animation: cardVoidBreathe 3s ease-in-out infinite !important;
+  position: relative;
+}
+.anim-card-void::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(59,130,246,0.3), rgba(147,197,253,0.1), rgba(59,130,246,0.3));
+  background-size: 200% 200%;
+  animation: cardVoidSweep 4s linear infinite;
+  z-index: -1;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  padding: 1.5px;
+}
+@keyframes cardVoidBreathe {
+  0%, 100% { box-shadow: 0 0 12px rgba(59,130,246,0.2), 0 0 24px rgba(147,197,253,0.08), 0 8px 32px rgba(0,0,0,0.6); transform: scale(1); }
+  50% { box-shadow: 0 0 20px rgba(59,130,246,0.45), 0 0 40px rgba(147,197,253,0.2), 0 0 60px rgba(59,130,246,0.08), 0 8px 32px rgba(0,0,0,0.6); transform: scale(1.01); }
+}
+@keyframes cardVoidSweep {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 200% 200%; }
+}
+
+/* ── Legend Card Theme: Eter Galaktik ────────────────── */
+.anim-card-eter {
+  animation: cardEterBreathe 3s ease-in-out infinite !important;
+  position: relative;
+}
+.anim-card-eter::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(168,85,247,0.35), rgba(219,39,119,0.15), rgba(6,182,212,0.1), rgba(168,85,247,0.35));
+  background-size: 300% 300%;
+  animation: cardEterSweep 5s linear infinite;
+  z-index: -1;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  padding: 1px;
+}
+@keyframes cardEterBreathe {
+  0%, 100% { box-shadow: 0 0 12px rgba(168,85,247,0.2), 0 0 24px rgba(219,39,119,0.06), 0 8px 32px rgba(0,0,0,0.6); transform: scale(1); }
+  50% { box-shadow: 0 0 22px rgba(168,85,247,0.4), 0 0 44px rgba(219,39,119,0.15), 0 0 66px rgba(6,182,212,0.06), 0 8px 32px rgba(0,0,0,0.6); transform: scale(1.01); }
+}
+@keyframes cardEterSweep {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 300% 300%; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   GACHA PAGE — Buka 5x Animated Gradient Button
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.gacha-bg-pan {
+  background: linear-gradient(
+    270deg,
+    rgba(99, 102, 241, 0.2),
+    rgba(139, 92, 246, 0.25),
+    rgba(168, 85, 247, 0.2),
+    rgba(99, 102, 241, 0.15),
+    rgba(139, 92, 246, 0.2)
+  );
+  background-size: 400% 100%;
+  animation: gachaBgPan 6s ease-in-out infinite;
+}
+
+@keyframes gachaBgPan {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.gacha-btn-5x {
+  position: relative;
+  overflow: hidden;
+}
+
+.gacha-btn-5x::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    rgba(139, 92, 246, 0.08) 25%,
+    transparent 50%,
+    rgba(99, 102, 241, 0.06) 75%,
+    transparent 100%
+  );
+  animation: gachaBtnShine 8s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes gachaBtnShine {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
