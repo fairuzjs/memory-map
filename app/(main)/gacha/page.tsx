@@ -1057,7 +1057,7 @@ export default function GachaPage() {
             </div>
 
             {/* All content sits above the glow orbs */}
-            <div className="relative" style={{ zIndex: 1 }}>
+            <div className="relative">
 
                 {/* ── Header (consistent with Shop/Inventory pattern) ── */}
                 <AnimatePresence>
@@ -1640,7 +1640,8 @@ export default function GachaPage() {
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 1.02, filter: "blur(6px)" }}
                             transition={{ duration: 0.4 }}
-                            className="flex flex-col items-center justify-center min-h-[60vh] py-12 relative"
+                            className="fixed inset-0 z-[990] flex flex-col items-center justify-center overflow-hidden"
+                            style={{ background: "rgba(8,8,14,0.95)", backdropFilter: "blur(24px)" }}
                         >
                             {/* Ambient reel glow */}
                             <motion.div
