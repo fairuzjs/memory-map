@@ -1,15 +1,15 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, useRef, useMemo } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import {
     Loader2, Star, Package, ShoppingBag,
-    ChevronRight, Info, X, Repeat2,
+    ChevronRight, Repeat2,
     User, Image as ImageIcon, Grid2x2, Type, Sticker,
     Sparkles, Gem, Flame, Zap, Settings
 } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, useMotionValue, animate as motionAnimate } from "framer-motion"
 import toast from "react-hot-toast"
 import Link from "next/link"
 import { StickerRenderer, StickerConfig } from "@/components/memories/StickerRenderer"
@@ -182,6 +182,15 @@ function getFrameClass(name?: string) {
     return ""
 }
 
+function getBannerClass(name?: string) {
+    if (!name) return ""
+    const n = name.toLowerCase()
+    if (n.includes("galaxy")) return "anim-banner-galaxy"
+    if (n.includes("hutan")) return "anim-banner-matrix"
+    if (n.includes("samudra")) return "anim-banner-samudra"
+    return ""
+}
+
 function getCardThemeClass(name?: string) {
     if (!name) return ""
     const n = name.toLowerCase()
@@ -262,14 +271,64 @@ function CardThemePreview({ value, name }: { value: string; name?: string }) {
     )
 }
 
-function BannerPreview({ value }: { value: string }) {
+function BannerPreview({ value, name }: { value: string; name?: string }) {
+    const bannerClass = getBannerClass(name)
+    const n = name?.toLowerCase() ?? ""
+    const isHutan   = n.includes("hutan")
+    const isGalaxy  = n.includes("galax")
+    const isSamudra = n.includes("samudra")
+    const bg = isHutan
+        ? "linear-gradient(135deg, #001a0a 0%, #003320 35%, #005233 65%, #007a4d 100%)"
+        : value
     return (
         <div
-            className="w-full h-full rounded-lg overflow-hidden relative"
-            style={{ background: value }}
+            className={`w-full h-full rounded-lg overflow-hidden relative ${bannerClass}`}
+            style={{ background: bg }}
         >
             <div className="absolute inset-0 opacity-[0.06]"
                 style={{ backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px)", backgroundSize: "12px 12px" }} />
+            {isGalaxy && (
+                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 800 140" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                    <ellipse cx="480" cy="55" rx="180" ry="55" fill="rgba(180,100,255,0.18)" className="nebula-drift" style={{ filter: "blur(20px)" }} />
+                    <ellipse cx="160" cy="95" rx="140" ry="40" fill="rgba(80,120,255,0.15)" className="nebula-drift" style={{ animationDelay: "-6s", filter: "blur(18px)" }} />
+                    <ellipse cx="670" cy="110" rx="120" ry="35" fill="rgba(150,60,255,0.12)" className="nebula-drift" style={{ animationDelay: "-10s", filter: "blur(16px)" }} />
+                    <circle cx="30"  cy="12" r="1.8" fill="white" className="star-twinkle" style={{ "--dur": "2.1s" } as any} />
+                    <circle cx="95"  cy="25" r="1.3" fill="#c4aaff" className="star-twinkle" style={{ "--dur": "1.7s" } as any} />
+                    <circle cx="160" cy="8"  r="1.6" fill="white" className="star-twinkle" style={{ "--dur": "2.8s" } as any} />
+                    <circle cx="260" cy="18" r="1.4" fill="white" className="star-twinkle" style={{ "--dur": "2.4s" } as any} />
+                    <circle cx="410" cy="10" r="1.7" fill="white" className="star-twinkle" style={{ "--dur": "3.0s" } as any} />
+                    <circle cx="530" cy="15" r="1.5" fill="white" className="star-twinkle" style={{ "--dur": "1.6s" } as any} />
+                    <circle cx="650" cy="20" r="1.8" fill="white" className="star-twinkle" style={{ "--dur": "1.4s" } as any} />
+                    <circle cx="710" cy="9"  r="1.3" fill="#c4aaff" className="star-twinkle" style={{ "--dur": "2.9s" } as any} />
+                    <circle cx="55"  cy="80" r="1.0" fill="#ffddaa" className="star-twinkle" style={{ "--dur": "2.5s" } as any} />
+                    <circle cx="500" cy="115" r="1.5" fill="#c4aaff" className="star-twinkle" style={{ "--dur": "2.7s" } as any} />
+                    <circle cx="785" cy="120" r="1.3" fill="#aaddff" className="star-twinkle" style={{ "--dur": "2.3s" } as any} />
+                </svg>
+            )}
+            {isSamudra && (
+                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 800 140" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs><filter id="blur-aurora-gacha"><feGaussianBlur stdDeviation="8" /></filter></defs>
+                    <rect x="-20" y="15" width="840" height="32" rx="16" fill="rgba(120,60,255,0.28)" className="aurora-wave" filter="url(#blur-aurora-gacha)"
+                        style={{ "--dur": "7s", "--op0": "0.25", "--op1": "0.55" } as any} />
+                    <rect x="-20" y="52" width="840" height="22" rx="11" fill="rgba(60,180,255,0.22)" className="aurora-wave" filter="url(#blur-aurora-gacha)"
+                        style={{ "--dur": "5.5s", "--op0": "0.2", "--op1": "0.5", animationDelay: "-2s" } as any} />
+                    <rect x="-20" y="80" width="840" height="24" rx="12" fill="rgba(200,50,255,0.18)" className="aurora-wave" filter="url(#blur-aurora-gacha)"
+                        style={{ "--dur": "9s", "--op0": "0.15", "--op1": "0.4", animationDelay: "-4s" } as any} />
+                    {[[20,10,1.8,"#fff","2.0s"],[145,18,2.0,"#fff","2.6s"],[260,22,1.7,"#fff","1.2s"],[380,7,2.1,"#fff","0.9s"],[500,10,1.6,"#fff","2.1s"],[620,6,1.8,"#fff","2.8s"],[740,8,1.7,"#fff","1.9s"],[130,105,1.5,"#ffccee","0.8s"],[310,110,1.8,"#ccddff","1.3s"],[490,115,1.2,"#aaddff","1.0s"],[670,108,1.3,"#ffccee","1.8s"],[350,65,1.2,"#ddbbff","1.6s"],[600,55,1.5,"#fff","2.4s"]].map(([cx,cy,r,fill,dur],i) => (
+                        <circle key={i} cx={cx as number} cy={cy as number} r={r as number} fill={fill as string} className="star-shimmer" style={{ "--dur": dur } as any} />
+                    ))}
+                </svg>
+            )}
+            {isHutan && (
+                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 200 140" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="18" y="0" width="15" rx="2" fill="#00cc55" opacity="0.75" className="eq-bar eq-bar-1" />
+                    <rect x="42" y="0" width="15" rx="2" fill="#00cc55" opacity="0.65" className="eq-bar eq-bar-2" />
+                    <rect x="66" y="0" width="15" rx="2" fill="#00bb44" opacity="0.85" className="eq-bar eq-bar-3" />
+                    <rect x="90" y="0" width="15" rx="2" fill="#00cc55" opacity="0.70" className="eq-bar eq-bar-4" />
+                    <rect x="114" y="0" width="15" rx="2" fill="#00bb44" opacity="0.60" className="eq-bar eq-bar-5" />
+                    <rect x="138" y="0" width="15" rx="2" fill="#00aa33" opacity="0.55" className="eq-bar eq-bar-6" />
+                </svg>
+            )}
         </div>
     )
 }
@@ -326,7 +385,7 @@ function ItemPreview({ item }: { item: ShopItem }) {
         case "AVATAR_FRAME":
             return <FramePreview value={item.value} name={item.name} />
         case "PROFILE_BANNER":
-            return <BannerPreview value={item.value} />
+            return <BannerPreview value={item.value} name={item.name} />
         case "MEMORY_CARD_THEME":
             return <CardThemePreview value={item.value} name={item.name} />
         case "USERNAME_DECORATION":
@@ -396,107 +455,380 @@ const GachaAudio = {
     }
 }
 
-// ─── Roulette Slot Component ───────────────────────────────────────────────────
+// ─── CS:GO Case Opening Reel System ────────────────────────────────────────────
 
-function RouletteSlot({ isLocked, finalResult, poolItems }: { isLocked: boolean, finalResult?: GachaResult, poolItems: ShopItem[] }) {
-    const [displayTier, setDisplayTier] = useState<TierName>("BASIC")
-    const [displayType, setDisplayType] = useState<ItemType>("AVATAR_FRAME")
-    const [displayName, setDisplayName] = useState("")
-    const [hasExploded, setHasExploded] = useState(false)
+const REEL_TOTAL_ITEMS = 55
+const REEL_RESULT_INDEX = 42
 
+// Responsive reel dimensions
+function useReelDimensions() {
+    const [dims, setDims] = useState({ w: 100, h: 120, gap: 8 })
     useEffect(() => {
-        if (!isLocked) {
-            if (poolItems.length === 0) return
-            const interval = setInterval(() => {
-                const item = poolItems[Math.floor(Math.random() * poolItems.length)]
-                setDisplayTier(getTier(item.price, item.name))
-                setDisplayType(item.type)
-                setDisplayName(item.name)
-                GachaAudio.tick()
-            }, 60)
-            return () => clearInterval(interval)
-        } else if (finalResult && !hasExploded) {
-            setDisplayTier(finalResult.tier)
-            setDisplayType(finalResult.item.type)
-            setDisplayName(finalResult.item.name)
-            setHasExploded(true)
-            GachaAudio.explosion(finalResult.tier)
+        const update = () => {
+            if (window.innerWidth >= 640) {
+                setDims({ w: 140, h: 165, gap: 10 })
+            } else {
+                setDims({ w: 100, h: 120, gap: 8 })
+            }
         }
-    }, [isLocked, finalResult, poolItems])
+        update()
+        window.addEventListener("resize", update)
+        return () => window.removeEventListener("resize", update)
+    }, [])
+    return { itemWidth: dims.w, itemHeight: dims.h, itemGap: dims.gap, itemStride: dims.w + dims.gap }
+}
 
-    const cfg = TIER_CONFIG[displayTier]
-    const Icon = TYPE_ICONS[displayType] || Package
+type ReelItem = {
+    shopItem: ShopItem
+    tier: TierName
+    isResult: boolean
+}
+
+function generateReel(result: GachaResult, poolItems: ShopItem[]): ReelItem[] {
+    const reel: ReelItem[] = []
+
+    const getRandomItem = (): ReelItem => {
+        const item = poolItems[Math.floor(Math.random() * poolItems.length)]
+        return { shopItem: item, tier: getTier(item.price, item.name), isResult: false }
+    }
+
+    const getHighTierTease = (): ReelItem => {
+        const highItems = poolItems.filter(i => {
+            const t = getTier(i.price, i.name)
+            return t === "LEGEND" || t === "EPIC"
+        })
+        if (highItems.length === 0) return getRandomItem()
+        const item = highItems[Math.floor(Math.random() * highItems.length)]
+        return { shopItem: item, tier: getTier(item.price, item.name), isResult: false }
+    }
+
+    const resultShopItem: ShopItem = {
+        id: result.item.id,
+        name: result.item.name,
+        description: result.item.description,
+        price: result.item.price,
+        type: result.item.type,
+        value: result.item.value,
+        previewColor: result.item.previewColor,
+        owned: false,
+        equipped: false,
+    }
+
+    for (let i = 0; i < REEL_TOTAL_ITEMS; i++) {
+        if (i === REEL_RESULT_INDEX) {
+            reel.push({ shopItem: resultShopItem, tier: result.tier, isResult: true })
+        } else if (i === REEL_RESULT_INDEX - 1 || i === REEL_RESULT_INDEX + 1) {
+            // Near-miss tease: adjacent high-tier items
+            reel.push(getHighTierTease())
+        } else if (i === REEL_RESULT_INDEX - 5 || i === REEL_RESULT_INDEX - 9 || i === REEL_RESULT_INDEX - 15) {
+            // Scattered teases earlier in the reel for excitement
+            reel.push(getHighTierTease())
+        } else {
+            reel.push(getRandomItem())
+        }
+    }
+
+    return reel
+}
+
+function CaseOpeningReel({
+    result,
+    poolItems,
+    onComplete,
+}: {
+    result: GachaResult
+    poolItems: ShopItem[]
+    onComplete: () => void
+}) {
+    const containerRef = useRef<HTMLDivElement>(null)
+    const x = useMotionValue(0)
+    const [hasFinished, setHasFinished] = useState(false)
+    const lastTickIndex = useRef(-1)
+    const animRef = useRef<ReturnType<typeof motionAnimate> | null>(null)
+    const completedRef = useRef(false)
+    const { itemWidth, itemHeight, itemGap, itemStride } = useReelDimensions()
+
+    const reel = useMemo(() => generateReel(result, poolItems), [result, poolItems])
+
+    // Calculate exact stop position so result item lands at center
+    const getStopPosition = useCallback(() => {
+        const containerWidth = containerRef.current?.offsetWidth || 550
+        // Add slight random offset for realism (±30% of item width)
+        const randomOffset = (Math.random() - 0.5) * itemWidth * 0.3
+        return -(REEL_RESULT_INDEX * itemStride) + (containerWidth / 2) - (itemWidth / 2) + randomOffset
+    }, [itemWidth, itemStride])
+
+    // Tick sound when items cross center indicator
+    useEffect(() => {
+        const containerWidth = containerRef.current?.offsetWidth || 550
+        const centerOffset = containerWidth / 2
+        const unsubscribe = x.on("change", (latest) => {
+            const currentIndex = Math.floor((-latest + centerOffset) / itemStride)
+            if (currentIndex !== lastTickIndex.current && currentIndex >= 0 && currentIndex < REEL_TOTAL_ITEMS) {
+                lastTickIndex.current = currentIndex
+                GachaAudio.tick()
+            }
+        })
+        return unsubscribe
+    }, [x, itemStride])
+
+    // Start animation on mount
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            const stopX = getStopPosition()
+            const overshootX = stopX - 22 // overshoot past target
+
+            // Phase 1: Fast scroll with easeOutExpo deceleration
+            animRef.current = motionAnimate(x, overshootX, {
+                duration: 4.5,
+                ease: [0.05, 0.7, 0.1, 1],
+                onComplete: () => {
+                    // Phase 2: Bounce back to exact target
+                    animRef.current = motionAnimate(x, stopX, {
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 30,
+                        onComplete: () => {
+                            if (completedRef.current) return
+                            completedRef.current = true
+                            setHasFinished(true)
+                            GachaAudio.explosion(result.tier)
+                            setTimeout(onComplete, 1200)
+                        }
+                    })
+                }
+            })
+        }, 400)
+
+        return () => {
+            clearTimeout(timer)
+            if (animRef.current) animRef.current.stop()
+        }
+    }, [itemStride])
+
+    // Skip/instant finish
+    const skipToEnd = useCallback(() => {
+        if (completedRef.current) return
+        completedRef.current = true
+        if (animRef.current) animRef.current.stop()
+        const containerWidth = containerRef.current?.offsetWidth || 550
+        const stopX = -(REEL_RESULT_INDEX * itemStride) + (containerWidth / 2) - (itemWidth / 2)
+        x.set(stopX)
+        setHasFinished(true)
+        GachaAudio.explosion(result.tier)
+        onComplete()
+    }, [x, result.tier, onComplete, itemWidth, itemStride])
+
+    const resultCfg = TIER_CONFIG[result.tier]
 
     return (
-        <div className="relative w-24 h-36 sm:w-32 sm:h-40 shrink-0">
-            {/* Explosion */}
-            <AnimatePresence>
-                {hasExploded && (
+        <div className="w-full">
+            {/* Reel Container */}
+            <div className="relative" ref={containerRef}>
+                {/* Center Indicator */}
+                <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center pointer-events-none" style={{ width: 2 }}>
+                    {/* Top triangle */}
+                    <div style={{
+                        width: 0, height: 0,
+                        borderLeft: "8px solid transparent",
+                        borderRight: "8px solid transparent",
+                        borderTop: hasFinished ? `12px solid ${resultCfg.color}` : "12px solid #6366f1",
+                        filter: hasFinished ? `drop-shadow(0 0 8px ${resultCfg.glow})` : "drop-shadow(0 0 4px rgba(99,102,241,0.6))",
+                        transition: "all 0.4s",
+                    }} />
+                    {/* Vertical line */}
+                    <div className="flex-1" style={{
+                        width: 2,
+                        background: hasFinished ? resultCfg.color : "#6366f1",
+                        boxShadow: hasFinished
+                            ? `0 0 12px ${resultCfg.glow}, 0 0 24px ${resultCfg.glow}`
+                            : "0 0 8px rgba(99,102,241,0.5)",
+                        transition: "all 0.4s",
+                    }} />
+                    {/* Bottom triangle */}
+                    <div style={{
+                        width: 0, height: 0,
+                        borderLeft: "8px solid transparent",
+                        borderRight: "8px solid transparent",
+                        borderBottom: hasFinished ? `12px solid ${resultCfg.color}` : "12px solid #6366f1",
+                        filter: hasFinished ? `drop-shadow(0 0 8px ${resultCfg.glow})` : "drop-shadow(0 0 4px rgba(99,102,241,0.6))",
+                        transition: "all 0.4s",
+                    }} />
+                </div>
+
+                {/* Edge fade gradients */}
+                <div className="absolute inset-y-0 left-0 w-16 sm:w-24 z-10 pointer-events-none"
+                    style={{ background: "linear-gradient(90deg, rgb(10,10,15), transparent)" }} />
+                <div className="absolute inset-y-0 right-0 w-16 sm:w-24 z-10 pointer-events-none"
+                    style={{ background: "linear-gradient(270deg, rgb(10,10,15), transparent)" }} />
+
+                {/* Reel track */}
+                <div
+                    className="overflow-hidden rounded-2xl"
+                    style={{
+                        height: itemHeight + 24,
+                        background: "linear-gradient(180deg, rgba(0,0,0,0.4), rgba(0,0,0,0.2))",
+                        border: "1px solid rgba(255,255,255,0.08)",
+                        boxShadow: "inset 0 2px 12px rgba(0,0,0,0.5), 0 4px 24px rgba(0,0,0,0.3)",
+                    }}
+                >
                     <motion.div
-                        key="explosion"
-                        initial={{ scale: 0.5, opacity: 1 }}
-                        animate={{ scale: [1, 2.5, 3], opacity: [1, 0.8, 0] }}
-                        transition={{ duration: 0.6, ease: "easeOut" }}
-                        className="absolute inset-0 rounded-2xl z-50 pointer-events-none"
+                        className="flex items-center h-full"
+                        style={{ x, gap: itemGap, paddingLeft: 12, paddingRight: 12 }}
+                    >
+                        {reel.map((reelItem, i) => {
+                            const itemCfg = TIER_CONFIG[reelItem.tier]
+                            const isHighTier = reelItem.tier === "LEGEND" || reelItem.tier === "EPIC"
+                            const isWinner = reelItem.isResult && hasFinished
+                            return (
+                                <motion.div
+                                    key={i}
+                                    className="shrink-0 rounded-xl flex flex-col overflow-hidden relative"
+                                    style={{
+                                        width: itemWidth,
+                                        height: itemHeight,
+                                        background: isHighTier
+                                            ? `linear-gradient(160deg, ${itemCfg.bg}, rgba(14,14,24,0.98))`
+                                            : "rgba(255,255,255,0.03)",
+                                        border: isWinner
+                                            ? `2px solid ${itemCfg.color}`
+                                            : `1px solid ${isHighTier ? itemCfg.border : "rgba(255,255,255,0.07)"}`,
+                                        boxShadow: isWinner
+                                            ? `0 0 24px ${itemCfg.glow}, 0 0 48px ${itemCfg.glow}`
+                                            : isHighTier ? `0 0 8px ${itemCfg.glow}` : "none",
+                                        transition: "border 0.4s, box-shadow 0.6s",
+                                    }}
+                                    animate={isWinner ? {
+                                        scale: [1, 1.1, 1.06],
+                                    } : {}}
+                                    transition={{ duration: 0.5, ease: "easeOut" }}
+                                >
+                                    {/* Top accent */}
+                                    <div className="absolute top-0 left-0 right-0"
+                                        style={{
+                                            height: isHighTier ? "2px" : "1.5px",
+                                            background: itemCfg.gradient,
+                                            boxShadow: isHighTier ? `0 0 6px ${itemCfg.glow}` : "none",
+                                        }}
+                                    />
+
+                                    {/* Winner glow overlay */}
+                                    {isWinner && (
+                                        <motion.div
+                                            className="absolute inset-0 rounded-xl pointer-events-none z-20"
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: [0, 0.3, 0.15] }}
+                                            transition={{ duration: 0.8 }}
+                                            style={{
+                                                background: `radial-gradient(ellipse at 50% 50%, ${itemCfg.glow}, transparent 70%)`,
+                                            }}
+                                        />
+                                    )}
+
+                                    {/* Item preview */}
+                                    <div className="flex-1 flex items-center justify-center p-1.5 min-h-0 relative z-10">
+                                        <ItemPreview item={reelItem.shopItem} />
+                                    </div>
+
+                                    {/* Name + tier badge */}
+                                    <div className="px-1.5 pb-1.5 sm:pb-2 flex flex-col items-center gap-0.5 relative z-10">
+                                        <span
+                                            className="text-[8px] sm:text-[10px] font-bold text-center line-clamp-1 w-full"
+                                            style={{ color: isHighTier ? itemCfg.color : "#6b7280" }}
+                                        >
+                                            {reelItem.shopItem.name}
+                                        </span>
+                                        <TierBadge tier={reelItem.tier} size="sm" />
+                                    </div>
+                                </motion.div>
+                            )
+                        })}
+                    </motion.div>
+                </div>
+            </div>
+
+            {/* Skip button */}
+            {!hasFinished && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 1.5 }}
+                    className="flex justify-center mt-4"
+                >
+                    <button
+                        onClick={skipToEnd}
+                        className="px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all duration-200 hover:scale-[1.05] active:scale-[0.95]"
                         style={{
-                            background: `radial-gradient(circle, white 10%, ${cfg.color} 50%, transparent 80%)`,
-                            boxShadow: `0 0 40px ${cfg.color}`
+                            background: "rgba(255,255,255,0.04)",
+                            border: "1px solid rgba(255,255,255,0.08)",
+                            color: "#6b7280",
                         }}
-                    />
+                    >
+                        Skip
+                    </button>
+                </motion.div>
+            )}
+
+            {/* Winner reveal text */}
+            <AnimatePresence>
+                {hasFinished && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3, duration: 0.4 }}
+                        className="text-center mt-4"
+                    >
+                        <p className="text-xs font-black uppercase tracking-wider" style={{ color: resultCfg.color }}>
+                            {result.item.name}
+                        </p>
+                        <div className="flex items-center justify-center gap-1.5 mt-1">
+                            <TierBadge tier={result.tier} size="md" />
+                            {result.isDuplicate && (
+                                <span className="text-[9px] font-bold text-amber-400 px-2 py-0.5 rounded-full"
+                                    style={{ background: "rgba(251,191,36,0.1)", border: "1px solid rgba(251,191,36,0.2)" }}>
+                                    Duplikat +{result.refundAmount}
+                                </span>
+                            )}
+                        </div>
+                    </motion.div>
                 )}
             </AnimatePresence>
-
-            {/* Slot Box */}
-            <motion.div
-                animate={isLocked ? { scale: [1, 1.1, 1], y: [0, -10, 0] } : { scale: 1 }}
-                transition={{ duration: 0.4 }}
-                className="w-full h-full flex flex-col items-center justify-center rounded-2xl relative overflow-hidden transition-colors duration-300"
-                style={{
-                    background: isLocked
-                        ? "linear-gradient(160deg, rgba(18,18,28,0.98), rgba(10,10,16,0.99))"
-                        : "rgba(255,255,255,0.03)",
-                    border: isLocked ? `2px solid ${cfg.color}` : "1px solid rgba(255,255,255,0.07)",
-                    boxShadow: isLocked ? `0 0 20px ${cfg.color}40, inset 0 0 20px ${cfg.color}10` : "none",
-                }}
-            >
-                {isLocked && (
-                    <div className="absolute top-0 left-0 right-0 h-0.5" style={{ background: cfg.gradient }} />
-                )}
-
-                {/* Preview area */}
-                {isLocked && finalResult ? (
-                    <div className="w-full h-full flex flex-col pt-3 pb-2.5 px-1">
-                        {/* Preview Item Component (Centered via flex-1) */}
-                        <div className="w-full flex-1 flex items-center justify-center min-h-0">
-                            <ItemPreview item={{
-                                id: finalResult.item.id,
-                                name: finalResult.item.name,
-                                description: finalResult.item.description,
-                                price: finalResult.item.price,
-                                type: finalResult.item.type,
-                                value: finalResult.item.value,
-                                previewColor: finalResult.item.previewColor,
-                                owned: false,
-                                equipped: false,
-                            }} />
-                        </div>
-                        
-                        {/* Title and Badge Container (Stick to bottom) */}
-                        <div className="flex flex-col items-center shrink-0 mt-2 gap-1.5">
-                            <span className="text-[9px] sm:text-[10px] font-black text-center leading-tight line-clamp-2" style={{ color: cfg.color }}>
-                                {displayName}
-                            </span>
-                            <TierBadge tier={displayTier} size="sm" />
-                        </div>
-                    </div>
-                ) : (
-                    <Icon
-                        className="w-8 h-8 sm:w-10 sm:h-10 transition-all opacity-40"
-                        style={{ color: "#64748b" }}
-                    />
-                )}
-            </motion.div>
         </div>
+    )
+}
+
+function MiniCollectedCard({ result }: { result: GachaResult }) {
+    const cfg = TIER_CONFIG[result.tier]
+    const previewItem: ShopItem = {
+        id: result.item.id,
+        name: result.item.name,
+        description: result.item.description,
+        price: result.item.price,
+        type: result.item.type,
+        value: result.item.value,
+        previewColor: result.item.previewColor,
+        owned: false,
+        equipped: false,
+    }
+    return (
+        <motion.div
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", bounce: 0.4 }}
+            className="w-16 h-20 rounded-lg relative overflow-hidden flex flex-col shrink-0"
+            style={{
+                background: `linear-gradient(160deg, ${cfg.bg}, rgba(14,14,24,0.98))`,
+                border: `1px solid ${cfg.border}`,
+                boxShadow: `0 0 12px ${cfg.glow}`,
+            }}
+        >
+            <div className="absolute top-0 left-0 right-0 h-0.5" style={{ background: cfg.gradient }} />
+            <div className="flex-1 flex items-center justify-center p-1 min-h-0">
+                <ItemPreview item={previewItem} />
+            </div>
+            <span className="text-[7px] font-bold text-center px-1 pb-1 line-clamp-1 w-full"
+                style={{ color: cfg.color }}>{result.item.name}</span>
+        </motion.div>
     )
 }
 
@@ -512,9 +844,9 @@ export default function GachaPage() {
     const [phase, setPhase] = useState<"idle" | "spinning" | "reveal">("idle")
     const [pullCount, setPullCount] = useState<1 | 5>(1)
     const [results, setResults] = useState<GachaResult[]>([])
-    const [lockedSlots, setLockedSlots] = useState<GachaResult[]>([])
+    const [currentReelIndex, setCurrentReelIndex] = useState(0)
+    const [collectedResults, setCollectedResults] = useState<GachaResult[]>([])
     const [resultMeta, setResultMeta] = useState<{ totalCost: number; totalRefund: number; newPoints: number } | null>(null)
-    const [showInfo, setShowInfo] = useState(false)
     const [boosterLevel, setBoosterLevel] = useState<0 | 1 | 2 | 3>(0)
 
     const loadData = useCallback(async () => {
@@ -552,7 +884,8 @@ export default function GachaPage() {
 
         setPhase("spinning")
         setPullCount(count)
-        setLockedSlots([])
+        setCurrentReelIndex(0)
+        setCollectedResults([])
         setResults([])
 
         try {
@@ -572,17 +905,7 @@ export default function GachaPage() {
             const pulls: GachaResult[] = data.results
             setResults(pulls)
             setResultMeta({ totalCost: data.totalCost, totalRefund: data.totalRefund, newPoints: data.newPoints })
-
-            pulls.forEach((pullResult, index) => {
-                setTimeout(() => {
-                    setLockedSlots(prev => [...prev, pullResult])
-                }, 1000 + (index * 600))
-            })
-
-            setTimeout(() => {
-                setPhase("reveal")
-                setPoints(data.newPoints)
-            }, 1000 + (pulls.length * 600) + 1200)
+            // Reel animation handles the rest — no setTimeout needed
 
         } catch (error) {
             toast.error("Terjadi kesalahan sistem")
@@ -593,9 +916,36 @@ export default function GachaPage() {
     const closeResults = () => {
         setPhase("idle")
         setResults([])
-        setLockedSlots([])
+        setCollectedResults([])
+        setCurrentReelIndex(0)
         setResultMeta(null)
     }
+
+    const handleReelComplete = useCallback((index: number) => {
+        const res = results[index]
+        if (!res) return
+
+        setCollectedResults(prev => [...prev, res])
+
+        if (index + 1 < results.length) {
+            // Brief pause to admire result, then next reel
+            setTimeout(() => {
+                setCurrentReelIndex(index + 1)
+            }, 1000)
+        } else {
+            // All reels done → reveal phase
+            setTimeout(() => {
+                setPhase("reveal")
+                if (resultMeta) setPoints(resultMeta.newPoints)
+            }, 1500)
+        }
+    }, [results, resultMeta])
+
+    const handleSkipAnimation = useCallback(() => {
+        setCollectedResults([...results])
+        setPhase("reveal")
+        if (resultMeta) setPoints(resultMeta.newPoints)
+    }, [results, resultMeta])
 
     if (loading) {
         return (
@@ -620,8 +970,8 @@ export default function GachaPage() {
                         left: "-5%",
                         width: "420px",
                         height: "420px",
-                        background: "radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%)",
-                        filter: "blur(120px)",
+                        background: "radial-gradient(circle, rgba(99,102,241,0.14) 0%, transparent 70%)",
+                        filter: "blur(100px)",
                     }}
                 />
                 {/* Bottom-right purple orb */}
@@ -632,8 +982,8 @@ export default function GachaPage() {
                         right: "-8%",
                         width: "500px",
                         height: "500px",
-                        background: "radial-gradient(circle, rgba(168,85,247,0.1) 0%, transparent 70%)",
-                        filter: "blur(120px)",
+                        background: "radial-gradient(circle, rgba(168,85,247,0.12) 0%, transparent 70%)",
+                        filter: "blur(100px)",
                     }}
                 />
                 {/* Center amber accent */}
@@ -645,8 +995,8 @@ export default function GachaPage() {
                         transform: "translateX(-50%)",
                         width: "350px",
                         height: "350px",
-                        background: "radial-gradient(circle, rgba(251,191,36,0.05) 0%, transparent 70%)",
-                        filter: "blur(120px)",
+                        background: "radial-gradient(circle, rgba(251,191,36,0.06) 0%, transparent 70%)",
+                        filter: "blur(100px)",
                     }}
                 />
                 {/* Top-right emerald accent */}
@@ -657,10 +1007,53 @@ export default function GachaPage() {
                         right: "10%",
                         width: "280px",
                         height: "280px",
-                        background: "radial-gradient(circle, rgba(52,211,153,0.06) 0%, transparent 70%)",
-                        filter: "blur(120px)",
+                        background: "radial-gradient(circle, rgba(52,211,153,0.07) 0%, transparent 70%)",
+                        filter: "blur(100px)",
                     }}
                 />
+
+                {/* ── Floating star particles ── */}
+                {[
+                    { x: "12%",  y: "18%", s: 1.5, d: 6,   delay: 0    },
+                    { x: "87%",  y: "12%", s: 2,   d: 8,   delay: 1.2  },
+                    { x: "35%",  y: "72%", s: 1,   d: 10,  delay: 0.7  },
+                    { x: "65%",  y: "55%", s: 2.5, d: 7,   delay: 2    },
+                    { x: "20%",  y: "45%", s: 1.5, d: 9,   delay: 0.3  },
+                    { x: "78%",  y: "80%", s: 1,   d: 11,  delay: 1.6  },
+                    { x: "50%",  y: "25%", s: 2,   d: 5,   delay: 0.9  },
+                    { x: "90%",  y: "42%", s: 1.5, d: 8,   delay: 1.4  },
+                    { x: "8%",   y: "62%", s: 1,   d: 12,  delay: 0.5  },
+                    { x: "58%",  y: "88%", s: 2,   d: 7,   delay: 2.3  },
+                    { x: "42%",  y: "10%", s: 1,   d: 9,   delay: 1.8  },
+                    { x: "25%",  y: "92%", s: 1.5, d: 6,   delay: 0.2  },
+                ].map(({ x, y, s, d, delay }, i) => (
+                    <motion.div
+                        key={i}
+                        className="absolute rounded-full pointer-events-none"
+                        animate={{
+                            y: [0, -12, 0],
+                            opacity: [0.15, 0.5, 0.15],
+                        }}
+                        transition={{
+                            duration: d,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                            delay,
+                        }}
+                        style={{
+                            left: x,
+                            top: y,
+                            width: s * 2,
+                            height: s * 2,
+                            background: i % 3 === 0
+                                ? "rgba(139,92,246,0.6)"
+                                : i % 3 === 1
+                                ? "rgba(99,102,241,0.5)"
+                                : "rgba(251,191,36,0.4)",
+                            boxShadow: `0 0 ${s * 3}px currentColor`,
+                        }}
+                    />
+                ))}
             </div>
 
             {/* All content sits above the glow orbs */}
@@ -678,11 +1071,20 @@ export default function GachaPage() {
                         >
                             <div className="flex items-start sm:items-center justify-between gap-4">
                                 <div className="flex items-center gap-3 sm:gap-4">
-                                    <div
-                                        className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0"
-                                        style={{ background: "rgba(139,92,246,0.12)", border: "1px solid rgba(139,92,246,0.2)" }}
-                                    >
-                                        <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-purple-400" />
+                                    {/* Animated icon with glow ring */}
+                                    <div className="relative shrink-0">
+                                        <motion.div
+                                            className="absolute inset-0 rounded-xl sm:rounded-2xl"
+                                            animate={{ opacity: [0.3, 0.7, 0.3], scale: [1, 1.08, 1] }}
+                                            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                                            style={{ background: "rgba(139,92,246,0.2)", filter: "blur(8px)" }}
+                                        />
+                                        <div
+                                            className="relative w-11 h-11 sm:w-13 sm:h-13 rounded-xl sm:rounded-2xl flex items-center justify-center"
+                                            style={{ background: "rgba(139,92,246,0.12)", border: "1px solid rgba(139,92,246,0.25)" }}
+                                        >
+                                            <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-purple-400" />
+                                        </div>
                                     </div>
                                     <div>
                                         <div className="flex items-center gap-3">
@@ -701,8 +1103,8 @@ export default function GachaPage() {
                                                 <ShoppingBag className="w-3.5 h-3.5" />
                                             </Link>
                                         </div>
-                                        <p className="text-[13px] text-neutral-500 mt-1">
-                                            Uji keberuntunganmu dan dapatkan item langka dari mystery box
+                                        <p className="text-[13px] mt-1 font-medium" style={{ color: "#6b7280" }}>
+                                            Uji keberuntunganmu dan dapatkan item langka
                                         </p>
                                     </div>
                                 </div>
@@ -710,7 +1112,7 @@ export default function GachaPage() {
                                 {/* Desktop Shop Button */}
                                 <Link
                                     href="/shop"
-                                    className="hidden sm:flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all hover:scale-[1.02]"
+                                    className="hidden sm:flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
                                     style={{
                                         background: "rgba(99,102,241,0.08)",
                                         border: "1px solid rgba(99,102,241,0.2)",
@@ -723,9 +1125,11 @@ export default function GachaPage() {
                                 </Link>
                             </div>
 
-                            {/* Stat pills (consistent with Shop/Inventory) */}
-                            <div className="flex items-center gap-3 mt-3 flex-wrap">
-                                <span
+                            {/* Stat pills */}
+                            <div className="flex items-center gap-3 mt-4 flex-wrap">
+                                <motion.span
+                                    animate={{ boxShadow: ["0 0 0px rgba(251,191,36,0)", "0 0 10px rgba(251,191,36,0.2)", "0 0 0px rgba(251,191,36,0)"] }}
+                                    transition={{ duration: 2.5, repeat: Infinity }}
                                     className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold"
                                     style={{
                                         background: "rgba(251,191,36,0.1)",
@@ -735,7 +1139,7 @@ export default function GachaPage() {
                                 >
                                     <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
                                     {formatPoints(points)} poin
-                                </span>
+                                </motion.span>
                                 <span
                                     className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold"
                                     style={{
@@ -747,18 +1151,6 @@ export default function GachaPage() {
                                     <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#8b5cf6" }} />
                                     {BOOSTER_CONFIGS[boosterLevel].single} poin / buka
                                 </span>
-                                <button
-                                    onClick={() => setShowInfo(!showInfo)}
-                                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all hover:bg-white/8"
-                                    style={{
-                                        background: "rgba(255,255,255,0.04)",
-                                        border: "1px solid rgba(255,255,255,0.08)",
-                                        color: "#6b7280",
-                                    }}
-                                >
-                                    <Info className="w-3 h-3" />
-                                    Drop Rate
-                                </button>
                             </div>
                         </motion.div>
                     )}
@@ -776,16 +1168,216 @@ export default function GachaPage() {
                             transition={{ duration: 0.4 }}
                         >
                             {/* ════════════════════════════════════════════════════════
+                                HERO — Mystery Box Center Stage
+                                ════════════════════════════════════════════════════════ */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 24 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                                className="flex flex-col items-center justify-center pt-2 pb-8 sm:pb-10 relative"
+                            >
+                                {/* Dynamic glow behind the box — reacts to booster */}
+                                {(() => {
+                                    const glowColors: Record<number, string> = {
+                                        0: "rgba(99,102,241,0.18)",
+                                        1: "rgba(99,102,241,0.28)",
+                                        2: "rgba(52,211,153,0.28)",
+                                        3: "rgba(232,121,249,0.32)",
+                                    }
+                                    return (
+                                        <motion.div
+                                            className="absolute rounded-full pointer-events-none"
+                                            animate={{
+                                                scale: [1, 1.15, 1],
+                                                opacity: [0.6, 1, 0.6],
+                                            }}
+                                            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                                            style={{
+                                                width: 280,
+                                                height: 280,
+                                                background: `radial-gradient(circle, ${glowColors[boosterLevel]} 0%, transparent 70%)`,
+                                                filter: "blur(24px)",
+                                                top: "50%",
+                                                left: "50%",
+                                                transform: "translate(-50%, -50%)",
+                                            }}
+                                        />
+                                    )
+                                })()}
+
+                                {/* Orbital ring */}
+                                <motion.div
+                                    animate={{ rotate: 360 }}
+                                    transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
+                                    className="absolute pointer-events-none"
+                                    style={{
+                                        width: 200,
+                                        height: 200,
+                                        borderRadius: "50%",
+                                        border: "1px dashed rgba(139,92,246,0.2)",
+                                    }}
+                                />
+                                <motion.div
+                                    animate={{ rotate: -360 }}
+                                    transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
+                                    className="absolute pointer-events-none"
+                                    style={{
+                                        width: 155,
+                                        height: 155,
+                                        borderRadius: "50%",
+                                        border: "1px dashed rgba(99,102,241,0.15)",
+                                    }}
+                                />
+
+                                {/* Particle dots */}
+                                {[
+                                    { angle: 0,   r: 100, size: 3, delay: 0 },
+                                    { angle: 72,  r: 100, size: 2, delay: 0.4 },
+                                    { angle: 144, r: 100, size: 4, delay: 0.8 },
+                                    { angle: 216, r: 100, size: 2, delay: 1.2 },
+                                    { angle: 288, r: 100, size: 3, delay: 1.6 },
+                                ].map(({ angle, r, size, delay }, idx) => {
+                                    const rad = (angle * Math.PI) / 180
+                                    const x = Math.cos(rad) * r
+                                    const y = Math.sin(rad) * r
+                                    const particleColors: Record<number, string> = {
+                                        0: "#818cf8",
+                                        1: "#818cf8",
+                                        2: "#34d399",
+                                        3: "#e879f9",
+                                    }
+                                    return (
+                                        <motion.div
+                                            key={idx}
+                                            className="absolute rounded-full pointer-events-none"
+                                            animate={{ opacity: [0.2, 0.9, 0.2], scale: [0.8, 1.2, 0.8] }}
+                                            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay }}
+                                            style={{
+                                                width: size,
+                                                height: size,
+                                                background: particleColors[boosterLevel],
+                                                boxShadow: `0 0 6px ${particleColors[boosterLevel]}`,
+                                                left: `calc(50% + ${x}px)`,
+                                                top: `calc(50% + ${y}px)`,
+                                                transform: "translate(-50%, -50%)",
+                                            }}
+                                        />
+                                    )
+                                })}
+
+                                {/* The Mystery Box itself */}
+                                <motion.div
+                                    animate={{ y: [0, -10, 0] }}
+                                    transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+                                    className="relative z-10"
+                                    style={{ perspective: "600px" }}
+                                >
+                                    <motion.div
+                                        animate={{ rotateY: [0, 8, 0, -8, 0] }}
+                                        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                                        style={{ transformStyle: "preserve-3d" }}
+                                    >
+                                        {/* Box face */}
+                                        {(() => {
+                                            const boxColors: Record<number, { border: string; topAccent: string; innerGlow: string; star: string }> = {
+                                                0: { border: "rgba(99,102,241,0.35)", topAccent: "linear-gradient(135deg,#818cf8,#6366f1)", innerGlow: "rgba(99,102,241,0.08)", star: "#818cf8" },
+                                                1: { border: "rgba(99,102,241,0.5)",  topAccent: "linear-gradient(135deg,#818cf8,#6366f1,#a5b4fc)", innerGlow: "rgba(99,102,241,0.12)", star: "#a5b4fc" },
+                                                2: { border: "rgba(52,211,153,0.5)",  topAccent: "linear-gradient(135deg,#34d399,#10b981,#6ee7b7)", innerGlow: "rgba(52,211,153,0.12)", star: "#34d399" },
+                                                3: { border: "rgba(232,121,249,0.5)", topAccent: "linear-gradient(135deg,#e879f9,#a855f7,#f0abfc)", innerGlow: "rgba(232,121,249,0.12)", star: "#e879f9" },
+                                            }
+                                            const bc = boxColors[boosterLevel]
+                                            return (
+                                                <div
+                                                    className="relative flex items-center justify-center"
+                                                    style={{
+                                                        width: 120,
+                                                        height: 120,
+                                                        borderRadius: "24px",
+                                                        background: `linear-gradient(160deg, rgba(20,20,32,0.98), rgba(10,10,18,0.99))`,
+                                                        border: `1.5px solid ${bc.border}`,
+                                                        boxShadow: `0 0 40px -8px ${bc.border}, 0 20px 60px -12px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.06)`,
+                                                        transition: "border-color 0.5s, box-shadow 0.5s",
+                                                    }}
+                                                >
+                                                    {/* Top accent bar */}
+                                                    <div className="absolute top-0 left-0 right-0 h-0.5 rounded-t-[24px]" style={{ background: bc.topAccent }} />
+
+                                                    {/* Inner bg glow */}
+                                                    <div className="absolute inset-0 rounded-[24px]" style={{ background: `radial-gradient(circle at 50% 30%, ${bc.innerGlow}, transparent 65%)` }} />
+
+                                                    {/* Question mark / star icon */}
+                                                    <motion.div
+                                                        animate={{ scale: [1, 1.08, 1], opacity: [0.7, 1, 0.7] }}
+                                                        transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                                                        className="relative z-10 flex flex-col items-center gap-1"
+                                                    >
+                                                        <Sparkles
+                                                            className="w-10 h-10"
+                                                            style={{
+                                                                color: bc.star,
+                                                                filter: `drop-shadow(0 0 8px ${bc.star})`,
+                                                                transition: "color 0.5s, filter 0.5s",
+                                                            }}
+                                                        />
+                                                    </motion.div>
+
+                                                    {/* Corner sparkles */}
+                                                    {[
+                                                        { top: 10, left: 10 },
+                                                        { top: 10, right: 10 },
+                                                        { bottom: 10, left: 10 },
+                                                        { bottom: 10, right: 10 },
+                                                    ].map((pos, idx) => (
+                                                        <motion.div
+                                                            key={idx}
+                                                            className="absolute w-1 h-1 rounded-full"
+                                                            animate={{ opacity: [0.2, 0.8, 0.2] }}
+                                                            transition={{ duration: 2, repeat: Infinity, delay: idx * 0.5 }}
+                                                            style={{ ...pos, background: bc.star, boxShadow: `0 0 4px ${bc.star}` }}
+                                                        />
+                                                    ))}
+                                                </div>
+                                            )
+                                        })()}
+                                    </motion.div>
+                                </motion.div>
+
+                                {/* Box shadow on floor */}
+                                <motion.div
+                                    animate={{ scaleX: [1, 0.8, 1], opacity: [0.25, 0.15, 0.25] }}
+                                    transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+                                    className="mt-3 rounded-full pointer-events-none"
+                                    style={{
+                                        width: 90,
+                                        height: 10,
+                                        background: "radial-gradient(ellipse, rgba(99,102,241,0.4) 0%, transparent 70%)",
+                                        filter: "blur(6px)",
+                                    }}
+                                />
+
+                                {/* CTA label */}
+                                <motion.p
+                                    animate={{ opacity: [0.5, 0.9, 0.5] }}
+                                    transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                                    className="mt-4 text-[11px] font-bold uppercase tracking-[0.2em] text-neutral-600"
+                                >
+                                    Buka untuk dapatkan hadiah
+                                </motion.p>
+                            </motion.div>
+
+                            {/* ════════════════════════════════════════════════════════
                                 Borderless Carousel Preview — Infinite Void Flow
                                 ════════════════════════════════════════════════════════ */}
                             <motion.div
                                 initial={{ opacity: 0, y: 12 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.1, duration: 0.5 }}
-                                className="py-5 sm:py-6 mb-5 sm:mb-6 overflow-hidden relative"
+                                className="py-6 sm:py-8 mb-6 sm:mb-8 overflow-hidden relative"
                             >
-                                <div className="text-center mb-5 relative z-10">
-                                    <p className="text-[11px] font-black uppercase tracking-[0.2em] text-neutral-600">Preview Hadiah</p>
+                                <div className="flex items-center justify-center gap-3 mb-6 relative z-10">
+                                    <div className="h-px w-8 bg-gradient-to-r from-transparent to-neutral-700" />
+                                    <p className="text-[10px] font-black uppercase tracking-[0.25em] text-neutral-500">Preview Hadiah Utama</p>
+                                    <div className="h-px w-8 bg-gradient-to-l from-transparent to-neutral-700" />
                                 </div>
 
                                 {/* Seamless Carousel with transparent fade edges */}
@@ -798,31 +1390,55 @@ export default function GachaPage() {
                                         style={{ background: "linear-gradient(270deg, rgb(10,10,15) 0%, rgba(10,10,15,0.6) 40%, transparent 100%)" }} />
 
                                     <motion.div
-                                        animate={{ x: [0, -(shopItems.length * 140)] }}
-                                        transition={{ duration: Math.max(20, shopItems.length * 1.5), ease: "linear", repeat: Infinity }}
-                                        className="flex gap-3 items-stretch w-max py-2"
+                                        animate={{ x: [0, -(shopItems.length * 164)] }}
+                                        transition={{ duration: Math.max(24, shopItems.length * 1.8), ease: "linear", repeat: Infinity }}
+                                        className="flex gap-4 items-stretch w-max py-3"
                                     >
                                         {carouselItems.map((item, i) => {
                                             const tier = getTier(item.price, item.name)
                                             const cfg = TIER_CONFIG[tier]
+                                            const isHighTier = tier === "LEGEND" || tier === "EPIC"
                                             return (
                                                 <div
                                                     key={i}
-                                                    className="w-28 sm:w-32 rounded-2xl flex flex-col relative overflow-hidden shrink-0 transition-all duration-300 hover:scale-[1.04]"
+                                                    className="w-36 sm:w-40 rounded-2xl flex flex-col relative overflow-hidden shrink-0 transition-all duration-300 hover:scale-[1.05] hover:-translate-y-1"
                                                     style={{
-                                                        background: "rgba(255,255,255,0.025)",
-                                                        border: "1px solid rgba(255,255,255,0.06)",
+                                                        background: isHighTier
+                                                            ? `linear-gradient(160deg, ${cfg.bg}, rgba(10,10,16,0.95))`
+                                                            : "rgba(255,255,255,0.025)",
+                                                        border: `1px solid ${isHighTier ? cfg.border : "rgba(255,255,255,0.07)"}`,
                                                         backdropFilter: "blur(8px)",
+                                                        boxShadow: isHighTier ? `0 4px 24px -6px ${cfg.glow}` : "none",
                                                     }}
                                                 >
-                                                    <div className="absolute top-0 left-0 right-0 h-0.5 z-10" style={{ background: cfg.gradient }} />
+                                                    {/* Top gradient accent — thicker for high tiers */}
+                                                    <div
+                                                        className="absolute top-0 left-0 right-0 z-10"
+                                                        style={{
+                                                            height: isHighTier ? "2px" : "1.5px",
+                                                            background: cfg.gradient,
+                                                            boxShadow: isHighTier ? `0 0 8px ${cfg.glow}` : "none",
+                                                        }}
+                                                    />
+                                                    {/* Ambient inner glow for high tiers */}
+                                                    {isHighTier && (
+                                                        <div
+                                                            className="absolute inset-0 pointer-events-none"
+                                                            style={{
+                                                                background: `radial-gradient(ellipse at 50% 0%, ${cfg.bg} 0%, transparent 70%)`,
+                                                            }}
+                                                        />
+                                                    )}
                                                     {/* Item preview */}
-                                                    <div className="h-20 sm:h-24 flex items-center justify-center p-2">
+                                                    <div className="h-28 sm:h-32 flex items-center justify-center p-3 relative z-10">
                                                         <ItemPreview item={item} />
                                                     </div>
                                                     {/* Name + tier badge */}
-                                                    <div className="px-2 pb-2 flex flex-col items-center gap-1">
-                                                        <span className="text-[8px] sm:text-[9px] text-center font-bold text-neutral-500 line-clamp-1 w-full">{item.name}</span>
+                                                    <div className="px-2.5 pb-3 flex flex-col items-center gap-1.5 relative z-10">
+                                                        <span
+                                                            className="text-[9px] sm:text-[10px] text-center font-bold line-clamp-1 w-full"
+                                                            style={{ color: isHighTier ? cfg.color : "#6b7280" }}
+                                                        >{item.name}</span>
                                                         <TierBadge tier={tier} size="sm" />
                                                     </div>
                                                 </div>
@@ -867,17 +1483,20 @@ export default function GachaPage() {
                                 <div className="relative z-10 mb-4 sm:mb-5">
                                     <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.15em] text-neutral-600 mb-3 flex items-center gap-1.5">
                                         <Settings className="w-3 h-3" /> Pilih Booster
+                                        <span className="text-[9px] font-medium text-neutral-700 normal-case tracking-normal">(opsional)</span>
                                     </p>
                                     <div className="grid grid-cols-3 gap-2 sm:gap-3">
                                         {([1, 2, 3] as const).map(lvl => {
                                             const active = boosterLevel === lvl
                                             const bcfg = BOOSTER_CONFIGS[lvl]
                                             const relic = BOOSTER_RELIC_STYLES[lvl]
+                                            const iconColor = BOOSTER_ICON_COLORS[lvl]
+                                            const IconComp = BOOSTER_ICONS[lvl]
                                             return (
                                                 <button
                                                     key={lvl}
                                                     onClick={() => { GachaAudio.init(); setBoosterLevel(prev => prev === lvl ? 0 : lvl as any); }}
-                                                    className="relative flex flex-col items-center justify-center gap-0.5 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl text-xs font-bold transition-all duration-300"
+                                                    className="relative flex flex-col items-center justify-center gap-1 py-3.5 sm:py-4 rounded-xl sm:rounded-2xl text-xs font-bold transition-all duration-300 overflow-hidden hover:scale-[1.02] active:scale-[0.98]"
                                                     style={{
                                                         background: active
                                                             ? relic.bgActive
@@ -886,33 +1505,72 @@ export default function GachaPage() {
                                                             ? `1.5px solid ${relic.borderColor}`
                                                             : "1px solid rgba(255,255,255,0.06)",
                                                         boxShadow: active
-                                                            ? `0 0 20px ${relic.glowColor}, inset 0 0 16px ${relic.glowColor}`
+                                                            ? `0 0 24px ${relic.glowColor}, inset 0 0 20px ${relic.glowColor}`
                                                             : "none",
                                                         color: active ? "#fff" : "#6b7280",
                                                     }}
                                                 >
+                                                    {/* Top colored accent stripe */}
+                                                    <div
+                                                        className="absolute top-0 left-0 right-0 h-0.5 transition-opacity duration-300"
+                                                        style={{
+                                                            background: relic.borderColor.replace("0.5)", "1)"),
+                                                            opacity: active ? 1 : 0.3,
+                                                        }}
+                                                    />
                                                     {/* Active glow ring pulse */}
                                                     {active && (
                                                         <motion.div
                                                             className="absolute inset-0 rounded-xl sm:rounded-2xl pointer-events-none"
-                                                            animate={{ opacity: [0.3, 0.6, 0.3] }}
+                                                            animate={{ opacity: [0.3, 0.7, 0.3] }}
                                                             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                                                             style={{
                                                                 border: `1px solid ${relic.borderColor}`,
-                                                                boxShadow: `0 0 12px ${relic.glowColor}`,
+                                                                boxShadow: `0 0 16px ${relic.glowColor}`,
                                                             }}
                                                         />
                                                     )}
-                                                    {(() => {
-                                                        const IconComp = BOOSTER_ICONS[lvl]
-                                                        const iconColor = BOOSTER_ICON_COLORS[lvl]
-                                                        return <IconComp className="relative z-10 w-5 h-5 sm:w-6 sm:h-6" style={{ color: active ? iconColor.active : iconColor.inactive }} />
-                                                    })()}
-                                                    <span className="relative z-10 text-[10px] sm:text-[11px] font-black tracking-tight mt-0.5">{bcfg.name}</span>
-                                                    <span className="relative z-10 text-[8px] sm:text-[9px] font-bold text-neutral-500">
-                                                        Legend {bcfg.rates.LEGEND}%
+                                                    <IconComp
+                                                        className="relative z-10 w-6 h-6 sm:w-7 sm:h-7 mb-0.5"
+                                                        style={{ color: active ? iconColor.active : iconColor.inactive }}
+                                                    />
+                                                    <span className="relative z-10 text-[10px] sm:text-[11px] font-black tracking-tight">{bcfg.name}</span>
+                                                    {/* Legend rate — highlighted */}
+                                                    <span
+                                                        className="relative z-10 text-[9px] sm:text-[10px] font-black tabular-nums pb-0.5"
+                                                        style={{ color: active ? "#fbbf24" : "#6b7280" }}
+                                                    >
+                                                        ★ {bcfg.rates.LEGEND}%
                                                     </span>
                                                 </button>
+                                            )
+                                        })}
+                                    </div>
+
+                                    {/* Inline Drop Rate Bars */}
+                                    <div className="mt-4 sm:mt-5 grid grid-cols-2 gap-x-4 sm:gap-x-6 gap-y-2">
+                                        {(["BASIC", "ELITE", "EPIC", "LEGEND"] as const).map(tier => {
+                                            const tcfg = TIER_CONFIG[tier]
+                                            const rate = BOOSTER_CONFIGS[boosterLevel].rates[tier]
+                                            return (
+                                                <div key={tier} className="flex items-center gap-2.5">
+                                                    <TierBadge tier={tier} size="sm" />
+                                                    <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.04)" }}>
+                                                        <motion.div
+                                                            className="h-full rounded-full"
+                                                            initial={false}
+                                                            animate={{ width: `${rate}%` }}
+                                                            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                                                            style={{
+                                                                background: tcfg.gradient,
+                                                                boxShadow: `0 0 8px ${tcfg.glow}`,
+                                                            }}
+                                                        />
+                                                    </div>
+                                                    <span className="text-[10px] font-bold tabular-nums w-7 text-right" style={{ color: tcfg.color }}>
+                                                        {rate}%
+                                                    </span>
+                                                </div>
                                             )
                                         })}
                                     </div>
@@ -924,12 +1582,12 @@ export default function GachaPage() {
                                 />
 
                                 {/* Section: Action Buttons */}
-                                <div className="relative z-10 grid grid-cols-5 gap-3 sm:gap-4">
-                                    {/* Single pull — smaller, 2 cols */}
+                                <div className="relative z-10 grid grid-cols-2 gap-3 sm:gap-4">
+                                    {/* Single pull */}
                                     <button
                                         onClick={() => { GachaAudio.init(); openBox(1); }}
                                         disabled={points < BOOSTER_CONFIGS[boosterLevel].single}
-                                        className="col-span-2 relative flex flex-col items-center justify-center gap-1 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl text-sm font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed group overflow-hidden"
+                                        className="relative flex flex-col items-center justify-center gap-1.5 py-4 sm:py-5 rounded-xl sm:rounded-2xl text-sm font-bold transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed group overflow-hidden hover:scale-[1.02] active:scale-[0.98]"
                                         style={{
                                             background: "rgba(255,255,255,0.03)",
                                             border: "1px solid rgba(255,255,255,0.08)",
@@ -937,35 +1595,19 @@ export default function GachaPage() {
                                     >
                                         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                                             style={{ background: "linear-gradient(135deg, rgba(99,102,241,0.08), rgba(139,92,246,0.04))" }} />
-                                        <span className="relative text-xs sm:text-sm font-bold text-neutral-400 group-hover:text-neutral-200 transition-colors">Buka 1x</span>
+                                        <span className="relative text-sm sm:text-base font-bold text-neutral-400 group-hover:text-neutral-200 transition-colors">Buka 1x</span>
                                         <span className="relative flex items-center gap-1 text-amber-400 text-xs font-bold">
                                             <Star className="w-3 h-3 fill-amber-400" />
                                             {BOOSTER_CONFIGS[boosterLevel].single} poin
                                         </span>
                                     </button>
 
-                                    {/* Multi pull — DOMINANT, 3 cols, animated gradient */}
-                                    <div className="col-span-3 relative">
-                                        {/* Floating discount badge */}
-                                        <motion.div
-                                            className="absolute -top-3 left-1/2 z-20 px-2.5 py-1 rounded-full text-[8px] sm:text-[9px] font-black uppercase tracking-wider whitespace-nowrap"
-                                            style={{
-                                                transform: "translateX(-50%)",
-                                                background: "linear-gradient(135deg, rgba(74,222,128,0.2), rgba(34,197,94,0.15))",
-                                                color: "#4ade80",
-                                                border: "1px solid rgba(74,222,128,0.3)",
-                                                boxShadow: "0 4px 12px rgba(74,222,128,0.15)",
-                                            }}
-                                            animate={{ y: [0, -3, 0] }}
-                                            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                                        >
-                                            ✦ Hemat {BOOSTER_CONFIGS[boosterLevel].single * 5 - BOOSTER_CONFIGS[boosterLevel].multi} Poin
-                                        </motion.div>
-
+                                    {/* Multi pull — Premium */}
+                                    <div className="relative">
                                         <button
                                             onClick={() => { GachaAudio.init(); openBox(5); }}
                                             disabled={points < BOOSTER_CONFIGS[boosterLevel].multi}
-                                            className="gacha-btn-5x w-full relative flex flex-col items-center justify-center gap-1 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl text-sm font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed group overflow-hidden"
+                                            className="gacha-btn-5x w-full h-full relative flex flex-col items-center justify-center gap-1.5 py-4 sm:py-5 rounded-xl sm:rounded-2xl text-sm font-bold transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed group overflow-hidden hover:scale-[1.02] active:scale-[0.98]"
                                             style={{
                                                 border: "1px solid rgba(99,102,241,0.3)",
                                                 boxShadow: "0 0 20px rgba(99,102,241,0.1), 0 4px 24px rgba(0,0,0,0.3)",
@@ -978,10 +1620,10 @@ export default function GachaPage() {
                                                 style={{ background: "rgba(255,255,255,0.06)" }} />
 
                                             <span className="relative z-10 text-sm sm:text-base font-black text-white">Buka 5x</span>
-                                            <span className="relative z-10 flex items-center gap-1 text-amber-300 text-xs font-bold">
+                                            <span className="relative z-10 flex items-center gap-1.5 text-amber-300 text-xs font-bold">
                                                 <Star className="w-3 h-3 fill-amber-300" />
                                                 {BOOSTER_CONFIGS[boosterLevel].multi} poin
-                                                <span className="text-neutral-500 line-through ml-1 font-normal opacity-70">{BOOSTER_CONFIGS[boosterLevel].single * 5}</span>
+                                                <span className="text-neutral-500 line-through font-normal opacity-70">{BOOSTER_CONFIGS[boosterLevel].single * 5}</span>
                                             </span>
                                         </button>
                                     </div>
@@ -990,7 +1632,7 @@ export default function GachaPage() {
                         </motion.div>
                     )}
 
-                    {/* ── SPINNING PHASE ── */}
+                    {/* ── SPINNING PHASE — CS:GO Case Opening Reel ── */}
                     {phase === "spinning" && (
                         <motion.div
                             key="spinning"
@@ -998,33 +1640,191 @@ export default function GachaPage() {
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 1.02, filter: "blur(6px)" }}
                             transition={{ duration: 0.4 }}
-                            className="flex flex-col items-center justify-center min-h-[75vh] py-16 relative"
+                            className="flex flex-col items-center justify-center min-h-[60vh] py-12 relative"
                         >
-                            {/* Spinning background ring */}
+                            {/* Ambient reel glow */}
                             <motion.div
-                                animate={{ rotate: 360, scale: [1, 1.05, 1] }}
-                                transition={{ rotate: { duration: 10, repeat: Infinity, ease: "linear" }, scale: { duration: 2, repeat: Infinity } }}
-                                className="absolute w-64 h-64 sm:w-80 sm:h-80 rounded-full"
-                                style={{ border: "1px solid rgba(99,102,241,0.1)", background: "rgba(99,102,241,0.02)", filter: "blur(8px)" }}
+                                className="absolute rounded-full pointer-events-none"
+                                animate={{ scale: [1, 1.15, 1], opacity: [0.08, 0.18, 0.08] }}
+                                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                                style={{
+                                    width: 500,
+                                    height: 300,
+                                    background: "radial-gradient(ellipse, rgba(99,102,241,0.25), transparent 70%)",
+                                    filter: "blur(50px)",
+                                }}
                             />
 
-                            <div className="flex flex-wrap justify-center gap-2 sm:gap-5 px-2 sm:px-4 relative z-10 w-full max-w-4xl">
-                                {Array.from({ length: pullCount }).map((_, i) => {
-                                    const isLocked = i < lockedSlots.length
-                                    return (
-                                        <RouletteSlot
-                                            key={i}
-                                            isLocked={isLocked}
-                                            finalResult={lockedSlots[i]}
-                                            poolItems={shopItems}
-                                        />
-                                    )
-                                })}
+                            {/* Pull progress (5x pulls) */}
+                            {pullCount > 1 && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="mb-6 text-center relative z-10"
+                                >
+                                    <p className="text-[10px] font-black uppercase tracking-[0.25em] text-neutral-500">
+                                        Pull {Math.min(currentReelIndex + 1, pullCount)} / {pullCount}
+                                    </p>
+                                    <div className="flex items-center justify-center gap-1.5 mt-2">
+                                        {Array.from({ length: pullCount }).map((_, i) => (
+                                            <div
+                                                key={i}
+                                                className="w-2 h-2 rounded-full transition-all duration-300"
+                                                style={{
+                                                    background: i < collectedResults.length
+                                                        ? TIER_CONFIG[results[i]?.tier ?? "BASIC"].color
+                                                        : i === currentReelIndex && results.length > 0
+                                                        ? "#6366f1"
+                                                        : "rgba(255,255,255,0.1)",
+                                                    boxShadow: i === currentReelIndex && results.length > 0
+                                                        ? "0 0 8px rgba(99,102,241,0.6)"
+                                                        : i < collectedResults.length
+                                                        ? `0 0 6px ${TIER_CONFIG[results[i]?.tier ?? "BASIC"].glow}`
+                                                        : "none",
+                                                }}
+                                            />
+                                        ))}
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {/* The Reel */}
+                            <div className="relative z-10 w-full max-w-2xl sm:max-w-4xl mx-auto px-0 sm:px-4">
+                                <AnimatePresence mode="wait">
+                                    {results.length > 0 && currentReelIndex < results.length ? (
+                                        <motion.div
+                                            key="actual-reel"
+                                            initial={{ opacity: 0, scale: 0.95, filter: "blur(8px)" }}
+                                            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                                            transition={{ duration: 0.6, ease: "easeOut" }}
+                                            className="w-full"
+                                        >
+                                            <CaseOpeningReel
+                                                key={currentReelIndex}
+                                                result={results[currentReelIndex]}
+                                                poolItems={shopItems}
+                                                onComplete={() => handleReelComplete(currentReelIndex)}
+                                            />
+                                        </motion.div>
+                                    ) : (
+                                        /* Holographic Scanning Track Loading State */
+                                        <motion.div
+                                            key="scanning-track"
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            exit={{ opacity: 0, scale: 1.05, filter: "blur(8px)" }}
+                                            transition={{ duration: 0.4 }}
+                                            className="w-full relative rounded-2xl overflow-hidden flex items-center justify-center"
+                                            style={{
+                                                height: 189, // Fits desktop height (165 + 24)
+                                                background: "rgba(10,10,18,0.4)",
+                                                border: "1px dashed rgba(99,102,241,0.2)",
+                                                boxShadow: "inset 0 0 20px rgba(99,102,241,0.05)"
+                                            }}
+                                        >
+                                            {/* Scanning grid overlay */}
+                                            <div 
+                                                className="absolute inset-0 opacity-[0.03] pointer-events-none"
+                                                style={{
+                                                    backgroundImage: `linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)`,
+                                                    backgroundSize: '20px 20px'
+                                                }}
+                                            />
+                                            
+                                            {/* Empty item slots wireframes */}
+                                            <div className="flex gap-4 sm:gap-6 opacity-30">
+                                                {Array.from({length: 7}).map((_, i) => (
+                                                    <div key={i} className="hidden sm:block shrink-0 w-[140px] h-[165px] rounded-xl"
+                                                        style={{ border: "1px solid rgba(99,102,241,0.3)", background: "rgba(99,102,241,0.02)" }}
+                                                    />
+                                                ))}
+                                            </div>
+                                            <div className="flex sm:hidden gap-3 absolute inset-0 items-center justify-center opacity-30">
+                                                {Array.from({length: 5}).map((_, i) => (
+                                                    <div key={i} className="shrink-0 w-[100px] h-[120px] rounded-xl"
+                                                        style={{ border: "1px solid rgba(99,102,241,0.3)", background: "rgba(99,102,241,0.02)" }}
+                                                    />
+                                                ))}
+                                            </div>
+
+                                            {/* Left to right to left scanning laser */}
+                                            <motion.div
+                                                className="absolute top-0 bottom-0 w-32 md:w-64 z-10"
+                                                animate={{ x: ["-100vw", "100vw", "-100vw"] }}
+                                                transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                                                style={{
+                                                    background: "linear-gradient(90deg, transparent, rgba(99,102,241,0.15), transparent)",
+                                                    borderRight: "1.5px solid rgba(139,92,246,0.8)",
+                                                    filter: "drop-shadow(0 0 12px rgba(139,92,246,0.8))"
+                                                }}
+                                            />
+
+                                            {/* Center indicator wireframe */}
+                                            <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 flex flex-col items-center opacity-40">
+                                                 <div style={{ width: 0, height: 0, borderLeft: "8px solid transparent", borderRight: "8px solid transparent", borderTop: "12px solid rgba(99,102,241,0.5)" }} />
+                                                 <div className="flex-1" style={{ width: 1.5, background: "rgba(99,102,241,0.3)" }} />
+                                                 <div style={{ width: 0, height: 0, borderLeft: "8px solid transparent", borderRight: "8px solid transparent", borderBottom: "12px solid rgba(99,102,241,0.5)" }} />
+                                            </div>
+
+                                            {/* Status Text overlay */}
+                                            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 bg-neutral-950/80 px-4 py-1 rounded-full backdrop-blur-sm border border-indigo-500/20">
+                                                <motion.div
+                                                    animate={{ opacity: [0.5, 1, 0.5] }}
+                                                    transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
+                                                    className="text-[9px] font-black uppercase tracking-[0.3em] flex items-center gap-2"
+                                                    style={{ color: "#818cf8", textShadow: "0 0 8px rgba(99,102,241,0.5)" }}
+                                                >
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-400" style={{ boxShadow: "0 0 8px #818cf8" }} />
+                                                    DECRYPTING...
+                                                </motion.div>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
                             </div>
 
-                            <p className="text-sm font-bold text-neutral-500 mt-8 relative z-10">
-                                Membuka keberuntungan...
-                            </p>
+                            {/* Collected results (for multi-pull) */}
+                            {collectedResults.length > 0 && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="relative z-10 mt-8"
+                                >
+                                    <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-600 text-center mb-3">
+                                        Hasil Terkumpul
+                                    </p>
+                                    <div className="flex items-center justify-center gap-2 flex-wrap">
+                                        {collectedResults.map((res, i) => (
+                                            <MiniCollectedCard key={i} result={res} />
+                                        ))}
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {/* Skip all + status */}
+                            <div className="relative z-10 mt-6 flex flex-col items-center gap-3">
+                                {results.length > 0 && pullCount > 1 && collectedResults.length < results.length && (
+                                    <button
+                                        onClick={handleSkipAnimation}
+                                        className="px-5 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all duration-200 hover:scale-[1.05] active:scale-[0.95]"
+                                        style={{
+                                            background: "rgba(255,255,255,0.04)",
+                                            border: "1px solid rgba(255,255,255,0.08)",
+                                            color: "#6b7280",
+                                        }}
+                                    >
+                                        Skip Semua
+                                    </button>
+                                )}
+                                <motion.p
+                                    animate={{ opacity: [0.3, 0.6, 0.3] }}
+                                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                                    className="text-[10px] font-bold uppercase tracking-[0.2em]"
+                                    style={{ color: "#4b5563" }}
+                                >
+                                    {results.length === 0 ? "Membuka box..." : "Menggulir keberuntungan..."}
+                                </motion.p>
+                            </div>
                         </motion.div>
                     )}
                 </AnimatePresence>
@@ -1039,232 +1839,277 @@ export default function GachaPage() {
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.5 }}
                             className="fixed inset-0 z-[999] overflow-y-auto"
-                            style={{ background: "rgba(3,3,10,0.95)", backdropFilter: "blur(20px)" }}
+                            style={{ background: "rgba(3,3,10,0.97)", backdropFilter: "blur(24px)" }}
                         >
-                            <div className="flex flex-col items-center min-h-screen w-full px-4 sm:px-8 pt-28 pb-12 md:py-20">
-                                <div className="m-auto w-full flex flex-col items-center">
-                                    <motion.h2
-                                        initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
-                                        className="text-2xl sm:text-3xl font-black text-white mb-8 tracking-wide text-center"
-                                        style={{ textShadow: "0 0 20px rgba(255,255,255,0.15)" }}
+                            {/* Ambient full-screen glow — driven by best tier */}
+                            {(() => {
+                                const bestTier = results.reduce<TierName>((best, r) => {
+                                    const order: TierName[] = ["BASIC","ELITE","EPIC","LEGEND"]
+                                    return order.indexOf(r.tier) > order.indexOf(best) ? r.tier : best
+                                }, "BASIC")
+                                const bestCfg = TIER_CONFIG[bestTier]
+                                return (
+                                    <motion.div
+                                        className="fixed inset-0 pointer-events-none"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ delay: 0.3, duration: 1 }}
+                                        style={{
+                                            background: `radial-gradient(ellipse at 50% 20%, ${bestCfg.bg} 0%, transparent 60%)`,
+                                        }}
+                                    />
+                                )
+                            })()}
+
+                            <div className="flex flex-col min-h-screen w-full px-4 sm:px-8 py-16 md:py-24">
+                                <div className="flex-1 min-h-[1rem]" />
+                                <div className="w-full flex flex-col items-center">
+
+                                    {/* Header */}
+                                    <motion.div
+                                        initial={{ y: -30, opacity: 0 }}
+                                        animate={{ y: 0, opacity: 1 }}
+                                        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                                        className="text-center mb-10"
                                     >
-                                        ITEM DIDAPATKAN
-                                    </motion.h2>
+                                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-neutral-600 mb-2">
+                                            Hasil Gacha
+                                        </p>
+                                        <h2
+                                            className="text-3xl sm:text-4xl font-black text-white tracking-tight"
+                                            style={{ textShadow: "0 0 40px rgba(139,92,246,0.4)" }}
+                                        >
+                                            ITEM DIDAPATKAN
+                                        </h2>
+                                        <div className="h-0.5 w-24 mx-auto mt-3 rounded-full"
+                                            style={{ background: "linear-gradient(90deg, transparent, #8b5cf6, #6366f1, transparent)" }} />
+                                    </motion.div>
 
-                                    <div className={`grid gap-4 sm:gap-5 w-full mx-auto ${results.length === 1 ? 'grid-cols-1 max-w-xs' : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 max-w-5xl'}`}>
-                                    {results.map((res, i) => {
-                                        const cfg = TIER_CONFIG[res.tier]
+                                    {/* Result Cards Grid */}
+                                    <div className={`grid gap-4 sm:gap-5 w-full mx-auto ${
+                                        results.length === 1
+                                            ? 'grid-cols-1 max-w-[220px]'
+                                            : results.length <= 3
+                                            ? `grid-cols-${results.length} max-w-2xl`
+                                            : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 max-w-5xl'
+                                    }`}>
+                                        {results.map((res, i) => {
+                                            const cfg = TIER_CONFIG[res.tier]
+                                            const isLegend = res.tier === "LEGEND"
+                                            const isEpic   = res.tier === "EPIC"
 
-                                        // Build ShopItem for ItemPreview
-                                        const previewItem: ShopItem = {
-                                            id: res.item.id,
-                                            name: res.item.name,
-                                            description: res.item.description,
-                                            price: res.item.price,
-                                            type: res.item.type,
-                                            value: res.item.value,
-                                            previewColor: res.item.previewColor,
-                                            owned: false,
-                                            equipped: false,
-                                        }
+                                            const previewItem: ShopItem = {
+                                                id: res.item.id,
+                                                name: res.item.name,
+                                                description: res.item.description,
+                                                price: res.item.price,
+                                                type: res.item.type,
+                                                value: res.item.value,
+                                                previewColor: res.item.previewColor,
+                                                owned: false,
+                                                equipped: false,
+                                            }
 
-                                        return (
-                                            <motion.div
-                                                key={i}
-                                                initial={{ opacity: 0, y: 50, scale: 0.8, rotateY: 90 }}
-                                                animate={{ opacity: 1, y: 0, scale: 1, rotateY: 0 }}
-                                                transition={{ delay: i * 0.15, duration: 0.6, type: "spring", bounce: 0.4 }}
-                                                onAnimationStart={() => GachaAudio.reveal(res.tier)}
-                                                className="relative group w-full"
-                                                style={{ perspective: "1000px" }}
-                                            >
-                                                {/* Card Glow */}
-                                                <div className="absolute inset-0 opacity-0 group-hover:opacity-40 transition-opacity duration-500 rounded-2xl"
-                                                    style={{ background: cfg.color, filter: "blur(20px)" }} />
-
-                                                <div
-                                                    className="relative flex flex-col rounded-2xl overflow-hidden"
-                                                    style={{
-                                                        background: "linear-gradient(160deg, rgba(18,18,28,0.98), rgba(10,10,16,0.99))",
-                                                        border: `1px solid ${cfg.border}`,
-                                                        boxShadow: `0 0 20px -4px ${cfg.glow}`,
+                                            return (
+                                                <motion.div
+                                                    key={i}
+                                                    initial={{ opacity: 0, y: 60, scale: 0.75, rotateY: 90 }}
+                                                    animate={{ opacity: 1, y: 0, scale: 1, rotateY: 0 }}
+                                                    transition={{
+                                                        delay: i * 0.12,
+                                                        duration: 0.65,
+                                                        type: "spring",
+                                                        bounce: 0.35,
                                                     }}
+                                                    onAnimationStart={() => GachaAudio.reveal(res.tier)}
+                                                    className="relative group w-full"
+                                                    style={{ perspective: "1000px" }}
                                                 >
-                                                    {/* Top Gradient Accent */}
-                                                    <div className="absolute top-0 left-0 right-0 h-0.5" style={{ background: cfg.gradient }} />
+                                                    {/* Outer glow — always on for LEGEND, hover for others */}
+                                                    <motion.div
+                                                        className="absolute inset-0 rounded-2xl pointer-events-none"
+                                                        initial={{ opacity: isLegend ? 0.5 : 0 }}
+                                                        animate={isLegend ? { opacity: [0.4, 0.7, 0.4] } : {}}
+                                                        transition={{ duration: 2.5, repeat: Infinity }}
+                                                        style={{
+                                                            background: cfg.glow,
+                                                            filter: "blur(18px)",
+                                                        }}
+                                                    />
+                                                    <div
+                                                        className="absolute inset-0 rounded-2xl pointer-events-none opacity-0 group-hover:opacity-60 transition-opacity duration-500"
+                                                        style={{ background: cfg.glow, filter: "blur(20px)" }}
+                                                    />
 
-                                                    {/* Tier + Duplicate badge row */}
-                                                    <div className="flex justify-between items-start z-10 px-3 pt-3">
-                                                        <TierBadge tier={res.tier} size="md" />
-                                                        {res.isDuplicate && (
-                                                            <span className="text-[9px] font-bold text-amber-400 px-2 py-0.5 rounded-full"
-                                                                style={{ background: "rgba(251,191,36,0.08)", border: "1px solid rgba(251,191,36,0.15)" }}>
-                                                                Duplikat +{res.refundAmount}
-                                                            </span>
-                                                        )}
-                                                    </div>
-
-                                                    {/* Item Preview (real visual) */}
-                                                    <div className="h-24 sm:h-32 flex items-center justify-center relative z-10 mx-3 my-2 rounded-xl overflow-hidden"
-                                                        style={{ background: "rgba(255,255,255,0.02)" }}
+                                                    <div
+                                                        className="relative flex flex-col rounded-2xl overflow-hidden h-full"
+                                                        style={{
+                                                            background: isLegend
+                                                                ? `linear-gradient(160deg, ${cfg.bg}, rgba(10,10,18,0.99))`
+                                                                : "linear-gradient(160deg, rgba(18,18,28,0.98), rgba(10,10,16,0.99))",
+                                                            border: `${isLegend || isEpic ? "1.5px" : "1px"} solid ${cfg.border}`,
+                                                            boxShadow: isLegend
+                                                                ? `0 0 32px -4px ${cfg.glow}, 0 16px 48px -8px rgba(0,0,0,0.8)`
+                                                                : `0 0 16px -4px ${cfg.glow}, 0 8px 32px -8px rgba(0,0,0,0.7)`,
+                                                        }}
                                                     >
-                                                        <motion.div
-                                                            animate={res.tier === 'LEGEND' ? { y: [-3, 3, -3] } : {}}
-                                                            transition={{ duration: 3, repeat: Infinity }}
-                                                            className="w-full h-full flex items-center justify-center"
-                                                        >
-                                                            <ItemPreview item={previewItem} />
-                                                        </motion.div>
-                                                    </div>
+                                                        {/* Top gradient accent */}
+                                                        <div
+                                                            className="absolute top-0 left-0 right-0 z-10"
+                                                            style={{
+                                                                height: isLegend ? "2.5px" : "1.5px",
+                                                                background: cfg.gradient,
+                                                                boxShadow: isLegend ? `0 0 12px ${cfg.glow}` : "none",
+                                                            }}
+                                                        />
 
-                                                    {/* Item info */}
-                                                    <div className="text-center z-10 relative px-3 pb-3">
-                                                        <p className="text-[9px] sm:text-[10px] text-neutral-500 uppercase tracking-wider font-bold mb-0.5">
-                                                            {TYPE_SHORT_LABELS[res.item.type]}
-                                                        </p>
-                                                        <h3 className="text-sm sm:text-base font-black text-white leading-tight mb-1.5">{res.item.name}</h3>
-                                                        <div className="flex items-center justify-center gap-1 text-amber-400">
-                                                            <Star className="w-3 h-3 fill-amber-400" />
-                                                            <span className="text-[11px] font-bold">Nilai: {res.item.price} poin</span>
+                                                        {/* LEGEND shimmer sweep */}
+                                                        {isLegend && (
+                                                            <motion.div
+                                                                className="absolute inset-0 z-10 pointer-events-none rounded-2xl"
+                                                                animate={{ x: ["-100%", "200%"] }}
+                                                                transition={{ duration: 2, repeat: Infinity, repeatDelay: 3, ease: "easeInOut" }}
+                                                                style={{
+                                                                    background: "linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.08) 50%, transparent 60%)",
+                                                                }}
+                                                            />
+                                                        )}
+
+                                                        {/* Tier + Duplicate badge row */}
+                                                        <div className="flex justify-between items-start z-10 px-3 pt-3">
+                                                            <TierBadge tier={res.tier} size="md" />
+                                                            {res.isDuplicate && (
+                                                                <motion.span
+                                                                    initial={{ scale: 0, rotate: -15 }}
+                                                                    animate={{ scale: 1, rotate: 0 }}
+                                                                    transition={{ delay: i * 0.12 + 0.5, type: "spring", bounce: 0.5 }}
+                                                                    className="text-[9px] font-bold text-amber-400 px-2 py-0.5 rounded-full"
+                                                                    style={{ background: "rgba(251,191,36,0.1)", border: "1px solid rgba(251,191,36,0.2)" }}
+                                                                >
+                                                                    Duplikat +{res.refundAmount}
+                                                                </motion.span>
+                                                            )}
+                                                        </div>
+
+                                                        {/* Item preview */}
+                                                        <div
+                                                            className="flex items-center justify-center relative z-10 mx-3 my-2 rounded-xl overflow-hidden"
+                                                            style={{
+                                                                height: isLegend ? "9rem" : "7rem",
+                                                                background: `radial-gradient(ellipse at 50% 50%, ${cfg.bg}, rgba(255,255,255,0.01))`,
+                                                            }}
+                                                        >
+                                                            <motion.div
+                                                                animate={isLegend
+                                                                    ? { y: [-4, 4, -4], rotate: [-1, 1, -1] }
+                                                                    : isEpic ? { y: [-2, 2, -2] } : {}
+                                                                }
+                                                                transition={{ duration: isLegend ? 3 : 4, repeat: Infinity, ease: "easeInOut" }}
+                                                                className="w-full h-full flex items-center justify-center"
+                                                            >
+                                                                <ItemPreview item={previewItem} />
+                                                            </motion.div>
+                                                        </div>
+
+                                                        {/* Item info */}
+                                                        <div className="text-center z-10 relative px-3 pb-4">
+                                                            <p className="text-[9px] sm:text-[10px] uppercase tracking-wider font-bold mb-0.5"
+                                                                style={{ color: cfg.color }}>
+                                                                {TYPE_SHORT_LABELS[res.item.type]}
+                                                            </p>
+                                                            <h3 className="text-sm sm:text-[15px] font-black text-white leading-tight mb-2">
+                                                                {res.item.name}
+                                                            </h3>
+                                                            <div className="flex items-center justify-center gap-1 text-amber-400/70">
+                                                                <Star className="w-2.5 h-2.5 fill-amber-400/70" />
+                                                                <span className="text-[10px] font-bold">{res.item.price} poin</span>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </motion.div>
-                                        )
-                                    })}
-                                </div>
+                                                </motion.div>
+                                            )
+                                        })}
+                                    </div>
 
-                                {/* Actions (inline, not absolute) */}
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: results.length * 0.15 + 0.5 }}
-                                    className="w-full max-w-xl mt-8 space-y-3"
-                                >
-                                    {/* Summary */}
-                                    <div
-                                        className="rounded-xl px-4 py-3 flex items-center justify-between"
-                                        style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+                                    {/* Summary + Actions */}
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 24 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: results.length * 0.12 + 0.6, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                                        className="w-full max-w-lg mt-10 space-y-3"
                                     >
-                                        <div className="text-[11px] sm:text-xs text-neutral-500">
-                                            <p>Total biaya: <span className="text-amber-400 font-bold">{resultMeta.totalCost} poin</span></p>
-                                            {resultMeta.totalRefund > 0 && <p>Refund duplikat: <span className="text-green-400 font-bold">+{resultMeta.totalRefund} poin</span></p>}
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="text-[10px] text-neutral-600 uppercase tracking-wider font-bold">Sisa poin</p>
-                                            <p className="text-base font-black text-amber-400">{formatPoints(resultMeta.newPoints)}</p>
-                                        </div>
-                                    </div>
-
-                                    {/* Buttons */}
-                                    <div className="flex gap-3">
-                                        <button
-                                            onClick={closeResults}
-                                            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-bold transition-all"
-                                            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "#9ca3af" }}
-                                        >
-                                            Konfirmasi
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                closeResults()
-                                                setTimeout(() => openBox(pullCount), 300)
+                                        {/* Summary pill */}
+                                        <div
+                                            className="rounded-2xl px-5 py-4 flex items-center justify-between gap-4"
+                                            style={{
+                                                background: "rgba(255,255,255,0.03)",
+                                                border: "1px solid rgba(255,255,255,0.07)",
+                                                backdropFilter: "blur(12px)",
                                             }}
-                                            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-bold transition-all relative overflow-hidden group"
-                                            style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
                                         >
-                                            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                                                style={{ background: "linear-gradient(135deg, #818cf8, #a78bfa)" }} />
-                                            <span className="relative flex items-center gap-2 text-white">
-                                                <Repeat2 className="w-4 h-4" />
-                                                Buka {pullCount}x Lagi
-                                            </span>
-                                        </button>
-                                    </div>
-                                </motion.div>
+                                            <div className="space-y-1">
+                                                <div className="flex items-center gap-2">
+                                                    <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                                                    <span className="text-[11px] text-neutral-500">
+                                                        Biaya: <span className="text-amber-400 font-bold">{resultMeta.totalCost} poin</span>
+                                                    </span>
+                                                </div>
+                                                {resultMeta.totalRefund > 0 && (
+                                                    <div className="flex items-center gap-2">
+                                                        <Repeat2 className="w-3 h-3 text-green-400" />
+                                                        <span className="text-[11px] text-neutral-500">
+                                                            Refund: <span className="text-green-400 font-bold">+{resultMeta.totalRefund} poin</span>
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="text-right shrink-0">
+                                                <p className="text-[9px] text-neutral-600 uppercase tracking-widest font-bold mb-0.5">Sisa Poin</p>
+                                                <p className="text-xl font-black text-amber-400">{formatPoints(resultMeta.newPoints)}</p>
+                                            </div>
+                                        </div>
+
+                                        {/* Action buttons */}
+                                        <div className="flex gap-3">
+                                            <button
+                                                onClick={closeResults}
+                                                className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl text-sm font-bold transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                                                style={{
+                                                    background: "rgba(255,255,255,0.04)",
+                                                    border: "1px solid rgba(255,255,255,0.09)",
+                                                    color: "#9ca3af",
+                                                }}
+                                            >
+                                                <Package className="w-4 h-4" />
+                                                Simpan
+                                            </button>
+                                            <button
+                                                onClick={() => {
+                                                    closeResults()
+                                                    setTimeout(() => openBox(pullCount), 300)
+                                                }}
+                                                className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl text-sm font-bold transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group"
+                                                style={{
+                                                    background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
+                                                    boxShadow: "0 0 24px rgba(99,102,241,0.3), 0 8px 24px rgba(0,0,0,0.3)",
+                                                }}
+                                            >
+                                                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                                                    style={{ background: "linear-gradient(135deg, #818cf8, #a78bfa)" }} />
+                                                <span className="relative flex items-center gap-2 text-white font-black">
+                                                    <Repeat2 className="w-4 h-4" />
+                                                    Buka {pullCount}x Lagi
+                                                </span>
+                                            </button>
+                                        </div>
+                                    </motion.div>
                                 </div>
+                                <div className="flex-1 min-h-[1rem]" />
                             </div>
                         </motion.div>
                     )}
                 </AnimatePresence>
 
-                {/* ── INFO MODAL ── */}
-                <AnimatePresence>
-                    {showInfo && (
-                        <motion.div
-                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                            className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-                            style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(12px)" }}
-                            onClick={() => setShowInfo(false)}
-                        >
-                            <motion.div
-                                initial={{ scale: 0.9, y: 20, opacity: 0 }}
-                                animate={{ scale: 1, y: 0, opacity: 1 }}
-                                exit={{ scale: 0.9, y: 20, opacity: 0 }}
-                                transition={{ ease: [0.22, 1, 0.36, 1], duration: 0.4 }}
-                                className="w-full max-w-sm rounded-3xl overflow-hidden"
-                                style={{
-                                    background: "linear-gradient(160deg, #0e0e18, #0a0a12)",
-                                    border: "1px solid rgba(255,255,255,0.08)",
-                                    boxShadow: "0 32px 80px rgba(0,0,0,0.8)",
-                                }}
-                                onClick={e => e.stopPropagation()}
-                            >
-                                {/* Modal top accent */}
-                                <div className="h-0.5 w-full" style={{ background: "linear-gradient(90deg, #6366f1, #8b5cf6, #a855f7)" }} />
-
-                                <div className="p-6">
-                                    <div className="flex justify-between items-center mb-5">
-                                        <h3 className="text-base font-black text-white flex items-center gap-2">
-                                            <Info className="w-4 h-4 text-indigo-400" />
-                                            Drop Rates
-                                        </h3>
-                                        <button
-                                            onClick={() => setShowInfo(false)}
-                                            className="w-7 h-7 rounded-full flex items-center justify-center text-neutral-500 hover:text-white hover:bg-white/8 transition-all"
-                                        >
-                                            <X className="w-4 h-4" />
-                                        </button>
-                                    </div>
-
-                                    <div className="space-y-2.5">
-                                        {(["LEGEND", "EPIC", "ELITE", "BASIC"] as const).map(tier => {
-                                            const cfg = TIER_CONFIG[tier as TierName]
-                                            const rate = BOOSTER_CONFIGS[boosterLevel].rates[tier]
-                                            return (
-                                                <div key={tier} className="flex items-center gap-3">
-                                                    <TierBadge tier={tier} size="md" />
-                                                    <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.05)" }}>
-                                                        <div
-                                                            className="h-full rounded-full"
-                                                            style={{
-                                                                width: `${rate}%`,
-                                                                background: cfg.gradient,
-                                                                boxShadow: `0 0 6px ${cfg.glow}`,
-                                                            }}
-                                                        />
-                                                    </div>
-                                                    <span className="text-xs font-bold tabular-nums w-8 text-right" style={{ color: cfg.color }}>
-                                                        {rate}%
-                                                    </span>
-                                                </div>
-                                            )
-                                        })}
-                                    </div>
-
-                                    <div
-                                        className="mt-5 px-4 py-3 rounded-xl text-[11px] text-neutral-500 leading-relaxed text-center"
-                                        style={{ background: "rgba(99,102,241,0.06)", border: "1px solid rgba(99,102,241,0.12)" }}
-                                    >
-                                        Harga buka gacha: <strong className="text-amber-400/80">{BOOSTER_CONFIGS[boosterLevel].single} poin</strong> per gacha.<br/>
-                                        5x buka gacha mendapat diskon menjadi <strong className="text-amber-400/80">{BOOSTER_CONFIGS[boosterLevel].multi} poin</strong>.<br/>
-                                        Item duplikat mendapat refund <strong className="text-green-400/80">5 poin</strong>.
-                                    </div>
-                                </div>
-                            </motion.div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
             </div>
         </div>
     )

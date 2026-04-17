@@ -568,3 +568,136 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+/* ──────────────────────────────────────────────────────────────
+   BANNER ANIMATIONS
+   ────────────────────────────────────────────────────────────── */
+
+/* ── Galaxy Dalam (Epic) — soft nebula pan for the background layer ── */
+.anim-banner-galaxy {
+  animation: bannerGalaxyPan 14s ease-in-out infinite alternate !important;
+  background-size: 180% 180% !important;
+}
+@keyframes bannerGalaxyPan {
+  0%   { background-position: 0% 0%;     filter: hue-rotate(-15deg) saturate(1.1) brightness(0.95); }
+  50%  { background-position: 60% 40%;   filter: hue-rotate(0deg)   saturate(1.25) brightness(1.05); }
+  100% { background-position: 100% 100%; filter: hue-rotate(20deg)  saturate(1.4)  brightness(1.1); }
+}
+
+/* SVG Galaxy stars twinkle */
+.star-twinkle {
+  animation: starTwinkle var(--dur, 2s) ease-in-out infinite alternate;
+}
+@keyframes starTwinkle {
+  0%   { opacity: 0.1; r: var(--r0, 1); }
+  50%  { opacity: 0.9; }
+  100% { opacity: 0.2; r: var(--r1, 2); }
+}
+
+/* Galaxy nebula blob slow drift */
+.nebula-drift {
+  animation: nebulaDrift 18s ease-in-out infinite alternate;
+}
+@keyframes nebulaDrift {
+  0%   { transform: translate(0px,  0px)  scale(1);    opacity: 0.45; }
+  33%  { transform: translate(12px, -8px) scale(1.08); opacity: 0.55; }
+  66%  { transform: translate(-8px, 10px) scale(0.95); opacity: 0.4; }
+  100% { transform: translate(6px,  -4px) scale(1.05); opacity: 0.5; }
+}
+
+/* Hutan Digital — animate-only filter on container */
+.anim-banner-matrix {
+  animation: bannerMatrixPulse 4s ease-in-out infinite alternate !important;
+}
+@keyframes bannerMatrixPulse {
+  0% { filter: brightness(1) hue-rotate(0deg); }
+  100% { filter: brightness(1.2) hue-rotate(-5deg); }
+}
+
+/* SVG Equalizer Bars — each bar grows/shrinks from the bottom */
+.eq-bar {
+  transform-origin: bottom;
+  transform-box: fill-box;
+}
+
+.eq-bar-1 {
+  animation: eqBounce1 1.1s ease-in-out infinite alternate;
+}
+.eq-bar-2 {
+  animation: eqBounce2 0.9s ease-in-out infinite alternate;
+  animation-delay: 0.15s;
+}
+.eq-bar-3 {
+  animation: eqBounce3 1.3s ease-in-out infinite alternate;
+  animation-delay: 0.05s;
+}
+.eq-bar-4 {
+  animation: eqBounce4 1.0s ease-in-out infinite alternate;
+  animation-delay: 0.25s;
+}
+.eq-bar-5 {
+  animation: eqBounce5 1.2s ease-in-out infinite alternate;
+  animation-delay: 0.1s;
+}
+.eq-bar-6 {
+  animation: eqBounce6 0.85s ease-in-out infinite alternate;
+  animation-delay: 0.35s;
+}
+
+@keyframes eqBounce1 {
+  0%   { height: 50px; y: 90px; }
+  100% { height: 100px; y: 40px; }
+}
+@keyframes eqBounce2 {
+  0%   { height: 30px; y: 110px; }
+  100% { height: 90px; y: 50px; }
+}
+@keyframes eqBounce3 {
+  0%   { height: 80px; y: 60px; }
+  100% { height: 130px; y: 10px; }
+}
+@keyframes eqBounce4 {
+  0%   { height: 60px; y: 80px; }
+  100% { height: 110px; y: 30px; }
+}
+@keyframes eqBounce5 {
+  0%   { height: 40px; y: 100px; }
+  100% { height: 95px; y: 45px; }
+}
+@keyframes eqBounce6 {
+  0%   { height: 25px; y: 115px; }
+  100% { height: 70px; y: 70px; }
+}
+
+/* ── Samudra Bintang (Legend) — aurora wave on background layer ── */
+.anim-banner-samudra {
+  animation: bannerSamudraAurora 10s ease-in-out infinite alternate !important;
+  background-size: 200% 200% !important;
+}
+@keyframes bannerSamudraAurora {
+  0%   { background-position: 0% 100%;   filter: hue-rotate(0deg)   saturate(1.2) brightness(0.9); }
+  25%  { background-position: 50% 0%;    filter: hue-rotate(25deg)  saturate(1.5) brightness(1.05); }
+  75%  { background-position: 100% 50%;  filter: hue-rotate(55deg)  saturate(1.7) brightness(1.15); }
+  100% { background-position: 30% 80%;   filter: hue-rotate(20deg)  saturate(1.3) brightness(1.0); }
+}
+
+/* SVG Aurora wave bands */
+.aurora-wave {
+  animation: auroraFloat var(--dur, 6s) ease-in-out infinite alternate;
+  transform-box: fill-box;
+}
+@keyframes auroraFloat {
+  0%   { transform: translateY(0px)   scaleX(1);   opacity: var(--op0, 0.3); }
+  50%  { transform: translateY(-12px) scaleX(1.05); opacity: var(--op1, 0.6); }
+  100% { transform: translateY(6px)   scaleX(0.97); opacity: var(--op0, 0.3); }
+}
+
+/* Samudra stars shimmer (brighter & more shimmer than galaxy) */
+.star-shimmer {
+  animation: starShimmer var(--dur, 1.5s) ease-in-out infinite alternate;
+}
+@keyframes starShimmer {
+  0%   { opacity: 0.15; }
+  60%  { opacity: 1; }
+  100% { opacity: 0.3; }
+}

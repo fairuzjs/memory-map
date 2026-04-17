@@ -27,6 +27,23 @@ interface LeaderboardEntry {
     image: string | null
     longestStreak: number
     currentStreak: number
+    equippedDecoration?: any
+}
+
+function getDecorationClass(name?: string) {
+    if (!name) return "";
+    const n = name.toLowerCase();
+    if (n.includes("kristal")) return "anim-kristal";
+    if (n.includes("api")) return "anim-api";
+    if (n.includes("neon")) return "anim-neon";
+    if (n.includes("emas")) return "anim-emas";
+    if (n.includes("pelangi")) return "anim-pelangi";
+    if (n.includes("glitch")) return "anim-glitch";
+    if (n.includes("quasar")) return "anim-quasar";
+    if (n.includes("celestial")) return "anim-celestial";
+    if (n.includes("supernova")) return "anim-supernova";
+    if (n.includes("rune")) return "anim-rune";
+    return "";
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -750,7 +767,10 @@ export default function StreakPage() {
                                     {/* Name */}
                                     <div className="flex-1 min-w-0">
                                         <Link href={`/profile/${entry.userId}`} className="group flex items-center gap-1.5">
-                                            <span className="text-sm font-semibold text-white group-hover:text-indigo-300 transition-colors truncate">
+                                            <span 
+                                                className={`text-sm font-semibold text-white group-hover:text-indigo-300 transition-colors truncate ${entry.equippedDecoration ? getDecorationClass(entry.equippedDecoration.name) : ""}`}
+                                                style={entry.equippedDecoration ? (() => { try { return JSON.parse(entry.equippedDecoration.value) } catch { return {} } })() : {}}
+                                            >
                                                 {entry.name}
                                             </span>
                                             {isMe && (

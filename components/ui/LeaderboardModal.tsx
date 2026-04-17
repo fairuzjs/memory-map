@@ -12,6 +12,23 @@ interface LeaderboardEntry {
   image: string | null
   longestStreak: number
   currentStreak: number
+  equippedDecoration?: any
+}
+
+function getDecorationClass(name?: string) {
+  if (!name) return "";
+  const n = name.toLowerCase();
+  if (n.includes("kristal")) return "anim-kristal";
+  if (n.includes("api")) return "anim-api";
+  if (n.includes("neon")) return "anim-neon";
+  if (n.includes("emas")) return "anim-emas";
+  if (n.includes("pelangi")) return "anim-pelangi";
+  if (n.includes("glitch")) return "anim-glitch";
+  if (n.includes("quasar")) return "anim-quasar";
+  if (n.includes("celestial")) return "anim-celestial";
+  if (n.includes("supernova")) return "anim-supernova";
+  if (n.includes("rune")) return "anim-rune";
+  return "";
 }
 
 interface LeaderboardModalProps {
@@ -271,11 +288,14 @@ function PodiumStep({
         </div>
 
         {/* Name */}
-        <div style={{
+        <div 
+          className={entry.equippedDecoration ? getDecorationClass(entry.equippedDecoration.name) : ""}
+          style={{
           fontSize: entry.rank === 1 ? 13 : 12, fontWeight: 600, color: "#fff",
           textAlign: "center", marginBottom: 4, marginTop: 8,
           overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
           width: "100%", padding: "0 4px",
+          ...(entry.equippedDecoration ? (() => { try { return JSON.parse(entry.equippedDecoration.value) } catch { return {} } })() : {})
         }}>
           {entry.name}
         </div>
@@ -520,7 +540,13 @@ export function LeaderboardModal({
                               fontSize: 13, fontWeight: 600, color: "#fff",
                               display: "flex", alignItems: "center", gap: 6,
                             }}>
-                              <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                              <span 
+                                className={entry.equippedDecoration ? getDecorationClass(entry.equippedDecoration.name) : ""}
+                                style={{ 
+                                  overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                                  ...(entry.equippedDecoration ? (() => { try { return JSON.parse(entry.equippedDecoration.value) } catch { return {} } })() : {})
+                                }}
+                              >
                                 {entry.name}
                               </span>
                               {isMe && (

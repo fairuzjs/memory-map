@@ -16,7 +16,17 @@ export async function GET() {
         take: 50,
         include: {
             user: {
-                select: { id: true, name: true, image: true },
+                select: { 
+                    id: true, 
+                    name: true, 
+                    image: true,
+                    inventories: {
+                        where: { isEquipped: true, item: { type: "USERNAME_DECORATION" } },
+                        select: {
+                            item: { select: { name: true, value: true } }
+                        }
+                    }
+                },
             },
         },
     })
@@ -29,6 +39,7 @@ export async function GET() {
             image: s.user.image,
             longestStreak: s.longestStreak,
             currentStreak: s.currentStreak,
+            equippedDecoration: s.user.inventories[0]?.item ?? null,
         }))
     )
 }
