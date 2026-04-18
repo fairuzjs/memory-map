@@ -120,39 +120,85 @@ export default function MemoryDetailPage() {
     }
 
     const isOwner = session?.user?.id === memory?.userId || session?.user?.role === "ADMIN"
-    const heroPhoto = memory.photos?.[0]
-    const galleryPhotos = memory.photos?.slice(1) || []
-    const allPhotos = memory.photos || []
+    const validPhotos = (memory.photos || []).filter((p: any) => p && p.url)
+    const heroPhoto = validPhotos[0]
+    const galleryPhotos = validPhotos.slice(1)
+    const allPhotos = validPhotos
     const formattedDate = new Date(memory.date).toLocaleDateString("en-US", {
         year: "numeric", month: "long", day: "numeric"
     })
 
+    const emotionGradient = (() => {
+        switch(memory.emotion) {
+            case "HAPPY": return "from-amber-500/20 via-orange-500/5 to-yellow-500/20"
+            case "SAD": return "from-blue-900/40 via-slate-900 to-indigo-950/60"
+            case "ROMANTIC": return "from-rose-500/20 via-pink-500/5 to-fuchsia-500/20"
+            case "PEACEFUL": return "from-emerald-500/20 via-teal-500/5 to-cyan-500/20"
+            case "EXCITED": return "from-violet-500/20 via-fuchsia-500/5 to-orange-500/20"
+            case "NOSTALGIC": return "from-amber-700/20 via-orange-900/10 to-yellow-900/20"
+            case "GRATEFUL": return "from-rose-400/20 via-amber-400/5 to-orange-400/20"
+            case "ADVENTUROUS": return "from-emerald-600/20 via-cyan-900/10 to-blue-900/20"
+            default: return "from-indigo-950 via-neutral-900 to-violet-950"
+        }
+    })();
+
     return (
         <div className="w-full pb-24 bg-[#0a0a0f]">
 
-            {/* ─── HERO — Single Photo ──────────────────────────── */}
-            <div className="relative w-full h-[70vh] min-h-[420px] max-h-[680px] overflow-hidden bg-neutral-900">
+            {/* ─── HERO — Dynamic Layout ──────────────────────────── */}
+            <div className={`relative w-full overflow-hidden bg-neutral-900 transition-all duration-500 ${heroPhoto ? "h-[70vh] min-h-[420px] max-h-[680px]" : "py-32 min-h-[45vh] flex flex-col justify-center"}`}>
 
                 {/* Background image */}
                 {heroPhoto ? (
-                    <button
-                        onClick={() => setLightbox(heroPhoto.url)}
-                        className="absolute inset-0 w-full h-full cursor-zoom-in"
-                        aria-label="Lihat foto penuh"
-                    >
-                        <img
-                            src={heroPhoto.url}
-                            alt={memory.title}
-                            className="w-full h-full object-cover"
-                        />
-                    </button>
+                    <>
+                        <button
+                            onClick={() => setLightbox(heroPhoto.url)}
+                            className="absolute inset-0 w-full h-full cursor-zoom-in"
+                            aria-label="Lihat foto penuh"
+                        >
+                            <img
+                                src={heroPhoto.url}
+                                alt={memory.title}
+                                className="w-full h-full object-cover"
+                            />
+                        </button>
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] via-black/50 to-transparent pointer-events-none" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent pointer-events-none" />
+                    </>
                 ) : (
-                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-950 via-neutral-900 to-violet-950" />
-                )}
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none bg-[#050508]">
+                        {/* Dynamic Background Base */}
+                        <div className={`absolute inset-0 bg-gradient-to-br opacity-50 ${emotionGradient}`} />
 
-                {/* Gradient overlays */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] via-black/50 to-transparent pointer-events-none" />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent pointer-events-none" />
+                        {/* High-tech Map Grid Container */}
+                        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:48px_48px] [mask-image:radial-gradient(ellipse_90%_90%_at_50%_50%,#000_20%,transparent_100%)]" />
+
+                        {/* Topography Rings / Radar Layout */}
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center opacity-70">
+                            {/* Static Rings */}
+                            <div className="absolute w-[800px] h-[800px] border border-white/5 rounded-full" />
+                            <div className="absolute w-[600px] h-[600px] border border-white/[0.08] rounded-full" />
+                            <div className="absolute w-[400px] h-[400px] border border-white/[0.15] rounded-full border-dashed" />
+                            <div className="absolute w-[200px] h-[200px] border border-white/[0.2] rounded-full bg-white/[0.01]" />
+                            <div className="absolute w-2 h-2 bg-white/50 rounded-full" />
+                            
+                            {/* Crosshairs */}
+                            <div className="absolute w-[1000px] h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                            <div className="absolute h-[1000px] w-[1px] bg-gradient-to-b from-transparent via-white/10 to-transparent" />
+                        </div>
+
+                        {/* Radar sweep animation */}
+                        <div className="absolute top-1/2 left-1/2 w-[800px] h-[800px] -translate-x-1/2 -translate-y-1/2 animate-[spin_8s_linear_infinite] rounded-full pointer-events-none [mask-image:radial-gradient(circle_at_center,white_0%,transparent_80%)]">
+                            <div 
+                                className="absolute top-0 right-1/2 w-[400px] h-[400px] origin-bottom-right" 
+                                style={{ background: 'conic-gradient(from 180deg at 100% 100%, transparent 0deg, rgba(255,255,255,0.03) 60deg, rgba(255,255,255,0.2) 90deg, transparent 90deg)' }} 
+                            />
+                        </div>
+
+                        {/* Bottom fade for content blending */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] via-[#0a0a0f]/50 to-transparent" />
+                    </div>
+                )}
 
                 {/* Sticker Layer */}
                 <StickerLayer
@@ -167,7 +213,7 @@ export default function MemoryDetailPage() {
                 {/* ── Top action bar ── */}
                 <div className="absolute top-0 left-0 right-0 px-5 md:px-10 py-5 flex items-center justify-between z-10">
                     <button
-                        onClick={() => router.back()}
+                        onClick={() => router.push("/map")}
                         className="flex items-center gap-2 text-white/60 hover:text-white transition-colors group backdrop-blur-md bg-white/5 border border-white/10 rounded-full px-4 py-2 text-sm"
                     >
                         <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
@@ -214,10 +260,10 @@ export default function MemoryDetailPage() {
                     </div>
                 </div>
 
-                {/* ── Hero content — bottom left ── */}
-                <div className="absolute bottom-0 left-0 px-5 md:px-12 pb-10 z-10 max-w-2xl">
+                {/* ── Hero content ── */}
+                <div className={`z-10 px-5 md:px-12 pb-10 w-full ${heroPhoto ? "absolute bottom-0 left-0 max-w-2xl" : "relative max-w-4xl mx-auto flex flex-col items-center text-center pt-24"}`}>
                     {/* Badges */}
-                    <div className="flex items-center gap-2 mb-4">
+                    <div className={`flex items-center gap-2 mb-4 ${heroPhoto ? "" : "justify-center"}`}>
                         <span className={`inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.1em] px-3 py-1 rounded-full border ${memory.isPublic
                             ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-400"
                             : "bg-white/5 border-white/10 text-neutral-400"
@@ -234,12 +280,12 @@ export default function MemoryDetailPage() {
                     </div>
 
                     {/* Title */}
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold font-[Outfit] text-white leading-[1.08] tracking-tight mb-5 drop-shadow-lg">
+                    <h1 className={`font-bold font-[Outfit] text-white leading-[1.08] tracking-tight mb-5 drop-shadow-lg ${heroPhoto ? "text-3xl sm:text-4xl md:text-5xl" : "text-4xl sm:text-5xl md:text-6xl text-transparent bg-clip-text bg-gradient-to-br from-white to-white/70"}`}>
                         {memory.title}
                     </h1>
 
                     {/* Meta */}
-                    <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[13px] text-white/50">
+                    <div className={`flex flex-wrap items-center gap-x-5 gap-y-2 text-[13px] text-white/50 ${heroPhoto ? "" : "justify-center"}`}>
                         <span className="flex items-center gap-1.5">
                             <Calendar className="w-3.5 h-3.5 text-indigo-400" />
                             {formattedDate}
@@ -261,29 +307,58 @@ export default function MemoryDetailPage() {
                     {/* ── LEFT / STORY COLUMN ── */}
                     <main className="flex-1 min-w-0">
 
-                        {/* Author strip — slim & inline */}
-                        <Link
-                            href={`/profile/${memory.user.id}`}
-                            className="flex items-center gap-3 mb-9 group w-fit"
-                        >
-                            <div className="relative shrink-0">
-                                <img
-                                    src={memory.user.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${memory.user.id}`}
-                                    alt={memory.user.name}
-                                    className="w-10 h-10 rounded-full border border-neutral-700/80 group-hover:border-indigo-500/60 transition-colors object-cover bg-neutral-800"
-                                />
-                                <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-[#0a0a0f]" />
-                            </div>
-                            <div>
-                                <p className="text-[13px] font-semibold text-neutral-200 group-hover:text-indigo-400 transition-colors flex items-center gap-1">
-                                    {memory.user.name}
-                                    <ExternalLink className="w-2.5 h-2.5 opacity-0 group-hover:opacity-50 transition-opacity" />
-                                </p>
-                                <p className="text-[11px] text-neutral-600 mt-0.5">
-                                    {memory.isPublic ? "Dibagikan publik" : "Kenangan privat"} · {formattedDate}
-                                </p>
-                            </div>
-                        </Link>
+                        {/* Author & Collaborators Strip */}
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-3 mb-9">
+                            <Link
+                                href={`/profile/${memory.user.id}`}
+                                className="flex items-center gap-3 group shrink-0"
+                            >
+                                <div className="relative shrink-0">
+                                    <img
+                                        src={memory.user.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${memory.user.id}`}
+                                        alt={memory.user.name}
+                                        className="w-10 h-10 rounded-full border border-neutral-700/80 group-hover:border-indigo-500/60 transition-colors object-cover bg-neutral-800"
+                                    />
+                                    <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-[#0a0a0f]" />
+                                </div>
+                                <div className="flex flex-col">
+                                    <p className="text-[13px] font-semibold text-neutral-200 group-hover:text-indigo-400 transition-colors flex items-center gap-1">
+                                        {memory.user.name}
+                                        <ExternalLink className="w-2.5 h-2.5 opacity-0 group-hover:opacity-50 transition-opacity" />
+                                    </p>
+                                    <p className="text-[11px] text-neutral-600 mt-0.5">
+                                        {memory.isPublic ? "Dibagikan publik" : "Kenangan privat"} · {formattedDate}
+                                    </p>
+                                </div>
+                            </Link>
+
+                            {memory.collaborators && memory.collaborators.length > 0 && (
+                                <>
+                                    <div className="w-[1px] h-8 bg-white/10 hidden sm:block mx-1" />
+                                    <div className="flex items-center gap-2.5">
+                                        <p className="text-[10px] font-semibold text-neutral-500 tracking-widest uppercase shrink-0">
+                                            Bersama
+                                        </p>
+                                        <div className="flex -space-x-2">
+                                            {memory.collaborators.map((collab: any) => (
+                                                <Link
+                                                    key={collab.id}
+                                                    href={`/profile/${collab.user.id}`}
+                                                    className="relative hover:z-10 transition-transform hover:scale-110"
+                                                    title={collab.user.name}
+                                                >
+                                                    <img
+                                                        src={collab.user.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${collab.user.id}`}
+                                                        alt={collab.user.name}
+                                                        className="w-8 h-8 rounded-full border-2 border-[#0a0a0f] object-cover bg-neutral-800"
+                                                    />
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                        </div>
 
                         {/* Story / Prose */}
                         <div className="text-neutral-400 leading-[1.9] text-[1.0rem] font-sans mb-12 space-y-5">
@@ -444,32 +519,7 @@ export default function MemoryDetailPage() {
                                 </ul>
                             </div>
 
-                            {/* Collaborators Card */}
-                            {memory.collaborators && memory.collaborators.length > 0 && (
-                                <div className="bg-[#13111e] border border-white/[0.07] rounded-2xl p-5">
-                                    <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-neutral-600 mb-4">
-                                        Bersama ({memory.collaborators.length})
-                                    </p>
-                                    <div className="space-y-3">
-                                        {memory.collaborators.map((collab: any) => (
-                                            <Link
-                                                key={collab.id}
-                                                href={`/profile/${collab.user.id}`}
-                                                className="flex items-center gap-3 group"
-                                            >
-                                                <img
-                                                    src={collab.user.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${collab.user.id}`}
-                                                    alt={collab.user.name}
-                                                    className="w-8 h-8 rounded-full border border-neutral-700/80 group-hover:border-violet-500/60 transition-colors object-cover bg-neutral-800 shrink-0"
-                                                />
-                                                <p className="text-[13px] text-neutral-400 group-hover:text-violet-400 transition-colors truncate">
-                                                    {collab.user.name}
-                                                </p>
-                                            </Link>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
+                            {/* Collaborators moved to top author strip */}
 
                             {/* Map Preview */}
                             {memory.latitude && memory.longitude && (

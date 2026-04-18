@@ -9,7 +9,9 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import toast from "react-hot-toast"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
+import Cropper from "react-easy-crop"
+import getCroppedImg from "@/lib/cropImage"
 
 // ─── TikTok SVG icon (not in lucide) ─────────────────────────────────────────
 function TikTokIcon({ className }: { className?: string }) {
@@ -99,6 +101,14 @@ export default function SettingsPage() {
     const [image, setImage] = useState("")
     const [previewImage, setPreviewImage] = useState("")
 
+    // Crop state
+    const [crop, setCrop] = useState({ x: 0, y: 0 })
+    const [zoom, setZoom] = useState(1)
+    const [rotation, setRotation] = useState(0)
+    const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null)
+    const [isCropping, setIsCropping] = useState(false)
+    const [cropImageUrl, setCropImageUrl] = useState("")
+
     // Social fields
     const [socials, setSocials] = useState<Record<SocialKey, string>>({
         instagram: "",
@@ -129,11 +139,21 @@ export default function SettingsPage() {
             })
     }, [session?.user?.id])
 
-    const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (!file) return
+        const url = URL.createObjectURL(file)
+        setCropImageUrl(url)
+        setIsCropping(true)
+        if (avatarInputRef.current) avatarInputRef.current.value = ""
+    }
+
+    const saveCrop = async () => {
         setUploadingPhoto(true)
+        setIsCropping(false)
         try {
+            const file = await getCroppedImg(cropImageUrl, croppedAreaPixels, rotation)
+            if (!file) throw new Error("Gagal crop")
             const form = new FormData()
             form.append("file", file)
             form.append("isPublic", "true")
@@ -142,9 +162,9 @@ export default function SettingsPage() {
             const { url } = await res.json()
             setImage(url)
             setPreviewImage(url)
-            toast.success("Photo updated!")
+            toast.success("Foto disesuaikan dan diunggah!")
         } catch {
-            toast.error("Failed to upload photo")
+            toast.error("Gagal mengupload foto")
         } finally {
             setUploadingPhoto(false)
         }
@@ -180,7 +200,74 @@ export default function SettingsPage() {
     const avatarSrc = previewImage || `https://api.dicebear.com/7.x/avataaars/svg?seed=${session?.user?.id}`
 
     return (
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 w-full">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 w-full relative">
+            
+            {/* ─────────────── CROP MODAL ─────────────── */}
+            <AnimatePresence>
+                {isCropping && (
+                    <motion.div
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }}
+                            className="bg-neutral-900 border border-white/10 rounded-2xl p-6 w-full max-w-lg shadow-2xl"
+                        >
+                            <h2 className="text-xl font-bold text-white mb-4">Sesuaikan Foto</h2>
+                            
+                            <div className="relative w-full h-64 bg-black rounded-xl overflow-hidden mb-6">
+                                <Cropper
+                                    image={cropImageUrl}
+                                    crop={crop}
+                                    zoom={zoom}
+                                    rotation={rotation}
+                                    aspect={1}
+                                    cropShape="round"
+                                    onCropChange={setCrop}
+                                    onCropComplete={(_: any, croppedPixels: any) => setCroppedAreaPixels(croppedPixels)}
+                                    onZoomChange={setZoom}
+                                    onRotationChange={setRotation}
+                                />
+                            </div>
+
+                            <div className="space-y-4 mb-6">
+                                <div>
+                                    <label className="text-sm font-semibold text-neutral-400 mb-2 block">Zoom ({zoom.toFixed(1)}x)</label>
+                                    <input 
+                                        type="range" min={1} max={3} step={0.1} value={zoom} 
+                                        onChange={(e) => setZoom(Number(e.target.value))} 
+                                        className="w-full accent-indigo-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-sm font-semibold text-neutral-400 mb-2 block">Rotasi ({rotation}°)</label>
+                                    <input 
+                                        type="range" min={0} max={360} step={1} value={rotation} 
+                                        onChange={(e) => setRotation(Number(e.target.value))} 
+                                        className="w-full accent-indigo-500"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex justify-end gap-3">
+                                <button
+                                    onClick={() => setIsCropping(false)}
+                                    className="px-4 py-2 rounded-xl text-sm font-semibold text-neutral-400 bg-white/5 border border-white/10 hover:bg-white/10 transition"
+                                >
+                                    Batal
+                                </button>
+                                <button
+                                    onClick={saveCrop}
+                                    className="px-4 py-2 rounded-xl text-sm font-bold text-white bg-indigo-500 hover:bg-indigo-400 transition flex items-center gap-2"
+                                >
+                                    <Check className="w-4 h-4" /> Simpan Potongan
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             {/* Back */}
             <Link
                 href={`/profile/${session?.user?.id}`}

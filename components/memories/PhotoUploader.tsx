@@ -22,6 +22,12 @@ export function PhotoUploader({ photos, onChange, isPublic }: PhotoUploaderProps
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files || e.target.files.length === 0) return
 
+        if (photos.length + e.target.files.length > 3) {
+            toast.error("Maksimal 3 foto diperbolehkan")
+            if (fileInputRef.current) fileInputRef.current.value = ""
+            return
+        }
+
         setIsUploading(true)
         const newPhotos = [...photos]
 
@@ -114,21 +120,23 @@ export function PhotoUploader({ photos, onChange, isPublic }: PhotoUploaderProps
                 </div>
             )}
 
-            <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isUploading}
-                className="w-full flex flex-col items-center justify-center p-8 border-2 border-dashed border-neutral-700 rounded-xl bg-neutral-900/50 hover:bg-neutral-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-                {isUploading ? (
-                    <Loader2 className="w-8 h-8 text-neutral-400 animate-spin mb-2" />
-                ) : (
-                    <ImagePlus className="w-8 h-8 text-neutral-400 mb-2" />
-                )}
-                <span className="text-sm font-medium text-neutral-300">
-                    {isUploading ? "Uploading..." : "Click to select photos"}
-                </span>
-            </button>
+            {photos.length < 3 && (
+                <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploading}
+                    className="w-full flex flex-col items-center justify-center p-8 border-2 border-dashed border-neutral-700 rounded-xl bg-neutral-900/50 hover:bg-neutral-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    {isUploading ? (
+                        <Loader2 className="w-8 h-8 text-neutral-400 animate-spin mb-2" />
+                    ) : (
+                        <ImagePlus className="w-8 h-8 text-neutral-400 mb-2" />
+                    )}
+                    <span className="text-sm font-medium text-neutral-300">
+                        {isUploading ? "Uploading..." : "Click to select photos (Maks 3)"}
+                    </span>
+                </button>
+            )}
 
             <input
                 type="file"

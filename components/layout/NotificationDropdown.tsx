@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Bell, MessageCircle, Heart, Loader2, X, Users, CheckCircle2, XCircle } from "lucide-react"
+import { Bell, MessageCircle, Heart, Loader2, X, Users, CheckCircle2, XCircle, UserPlus } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import { ConfirmDialog, useConfirm } from "@/components/ui/ConfirmDialog"
@@ -21,7 +21,7 @@ const timeAgo = (date: string) => {
 
 interface Notification {
     id: string
-    type: "COMMENT" | "REACTION" | "REPLY" | "COLLABORATION_INVITE"
+    type: "COMMENT" | "REACTION" | "REPLY" | "COLLABORATION_INVITE" | "FOLLOW"
     isRead: boolean
     createdAt: string
     memoryId: string | null
@@ -268,12 +268,15 @@ export function NotificationDropdown() {
                                                         />
                                                         <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center border-2 border-[#11111a] ${n.type === "REACTION" ? "bg-rose-500" :
                                                             n.type === "COLLABORATION_INVITE" ? "bg-violet-500" :
+                                                                n.type === "FOLLOW" ? "bg-emerald-500" :
                                                                 "bg-indigo-500"
                                                             }`}>
                                                             {n.type === "REACTION" ? (
                                                                 <Heart className="w-2.5 h-2.5 text-white fill-white" />
                                                             ) : n.type === "COLLABORATION_INVITE" ? (
                                                                 <Users className="w-2.5 h-2.5 text-white" />
+                                                            ) : n.type === "FOLLOW" ? (
+                                                                <UserPlus className="w-2.5 h-2.5 text-white" />
                                                             ) : (
                                                                 <MessageCircle className="w-2.5 h-2.5 text-white" />
                                                             )}
@@ -287,11 +290,16 @@ export function NotificationDropdown() {
                                                             {n.type === "REACTION" ? "reacted to" :
                                                                 n.type === "COMMENT" ? "commented on" :
                                                                     n.type === "REPLY" ? "replied to your comment in" :
-                                                                        "invited you to collaborate on"}
-                                                            {" "}
-                                                            <span className="font-semibold text-indigo-400">
-                                                                &quot;{n.memory?.title || "a memory"}&quot;
-                                                            </span>
+                                                                        n.type === "FOLLOW" ? "started following you" :
+                                                                            "invited you to collaborate on"}
+                                                            {n.type !== "FOLLOW" && (
+                                                                <>
+                                                                    {" "}
+                                                                    <span className="font-semibold text-indigo-400">
+                                                                        &quot;{n.memory?.title || "a memory"}&quot;
+                                                                    </span>
+                                                                </>
+                                                            )}
                                                         </p>
                                                         <p className="text-[11px] text-neutral-500 mt-1 font-medium">
                                                             {timeAgo(n.createdAt)}
@@ -339,7 +347,7 @@ export function NotificationDropdown() {
                                                 {/* Clickable link — only for non-collaboration notifications */}
                                                 {n.type !== "COLLABORATION_INVITE" && (
                                                     <Link
-                                                        href={n.memory ? `/memories/${n.memory.id}` : "/map"}
+                                                        href={n.type === "FOLLOW" ? `/profile/${n.actor.id}` : (n.memory ? `/memories/${n.memory.id}` : "/map")}
                                                         onClick={() => {
                                                             if (!n.isRead) markAsRead(n.id)
                                                             setIsOpen(false)

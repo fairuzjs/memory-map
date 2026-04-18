@@ -231,7 +231,7 @@ export default function MapView({ memories }: MapViewProps) {
                                                     } catch {
                                                         return p // legacy fallback
                                                     }
-                                                })
+                                                }).filter((p: any) => p && p.url)
 
                                                 if (photos.length === 0) return null
 

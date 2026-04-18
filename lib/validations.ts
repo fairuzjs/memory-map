@@ -43,7 +43,7 @@ export const memorySchema = z.object({
         "PEACEFUL", "GRATEFUL", "ROMANTIC", "ADVENTUROUS"
     ]),
     isPublic: z.boolean().default(true),
-    photos: z.array(z.any()).optional(), // array of anything (we will store rich objects and stringify before sending)
+    photos: z.array(z.any()).max(3, { message: "Maksimal 3 foto diperbolehkan" }).optional(), // array of anything (we will store rich objects and stringify before sending)
     tags: z.array(z.string()).optional(),
     collaborators: z.array(z.string()).max(5, { message: "Maximum 5 collaborators allowed" }).optional().default([]),
     // Audio clip fields (optional)

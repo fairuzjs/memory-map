@@ -77,34 +77,66 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
             }
         }
 
-        await prisma.photo.deleteMany({ where: { memoryId: id } })
+        const updated = await prisma.$transaction(async (tx) => {
+            await tx.photo.deleteMany({ where: { memoryId: id } })
 
-        const updated = await prisma.memory.update({
-            where: { id },
-            data: {
-                ...data,
-                date: new Date(date),
-                photos: {
-                    create: photos?.map(url => ({ url })) || []
+            const updatedMemory = await tx.memory.update({
+                where: { id },
+                data: {
+                    ...data,
+                    date: new Date(date),
+                    photos: {
+                        create: photos?.map(url => ({ url })) || []
+                    },
+                    tags: {
+                        connectOrCreate: tags?.map(tag => ({
+                            where: { name: tag },
+                            create: { name: tag }
+                        })) || []
+                    },
+                    // Audio clip data — clear if null/undefined
+                    audioUrl: audio?.url ?? null,
+                    audioBucket: audio?.bucket ?? null,
+                    audioPath: audio?.path ?? null,
+                    audioStartTime: audio?.startTime ?? null,
+                    audioDuration: audio?.duration ?? null,
+                    audioFileName: audio?.fileName ?? null,
+                    
+                    // Spotify integration
+                    spotifyTrackId: data.spotifyTrackId ?? null,
                 },
-                tags: {
-                    connectOrCreate: tags?.map(tag => ({
-                        where: { name: tag },
-                        create: { name: tag }
-                    })) || []
-                },
-                // Audio clip data — clear if null/undefined
-                audioUrl: audio?.url ?? null,
-                audioBucket: audio?.bucket ?? null,
-                audioPath: audio?.path ?? null,
-                audioStartTime: audio?.startTime ?? null,
-                audioDuration: audio?.duration ?? null,
-                audioFileName: audio?.fileName ?? null,
-                
-                // Spotify integration
-                spotifyTrackId: data.spotifyTrackId ?? null,
-            },
-            include: { photos: true, tags: true }
+                include: { photos: true, tags: true }
+            })
+
+            // Handle Collaborators Update
+            const existingCollabs = await tx.memoryCollaborator.findMany({ where: { memoryId: id } })
+            const existingUserIds = existingCollabs.map(c => c.userId)
+            const requestedCollabs = [...new Set(collaborators || [])].filter((uid: any) => uid !== session.user.id)
+
+            const toDelete = existingUserIds.filter(uid => !requestedCollabs.includes(uid))
+            const toAdd = requestedCollabs.filter(uid => !existingUserIds.includes(uid))
+
+            if (toDelete.length > 0) {
+                await tx.memoryCollaborator.deleteMany({
+                    where: { memoryId: id, userId: { in: toDelete } }
+                })
+            }
+
+            for (const userId of toAdd) {
+                await tx.memoryCollaborator.create({
+                    data: { memoryId: id, userId, status: "PENDING" }
+                })
+                await tx.notification.create({
+                    data: {
+                        type: "COLLABORATION_INVITE",
+                        userId,
+                        actorId: session.user.id,
+                        memoryId: id,
+                    }
+                })
+            }
+
+            return updatedMemory
         })
 
         return NextResponse.json(updated)

@@ -482,14 +482,14 @@ export default function StreakPage() {
                             </div>
 
                             {/* Right: stat chips */}
-                            <div className="flex flex-col gap-2 items-end">
+                            <div className="flex flex-col max-[420px]:flex-row max-[420px]:w-full gap-2 items-end max-[420px]:items-center max-[420px]:justify-between">
                                 {[
                                     { value: streak.longestStreak, label: "Terpanjang" },
                                     { value: streak.totalActiveDays, label: "Total Hari" },
                                 ].map((s) => (
                                     <div
                                         key={s.label}
-                                        className="px-5 py-2.5 rounded-xl text-center w-[115px]"
+                                        className="px-5 py-2.5 rounded-xl text-center w-[115px] max-[420px]:flex-1 max-[420px]:w-auto"
                                         style={{
                                             background: "rgba(0,0,0,0.25)",
                                             border: "1px solid rgba(255,255,255,0.12)",

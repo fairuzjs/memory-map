@@ -5,6 +5,8 @@ import { auth } from "@/lib/auth"
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         const { id } = await params;
+        const session = await auth();
+
         const user = await prisma.user.findUnique({
             where: { id },
             select: {
@@ -32,7 +34,9 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
                     select: {
                         memories: { where: { isPublic: true } },
                         comments: true,
-                        reactions: true
+                        reactions: true,
+                        followers: true,
+                        following: true
                     }
                 }
             }
@@ -47,7 +51,20 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
         const equippedBanner = user.inventories.find(inv => inv.item.type === "PROFILE_BANNER")?.item ?? null
         const equippedDecoration = user.inventories.find(inv => inv.item.type === "USERNAME_DECORATION")?.item ?? null
 
-        return NextResponse.json({ ...user, equippedFrame, equippedBanner, equippedDecoration })
+        let isFollowing = false;
+        if (session?.user?.id && session.user.id !== id) {
+            const follow = await prisma.follow.findUnique({
+                where: {
+                    followerId_followingId: {
+                        followerId: session.user.id,
+                        followingId: id
+                    }
+                }
+            })
+            if (follow) isFollowing = true;
+        }
+
+        return NextResponse.json({ ...user, equippedFrame, equippedBanner, equippedDecoration, isFollowing })
     } catch (error) {
         console.error("GET user error:", error)
         return NextResponse.json({ error: "Server error" }, { status: 500 })

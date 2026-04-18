@@ -468,7 +468,7 @@ export default function EditMemoryPage() {
                                             </div>
                                             <div>
                                                 <h2 className="text-lg font-semibold font-[Outfit] text-white">Galeri Foto</h2>
-                                                <p className="text-xs text-neutral-500">Upload visual kenangan</p>
+                                                <p className="text-xs text-neutral-500">Upload visual kenangan (Maks 3 foto)</p>
                                             </div>
                                         </div>
                                         <Controller
