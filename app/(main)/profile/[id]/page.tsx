@@ -1266,7 +1266,7 @@ export default function UserProfilePage() {
                                                             e.stopPropagation()
                                                             handleFollowsAction(u.id, followsModalType === "followers" ? "remove_follower" : "unfollow")
                                                         }}
-                                                        className="shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/5 hover:bg-rose-500/10 text-neutral-400 hover:text-rose-400 border border-white/10 hover:border-rose-500/30 transition-all opacity-0 md:group-hover:opacity-100"
+                                                        className="shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/5 hover:bg-rose-500/10 text-neutral-400 hover:text-rose-400 border border-white/10 hover:border-rose-500/30 transition-all"
                                                     >
                                                         {followsModalType === "followers" ? "Hapus" : "Mengikuti"}
                                                     </button>

@@ -129,52 +129,23 @@
   }
 }
 
-/* Leaflet Popup Overrides - HIGH SPECIFICITY */
-.leaflet-container .leaflet-popup-content-wrapper {
-  background: rgba(17, 17, 26, 0.8) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
-  color: #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 1.5rem !important;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7) !important;
-  padding: 0 !important;
-  overflow: hidden !important;
-}
-
-.leaflet-container .leaflet-popup-content {
-  margin: 0 !important;
-  padding: 0 !important;
-  width: auto !important;
-  line-height: inherit !important;
-}
-
-.leaflet-container .leaflet-popup-tip-container {
-  width: 40px !important;
-  height: 20px !important;
-}
-
-.leaflet-container .leaflet-popup-tip {
-  background: rgba(17, 17, 26, 0.8) !important;
-  backdrop-filter: blur(16px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  box-shadow: none !important;
-}
-
-.leaflet-container .leaflet-popup-close-button {
-  color: rgba(255, 255, 255, 0.5) !important;
-  padding: 16px !important;
-  font-size: 20px !important;
-  top: 4px !important;
-  right: 4px !important;
-  transition: color 0.2s !important;
-  z-index: 100 !important;
-}
-
-.leaflet-container .leaflet-popup-close-button:hover {
-  color: #ffffff !important;
+/* Mapbox Popup Styling */
+.mapboxgl-popup-content {
   background: transparent !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  border-radius: 1.5rem !important;
 }
+
+.mapboxgl-popup-tip {
+  border-top-color: rgba(17, 17, 26, 0.8) !important;
+  backdrop-filter: blur(16px) !important;
+}
+
+.memory-mapbox-popup .mapboxgl-popup-content {
+  filter: drop-shadow(0 25px 50px rgba(0, 0, 0, 0.5));
+}
+
 
 /* Username Decoration Animations */
 .anim-kristal {
