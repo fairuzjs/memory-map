@@ -31,7 +31,7 @@ export default function MapPage() {
                 <div>
                     <h1 className="text-2xl font-bold font-[Outfit]">Global Memories</h1>
                     <p className="text-sm text-neutral-400 mt-1">
-                        Explore public moments shared by {session?.user?.name || "the community"}.
+                        Jelajahi kenangan publik yang dibagikan oleh {session?.user?.name || "komunitas"}.
                     </p>
                 </div>
             </div>

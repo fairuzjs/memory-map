@@ -13,11 +13,13 @@ datasource db {
 model User {
   id            String     @id @default(cuid())
   role          Role       @default(USER)
+  username      String?    @unique
   name          String
   email         String     @unique
   password      String
   image         String?
   bio           String?
+  isVerified    Boolean    @default(false)
   instagram     String?
   tiktok        String?
   facebook      String?

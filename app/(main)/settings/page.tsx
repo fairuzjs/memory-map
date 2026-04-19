@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import {
     Instagram, Facebook, Settings, Loader2, Check, AlertCircle,
-    Camera, User, FileText, Share2, ArrowLeft, Mail
+    Camera, User, FileText, Share2, ArrowLeft, Mail, AtSign, Link as LinkIcon
 } from "lucide-react"
 import Link from "next/link"
 import toast from "react-hot-toast"
@@ -97,6 +97,8 @@ export default function SettingsPage() {
 
     // Profile fields
     const [name, setName] = useState("")
+    const [username, setUsername] = useState("")
+    const [usernameError, setUsernameError] = useState("")
     const [bio, setBio] = useState("")
     const [image, setImage] = useState("")
     const [previewImage, setPreviewImage] = useState("")
@@ -127,6 +129,7 @@ export default function SettingsPage() {
             .then(r => r.json())
             .then(data => {
                 setName(data.name || "")
+                setUsername(data.username || "")
                 setBio(data.bio || "")
                 setImage(data.image || "")
                 setPreviewImage(data.image || "")
@@ -170,20 +173,33 @@ export default function SettingsPage() {
         }
     }
 
+    const validateUsername = (val: string) => {
+        if (val === "") { setUsernameError(""); return }
+        if (!/^[a-z0-9_.]{3,30}$/.test(val.toLowerCase())) {
+            setUsernameError("Hanya huruf kecil, angka, underscore, dan titik (3-30 karakter)")
+        } else {
+            setUsernameError("")
+        }
+    }
+
     const handleSave = async () => {
         if (!name.trim()) return toast.error("Name cannot be empty")
+        if (usernameError) return toast.error("Perbaiki username terlebih dahulu")
         setSaving(true)
         try {
             const res = await fetch(`/api/users/${session?.user?.id}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name, bio, image, ...socials }),
+                body: JSON.stringify({ name, bio, image, ...socials, username: username || null }),
             })
-            if (!res.ok) throw new Error()
+            if (!res.ok) {
+                const err = await res.json()
+                throw new Error(err.error || "Failed")
+            }
             await update({ name, image })
             toast.success("Settings saved!")
-        } catch {
-            toast.error("Failed to save settings")
+        } catch (e: any) {
+            toast.error(e.message || "Failed to save settings")
         } finally {
             setSaving(false)
         }
@@ -274,7 +290,7 @@ export default function SettingsPage() {
                 className="inline-flex items-center gap-2 text-sm text-neutral-500 hover:text-neutral-300 transition-colors group mb-8"
             >
                 <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-                Back to Profile
+                Kembali ke Profil
             </Link>
 
             {/* Page header */}
@@ -284,7 +300,7 @@ export default function SettingsPage() {
                 </div>
                 <div>
                     <h1 className="text-2xl font-extrabold font-[Outfit] text-white">Settings</h1>
-                    <p className="text-sm text-neutral-500">Manage your profile and social links</p>
+                    <p className="text-sm text-neutral-500">Atur profil kamu dan tautkan sosial media</p>
                 </div>
             </div>
 
@@ -319,7 +335,7 @@ export default function SettingsPage() {
                         style={{ background: "rgba(255,255,255,0.02)" }}
                     >
                         <div>
-                            <p className="text-xs font-semibold text-neutral-500 uppercase tracking-widest mb-4">Profile Photo</p>
+                            <p className="text-xs font-semibold text-neutral-500 uppercase tracking-widest mb-4">Foto Profil</p>
                             <div className="flex items-center gap-5">
                                 <div className="relative group shrink-0">
                                     <img
@@ -353,16 +369,16 @@ export default function SettingsPage() {
                                         disabled={uploadingPhoto}
                                         className="text-sm font-medium text-indigo-400 hover:text-indigo-300 transition-colors"
                                     >
-                                        {uploadingPhoto ? "Uploading..." : "Upload photo"}
+                                        {uploadingPhoto ? "Mengunggah..." : "Unggah Foto"}
                                     </button>
-                                    <p className="text-xs text-neutral-600 mt-1">JPG, PNG, GIF up to 5MB</p>
+                                    <p className="text-xs text-neutral-600 mt-1">JPG, PNG, GIF maksimal 5MB</p>
                                 </div>
                             </div>
                         </div>
 
                         {/* Predefined Avatars */}
                         <div className="pt-5 border-t border-white/[0.06]">
-                            <p className="text-xs font-semibold text-neutral-500 uppercase tracking-widest mb-3">Or Choose an Avatar</p>
+                            <p className="text-xs font-semibold text-neutral-500 uppercase tracking-widest mb-3">Atau Pilih Avatar</p>
                             <div className="flex flex-wrap gap-2.5">
                                 {PREDEFINED_AVATARS.map((url, idx) => {
                                     const isSelected = previewImage === url;
@@ -392,10 +408,10 @@ export default function SettingsPage() {
 
                     {/* Basic Info */}
                     <div className="rounded-2xl border border-white/[0.06] p-6 space-y-4" style={{ background: "rgba(255,255,255,0.02)" }}>
-                        <p className="text-xs font-semibold text-neutral-500 uppercase tracking-widest">Basic Info</p>
+                        <p className="text-xs font-semibold text-neutral-500 uppercase tracking-widest">Informasi Dasar</p>
                         <div>
                             <label className="block text-sm font-medium text-neutral-400 mb-1.5 flex items-center gap-1.5">
-                                <Mail className="w-3.5 h-3.5" /> Email Address
+                                <Mail className="w-3.5 h-3.5" /> Email
                             </label>
                             <input
                                 type="email"
@@ -406,14 +422,53 @@ export default function SettingsPage() {
                             <p className="text-[10px] text-neutral-600 mt-1">Alamat email yang terdaftar (tidak dapat diubah).</p>
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-neutral-400 mb-1.5">Display Name</label>
+                            <label className="block text-sm font-medium text-neutral-400 mb-1.5">Nama</label>
                             <input
                                 type="text"
                                 value={name}
                                 onChange={e => setName(e.target.value)}
-                                placeholder="Your display name"
+                                placeholder="Nama kamu"
                                 className="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-4 py-3 text-white placeholder-neutral-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500/50 text-sm transition-all"
                             />
+                        </div>
+                        {/* Username */}
+                        <div>
+                            <label className="block text-sm font-medium text-neutral-400 mb-1.5 flex items-center gap-1.5">
+                                <AtSign className="w-3.5 h-3.5" /> Username (URL Pendek)
+                            </label>
+                            <div className="relative">
+                                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-600 text-sm select-none">@</span>
+                                <input
+                                    type="text"
+                                    value={username}
+                                    onChange={e => {
+                                        const v = e.target.value.toLowerCase().replace(/[^a-z0-9_.]/g, "")
+                                        setUsername(v)
+                                        validateUsername(v)
+                                    }}
+                                    placeholder="namauser"
+                                    maxLength={30}
+                                    className={`w-full bg-neutral-900 border rounded-xl pl-8 pr-4 py-3 text-white placeholder-neutral-600 focus:outline-none focus:ring-2 text-sm transition-all ${
+                                        usernameError
+                                            ? "border-red-500/50 focus:ring-red-500/30"
+                                            : "border-neutral-800 focus:ring-indigo-500/30 focus:border-indigo-500/50"
+                                    }`}
+                                />
+                            </div>
+                            {usernameError && (
+                                <p className="text-xs text-red-400 mt-1 flex items-center gap-1">
+                                    <AlertCircle className="w-3 h-3" /> {usernameError}
+                                </p>
+                            )}
+                            {username && !usernameError && (
+                                <div className="mt-2 flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-500/5 border border-indigo-500/15">
+                                    <LinkIcon className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                                    <span className="text-xs text-indigo-300 font-mono">
+                                        {typeof window !== "undefined" ? window.location.origin : "https://memorymap-theta.vercel.app"}/u/<strong>{username}</strong>
+                                    </span>
+                                </div>
+                            )}
+                            <p className="text-[10px] text-neutral-600 mt-1.5">Hanya huruf kecil, angka, underscore, dan titik. 3–30 karakter. Digunakan untuk URL profil pendek.</p>
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-neutral-400 mb-1.5 flex items-center gap-1.5">
@@ -444,9 +499,9 @@ export default function SettingsPage() {
                 >
                     <div className="flex items-center gap-2 mb-2">
                         <Share2 className="w-4 h-4 text-neutral-500" />
-                        <p className="text-xs font-semibold text-neutral-500 uppercase tracking-widest">Social Media Links</p>
+                        <p className="text-xs font-semibold text-neutral-500 uppercase tracking-widest">Sosial Media</p>
                     </div>
-                    <p className="text-sm text-neutral-600">Links you add here will be displayed publicly on your profile.</p>
+                    <p className="text-sm text-neutral-600">Links yang kamu tambahkan di sini akan ditampilkan secara publik di profilmu.</p>
 
                     {SOCIALS.map(s => (
                         <div key={s.key}>
@@ -475,7 +530,7 @@ export default function SettingsPage() {
 
                     <div className="flex items-start gap-2 pt-2 text-xs text-neutral-600 border-t border-white/[0.04]">
                         <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-                        <span>Paste the full URL including https://</span>
+                        <span>Tempel URL lengkap termasuk https://</span>
                     </div>
                 </motion.div>
             )}
@@ -489,8 +544,8 @@ export default function SettingsPage() {
                     style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
                 >
                     {saving
-                        ? <><Loader2 className="w-4 h-4 animate-spin" /> Saving...</>
-                        : <><Check className="w-4 h-4" /> Save Changes</>
+                        ? <><Loader2 className="w-4 h-4 animate-spin" /> Menyimpan...</>
+                        : <><Check className="w-4 h-4" /> Simpan Perubahan</>
                     }
                 </button>
             </div>

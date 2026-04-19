@@ -101,7 +101,7 @@ function SearchControl({ mapRef }: { mapRef: React.RefObject<MapRef | null> }) {
                     value={query}
                     onChange={handleInput}
                     onFocus={() => { if (query) setShowResults(true) }}
-                    placeholder="Search locations..."
+                    placeholder="Cari lokasi..."
                     className="block w-full pl-10 pr-3 py-3 border border-neutral-300 rounded-xl leading-5 bg-white text-neutral-900 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-lg text-sm transition-all"
                 />
                 {isSearching && (
@@ -506,4 +506,4 @@ export default function MapView({ memories }: MapViewProps) {
             </Map>
         </div>
     )
-}
+}

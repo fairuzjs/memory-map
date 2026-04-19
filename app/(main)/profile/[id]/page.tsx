@@ -9,7 +9,7 @@ import {
     Settings, Image as ImageIcon, BookOpen, Globe,
     Flame, Zap, Medal, Crown, Package,
     UserPlus, Link as LinkIcon, QrCode, Share2,
-    Users, UserCheck, Search
+    Users, UserCheck, Search, AtSign, AlertCircle, BadgeCheck
 } from "lucide-react"
 import Link from "next/link"
 import toast from "react-hot-toast"
@@ -134,6 +134,10 @@ export default function UserProfilePage() {
     // Edit modal state
     const [isEditOpen, setIsEditOpen] = useState(false)
     const [editName, setEditName] = useState("")
+    const [editUsername, setEditUsername] = useState("")
+    const [editUsernameError, setEditUsernameError] = useState("")
+    const [editUsernameStatus, setEditUsernameStatus] = useState<"idle" | "checking" | "available" | "taken">("idle")
+    const [editModalTab, setEditModalTab] = useState<"profil" | "badge">("profil")
     const [editBio, setEditBio] = useState("")
     const [editImage, setEditImage] = useState("")
     const [previewImage, setPreviewImage] = useState("")
@@ -141,6 +145,7 @@ export default function UserProfilePage() {
     const [isSaving, setIsSaving] = useState(false)
     const [isUploadingPhoto, setIsUploadingPhoto] = useState(false)
     const avatarInputRef = useRef<HTMLInputElement>(null)
+    const usernameCheckTimerRef = useRef<NodeJS.Timeout | null>(null)
 
     // Crop state
     const [crop, setCrop] = useState({ x: 0, y: 0 })
@@ -201,8 +206,12 @@ export default function UserProfilePage() {
     }
 
     const copyProfileLink = () => {
-        navigator.clipboard.writeText(window.location.href)
-        toast.success("Tautan disalin ke papan klip")
+        const base = window.location.origin
+        const link = user?.username
+            ? `${base}/u/${user.username}`
+            : window.location.href
+        navigator.clipboard.writeText(link)
+        toast.success(user?.username ? `Tautan disalin: /u/${user.username}` : "Tautan disalin ke papan klip")
     }
 
     const handleFollow = async () => {
@@ -251,11 +260,55 @@ export default function UserProfilePage() {
 
     const openEdit = () => {
         setEditName(user.name || "")
+        setEditUsername(user.username || "")
+        setEditUsernameError("")
+        setEditUsernameStatus("idle")
+        setEditModalTab("profil")
         setEditBio(user.bio || "")
         setEditImage(user.image || "")
         setPreviewImage(user.image || "")
         setEditPinnedBadge(user.pinnedBadge)
         setIsEditOpen(true)
+    }
+
+    const handleUsernameChange = (val: string) => {
+        const v = val.toLowerCase().replace(/[^a-z0-9_.]/g, "")
+        setEditUsername(v)
+        setEditUsernameError("")
+        setEditUsernameStatus("idle")
+
+        if (usernameCheckTimerRef.current) clearTimeout(usernameCheckTimerRef.current)
+
+        if (v === "") return
+
+        // Same as current username — no need to check
+        if (v === user.username) {
+            setEditUsernameStatus("available")
+            return
+        }
+
+        if (!/^[a-z0-9_.]{3,30}$/.test(v)) {
+            setEditUsernameError("Hanya huruf kecil, angka, underscore, dan titik (3-30 karakter)")
+            return
+        }
+
+        setEditUsernameStatus("checking")
+        usernameCheckTimerRef.current = setTimeout(async () => {
+            try {
+                const res = await fetch(`/api/users/by-username/${encodeURIComponent(v)}`)
+                if (res.status === 404) {
+                    setEditUsernameStatus("available")
+                } else if (res.ok) {
+                    const data = await res.json()
+                    // Available if it belongs to current user
+                    setEditUsernameStatus(data.id === id ? "available" : "taken")
+                } else {
+                    setEditUsernameStatus("idle")
+                }
+            } catch {
+                setEditUsernameStatus("idle")
+            }
+        }, 500)
     }
 
     const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -290,14 +343,20 @@ export default function UserProfilePage() {
 
     const handleSave = async () => {
         if (!editName.trim()) { toast.error("Nama tidak boleh kosong"); return }
+        if (editUsernameError) { toast.error("Perbaiki username terlebih dahulu"); return }
+        if (editUsernameStatus === "taken") { toast.error("Username sudah dipakai orang lain"); return }
+        if (editUsernameStatus === "checking") { toast.error("Tunggu sebentar, sedang mengecek username..."); return }
         setIsSaving(true)
         try {
             const res = await fetch(`/api/users/${id}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name: editName, bio: editBio, image: editImage, pinnedBadge: editPinnedBadge }),
+                body: JSON.stringify({ name: editName, bio: editBio, image: editImage, pinnedBadge: editPinnedBadge, username: editUsername || null }),
             })
-            if (!res.ok) throw new Error("Failed")
+            if (!res.ok) {
+                const err = await res.json()
+                throw new Error(err.error || "Failed")
+            }
             const updated = await res.json()
             setUser((prev: any) => ({ ...prev, ...updated }))
             await updateSession()
@@ -486,13 +545,18 @@ export default function UserProfilePage() {
 
                         {/* Nama & Bio */}
                         <div className="text-center md:text-left md:pb-2 max-w-sm">
-                            <div className="flex flex-col md:flex-row items-center gap-2 md:gap-3 mb-1.5 flex-wrap justify-center md:justify-start">
-                                <h1 
-                                    className={`text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight ${user.equippedDecoration ? getDecorationClass(user.equippedDecoration.name) : ""}`}
-                                    style={user.equippedDecoration ? (() => { try { return JSON.parse(user.equippedDecoration.value) } catch { return {} } })() : {}}
-                                >
-                                    {user.name}
-                                </h1>
+                            <div className="flex flex-col md:flex-row items-center gap-2 md:gap-3 mb-0.5 flex-wrap justify-center md:justify-start">
+                                <div className="flex items-center gap-1.5 flex-wrap justify-center md:justify-start">
+                                    <h1 
+                                        className={`text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight ${user.equippedDecoration ? getDecorationClass(user.equippedDecoration.name) : ""}`}
+                                        style={user.equippedDecoration ? (() => { try { return JSON.parse(user.equippedDecoration.value) } catch { return {} } })() : {}}
+                                    >
+                                        {user.username || user.name}
+                                    </h1>
+                                    {user.isVerified && (
+                                        <BadgeCheck className="w-[18px] h-[18px] text-white shrink-0 relative -top-1 fill-[#0095F6]" />
+                                    )}
+                                </div>
                                 {user.pinnedBadge !== null && user.pinnedBadge !== undefined && (() => {
                                     const bConfig = getBadgeConfig(user.pinnedBadge)
                                     const IconInfo = bConfig.icon
@@ -515,6 +579,11 @@ export default function UserProfilePage() {
                                     </span>
                                 )}
                             </div>
+                            {user.username && (
+                                <h2 className="text-base sm:text-lg font-medium text-neutral-200 mb-1">
+                                    {user.name}
+                                </h2>
+                            )}
                             <p className="text-sm sm:text-base text-neutral-400 leading-relaxed font-light">
                                 {user.bio || <span className="italic text-neutral-600">Penjelajah ini belum menulis bio.</span>}
                             </p>
@@ -595,14 +664,24 @@ export default function UserProfilePage() {
                                         title="Pengaturan">
                                         <Settings className="w-4 h-4" />
                                     </Link>
-                                    <button onClick={openEdit}
-                                        className="flex items-center gap-1.5 px-4 h-9 rounded-lg text-xs sm:text-sm font-bold text-white transition-all hover:scale-[1.03] relative overflow-hidden group"
-                                        style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}>
-                                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "linear-gradient(135deg, #818cf8, #a78bfa)" }} />
-                                        <Pencil className="w-3.5 h-3.5 relative z-10" />
-                                        <span className="relative z-10 hidden sm:inline">Edit Profil</span>
-                                        <span className="relative z-10 sm:hidden">Edit</span>
-                                    </button>
+                                    <div className="relative">
+                                        <button onClick={openEdit}
+                                            className="flex items-center gap-1.5 px-4 h-9 rounded-lg text-xs sm:text-sm font-bold text-white transition-all hover:scale-[1.03] relative overflow-hidden group"
+                                            style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}>
+                                            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "linear-gradient(135deg, #818cf8, #a78bfa)" }} />
+                                            <Pencil className="w-3.5 h-3.5 relative z-10" />
+                                            <span className="relative z-10 hidden sm:inline">Edit Profil</span>
+                                            <span className="relative z-10 sm:hidden">Edit</span>
+                                        </button>
+                                        {!user.username && (
+                                            <div className="absolute -top-9 -right-2 flex flex-col items-center animate-bounce z-20 pointer-events-none">
+                                                <span className="bg-red-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow-lg whitespace-nowrap">
+                                                    Atur username!
+                                                </span>
+                                                <div className="w-0 h-0 border-x-[4px] border-t-[5px] border-x-transparent border-t-red-500"></div>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             ) : (
                                 <div className="flex items-center gap-2">
@@ -946,7 +1025,10 @@ export default function UserProfilePage() {
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     if (navigator.share) {
-                                        navigator.share({ title: user.name, url: window.location.href }).catch(() => {});
+                                        const shareUrl = user?.username 
+                                            ? `${window.location.origin}/u/${user.username}` 
+                                            : window.location.href;
+                                        navigator.share({ title: user.name, url: shareUrl }).catch(() => {});
                                     } else {
                                         copyProfileLink()
                                     }
@@ -1026,7 +1108,6 @@ export default function UserProfilePage() {
                             <div className="flex items-center justify-between px-7 pt-6 pb-2">
                                 <div>
                                     <h2 className="text-xl font-bold text-white">Edit Profil</h2>
-                                    <p className="text-xs text-neutral-600 mt-0.5">Perbarui informasi profil kamu</p>
                                 </div>
                                 <button
                                     onClick={() => setIsEditOpen(false)}
@@ -1037,7 +1118,24 @@ export default function UserProfilePage() {
                                 </button>
                             </div>
 
-                            <div className="px-7 py-6 space-y-5">
+                            <div className="flex border-b border-white/5">
+                                <button
+                                    onClick={() => setEditModalTab("profil")}
+                                    className={`flex-1 py-3.5 text-sm font-semibold transition-colors ${editModalTab === "profil" ? "text-indigo-400 border-b-2 border-indigo-400" : "text-neutral-500 hover:text-neutral-300"}`}
+                                >
+                                    Profil
+                                </button>
+                                <button
+                                    onClick={() => setEditModalTab("badge")}
+                                    className={`flex-1 py-3.5 text-sm font-semibold transition-colors ${editModalTab === "badge" ? "text-orange-400 border-b-2 border-orange-400" : "text-neutral-500 hover:text-neutral-300"}`}
+                                >
+                                    Profil Badge
+                                </button>
+                            </div>
+
+                            <div className="px-7 py-6 space-y-5 max-h-[60vh] overflow-y-auto" style={{ scrollbarWidth: "thin" }}>
+                                {editModalTab === "profil" && (
+                                    <>
                                 {/* Avatar upload */}
                                 <div className="flex flex-col items-center gap-3">
                                     <div className="relative group">
@@ -1069,6 +1167,61 @@ export default function UserProfilePage() {
 
                                 {/* Divider */}
                                 <div className="h-px" style={{ background: "rgba(255,255,255,0.05)" }} />
+
+                                {/* Username */}
+                                <div>
+                                    <label className="block text-xs font-bold text-neutral-500 mb-2 uppercase tracking-wide flex items-center gap-1.5">
+                                        <AtSign className="w-3.5 h-3.5" /> Username (URL Pendek)
+                                    </label>
+                                    <div className="relative">
+                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-600 text-sm select-none">@</span>
+                                        <input
+                                            type="text"
+                                            value={editUsername}
+                                            onChange={(e) => handleUsernameChange(e.target.value)}
+                                            placeholder="namauser"
+                                            maxLength={30}
+                                            className="w-full rounded-2xl pl-9 pr-10 py-3.5 text-sm text-white focus:outline-none transition-all"
+                                            style={{
+                                                background: "rgba(0,0,0,0.4)",
+                                                border: editUsernameError ? "1px solid rgba(239,68,68,0.5)"
+                                                    : editUsernameStatus === "taken" ? "1px solid rgba(239,68,68,0.5)"
+                                                    : editUsernameStatus === "available" ? "1px solid rgba(34,197,94,0.4)"
+                                                    : "1px solid rgba(255,255,255,0.07)",
+                                                boxShadow: editUsernameStatus === "available" ? "0 0 0 3px rgba(34,197,94,0.07)"
+                                                    : editUsernameStatus === "taken" ? "0 0 0 3px rgba(239,68,68,0.08)"
+                                                    : "none"
+                                            }}
+                                        />
+                                        {/* Status icon */}
+                                        <span className="absolute right-4 top-1/2 -translate-y-1/2">
+                                            {editUsernameStatus === "checking" && (
+                                                <Loader2 className="w-4 h-4 text-neutral-500 animate-spin" />
+                                            )}
+                                            {editUsernameStatus === "available" && (
+                                                <Check className="w-4 h-4 text-green-500" />
+                                            )}
+                                            {editUsernameStatus === "taken" && (
+                                                <X className="w-4 h-4 text-red-400" />
+                                            )}
+                                        </span>
+                                    </div>
+                                    {editUsernameError && (
+                                        <p className="text-[11px] text-red-400 mt-1.5 flex items-center gap-1">
+                                            <AlertCircle className="w-3 h-3" /> {editUsernameError}
+                                        </p>
+                                    )}
+                                    {!editUsernameError && editUsernameStatus === "available" && (
+                                        <p className="text-[11px] text-green-500 mt-1.5 flex items-center gap-1">
+                                            <Check className="w-3 h-3" /> Username tersedia
+                                        </p>
+                                    )}
+                                    {!editUsernameError && editUsernameStatus === "taken" && (
+                                        <p className="text-[11px] text-red-400 mt-1.5 flex items-center gap-1">
+                                            <AlertCircle className="w-3 h-3" /> Username sudah dipakai orang lain
+                                        </p>
+                                    )}
+                                </div>
 
                                 {/* Name */}
                                 <div>
@@ -1107,7 +1260,11 @@ export default function UserProfilePage() {
                                         </span>
                                     </div>
                                 </div>
+                                    </>
+                                )}
 
+                                {editModalTab === "badge" && (
+                                    <>
                                 {/* Pinned Badge Selector */}
                                 <div>
                                     <label className="block text-xs font-bold text-neutral-500 mb-2 uppercase tracking-wide flex items-center gap-1.5">
@@ -1158,6 +1315,8 @@ export default function UserProfilePage() {
                                     </div>
                                     <p className="text-[10px] text-neutral-600 mt-2">Pilih lencana streak untuk dipamerkan di sebelah namamu.</p>
                                 </div>
+                                    </>
+                                )}
                             </div>
 
                             {/* Footer Actions */}

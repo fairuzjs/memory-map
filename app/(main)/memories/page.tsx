@@ -160,7 +160,7 @@ export default function MemoriesPage() {
                                 My Memories
                             </h1>
                             <p className="text-neutral-500 text-sm mt-1 leading-relaxed">
-                                Every chapter of your life, beautifully preserved.
+                                Setiap kenangan dalam hidupmu, terabadikan dengan indah.
                             </p>
                         </div>
 
