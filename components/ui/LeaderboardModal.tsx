@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { createPortal } from "react-dom"
 import { motion, AnimatePresence, Variants } from "framer-motion"
 import Link from "next/link"
+import { BadgeCheck } from "lucide-react"
 
 interface LeaderboardEntry {
   rank: number
@@ -13,6 +14,7 @@ interface LeaderboardEntry {
   longestStreak: number
   currentStreak: number
   equippedDecoration?: any
+  isVerified?: boolean
 }
 
 function getDecorationClass(name?: string) {
@@ -288,16 +290,15 @@ function PodiumStep({
         </div>
 
         {/* Name */}
-        <div 
-          className={entry.equippedDecoration ? getDecorationClass(entry.equippedDecoration.name) : ""}
-          style={{
+        <div style={{
           fontSize: entry.rank === 1 ? 13 : 12, fontWeight: 600, color: "#fff",
           textAlign: "center", marginBottom: 4, marginTop: 8,
           overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
           width: "100%", padding: "0 4px",
-          ...(entry.equippedDecoration ? (() => { try { return JSON.parse(entry.equippedDecoration.value) } catch { return {} } })() : {})
+          display: "flex", alignItems: "center", justifyContent: "center", gap: "2px"
         }}>
           {entry.name}
+          {entry.isVerified && <BadgeCheck className="w-[14px] h-[14px] text-white shrink-0 fill-[#0095F6] relative -top-0.5" />}
         </div>
 
         {/* Streak */}
@@ -540,15 +541,16 @@ export function LeaderboardModal({
                               fontSize: 13, fontWeight: 600, color: "#fff",
                               display: "flex", alignItems: "center", gap: 6,
                             }}>
-                              <span 
-                                className={entry.equippedDecoration ? getDecorationClass(entry.equippedDecoration.name) : ""}
-                                style={{ 
-                                  overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                                  ...(entry.equippedDecoration ? (() => { try { return JSON.parse(entry.equippedDecoration.value) } catch { return {} } })() : {})
-                                }}
-                              >
-                                {entry.name}
-                              </span>
+                              <div style={{ display: "flex", alignItems: "center", gap: "2px" }}>
+                                <span 
+                                  style={{ 
+                                    overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                                  }}
+                                >
+                                  {entry.name}
+                                </span>
+                                {entry.isVerified && <BadgeCheck className="w-[14px] h-[14px] text-white shrink-0 fill-[#0095F6]" />}
+                              </div>
                               {isMe && (
                                 <span style={{
                                   fontSize: 9, padding: "2px 6px",

@@ -19,7 +19,9 @@ export async function GET() {
                 select: { 
                     id: true, 
                     name: true, 
+                    username: true,
                     image: true,
+                    isVerified: true,
                     inventories: {
                         where: { isEquipped: true, item: { type: "USERNAME_DECORATION" } },
                         select: {
@@ -35,8 +37,9 @@ export async function GET() {
         topStreakers.map((s, i) => ({
             rank: i + 1,
             userId: s.user.id,
-            name: s.user.name,
+            name: s.user.username || s.user.name,
             image: s.user.image,
+            isVerified: s.user.isVerified,
             longestStreak: s.longestStreak,
             currentStreak: s.currentStreak,
             equippedDecoration: s.user.inventories[0]?.item ?? null,

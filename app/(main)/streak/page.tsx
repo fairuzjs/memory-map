@@ -3,7 +3,7 @@
 import { useSession } from "next-auth/react"
 import { useEffect, useState, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Trophy, Calendar, Zap, Medal, Star, Crown, Users, ChevronRight, Loader2, CheckCircle2, ShoppingBag } from "lucide-react"
+import { Trophy, Calendar, Zap, Medal, Star, Crown, Users, ChevronRight, Loader2, CheckCircle2, ShoppingBag, BadgeCheck } from "lucide-react"
 import Link from "next/link"
 import { BadgeUnlockModal } from "@/components/ui/BadgeUnlockModal"
 import { LeaderboardModal } from "@/components/ui/LeaderboardModal"
@@ -28,6 +28,7 @@ interface LeaderboardEntry {
     longestStreak: number
     currentStreak: number
     equippedDecoration?: any
+    isVerified?: boolean
 }
 
 function getDecorationClass(name?: string) {
@@ -766,13 +767,13 @@ export default function StreakPage() {
 
                                     {/* Name */}
                                     <div className="flex-1 min-w-0">
-                                        <Link href={`/profile/${entry.userId}`} className="group flex items-center gap-1.5">
-                                            <span 
-                                                className={`text-sm font-semibold text-white group-hover:text-indigo-300 transition-colors truncate ${entry.equippedDecoration ? getDecorationClass(entry.equippedDecoration.name) : ""}`}
-                                                style={entry.equippedDecoration ? (() => { try { return JSON.parse(entry.equippedDecoration.value) } catch { return {} } })() : {}}
-                                            >
-                                                {entry.name}
-                                            </span>
+                                        <Link href={`/profile/${entry.userId}`} className="group flex items-center gap-1.5 min-w-0">
+                                            <div className="flex items-center gap-1 truncate">
+                                                <span className="text-sm font-semibold text-white group-hover:text-indigo-300 transition-colors truncate">
+                                                    {entry.name}
+                                                </span>
+                                                {entry.isVerified && <BadgeCheck className="w-3.5 h-3.5 text-white shrink-0 fill-[#0095F6] relative -top-[1px]" />}
+                                            </div>
                                             {isMe && (
                                                 <span
                                                     className="text-[9px] px-1.5 py-0.5 rounded-full font-bold flex-shrink-0"
