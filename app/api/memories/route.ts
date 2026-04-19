@@ -89,19 +89,23 @@ export async function GET(req: Request) {
         if (!userId) {
             // 1. Public Feed: tanpa userId dan tanpa mine. Wajib public-only!
             where.isPublic = true
-        } else if (!currentUserId) {
-            // 2. Guest lihat profile user lain => public only
-            where.userId = userId
-            where.isPublic = true
-        } else if (userId === currentUserId) {
-            // 3. Owner profile => semua memory sendiri 
-            // Cek jika client eksplisit hanya meminta public
-            where.userId = userId
-            if (publicOnly) where.isPublic = true
         } else {
-            // 4. User login lihat profile user lain => public only
-            where.userId = userId
-            where.isPublic = true
+            // Fetch memory sendiri + memory kolaborasi
+            const collabs = await prisma.memoryCollaborator.findMany({
+                where: { userId: userId, status: "ACCEPTED" },
+                select: { memoryId: true }
+            })
+            const collabIds = collabs.map(c => c.memoryId)
+
+            where.OR = [
+                { userId: userId },
+                { id: { in: collabIds } }
+            ]
+
+            // Kalau visitor bukan owner, atau owner eksplisit minta publicOnly
+            if (!currentUserId || userId !== currentUserId || publicOnly) {
+                where.isPublic = true
+            }
         }
 
         // Sorting
