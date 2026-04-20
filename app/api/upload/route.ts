@@ -14,6 +14,16 @@ const MAX_AUDIO_SIZE = 4 * 1024 * 1024 // 4MB
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"]
 const ALLOWED_AUDIO_TYPES = ["audio/mpeg"]
 
+// Map MIME type ke ekstensi file yang aman
+// Mengabaikan nama file dari client agar tidak bisa dimanipulasi
+const MIME_TO_EXT: Record<string, string> = {
+    "image/jpeg": "jpg",
+    "image/png":  "png",
+    "image/webp": "webp",
+    "image/gif":  "gif",
+    "audio/mpeg": "mp3",
+}
+
 export async function POST(req: Request) {
   try {
     // SECURITY CHECK 1: Wajib Login
@@ -48,9 +58,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: `File size exceeds ${isAudio ? "4MB" : "5MB"} limit` }, { status: 400 })
     }
 
-    // SECURITY CHECK 5: Gunakan Nama File Acak (UUID) untuk mencegah directory traversal / tebakan nama
-    const fileExt = file.name.split(".").pop()
-    // Opsional: prefix dengan userId agar rapi dan mudah di-manage
+    // SECURITY CHECK 5: Derive ekstensi dari MIME type (BUKAN dari nama file client)
+    // Mencegah: upload file.html dengan MIME image/jpeg, atau path traversal via nama file
+    const fileExt = MIME_TO_EXT[file.type]
+    if (!fileExt) {
+        // Seharusnya sudah dicegah di check 3, tapi ini safety net
+        return NextResponse.json({ error: "Unsupported file type" }, { status: 400 })
+    }
+    // Prefix dengan userId agar rapi, UUID agar tidak bisa di-enumerate
     const fileName = `${session.user.id}/${crypto.randomUUID()}.${fileExt}`
 
     // SECURITY CHECK 6: Pisahkan bucket berdasarkan privacy filter

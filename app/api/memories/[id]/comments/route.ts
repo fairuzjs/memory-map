@@ -14,8 +14,24 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         const rl = checkRateLimit(`comment:${session.user.id}`, RATE_LIMITS.COMMENT.limit, RATE_LIMITS.COMMENT.windowMs)
         if (!rl.success) return rateLimitResponse(rl.reset)
 
-        const { content, parentId } = await req.json()
-        if (!content?.trim()) return NextResponse.json({ error: "Content is required" }, { status: 400 })
+        const { content: rawContent, parentId } = await req.json()
+
+        // Sanitasi dasar: trim whitespace & hapus null bytes
+        const content = typeof rawContent === "string"
+            ? rawContent.replace(/\0/g, "").trim()
+            : ""
+
+        // Validasi: tidak boleh kosong dan maksimum 1000 karakter
+        if (!content) {
+            return NextResponse.json({ error: "Komentar tidak boleh kosong" }, { status: 400 })
+        }
+        if (content.length > 1000) {
+            return NextResponse.json(
+                { error: `Komentar terlalu panjang. Maksimum 1000 karakter (sekarang: ${content.length})` },
+                { status: 400 }
+            )
+        }
+
 
         const comment = await prisma.comment.create({
             data: {

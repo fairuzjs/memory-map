@@ -14,7 +14,16 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         if (!rl.success) return rateLimitResponse(rl.reset)
 
         const { type } = await req.json()
-        if (!type) return NextResponse.json({ error: "Reaction type required" }, { status: 400 })
+
+        // Validasi: type harus sesuai dengan enum ReactionType di Prisma
+        const VALID_REACTION_TYPES = ["LOVE", "WOW", "SAD", "LAUGH"] as const
+        if (!type || !VALID_REACTION_TYPES.includes(type)) {
+            return NextResponse.json(
+                { error: `Invalid reaction type. Valid types: ${VALID_REACTION_TYPES.join(", ")}` },
+                { status: 400 }
+            )
+        }
+
 
         const userId = session.user.id
         const memoryId = id
