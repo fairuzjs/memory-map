@@ -9,7 +9,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
         if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
         const comment = await prisma.comment.findUnique({
-            where: { id: commentId }
+            where: { id: commentId, memoryId: id }
         })
 
         if (!comment) return NextResponse.json({ error: "Not found" }, { status: 404 })

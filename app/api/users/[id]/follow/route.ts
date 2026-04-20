@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
+import { revalidateTag } from "next/cache"
+import { CACHE_TAGS } from "@/lib/cache"
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
@@ -42,6 +44,10 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
                     }
                 }
             })
+            // Revalidate both users
+            ;(revalidateTag as any)(CACHE_TAGS.user(currentUser))
+            ;(revalidateTag as any)(CACHE_TAGS.user(targetUser))
+
             return NextResponse.json({ followed: false })
         } else {
             // Follow
@@ -62,6 +68,10 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
                     }
                 })
             })
+            // Revalidate both users
+            ;(revalidateTag as any)(CACHE_TAGS.user(currentUser));
+            ;(revalidateTag as any)(CACHE_TAGS.user(targetUser));
+
             return NextResponse.json({ followed: true })
         }
     } catch (error) {

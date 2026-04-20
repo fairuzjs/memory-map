@@ -1,57 +1,20 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
+import { getCachedUser } from "@/lib/services/user-service"
+import { revalidateTag } from "next/cache"
+import { CACHE_TAGS } from "@/lib/cache"
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         const { id } = await params;
         const session = await auth();
 
-        const user = await prisma.user.findUnique({
-            where: { id },
-            select: {
-                id: true,
-                username: true,
-                name: true,
-                bio: true,
-                image: true,
-                isVerified: true,
-                instagram: true,
-                tiktok: true,
-                facebook: true,
-                createdAt: true,
-                pinnedBadge: true,
-                streakBadges: {
-                    select: { milestone: true }
-                },
-                inventories: {
-                    where: { isEquipped: true },
-                    select: {
-                        item: {
-                            select: { type: true, value: true, previewColor: true, name: true }
-                        }
-                    }
-                },
-                _count: {
-                    select: {
-                        memories: { where: { isPublic: true } },
-                        comments: true,
-                        reactions: true,
-                        followers: true,
-                        following: true
-                    }
-                }
-            }
-        })
+        const user = await getCachedUser(id)
 
         if (!user) {
             return NextResponse.json({ error: "User not found" }, { status: 404 })
         }
-
-        // Reshape equipped items into a convenient map
-        const equippedFrame = user.inventories.find(inv => inv.item.type === "AVATAR_FRAME")?.item ?? null
-        const equippedBanner = user.inventories.find(inv => inv.item.type === "PROFILE_BANNER")?.item ?? null
-        const equippedDecoration = user.inventories.find(inv => inv.item.type === "USERNAME_DECORATION")?.item ?? null
 
         let isFollowing = false;
         if (session?.user?.id && session.user.id !== id) {
@@ -66,7 +29,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
             if (follow) isFollowing = true;
         }
 
-        return NextResponse.json({ ...user, equippedFrame, equippedBanner, equippedDecoration, isFollowing })
+        return NextResponse.json({ ...user, isFollowing })
     } catch (error) {
         console.error("GET user error:", error)
         return NextResponse.json({ error: "Server error" }, { status: 500 })
@@ -131,6 +94,9 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
             },
             select: { id: true, username: true, name: true, bio: true, image: true, instagram: true, tiktok: true, facebook: true, pinnedBadge: true }
         })
+
+        // Revalidate cache
+        ;(revalidateTag as any)(CACHE_TAGS.user(id))
 
         return NextResponse.json(updated)
     } catch (error) {

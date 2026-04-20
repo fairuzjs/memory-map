@@ -8,13 +8,12 @@ import type { LucideIcon } from "lucide-react"
 
 // ─── Animation Variants ───────────────────────────────────────────────────────
 const fadeUp = {
-  hidden: { opacity: 0, y: 32 },
-  show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 260, damping: 22 } },
+  hidden: { opacity: 0, y: 24 },
+  show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 240, damping: 24 } },
 }
-
 const stagger = {
   hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.12 } },
+  show: { opacity: 1, transition: { staggerChildren: 0.1 } },
 }
 
 // ─── Data ──────────────────────────────────────────────────────────────────────
@@ -23,12 +22,171 @@ interface Step {
   icon: LucideIcon
   title: string
   desc: string
-  color: string
-  gradient: string
-  glow: string
-  border: string
-  bg: string
   cta: { label: string; href: string } | null
+  preview: React.ReactNode
+}
+
+// ─── Step Preview Mockups ─────────────────────────────────────────────────────
+function RegisterPreview() {
+  return (
+    <div className="w-full h-full flex items-center justify-center p-6">
+      <div className="w-full max-w-[280px] bg-white/[0.03] border border-white/[0.08] rounded-3xl p-6 space-y-4">
+        <div className="text-center mb-5">
+          <div className="w-12 h-12 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center mx-auto mb-3">
+            <UserPlus className="w-6 h-6 text-indigo-400" />
+          </div>
+          <p className="text-sm font-semibold text-white">Buat Akun</p>
+          <p className="text-xs text-neutral-500 mt-0.5">Gratis, 30 detik</p>
+        </div>
+        <div className="space-y-3">
+          {["Nama Lengkap", "Email Kamu", "Password"].map((placeholder, i) => (
+            <div key={i} className="px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-xs text-neutral-500">
+              {placeholder}
+            </div>
+          ))}
+        </div>
+        <div className="w-full py-2.5 rounded-xl bg-indigo-500/20 border border-indigo-500/30 text-center text-xs font-semibold text-indigo-300">
+          Daftar Sekarang →
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function MapPickPreview() {
+  return (
+    <div className="w-full h-full flex items-center justify-center p-6">
+      <div className="w-full relative rounded-3xl overflow-hidden border border-white/[0.08] bg-[#0e0e1a] min-h-[220px]">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(99,102,241,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.06) 1px, transparent 1px)",
+            backgroundSize: "24px 24px",
+          }}
+        />
+        <div className="absolute top-[25%] left-[10%] w-[35%] h-[40%] bg-indigo-500/[0.08] rounded-2xl" />
+        <div className="absolute top-[20%] left-[50%] w-[40%] h-[50%] bg-indigo-500/[0.08] rounded-2xl" />
+        {/* Active pin */}
+        <div className="absolute left-[55%] top-[32%] -translate-x-1/2 -translate-y-full">
+          <div className="px-3 py-1.5 rounded-xl bg-[#12121e]/90 backdrop-blur-md border border-indigo-500/40 text-[10px] text-white whitespace-nowrap shadow-xl mb-1 flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 shadow-[0_0_6px_rgba(129,140,248,0.8)]" />
+            Pilih lokasi ini
+          </div>
+          <div className="w-px h-4 bg-indigo-400/60 mx-auto" />
+          <div className="w-3 h-3 rounded-full bg-indigo-400 mx-auto shadow-[0_0_12px_rgba(129,140,248,0.9)]" />
+        </div>
+        {/* Other pins */}
+        <div className="absolute left-[25%] top-[50%] w-2 h-2 rounded-full bg-indigo-400/40" />
+        <div className="absolute left-[72%] top-[60%] w-1.5 h-1.5 rounded-full bg-indigo-400/40" />
+        <div className="absolute left-[40%] top-[40%] w-1.5 h-1.5 rounded-full bg-indigo-400/30" />
+      </div>
+    </div>
+  )
+}
+
+function WritePreview() {
+  return (
+    <div className="w-full h-full flex items-center justify-center p-6">
+      <div className="w-full max-w-[300px] space-y-3">
+        <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-4 space-y-2.5">
+          <div className="flex items-center gap-2 text-xs text-indigo-400/70 font-medium uppercase tracking-wider">
+            <PenLine className="w-3 h-3" />
+            Tulis Kenangan
+          </div>
+          <div className="space-y-2">
+            <div className="px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.07]">
+              <p className="text-[10px] text-neutral-500 mb-1">Judul</p>
+              <p className="text-xs text-white/80">Sunset di Labuan Bajo</p>
+            </div>
+            <div className="px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.07] min-h-[60px]">
+              <p className="text-[10px] text-neutral-500 mb-1">Cerita</p>
+              <p className="text-xs text-white/60 leading-relaxed">Akhirnya setelah semua perjalanan, aku bisa berdiri di sini dan melihat...</p>
+            </div>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <div className="flex-1 px-3 py-2 rounded-xl bg-white/[0.03] border border-white/[0.07] flex items-center gap-1.5">
+            <span className="text-[10px]">📅</span>
+            <span className="text-[10px] text-neutral-500">14 Apr 2025</span>
+          </div>
+          <div className="flex-1 px-3 py-2 rounded-xl bg-white/[0.03] border border-white/[0.07] flex items-center gap-1.5">
+            <span className="text-[10px]">📍</span>
+            <span className="text-[10px] text-neutral-500">Labuan Bajo</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function MediaPreview() {
+  return (
+    <div className="w-full h-full flex items-center justify-center p-6">
+      <div className="w-full max-w-[300px] space-y-3">
+        <div className="grid grid-cols-3 gap-2">
+          <div className="col-span-2 rounded-2xl bg-indigo-950/40 border border-white/[0.07] overflow-hidden h-28 relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-violet-500/10" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <ImagePlus className="w-6 h-6 text-indigo-400/50" />
+            </div>
+            <div className="absolute bottom-2 left-2">
+              <div className="px-2 py-1 rounded-lg bg-black/60 backdrop-blur-sm text-[9px] text-white/70">Foto Utama</div>
+            </div>
+          </div>
+          <div className="flex flex-col gap-2">
+            <div className="rounded-2xl bg-indigo-950/40 border border-white/[0.07] h-[54px] flex items-center justify-center">
+              <ImagePlus className="w-4 h-4 text-indigo-400/40" />
+            </div>
+            <div className="rounded-2xl bg-indigo-950/40 border border-white/[0.07] h-[54px] flex items-center justify-center">
+              <ImagePlus className="w-4 h-4 text-indigo-400/40" />
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {[{ label: "😊 Bahagia", active: true }, { label: "🌊 Petualangan", active: false }, { label: "✨ Nostalgia", active: true }].map((tag) => (
+            <div key={tag.label} className={`px-2.5 py-1 rounded-full text-[10px] font-medium border ${tag.active ? "bg-indigo-500/15 border-indigo-500/40 text-indigo-300" : "bg-white/[0.04] border-white/[0.08] text-neutral-500"}`}>
+              {tag.label}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function SharePreview() {
+  return (
+    <div className="w-full h-full flex items-center justify-center p-6">
+      <div className="w-full max-w-[300px] space-y-4">
+        <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-5">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 shrink-0 overflow-hidden border-2 border-[#151520]">
+              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=explorer1" className="w-full h-full" alt="" />
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-white">Sunset di Labuan Bajo</p>
+              <p className="text-[10px] text-indigo-400">by @kamu · 14 Apr 2025</p>
+            </div>
+          </div>
+          <div className="space-y-1.5 mb-4">
+            <div className="h-1.5 bg-white/[0.07] rounded-full w-full" />
+            <div className="h-1.5 bg-white/[0.07] rounded-full w-5/6" />
+            <div className="h-1.5 bg-white/[0.05] rounded-full w-3/4" />
+          </div>
+          <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-indigo-500/10 border border-indigo-500/25">
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)]" />
+            <span className="text-[10px] text-neutral-400 font-mono flex-1">memorymap.app/m/bajo-trip</span>
+            <div className="text-[9px] font-semibold text-indigo-400 uppercase tracking-wider">Salin</div>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <div className="flex-1 px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.07] text-center text-[10px] text-neutral-400">🔒 Privat</div>
+          <div className="flex-1 px-3 py-2 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-center text-[10px] text-indigo-300 font-semibold">🌍 Publik</div>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 const steps: Step[] = [
@@ -36,77 +194,52 @@ const steps: Step[] = [
     number: "01",
     icon: UserPlus,
     title: "Buat Akunmu",
-    desc: "Daftar gratis dalam hitungan detik, nggak perlu kartu kredit. Akunmu adalah brankas kenangan pribadimu.",
-    color: "#818cf8",
-    gradient: "from-indigo-500 to-violet-600",
-    glow: "rgba(99,102,241,0.3)",
-    border: "rgba(99,102,241,0.2)",
-    bg: "rgba(99,102,241,0.06)",
-    cta: { label: "Mulai sekarang", href: "/register" },
+    desc: "Daftar gratis dalam hitungan detik, nggak perlu kartu kredit. Akunmu adalah brankas kenangan pribadimu yang aman.",
+    cta: { label: "Daftar sekarang", href: "/register" },
+    preview: <RegisterPreview />,
   },
   {
     number: "02",
     icon: MapPin,
     title: "Pilih Lokasi di Peta",
-    desc: "Cari dan ketuk di mana saja di peta dunia kami yang interaktif buat nancapin pin kenangan di tempat pastinya.",
-    color: "#a78bfa",
-    gradient: "from-violet-500 to-purple-600",
-    glow: "rgba(139,92,246,0.3)",
-    border: "rgba(139,92,246,0.2)",
-    bg: "rgba(139,92,246,0.06)",
+    desc: "Cari dan ketuk di mana saja di peta dunia interaktif kami untuk menancapkan pin kenangan di tempat pastinya.",
     cta: null,
+    preview: <MapPickPreview />,
   },
   {
     number: "03",
     icon: PenLine,
     title: "Tulis Kenanganmu",
-    desc: "Kasih judul, tanggal, dan ceritamu. Tuangkan perasaanmu ke dalam kata-kata singkat atau panjang, ini kanvasmu.",
-    color: "#60a5fa",
-    gradient: "from-sky-500 to-blue-600",
-    glow: "rgba(59,130,246,0.3)",
-    border: "rgba(59,130,246,0.2)",
-    bg: "rgba(59,130,246,0.06)",
+    desc: "Beri judul, tanggal, dan curahkan ceritamu. Ini kanvasmu, bisa singkat atau sepanjang apapun yang kamu mau.",
     cta: null,
+    preview: <WritePreview />,
   },
   {
     number: "04",
     icon: ImagePlus,
     title: "Tambah Foto & Suasana",
-    desc: "Upload foto dan kasih tag emosi Bahagia, Nostalgia, Romantis, Petualangan, dan masih banyak lagi biar kenanganmu makin hidup.",
-    color: "#fbbf24",
-    gradient: "from-amber-500 to-orange-600",
-    glow: "rgba(245,158,11,0.3)",
-    border: "rgba(245,158,11,0.2)",
-    bg: "rgba(245,158,11,0.06)",
+    desc: "Upload foto dan beri tag emosi, Bahagia, Nostalgia, Romantis, Petualangan, biar kenanganmu makin hidup.",
     cta: null,
+    preview: <MediaPreview />,
   },
   {
     number: "05",
     icon: Share2,
     title: "Bagikan atau Simpan Sendiri",
-    desc: "Jadikan kenangan kamu publik buat ditemukan komunitas, atau simpan buat diri sendiri aman selamanya.",
-    color: "#34d399",
-    gradient: "from-emerald-500 to-teal-600",
-    glow: "rgba(52,211,153,0.3)",
-    border: "rgba(52,211,153,0.2)",
-    bg: "rgba(52,211,153,0.06)",
+    desc: "Jadikan kenangan publik buat ditemukan komunitas, atau simpan untuk dirimu sendiri selamanya.",
     cta: { label: "Jelajahi komunitas", href: "/community" },
+    preview: <SharePreview />,
   },
 ]
 
 // ─── Component ────────────────────────────────────────────────────────────────
 export function HowItWorksTimeline() {
-  const [openSteps, setOpenSteps] = useState<Set<string>>(new Set(["01"]))
+  const [activeStep, setActiveStep] = useState("01")
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-80px" })
 
-  const toggle = (number: string) => {
-    setOpenSteps((prev) => {
-      const next = new Set(prev)
-      next.has(number) ? next.delete(number) : next.add(number)
-      return next
-    })
-  }
+  const active = steps.find((s) => s.number === activeStep)!
+  const ActiveIcon = active.icon
 
   return (
     <motion.div
@@ -114,235 +247,240 @@ export function HowItWorksTimeline() {
       initial="hidden"
       animate={isInView ? "show" : "hidden"}
       variants={stagger}
-      className="max-w-5xl mx-auto"
+      className="max-w-6xl mx-auto"
     >
-      {/* Section header */}
-      <motion.div variants={fadeUp} className="text-center mb-16">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/[0.08] bg-white/[0.03] text-sm text-neutral-400 mb-5 backdrop-blur-sm">
+      {/* ── Section Header ─────────────────────────────────────────────────── */}
+      <motion.div variants={fadeUp} className="text-center mb-10">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/[0.08] bg-white/[0.03] text-sm text-indigo-300/80 mb-5 backdrop-blur-sm">
           Langkah demi langkah
         </div>
-        <h2 className="text-4xl md:text-5xl font-extrabold font-[Outfit] text-white leading-tight mb-4">
+        <h2 className="text-4xl md:text-5xl font-extrabold font-[Outfit] text-white leading-tight mb-3">
           Cara{" "}
           <span
             style={{
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
-              backgroundImage: "linear-gradient(135deg, #818cf8 0%, #c084fc 100%)",
+              backgroundImage: "linear-gradient(135deg, #a5b4fc 0%, #818cf8 100%)",
               backgroundClip: "text",
             }}
           >
             Kerjanya
           </span>
         </h2>
-        <p className="text-neutral-500 text-lg max-w-7xl mx-auto leading-relaxed">
-          Dari daftar akun, sampai berbagi kenangan pertamamu hanya dalam lima langkah.
+        <p className="text-neutral-500 text-base md:text-lg max-w-7xl mx-auto leading-relaxed font-light">
+          Dari daftar akun hingga berbagi kenangan pertamamu <span className="text-white"></span>hanya dalam lima langkah.
         </p>
       </motion.div>
 
-      {/* ────── DESKTOP: 3-row horizontal layout ────── */}
-      <motion.div variants={fadeUp} className="hidden md:block">
-        {/* ROW 1 — Icons */}
-        <div className="grid grid-cols-5 gap-x-3">
-          {steps.map((step) => {
-            const Icon = step.icon
-            const isOpen = openSteps.has(step.number)
-            return (
-              <div key={step.number} className="flex flex-col items-center gap-2">
-                <button
-                  onClick={() => toggle(step.number)}
-                  className="relative focus:outline-none group/icon"
-                  aria-expanded={isOpen}
-                >
-                  <motion.div
-                    animate={{ opacity: isOpen ? 0.85 : 0.2, scale: isOpen ? 1.5 : 1 }}
-                    transition={{ duration: 0.4, ease: "easeOut" }}
-                    className="absolute inset-0 rounded-2xl blur-xl pointer-events-none"
-                    style={{ background: step.glow }}
-                  />
-                  <motion.div
-                    animate={{
-                      scale: isOpen ? 1.1 : 1,
-                      boxShadow: isOpen
-                        ? `0 16px 48px ${step.glow}, 0 0 0 1.5px ${step.border}`
-                        : `0 4px 16px ${step.glow.replace("0.3", "0.1")}`,
-                    }}
-                    transition={{ type: "spring", stiffness: 300, damping: 22 }}
-                    className={`relative w-14 h-14 rounded-2xl flex items-center justify-center bg-gradient-to-br ${step.gradient} z-10`}
+      {/* ── Two-Column Layout (desktop) / Accordion (mobile) ──────────────────── */}
+      <motion.div variants={fadeUp} className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+
+        {/* ── LEFT: Step List ───────────────────────────────────────────────── */}
+        <div className="relative">
+          {/* Vertical spine line */}
+          <div className="absolute left-[21px] top-6 bottom-6 w-px bg-gradient-to-b from-indigo-500/50 via-indigo-500/20 to-indigo-500/5 pointer-events-none" />
+
+          <div className="space-y-2">
+            {steps.map((step) => {
+              const Icon = step.icon
+              const isActive = step.number === activeStep
+
+              return (
+                <div key={step.number}>
+                  {/* Step button */}
+                  <button
+                    onClick={() => setActiveStep(step.number)}
+                    className={`w-full flex items-start gap-5 p-4 rounded-2xl text-left transition-all duration-300 group ${
+                      isActive
+                        ? "bg-indigo-500/10 border border-indigo-500/25"
+                        : "border border-transparent hover:bg-white/[0.03] hover:border-white/[0.06]"
+                    }`}
                   >
-                    <Icon className="w-6 h-6 text-white" />
-                  </motion.div>
-                </button>
-                <motion.span
-                  animate={{ opacity: isOpen ? 1 : 0.4 }}
-                  className="text-[10px] font-black uppercase tracking-[0.18em]"
-                  style={{ color: step.color }}
-                >
-                  {step.number}
-                </motion.span>
-              </div>
-            )
-          })}
-        </div>
+                    {/* Step icon */}
+                    <div className="relative shrink-0">
+                      <div
+                        className={`relative w-11 h-11 rounded-2xl flex items-center justify-center z-10 transition-all duration-300 ${
+                          isActive
+                            ? "bg-indigo-500 shadow-[0_0_24px_rgba(99,102,241,0.5)]"
+                            : "bg-white/[0.05] border border-white/[0.08] group-hover:border-indigo-500/30"
+                        }`}
+                      >
+                        <Icon className={`w-5 h-5 transition-colors ${isActive ? "text-white" : "text-neutral-500 group-hover:text-indigo-400"}`} />
+                      </div>
+                    </div>
 
-        {/* ROW 2 — Spine + dots */}
-        <div className="relative grid grid-cols-5 gap-x-3" style={{ height: "44px" }}>
-          <div
-            className="absolute left-[10%] right-[10%] h-px top-1/2 -translate-y-1/2 pointer-events-none"
-            style={{ background: "linear-gradient(to right, rgba(99,102,241,0.6), rgba(139,92,246,0.5), rgba(59,130,246,0.4), rgba(245,158,11,0.4), rgba(52,211,153,0.55))" }}
-          />
-          {steps.map((step) => {
-            const isOpen = openSteps.has(step.number)
-            return (
-              <div key={step.number} className="flex flex-col items-center justify-between h-full">
-                <div className="w-px flex-1" style={{ background: `linear-gradient(to bottom, transparent, ${step.border})` }} />
-                <motion.button
-                  onClick={() => toggle(step.number)}
-                  animate={{
-                    scale: isOpen ? 1.7 : 1,
-                    backgroundColor: isOpen ? step.color : "rgba(255,255,255,0.18)",
-                    boxShadow: isOpen ? `0 0 18px 5px ${step.glow}` : "none",
-                  }}
-                  transition={{ type: "spring", stiffness: 400, damping: 24 }}
-                  className="w-3 h-3 rounded-full z-10 shrink-0 cursor-pointer focus:outline-none"
-                />
-                <motion.div
-                  animate={{ flexGrow: isOpen ? 1 : 0, opacity: isOpen ? 1 : 0 }}
-                  transition={{ type: "spring", stiffness: 260, damping: 26 }}
-                  className="w-px min-h-0"
-                  style={{ background: `linear-gradient(to bottom, ${step.color}, transparent)` }}
-                />
-              </div>
-            )
-          })}
-        </div>
+                    {/* Step content */}
+                    <div className="flex-1 min-w-0 pt-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className={`text-[10px] font-black uppercase tracking-[0.2em] transition-colors ${isActive ? "text-indigo-400" : "text-neutral-600"}`}>
+                          Step {step.number}
+                        </span>
+                      </div>
+                      <h3 className={`text-sm font-bold font-[Outfit] leading-snug transition-colors ${isActive ? "text-white" : "text-neutral-400 group-hover:text-neutral-200"}`}>
+                        {step.title}
+                      </h3>
+                      <AnimatePresence initial={false}>
+                        {isActive && (
+                          <motion.div
+                            key="desc"
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.25, ease: "easeOut" }}
+                            style={{ overflow: "hidden" }}
+                          >
+                            <p className="text-xs text-neutral-500 leading-relaxed mt-2 pr-2">{step.desc}</p>
+                            {step.cta && (
+                              <Link
+                                href={step.cta.href}
+                                className="inline-flex items-center gap-1 mt-3 text-xs font-semibold text-indigo-400 hover:text-indigo-300 transition-colors group/cta"
+                              >
+                                {step.cta.label}
+                                <ArrowRight className="w-3 h-3 group-hover/cta:translate-x-0.5 transition-transform" />
+                              </Link>
+                            )}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
 
-        {/* ROW 3 — Cards */}
-        <div className="grid grid-cols-5 gap-x-3">
-          {steps.map((step) => {
-            const isOpen = openSteps.has(step.number)
-            return (
-              <motion.div
-                key={step.number}
-                animate={{ height: isOpen ? "auto" : 0, opacity: isOpen ? 1 : 0 }}
-                initial={false}
-                transition={{
-                  height: { type: "spring", stiffness: 270, damping: 30 },
-                  opacity: { duration: 0.22 },
-                }}
-                style={{ overflow: "hidden" }}
-              >
-                <div
-                  className="rounded-2xl p-4 border relative overflow-hidden"
-                  style={{
-                    background: step.bg,
-                    borderColor: step.border,
-                    backdropFilter: "blur(16px)",
-                    boxShadow: `0 12px 40px ${step.glow.replace("0.3", "0.1")}, inset 0 1px 0 rgba(255,255,255,0.06)`,
-                  }}
-                >
-                  <div className="absolute top-0 right-0 w-20 h-20 pointer-events-none" style={{ background: `radial-gradient(circle at top right, ${step.glow.replace("0.3", "0.18")}, transparent 70%)` }} />
-                  <span className="inline-block text-[9px] font-black uppercase tracking-[0.2em] mb-1.5" style={{ color: step.color }}>Step {step.number}</span>
-                  <h3 className="text-sm font-bold font-[Outfit] text-white mb-1.5 leading-snug">{step.title}</h3>
-                  <p className="text-xs text-neutral-400 leading-relaxed">{step.desc}</p>
-                  {step.cta && (
-                    <Link href={step.cta.href} className="inline-flex items-center gap-1 mt-3 text-xs font-semibold group/cta transition-colors" style={{ color: step.color }}>
-                      {step.cta.label}
-                      <ArrowRight className="w-3 h-3 group-hover/cta:translate-x-0.5 transition-transform" />
-                    </Link>
-                  )}
-                </div>
-              </motion.div>
-            )
-          })}
-        </div>
-      </motion.div>
+                    {/* Active indicator dot */}
+                    <div className={`shrink-0 mt-3 w-1.5 h-1.5 rounded-full transition-all duration-300 ${isActive ? "bg-indigo-400 shadow-[0_0_8px_rgba(129,140,248,0.8)]" : "bg-transparent"}`} />
+                  </button>
 
-      {/* ────── MOBILE: vertical accordion ────── */}
-      <motion.div variants={fadeUp} className="md:hidden relative">
-        <div
-          className="absolute left-[27px] top-6 bottom-6 w-px pointer-events-none"
-          style={{ background: "linear-gradient(to bottom, rgba(99,102,241,0.5) 0%, rgba(139,92,246,0.3) 40%, rgba(59,130,246,0.2) 60%, rgba(245,158,11,0.2) 80%, rgba(52,211,153,0.4) 100%)" }}
-        />
-        <div className="space-y-3">
-          {steps.map((step) => {
-            const Icon = step.icon
-            const isOpen = openSteps.has(step.number)
-            return (
-              <div key={step.number} className="relative">
-                <button onClick={() => toggle(step.number)} className="w-full flex items-center gap-5 group/step text-left" aria-expanded={isOpen}>
-                  <div className="relative flex-shrink-0">
-                    <motion.div
-                      animate={{ opacity: isOpen ? 0.85 : 0.25, scale: isOpen ? 1.4 : 1 }}
-                      transition={{ duration: 0.4, ease: "easeOut" }}
-                      className="absolute inset-0 rounded-2xl blur-xl pointer-events-none"
-                      style={{ background: step.glow }}
-                    />
-                    <motion.div
-                      animate={{
-                        scale: isOpen ? 1.08 : 1,
-                        boxShadow: isOpen
-                          ? `0 12px 40px ${step.glow}, 0 0 0 1.5px ${step.border}`
-                          : `0 4px 16px ${step.glow.replace("0.3", "0.12")}`,
-                      }}
-                      transition={{ type: "spring", stiffness: 300, damping: 22 }}
-                      className={`relative w-14 h-14 rounded-2xl flex items-center justify-center bg-gradient-to-br ${step.gradient} z-10`}
-                    >
-                      <Icon className="w-6 h-6 text-white" />
-                    </motion.div>
-                  </div>
+                  {/* ── Mobile inline preview (below each active step, hidden on lg+) ── */}
                   <AnimatePresence initial={false}>
-                    {!isOpen && (
-                      <motion.div initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -6 }} transition={{ duration: 0.18 }} className="flex-1 min-w-0">
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: step.color }}>Step {step.number}</span>
-                        <p className="text-sm font-semibold text-neutral-300 group-hover/step:text-white transition-colors leading-tight mt-0.5 truncate">{step.title}</p>
+                    {isActive && (
+                      <motion.div
+                        key={`preview-mobile-${step.number}`}
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: "easeOut" }}
+                        style={{ overflow: "hidden" }}
+                        className="lg:hidden ml-4 mt-2 mb-1"
+                      >
+                        <div className="rounded-2xl overflow-hidden border border-white/[0.07] bg-white/[0.025]">
+                          {/* Mini header */}
+                          <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06]">
+                            <div className="flex items-center gap-2">
+                              <div className="w-7 h-7 rounded-xl flex items-center justify-center bg-indigo-500/20 border border-indigo-500/30">
+                                <Icon className="w-3.5 h-3.5 text-indigo-400" />
+                              </div>
+                              <p className="text-[11px] font-bold text-white font-[Outfit]">{step.title}</p>
+                            </div>
+                            {/* Nav dots */}
+                            <div className="flex items-center gap-1">
+                              {steps.map((s) => (
+                                <button
+                                  key={s.number}
+                                  onClick={(e) => { e.stopPropagation(); setActiveStep(s.number) }}
+                                  className={`rounded-full transition-all duration-300 ${s.number === activeStep ? "w-4 h-1 bg-indigo-500" : "w-1 h-1 bg-white/20"}`}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                          {/* Preview scaled for mobile */}
+                          <div className="overflow-hidden">
+                            {step.preview}
+                          </div>
+                          {/* Prev/Next nav */}
+                          <div className="flex items-center justify-between px-4 py-3 border-t border-white/[0.06]">
+                            <button
+                              onClick={(e) => { e.stopPropagation(); const idx = steps.findIndex((s) => s.number === activeStep); if (idx > 0) setActiveStep(steps[idx - 1].number) }}
+                              disabled={activeStep === "01"}
+                              className="text-[11px] text-neutral-500 hover:text-white disabled:opacity-30 transition-colors flex items-center gap-1"
+                            >
+                              <ArrowRight className="w-3 h-3 rotate-180" /> Sebelumnya
+                            </button>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); const idx = steps.findIndex((s) => s.number === activeStep); if (idx < steps.length - 1) setActiveStep(steps[idx + 1].number) }}
+                              disabled={activeStep === steps[steps.length - 1].number}
+                              className="text-[11px] text-neutral-500 hover:text-white disabled:opacity-30 transition-colors flex items-center gap-1"
+                            >
+                              Selanjutnya <ArrowRight className="w-3 h-3" />
+                            </button>
+                          </div>
+                        </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
-                  <div className={`ml-auto mr-1 shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}>
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-neutral-600">
-                      <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </div>
-                </button>
-                <AnimatePresence initial={false}>
-                  {isOpen && (
-                    <motion.div
-                      key="content"
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ height: { type: "spring", stiffness: 280, damping: 28 }, opacity: { duration: 0.22 } }}
-                      style={{ overflow: "hidden" }}
-                    >
-                      <motion.div initial={{ y: -8 }} animate={{ y: 0 }} exit={{ y: -8 }} transition={{ type: "spring", stiffness: 300, damping: 26 }} className="ml-[76px] mt-3 mb-2">
-                        <div
-                          className="rounded-2xl p-5 border relative overflow-hidden"
-                          style={{
-                            background: step.bg,
-                            borderColor: step.border,
-                            backdropFilter: "blur(16px)",
-                            boxShadow: `0 16px 48px ${step.glow.replace("0.3", "0.12")}, inset 0 1px 0 rgba(255,255,255,0.06)`,
-                          }}
-                        >
-                          <div className="absolute top-0 right-0 w-32 h-32 pointer-events-none" style={{ background: `radial-gradient(circle at top right, ${step.glow.replace("0.3", "0.2")}, transparent 70%)` }} />
-                          <span className="inline-block text-[10px] font-black uppercase tracking-[0.2em] mb-3" style={{ color: step.color }}>Step {step.number}</span>
-                          <h3 className="text-lg font-bold font-[Outfit] text-white mb-2 leading-snug">{step.title}</h3>
-                          <p className="text-sm text-neutral-400 leading-relaxed">{step.desc}</p>
-                          {step.cta && (
-                            <Link href={step.cta.href} className="inline-flex items-center gap-1.5 mt-4 text-sm font-semibold transition-colors group/cta" style={{ color: step.color }}>
-                              {step.cta.label}
-                              <ArrowRight className="w-3.5 h-3.5 group-hover/cta:translate-x-1 transition-transform" />
-                            </Link>
-                          )}
-                        </div>
-                      </motion.div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            )
-          })}
+                </div>
+              )
+            })}
+          </div>
         </div>
+
+        {/* ── RIGHT: Preview Panel (desktop only) ──────────────────────────────── */}
+        <div className="relative lg:sticky lg:top-28 hidden lg:block">
+          <div
+            className="relative rounded-3xl overflow-hidden border border-white/[0.07] bg-white/[0.025]"
+            style={{ minHeight: "420px" }}
+          >
+            {/* Panel header */}
+            <div className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.06]">
+              <div className={`w-9 h-9 rounded-xl flex items-center justify-center bg-indigo-500/20 border border-indigo-500/30`}>
+                <ActiveIcon className="w-4 h-4 text-indigo-400" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-white font-[Outfit]">{active.title}</p>
+                <p className="text-[10px] text-neutral-600 uppercase tracking-wider">Step {active.number} / {steps.length}</p>
+              </div>
+              {/* Progress dots */}
+              <div className="ml-auto flex items-center gap-1.5">
+                {steps.map((s) => (
+                  <button
+                    key={s.number}
+                    onClick={() => setActiveStep(s.number)}
+                    className={`rounded-full transition-all duration-300 ${s.number === activeStep ? "w-5 h-1.5 bg-indigo-500" : "w-1.5 h-1.5 bg-white/20 hover:bg-white/40"}`}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Preview content */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeStep}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                className="h-full"
+                style={{ minHeight: "360px" }}
+              >
+                {active.preview}
+              </motion.div>
+            </AnimatePresence>
+
+            {/* Navigation arrows */}
+            <div className="flex items-center justify-between px-5 py-4 border-t border-white/[0.06]">
+              <button
+                onClick={() => {
+                  const idx = steps.findIndex((s) => s.number === activeStep)
+                  if (idx > 0) setActiveStep(steps[idx - 1].number)
+                }}
+                disabled={activeStep === "01"}
+                className="text-xs text-neutral-500 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center gap-1"
+              >
+                <ArrowRight className="w-3 h-3 rotate-180" />
+                Sebelumnya
+              </button>
+              <button
+                onClick={() => {
+                  const idx = steps.findIndex((s) => s.number === activeStep)
+                  if (idx < steps.length - 1) setActiveStep(steps[idx + 1].number)
+                }}
+                disabled={activeStep === steps[steps.length - 1].number}
+                className="text-xs text-neutral-500 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center gap-1"
+              >
+                Selanjutnya
+                <ArrowRight className="w-3 h-3" />
+              </button>
+            </div>
+          </div>
+        </div>
+
       </motion.div>
     </motion.div>
   )

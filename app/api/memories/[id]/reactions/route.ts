@@ -3,26 +3,32 @@ import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { checkRateLimit, rateLimitResponse, RATE_LIMITS } from "@/lib/rate-limit"
 
+import { reactionSchema } from "@/lib/validations"
+
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         const { id } = await params;
         const session = await auth()
         if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-        // Rate Limit — 60 reactions per jam per user
+        // 1. Validasi Input (Hardening)
+        const body = await req.json()
+        const result = reactionSchema.safeParse(body)
+        if (!result.success) {
+            return NextResponse.json({ error: "Invalid reaction type", details: result.error.format() }, { status: 400 })
+        }
+        const { type } = result.data
+
+        // 2. Cek Eksistensi Memori (Data Consistency)
+        const memory = await prisma.memory.findUnique({
+            where: { id },
+            select: { id: true, userId: true }
+        })
+        if (!memory) return NextResponse.json({ error: "Memory not found" }, { status: 404 })
+
+        // 3. Rate Limit — 60 reactions per jam per user
         const rl = checkRateLimit(`reaction:${session.user.id}`, RATE_LIMITS.REACTION.limit, RATE_LIMITS.REACTION.windowMs)
         if (!rl.success) return rateLimitResponse(rl.reset)
-
-        const { type } = await req.json()
-
-        // Validasi: type harus sesuai dengan enum ReactionType di Prisma
-        const VALID_REACTION_TYPES = ["LOVE", "WOW", "SAD", "LAUGH"] as const
-        if (!type || !VALID_REACTION_TYPES.includes(type)) {
-            return NextResponse.json(
-                { error: `Invalid reaction type. Valid types: ${VALID_REACTION_TYPES.join(", ")}` },
-                { status: 400 }
-            )
-        }
 
 
         const userId = session.user.id
@@ -54,11 +60,6 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         })
 
         // Notify memory owner
-        const memory = await prisma.memory.findUnique({
-            where: { id: memoryId },
-            select: { userId: true }
-        })
-
         if (memory && memory.userId !== userId) {
             await prisma.notification.create({
                 data: {

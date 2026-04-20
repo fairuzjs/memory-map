@@ -58,6 +58,15 @@ export const memorySchema = z.object({
     spotifyTrackId: z.string().optional().nullable(),
 })
 
+export const reactionSchema = z.object({
+    type: z.enum(["LOVE", "WOW", "SAD", "LAUGH"]),
+})
+
+export const commentSchema = z.object({
+    content: z.string().min(1, { message: "Komentar tidak boleh kosong" }).max(1000, { message: "Komentar maksimal 1000 karakter" }),
+    parentId: z.string().optional().nullable(),
+})
+
 export type LoginInput = z.infer<typeof loginSchema>
 export type RegisterInput = z.infer<typeof registerSchema>
 export type MemoryInput = z.infer<typeof memorySchema>

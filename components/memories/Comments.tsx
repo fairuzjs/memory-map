@@ -17,10 +17,41 @@ export function Comments({ memoryId, initialComments }: { memoryId: string, init
 
     const handleSubmit = async (e: React.FormEvent, parentId: string | null = null) => {
         e.preventDefault()
-        if (!session) return toast.error("Please login to comment")
+        if (!session?.user) return toast.error("Please login to comment")
 
         const text = parentId ? replyContent : content
         if (!text.trim()) return
+
+        const tempId = `temp-${Date.now()}`
+        const optimisticComment = {
+            id: tempId,
+            content: text,
+            createdAt: new Date().toISOString(),
+            userId: session.user.id,
+            user: {
+                id: session.user.id,
+                name: session.user.name,
+                image: session.user.image,
+            },
+            isOptimistic: true, // Flag for UI styling
+            replies: []
+        }
+
+        // 1. Optimistic Update
+        const previousComments = [...comments]
+        if (parentId) {
+            setComments(comments.map(c => {
+                if (c.id === parentId) {
+                    return { ...c, replies: [...(c.replies || []), optimisticComment] }
+                }
+                return c
+            }))
+            setReplyTo(null)
+            setReplyContent("")
+        } else {
+            setComments([...comments, optimisticComment])
+            setContent("")
+        }
 
         setSubmitting(true)
         try {
@@ -32,23 +63,27 @@ export function Comments({ memoryId, initialComments }: { memoryId: string, init
             const data = await res.json()
             if (!res.ok) throw new Error(data.error)
 
-            if (parentId) {
-                // Find parent and append reply
-                const newComments = comments.map((c: any) => {
-                    if (c.id === parentId) {
-                        return { ...c, replies: [...(c.replies || []), data] }
-                    }
-                    return c
-                })
-                setComments(newComments)
-                setReplyTo(null)
-                setReplyContent("")
-            } else {
-                setComments([...comments, { ...data, replies: [] }])
-                setContent("")
-            }
+            // 2. Sync with server data (replace optimistic with real data)
+            setComments(prev => {
+                if (parentId) {
+                    return prev.map(c => {
+                        if (c.id === parentId) {
+                            return {
+                                ...c,
+                                replies: c.replies.map((r: any) => r.id === tempId ? data : r)
+                            }
+                        }
+                        return c
+                    })
+                }
+                return prev.map(c => c.id === tempId ? { ...data, replies: [] } : c)
+            })
         } catch (e: any) {
+            // 3. Rollback on failure
+            setComments(previousComments)
             toast.error(e.message || "Failed to post comment")
+            if (parentId) setReplyContent(text)
+            else setContent(text)
         } finally {
             setSubmitting(false)
         }
@@ -139,7 +174,7 @@ export function Comments({ memoryId, initialComments }: { memoryId: string, init
                                 />
                             </Link>
                             <div className="flex-1">
-                                <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl rounded-tl-none p-3 relative">
+                                <div className={`bg-neutral-900/50 border border-neutral-800 rounded-2xl rounded-tl-none p-3 relative ${comment.isOptimistic ? "opacity-50 grayscale-[0.05]" : ""}`}>
                                     <div className="flex justify-between items-start mb-1">
                                         <Link
                                             href={`/profile/${comment.user.id}`}
@@ -147,7 +182,10 @@ export function Comments({ memoryId, initialComments }: { memoryId: string, init
                                         >
                                             {comment.user.name}
                                         </Link>
-                                        <span className="text-[10px] text-neutral-500">{new Date(comment.createdAt).toLocaleDateString()}</span>
+                                        <div className="flex items-center gap-2">
+                                            {comment.isOptimistic && <span className="text-[9px] uppercase tracking-widest text-indigo-400 animate-pulse font-bold">Sending...</span>}
+                                            <span className="text-[10px] text-neutral-500">{new Date(comment.createdAt).toLocaleDateString()}</span>
+                                        </div>
                                     </div>
                                     <p className="text-sm text-neutral-300 whitespace-pre-wrap">{comment.content}</p>
                                 </div>
@@ -189,7 +227,7 @@ export function Comments({ memoryId, initialComments }: { memoryId: string, init
                                                         alt={reply.user.name}
                                                     />
                                                 </Link>
-                                                <div className="flex-1">
+                                                <div className={`flex-1 ${reply.isOptimistic ? "opacity-50" : ""}`}>
                                                     <div className="bg-neutral-900/30 border border-neutral-800/50 rounded-2xl rounded-tl-none px-3 py-2">
                                                         <Link
                                                             href={`/profile/${reply.user.id}`}
@@ -197,7 +235,10 @@ export function Comments({ memoryId, initialComments }: { memoryId: string, init
                                                         >
                                                             {reply.user.name}
                                                         </Link>
-                                                        <span className="text-xs text-neutral-400">{reply.content}</span>
+                                                        <span className="text-xs text-neutral-400 italic">
+                                                            {reply.isOptimistic ? "Membalas..." : reply.content}
+                                                        </span>
+                                                        {!reply.isOptimistic && <span className="text-xs text-neutral-400 ml-1">{reply.content}</span>}
                                                     </div>
                                                     {session?.user?.id === reply.userId && (
                                                         <button onClick={() => handleDelete(reply.id, comment.id)} className="text-[10px] text-red-500/70 hover:text-red-500 ml-3 mt-1 font-medium">Delete</button>

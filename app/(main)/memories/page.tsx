@@ -1,16 +1,63 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import {
     Plus, Loader2, BookHeart, Image as ImageIcon,
-    BookOpen, Filter, SlidersHorizontal, MapPin, Users
+    BookOpen, Filter, SlidersHorizontal, MapPin, Users, ChevronDown
 } from "lucide-react"
 import { MemoryCard } from "@/components/memories/MemoryCard"
 
-// ─── Emotion Filter Options ────────────────────────────────────────────────────
+// ─── Types ─────────────────────────────────────────────────────────────────────
+interface MemoryPhoto {
+    id: string
+    url: string
+}
+
+interface StickerPlacement {
+    id: string
+    posX: number
+    posY: number
+    rotation: number
+    scale: number
+    customText?: string | null
+    item: { id: string; name: string; value: string; previewColor: string | null }
+}
+
+export interface Memory {
+    id: string
+    title: string
+    date: string
+    emotion: string
+    isPublic: boolean
+    latitude: number
+    longitude: number
+    isCollaboration: boolean
+    photos: MemoryPhoto[]
+    stickerPlacements: StickerPlacement[]
+    user?: {
+        id: string
+        name: string | null
+        image: string | null
+    }
+}
+
+interface PaginatedResponse {
+    data: Memory[]
+    pagination: {
+        page: number
+        limit: number
+        total: number
+        totalPages: number
+        hasMore: boolean
+    }
+}
+
+// ─── Constants ─────────────────────────────────────────────────────────────────
+const PAGE_LIMIT = 24
+
 const EMOTIONS = [
     { value: "ALL", emoji: "✨", label: "All" },
     { value: "HAPPY", emoji: "🌟", label: "Happy" },
@@ -66,37 +113,74 @@ function SectionHeader({
     )
 }
 
+// ─── URL Builder ───────────────────────────────────────────────────────────────
+function buildMineUrl(page: number, emotion: string): string {
+    const params = new URLSearchParams({
+        mine: "true",
+        page: String(page),
+        limit: String(PAGE_LIMIT),
+    })
+    if (emotion !== "ALL") params.set("emotion", emotion)
+    return `/api/memories?${params.toString()}`
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function MemoriesPage() {
     const { data: session, status } = useSession()
-    const [allMemories, setAllMemories] = useState<any[]>([])
-    const [loading, setLoading] = useState(true)
+    const [memories, setMemories]       = useState<Memory[]>([])
+    const [loading, setLoading]         = useState(true)
+    const [loadingMore, setLoadingMore] = useState(false)
+    const [page, setPage]               = useState(1)
+    const [hasMore, setHasMore]         = useState(false)
+    const [total, setTotal]             = useState(0)
     const [selectedEmotion, setSelectedEmotion] = useState("ALL")
 
-    // Fetch gabungan: memory sendiri + memory kolaborasi ACCEPTED
+    // Initial fetch
+    const resetAndFetch = useCallback((emotion: string) => {
+        setLoading(true)
+        setPage(1)
+        setMemories([])
+
+        fetch(buildMineUrl(1, emotion))
+            .then(res => res.json())
+            .then((res: PaginatedResponse) => {
+                setMemories(res.data ?? [])
+                setHasMore(res.pagination?.hasMore ?? false)
+                setTotal(res.pagination?.total ?? 0)
+            })
+            .catch(() => { /* silently fail */ })
+            .finally(() => setLoading(false))
+    }, [])
+
+    // Load more (append)
+    const loadMore = useCallback(() => {
+        if (loadingMore || !hasMore) return
+        const nextPage = page + 1
+        setLoadingMore(true)
+
+        fetch(buildMineUrl(nextPage, selectedEmotion))
+            .then(res => res.json())
+            .then((res: PaginatedResponse) => {
+                setMemories(prev => [...prev, ...(res.data ?? [])])
+                setHasMore(res.pagination?.hasMore ?? false)
+                setPage(nextPage)
+            })
+            .catch(() => { /* silently fail */ })
+            .finally(() => setLoadingMore(false))
+    }, [loadingMore, hasMore, page, selectedEmotion])
+
     useEffect(() => {
         if (status === "unauthenticated") return
-        fetch("/api/memories?mine=true")
-            .then(res => res.json())
-            .then(data => {
-                setAllMemories(data)
-                setLoading(false)
-            })
-            .catch(() => setLoading(false))
-    }, [status])
+        resetAndFetch(selectedEmotion)
+    }, [status, selectedEmotion, resetAndFetch])
 
-    // Client-side emotion filter
-    const filtered =
-        selectedEmotion === "ALL"
-            ? allMemories
-            : allMemories.filter((m: any) => m.emotion === selectedEmotion)
-
-    const withPhotos = filtered.filter((m: any) => m.photos && m.photos.length > 0)
-    const withoutPhotos = filtered.filter((m: any) => !m.photos || m.photos.length === 0)
+    // Client-side splits (no extra filter needed — API handles emotion filtering)
+    const withPhotos    = memories.filter(m => m.photos?.length > 0)
+    const withoutPhotos = memories.filter(m => !m.photos?.length)
 
     // Stats
-    const totalPhotos = allMemories.reduce((a: number, m: any) => a + (m.photos?.length || 0), 0)
-    const totalCollab = allMemories.filter((m: any) => m.isCollaboration).length
+    const totalPhotos = memories.reduce((a, m) => a + (m.photos?.length || 0), 0)
+    const totalCollab = memories.filter(m => m.isCollaboration).length
 
     if (loading) {
         return (
@@ -140,9 +224,7 @@ export default function MemoriesPage() {
                     {/* Right ambient orb */}
                     <div
                         className="absolute right-0 top-0 h-full w-72 pointer-events-none opacity-[0.07]"
-                        style={{
-                            background: "radial-gradient(ellipse at right center, #8b5cf6, transparent 70%)",
-                        }}
+                        style={{ background: "radial-gradient(ellipse at right center, #8b5cf6, transparent 70%)" }}
                     />
 
                     <div className="relative flex flex-wrap items-center gap-4">
@@ -168,7 +250,7 @@ export default function MemoriesPage() {
                         <div className="ml-auto shrink-0 hidden sm:flex items-center gap-2 flex-wrap">
                             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/[0.07] bg-white/[0.03] text-[11px] font-medium text-neutral-400">
                                 <BookHeart className="w-3 h-3 text-violet-400" />
-                                {allMemories.length} {allMemories.length === 1 ? "memory" : "memories"}
+                                {total} {total === 1 ? "memory" : "memories"}
                             </div>
                             {totalPhotos > 0 && (
                                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/[0.07] bg-white/[0.03] text-[11px] font-medium text-neutral-400">
@@ -237,7 +319,7 @@ export default function MemoriesPage() {
 
             {/* ── Feed Content ─────────────────────────────────────────────────── */}
             <AnimatePresence mode="wait">
-                {filtered.length === 0 ? (
+                {memories.length === 0 ? (
                     <motion.div
                         key="empty"
                         initial={{ opacity: 0, scale: 0.97 }}
@@ -303,7 +385,7 @@ export default function MemoriesPage() {
                                     variants={stagger}
                                     className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
                                 >
-                                    {withPhotos.map((memory: any) => (
+                                    {withPhotos.map((memory) => (
                                         <motion.div key={memory.id} variants={fadeUp}>
                                             <MemoryCard
                                                 memory={memory}
@@ -316,7 +398,6 @@ export default function MemoriesPage() {
                             </div>
                         )}
 
-                        {/* Divider between sections */}
                         {withPhotos.length > 0 && withoutPhotos.length > 0 && (
                             <div className="h-px bg-white/[0.04]" />
                         )}
@@ -336,7 +417,7 @@ export default function MemoriesPage() {
                                     variants={stagger}
                                     className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
                                 >
-                                    {withoutPhotos.map((memory: any) => (
+                                    {withoutPhotos.map((memory) => (
                                         <motion.div key={memory.id} variants={fadeUp}>
                                             <MemoryCard
                                                 memory={memory}
@@ -347,6 +428,36 @@ export default function MemoriesPage() {
                                     ))}
                                 </motion.div>
                             </div>
+                        )}
+
+                        {/* ── Load More ──────────────────────────────────────────── */}
+                        {hasMore && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 8 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="flex flex-col items-center gap-2 pt-4"
+                            >
+                                <p className="text-[12px] text-neutral-600">
+                                    Menampilkan {memories.length} dari {total} kenangan
+                                </p>
+                                <button
+                                    onClick={loadMore}
+                                    disabled={loadingMore}
+                                    className="flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold text-neutral-300 border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.07] hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {loadingMore ? (
+                                        <><Loader2 className="w-4 h-4 animate-spin" /> Memuat…</>
+                                    ) : (
+                                        <><ChevronDown className="w-4 h-4" /> Muat Lebih Banyak</>
+                                    )}
+                                </button>
+                            </motion.div>
+                        )}
+
+                        {!hasMore && memories.length > 0 && total > PAGE_LIMIT && (
+                            <p className="text-center text-[11px] text-neutral-700 pt-4">
+                                Semua {total} kenangan telah ditampilkan ✓
+                            </p>
                         )}
                     </motion.div>
                 )}

@@ -9,6 +9,7 @@ import {
     Flame, ChevronRight, CheckCircle2, CalendarDays, Activity, Zap
 } from "lucide-react"
 import { motion, useInView } from "framer-motion"
+import { DashboardSkeleton } from "@/components/dashboard/DashboardSkeleton"
 
 // ─── Animation Variants ───────────────────────────────────────────────────────
 const fadeUp = {
@@ -362,14 +363,7 @@ export default function DashboardPage() {
             .catch(() => { })
     }, [session?.user?.id])
 
-    if (loading) return (
-        <div className="flex-1 flex items-center justify-center min-h-[500px]">
-            <div className="flex flex-col items-center gap-3">
-                <Loader2 className="w-6 h-6 text-indigo-400 animate-spin" />
-                <span className="text-neutral-500 text-sm">Memuat dashboard Anda…</span>
-            </div>
-        </div>
-    )
+    if (loading) return <DashboardSkeleton />
 
     const emotionDisplay = stats.topEmotion !== '-'
         ? stats.topEmotion.charAt(0).toUpperCase() + stats.topEmotion.slice(1).toLowerCase()

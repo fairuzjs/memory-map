@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from "react"
 import Map, { Marker, NavigationControl, MapRef } from "react-map-gl/mapbox"
 import "mapbox-gl/dist/mapbox-gl.css"
-import { MapPin, Search, Layers } from "lucide-react"
+import { MapPin, Search, Layers, X } from "lucide-react"
 import { Input } from "@/components/ui/Input"
 import { Button } from "@/components/ui/Button"
 
@@ -122,8 +122,17 @@ export default function LocationPicker({ latitude, longitude, locationName, onCh
                         }}
                         onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                         placeholder="Cari lokasi (cth: Bali, Jakarta)"
-                        className="pl-9"
+                        className="pl-9 pr-10"
                     />
+                    {searchQuery && (
+                        <button
+                            type="button"
+                            onClick={() => { setSearchQuery(""); setSuggestions([]); setShowSuggestions(false) }}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-200 transition-colors"
+                        >
+                            <X className="w-4 h-4" />
+                        </button>
+                    )}
                     {showSuggestions && suggestions.length > 0 && (
                         <div className="absolute z-50 w-full mt-1 bg-neutral-900 border border-neutral-700 rounded-lg shadow-xl overflow-hidden max-h-64 overflow-y-auto">
                             {suggestions.map((s, i) => (

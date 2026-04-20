@@ -24,6 +24,8 @@ const MIME_TO_EXT: Record<string, string> = {
     "audio/mpeg": "mp3",
 }
 
+import sharp from "sharp"
+
 export async function POST(req: Request) {
   try {
     // SECURITY CHECK 1: Wajib Login
@@ -59,23 +61,51 @@ export async function POST(req: Request) {
     }
 
     // SECURITY CHECK 5: Derive ekstensi dari MIME type (BUKAN dari nama file client)
-    // Mencegah: upload file.html dengan MIME image/jpeg, atau path traversal via nama file
     const fileExt = MIME_TO_EXT[file.type]
     if (!fileExt) {
-        // Seharusnya sudah dicegah di check 3, tapi ini safety net
         return NextResponse.json({ error: "Unsupported file type" }, { status: 400 })
     }
-    // Prefix dengan userId agar rapi, UUID agar tidak bisa di-enumerate
     const fileName = `${session.user.id}/${crypto.randomUUID()}.${fileExt}`
 
     // SECURITY CHECK 6: Pisahkan bucket berdasarkan privacy filter
-    // Memory private harus masuk bucket "private_uploads", memory public masuk "public_uploads"
     const bucketName = isPublic ? "public_uploads" : "private_uploads"
 
-    // Upload menggunakan Service Role (aman karena Auth & RLS kita yang handle di handler ini)
+    let uploadBuffer: Buffer | ArrayBuffer;
+
+    // SECURITY CHECK 8: Image Sanity & Privacy (Re-encoding)
+    if (isImage) {
+        try {
+            const buffer = Buffer.from(await file.arrayBuffer());
+            
+            // Re-encode gambar untuk membuang payload malware (polyglot) yang mungkin disisipkan
+            // dan menghapus metadata EXIF (lokasi GPS, info perangkat) demi privasi user.
+            const sharpInstance = sharp(buffer).rotate() // Auto-rotate berdasarkan EXIF sebelum di-strip
+            
+            if (file.type === "image/jpeg") {
+                uploadBuffer = await sharpInstance.jpeg({ quality: 85, mozjpeg: true }).toBuffer()
+            } else if (file.type === "image/png") {
+                uploadBuffer = await sharpInstance.png({ compressionLevel: 9 }).toBuffer()
+            } else if (file.type === "image/webp") {
+                uploadBuffer = await sharpInstance.webp({ quality: 80 }).toBuffer()
+            } else {
+                // Untuk GIF, kita tidak re-encode (karena sharp butuh setup extra), gunakan buffer asli aman
+                uploadBuffer = buffer
+            }
+        } catch (err) {
+            console.error("Sharp processing error:", err)
+            return NextResponse.json({ error: "Corrupted or invalid image file" }, { status: 400 })
+        }
+    } else {
+        uploadBuffer = await file.arrayBuffer()
+    }
+
+    // Upload menggunakan Service Role
     const { data, error } = await supabase.storage
       .from(bucketName)
-      .upload(fileName, file)
+      .upload(fileName, uploadBuffer, {
+          contentType: file.type,
+          upsert: false
+      })
 
     if (error) {
       console.error("Supabase upload error:", error)
@@ -95,9 +125,6 @@ export async function POST(req: Request) {
       })
     }
 
-    // Untuk file private, HANYA kembalikan path dan bucket.
-    // Client tidak akan mendapatkan URL langsung.
-    // Harus ada endpoint GET terpisah untuk men-generate Signed URL saat membaca data.
     return NextResponse.json({ path: data.path, bucket: bucketName })
 
   } catch (error) {

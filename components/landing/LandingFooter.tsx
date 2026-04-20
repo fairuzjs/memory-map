@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { MapPin, Twitter, Instagram, Github, Heart } from "lucide-react"
+import { MapPin, Twitter, Instagram, Github } from "lucide-react"
 
 interface LandingFooterProps {
   scrollToSection: (e: React.MouseEvent, id: string) => void
@@ -29,40 +29,47 @@ export function LandingFooter({
   ]
 
   return (
-    <footer className="relative border-t border-white/[0.06] overflow-hidden" style={{ background: "rgba(8,8,16,0.95)" }}>
-      {/* Top Gradient Line */}
+    <footer className="relative overflow-hidden" style={{ background: "rgba(8,8,14,0.98)" }}>
+      {/* Top separator */}
       <div
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[1px]"
-        style={{ background: "linear-gradient(90deg, transparent, rgba(99,102,241,0.3), transparent)" }}
+        className="absolute top-0 left-0 right-0 h-px"
+        style={{ background: "linear-gradient(90deg, transparent 0%, rgba(99,102,241,0.2) 30%, rgba(99,102,241,0.2) 70%, transparent 100%)" }}
       />
-      {/* Glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-indigo-500/10 blur-[120px] pointer-events-none opacity-50" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20 mb-12 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-8 mb-16">
+      {/* Faint top glow */}
+      <div
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-48 pointer-events-none"
+        style={{ background: "radial-gradient(ellipse at top, rgba(99,102,241,0.07) 0%, transparent 70%)" }}
+      />
 
-          {/* Brand Column */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-10 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-8 mb-14">
+
+          {/* ── Brand Column ─────────────────────────────────────────────── */}
           <div className="lg:col-span-2">
-            <Link href="/" className="flex items-center gap-3 mb-6 group inline-flex">
-              <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center rotate-[-8deg] group-hover:rotate-0 transition-all duration-300 shadow-lg shadow-indigo-500/30">
-                <MapPin className="w-5 h-5 text-white" />
+            <Link href="/" className="inline-flex items-center gap-2.5 mb-6 group">
+              <div className="relative w-9 h-9 flex items-center justify-center shrink-0">
+                <div className="absolute inset-0 bg-indigo-600 rounded-xl rotate-[-8deg] group-hover:rotate-0 transition-transform duration-300 shadow-lg shadow-indigo-500/30" />
+                <MapPin className="relative w-4 h-4 text-white z-10" />
               </div>
-              <span className="font-extrabold text-2xl font-[Outfit] text-white tracking-tight">
+              <span className="font-extrabold text-[20px] font-[Outfit] text-white tracking-tight">
                 Memory<span className="text-indigo-400">Map</span>
               </span>
             </Link>
-            <p className="text-neutral-400 text-sm leading-relaxed max-w-sm mb-8">
-              Platform jurnal visual interaktif yang membantu Anda mengabadikan, membagikan, dan mengenang setiap momen berharga tepat di lokasi ia terjadi.
+
+            <p className="text-neutral-500 text-sm leading-relaxed max-w-xs mb-8 font-light">
+              Platform jurnal visual yang membantu Anda mengabadikan setiap momen berharga tepat di lokasi ia terjadi.
             </p>
-            <div className="flex items-center gap-4 mt-8">
-              {socialLinks.map((social, i) => {
+
+            <div className="flex items-center gap-2">
+              {socialLinks.map((social) => {
                 const Icon = social.icon
                 return (
                   <a
-                    key={i}
+                    key={social.label}
                     href={social.href}
                     aria-label={social.label}
-                    className="w-10 h-10 rounded-full border border-white/10 bg-white/[0.03] flex items-center justify-center text-neutral-400 hover:text-white hover:bg-indigo-500/20 hover:border-indigo-500/30 transition-all"
+                    className="w-9 h-9 rounded-xl border border-white/[0.07] bg-white/[0.03] flex items-center justify-center text-neutral-600 hover:text-white hover:border-indigo-500/30 hover:bg-indigo-500/10 transition-all"
                   >
                     <Icon className="w-4 h-4" />
                   </a>
@@ -71,71 +78,100 @@ export function LandingFooter({
             </div>
           </div>
 
-          {/* Links Columns */}
+          {/* ── Link Columns ──────────────────────────────────────────────── */}
           <div className="lg:col-span-3 grid grid-cols-2 md:grid-cols-3 gap-8">
             {/* Produk */}
             <div>
-              <h4 className="font-bold text-white mb-6 uppercase tracking-wider text-[13px] font-[Outfit]">Produk</h4>
-              <ul className="space-y-3.5 flex flex-col items-start">
+              <h4 className="text-[11px] font-bold text-white uppercase tracking-[0.15em] mb-5 font-[Outfit]">Produk</h4>
+              <ul className="space-y-3.5">
                 <li>
-                  <button onClick={(e) => scrollToSection(e, "features")} className="text-[14px] text-neutral-500 hover:text-indigo-400 transition-colors text-left">Fitur</button>
+                  <button onClick={(e) => scrollToSection(e, "features")} className="text-[13px] text-neutral-600 hover:text-indigo-400 transition-colors">
+                    Fitur
+                  </button>
                 </li>
                 <li>
-                  <button onClick={(e) => scrollToSection(e, "how-it-works")} className="text-[14px] text-neutral-500 hover:text-indigo-400 transition-colors text-left">Cara Kerja</button>
+                  <button onClick={(e) => scrollToSection(e, "how-it-works")} className="text-[13px] text-neutral-600 hover:text-indigo-400 transition-colors">
+                    Cara Kerja
+                  </button>
                 </li>
                 <li>
-                  <button onClick={(e) => scrollToSection(e, "map")} className="text-[14px] text-neutral-500 hover:text-indigo-400 transition-colors text-left">Jelajahi Peta</button>
+                  <button onClick={(e) => scrollToSection(e, "map")} className="text-[13px] text-neutral-600 hover:text-indigo-400 transition-colors">
+                    Jelajahi Peta
+                  </button>
                 </li>
                 <li>
-                  <button onClick={() => onMobileAppOpen()} className="text-[14px] text-neutral-500 hover:text-indigo-400 transition-colors block text-left">Aplikasi Mobile</button>
+                  <button onClick={onMobileAppOpen} className="text-[13px] text-neutral-600 hover:text-indigo-400 transition-colors">
+                    Aplikasi Mobile
+                  </button>
                 </li>
               </ul>
             </div>
 
             {/* Perusahaan */}
             <div>
-              <h4 className="font-bold text-white mb-6 uppercase tracking-wider text-[13px] font-[Outfit]">Perusahaan</h4>
-              <ul className="space-y-3.5 flex flex-col items-start">
-                <li className="w-full">
-                  <a href="#" className="text-[14px] text-neutral-500 hover:text-indigo-400 transition-colors block text-left">Tentang Kami</a>
+              <h4 className="text-[11px] font-bold text-white uppercase tracking-[0.15em] mb-5 font-[Outfit]">Perusahaan</h4>
+              <ul className="space-y-3.5">
+                <li>
+                  <a href="#" className="text-[13px] text-neutral-600 hover:text-indigo-400 transition-colors">
+                    Tentang Kami
+                  </a>
                 </li>
-                <li className="w-full">
-                  <button onClick={() => onBlogOpen()} className="text-[14px] text-neutral-500 hover:text-indigo-400 transition-colors block text-left">Blog</button>
+                <li>
+                  <button onClick={onBlogOpen} className="text-[13px] text-neutral-600 hover:text-indigo-400 transition-colors">
+                    Blog
+                  </button>
                 </li>
-                <li className="w-full">
-                  <button onClick={() => onContactOpen()} className="text-[14px] text-neutral-500 hover:text-indigo-400 transition-colors block text-left">Kontak</button>
+                <li>
+                  <button onClick={onContactOpen} className="text-[13px] text-neutral-600 hover:text-indigo-400 transition-colors">
+                    Kontak
+                  </button>
                 </li>
               </ul>
             </div>
 
             {/* Sumber Daya */}
             <div>
-              <h4 className="font-bold text-white mb-6 uppercase tracking-wider text-[13px] font-[Outfit]">Sumber Daya</h4>
-              <ul className="space-y-3.5 flex flex-col items-start">
-                <li className="w-full">
-                  <a href="#" className="text-[14px] text-neutral-500 hover:text-indigo-400 transition-colors block text-left">Komunitas</a>
+              <h4 className="text-[11px] font-bold text-white uppercase tracking-[0.15em] mb-5 font-[Outfit]">Sumber Daya</h4>
+              <ul className="space-y-3.5">
+                <li>
+                  <a href="#" className="text-[13px] text-neutral-600 hover:text-indigo-400 transition-colors">
+                    Komunitas
+                  </a>
                 </li>
-                <li className="w-full">
-                  <button onClick={() => onChangelogOpen()} className="text-[14px] text-neutral-500 hover:text-indigo-400 transition-colors block text-left">Status Sistem</button>
+                <li>
+                  <button onClick={onChangelogOpen} className="text-[13px] text-neutral-600 hover:text-indigo-400 transition-colors">
+                    Changelog
+                  </button>
+                </li>
+                <li>
+                  <button onClick={onChangelogOpen} className="text-[13px] text-neutral-600 hover:text-indigo-400 transition-colors">
+                    Status Sistem
+                  </button>
                 </li>
               </ul>
             </div>
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="pt-8 border-t border-white/[0.08] flex flex-col md:flex-row items-center justify-between gap-6">
-          <p className="text-sm text-neutral-500">
-            &copy; {new Date().getFullYear()} MemoryMap Inc. Hak cipta dilindungi undang-undang.
+        {/* ── Bottom Bar ────────────────────────────────────────────────── */}
+        <div className="pt-8 border-t border-white/[0.05] flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-[12px] text-neutral-700 order-2 md:order-1">
+            © {new Date().getFullYear()} MemoryMap. Hak cipta dilindungi.
           </p>
-          <div className="flex flex-wrap justify-center items-center gap-6">
-            <button onClick={onPrivacyOpen} className="text-[13px] text-neutral-500 hover:text-neutral-300 transition-colors">Kebijakan Privasi</button>
-            <button onClick={onTermsOpen} className="text-[13px] text-neutral-500 hover:text-neutral-300 transition-colors">Ketentuan Layanan</button>
-            <a href="#" className="text-[13px] text-neutral-500 hover:text-neutral-300 transition-colors">Pengaturan Cookie</a>
+          <div className="flex flex-wrap justify-center items-center gap-6 order-1 md:order-2">
+            <button onClick={onPrivacyOpen} className="text-[12px] text-neutral-700 hover:text-neutral-400 transition-colors">
+              Kebijakan Privasi
+            </button>
+            <button onClick={onTermsOpen} className="text-[12px] text-neutral-700 hover:text-neutral-400 transition-colors">
+              Ketentuan Layanan
+            </button>
+            <a href="#" className="text-[12px] text-neutral-700 hover:text-neutral-400 transition-colors">
+              Cookie
+            </a>
           </div>
-          <div className="text-[13px] text-neutral-600 lg:flex items-center gap-2 hidden">
-            Dibuat dengan <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500/20" /> di Indonesia
-          </div>
+          <p className="text-[12px] text-neutral-800 hidden lg:block order-3">
+            Dibuat dengan ♥ di Indonesia
+          </p>
         </div>
       </div>
     </footer>

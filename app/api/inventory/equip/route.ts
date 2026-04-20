@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
+import { revalidateTag } from "next/cache"
+import { CACHE_TAGS } from "@/lib/cache"
 
 // POST /api/inventory/equip  { itemId: string } — toggles equipped state
 // Only one item per ItemType may be equipped at a time; equipping a new one unequips the old one.
@@ -55,6 +57,9 @@ export async function POST(req: Request) {
             })]
             : []),
     ])
+
+    // Revalidate user profile cache
+    ;(revalidateTag as any)(CACHE_TAGS.user(userId))
 
     return NextResponse.json({
         success: true,

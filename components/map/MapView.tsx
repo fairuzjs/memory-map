@@ -2,10 +2,11 @@
 
 import { useEffect, useState, useRef, useMemo } from "react"
 import Map, { Marker, Popup, NavigationControl, MapRef } from "react-map-gl/mapbox"
+import { useSearchParams } from "next/navigation"
 import "mapbox-gl/dist/mapbox-gl.css"
 import { getEmotionConfig } from "./MapIcons"
 import Link from "next/link"
-import { Calendar, MapPin, Search, Loader2, Layers } from "lucide-react"
+import { Calendar, MapPin, Search, Loader2, Layers, X } from "lucide-react"
 import { StickerRenderer, StickerConfig } from "@/components/memories/StickerRenderer"
 import { PopupMiniPlayer } from "@/components/memories/PopupMiniPlayer"
 import useSupercluster from "use-supercluster"
@@ -104,6 +105,15 @@ function SearchControl({ mapRef }: { mapRef: React.RefObject<MapRef | null> }) {
                     placeholder="Cari lokasi..."
                     className="block w-full pl-10 pr-3 py-3 border border-neutral-300 rounded-xl leading-5 bg-white text-neutral-900 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-lg text-sm transition-all"
                 />
+                {query && !isSearching && (
+                    <button
+                        type="button"
+                        onClick={() => { setQuery(""); setResults([]); setShowResults(false) }}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-400 hover:text-neutral-600 transition-colors"
+                    >
+                        <X className="h-4 w-4" />
+                    </button>
+                )}
                 {isSearching && (
                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                         <Loader2 className="h-4 w-4 text-indigo-500 animate-spin" />
@@ -228,8 +238,12 @@ function StyleSwitcher({ current, onChange }: { current: string; onChange: (styl
 
 export default function MapView({ memories }: MapViewProps) {
     const mapRef = useRef<MapRef>(null)
+    const [viewState, setViewState] = useState({
+        longitude: 118.0149,
+        latitude: -2.5489,
+        zoom: 5
+    })
     const [bounds, setBounds] = useState<any>(null)
-    const [zoom, setZoom] = useState(5)
     const [selectedMemory, setSelectedMemory] = useState<any>(null)
     const [mounted, setMounted] = useState(false)
     const [mapStyle, setMapStyle] = useState(MAP_STYLES[2].style)
@@ -237,6 +251,43 @@ export default function MapView({ memories }: MapViewProps) {
     useEffect(() => {
         setMounted(true)
     }, [])
+
+    const searchParams = useSearchParams()
+    
+    // ── Handle incoming "Fly-To" parameters from URL ─────────────────
+    useEffect(() => {
+        if (!mounted || !mapRef.current) return
+        
+        const lat = searchParams.get("lat")
+        const lng = searchParams.get("lng")
+        const mid = searchParams.get("memoryId")
+
+        if (lat && lng) {
+            const timeout = setTimeout(() => {
+                mapRef.current?.flyTo({
+                    center: [parseFloat(lng), parseFloat(lat)],
+                    zoom: 14,
+                    duration: 2500,
+                    essential: true
+                })
+                
+                // Update controlled state to match flyTo target to avoid jumps
+                setViewState(prev => ({
+                    ...prev,
+                    longitude: parseFloat(lng),
+                    latitude: parseFloat(lat),
+                    zoom: 14
+                }))
+
+                if (mid) {
+                    const mem = memories.find(m => m.id === mid)
+                    if (mem) setSelectedMemory(mem)
+                }
+            }, 800)
+            
+            return () => clearTimeout(timeout)
+        }
+    }, [mounted, searchParams, memories])
 
     const safeMemories = useMemo(() => Array.isArray(memories) ? memories : [], [memories])
 
@@ -253,7 +304,7 @@ export default function MapView({ memories }: MapViewProps) {
     const { clusters, supercluster } = useSupercluster({
         points,
         bounds,
-        zoom,
+        zoom: viewState.zoom,
         options: { radius: 75, maxZoom: 20 }
     })
 
@@ -276,22 +327,20 @@ export default function MapView({ memories }: MapViewProps) {
                 mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
                 initialViewState={{
                     ...initialCenter,
-                    zoom: zoom
+                    zoom: viewState.zoom
                 }}
                 style={{ width: "100%", height: "100%", minHeight: "60vh" }}
                 mapStyle={mapStyle}
-                onMove={evt => {
-                    setZoom(evt.viewState.zoom)
+                onZoom={evt => {
+                    setViewState(prev => ({...prev, zoom: evt.viewState.zoom}))
+                }}
+                onMoveEnd={() => {
                     const b = mapRef.current?.getMap().getBounds()?.toArray()
-                    if (b) {
-                        setBounds([b[0][0], b[0][1], b[1][0], b[1][1]])
-                    }
+                    if (b) setBounds([b[0][0], b[0][1], b[1][0], b[1][1]])
                 }}
                 onLoad={() => {
                     const b = mapRef.current?.getMap().getBounds()?.toArray()
-                    if (b) {
-                        setBounds([b[0][0], b[0][1], b[1][0], b[1][1]])
-                    }
+                    if (b) setBounds([b[0][0], b[0][1], b[1][0], b[1][1]])
                 }}
             >
                 <SearchControl mapRef={mapRef} />

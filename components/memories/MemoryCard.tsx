@@ -171,10 +171,14 @@ export function MemoryCard({ memory, isCollaboration, placements = [] }: MemoryC
                                 {new Date(memory.date).toLocaleDateString()}
                             </span>
                             {memory.locationName && (
-                                <span className="flex items-center gap-1 min-w-0">
-                                    <MapPin className="w-3 h-3 shrink-0" />
+                                <Link
+                                    href={`/map?lat=${memory.latitude}&lng=${memory.longitude}&memoryId=${memory.id}`}
+                                    className="flex items-center gap-1 min-w-0 group/loc relative z-30 hover:text-indigo-400 transition-colors"
+                                    onClick={e => e.stopPropagation()}
+                                >
+                                    <MapPin className="w-3 h-3 shrink-0 group-hover/loc:animate-bounce" />
                                     <span className="truncate max-w-[90px]">{memory.locationName}</span>
-                                </span>
+                                </Link>
                             )}
                         </div>
                     </div>

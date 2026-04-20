@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { revalidateTag } from "next/cache"
+import { CACHE_TAGS } from "@/lib/cache"
 
 const MILESTONES = [7, 30, 60, 90]
 
@@ -104,6 +106,11 @@ export async function POST() {
     const earnedMilestones = badges.map((b) => b.milestone)
     const nextMilestone = MILESTONES.find((m) => !earnedMilestones.includes(m)) ?? null
     const daysToNext = nextMilestone !== null ? nextMilestone - newStreak : null
+
+    // Revalidate leaderboard cache
+    ;(revalidateTag as any)(CACHE_TAGS.leaderboard)
+    // Revalidate user profile as current streak changed
+    ;(revalidateTag as any)(CACHE_TAGS.user(userId))
 
     return NextResponse.json({
         alreadyClaimed: false,

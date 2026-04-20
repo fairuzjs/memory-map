@@ -111,7 +111,10 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
         }
 
         const updated = await prisma.memoryStickerPlacement.update({
-            where: { id: placementId },
+            where: { 
+                id: placementId,
+                memoryId: memoryId // Ensure referential consistency
+            },
             data: {
                 ...(posX !== undefined && { posX }),
                 ...(posY !== undefined && { posY }),
@@ -125,7 +128,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
         })
         return NextResponse.json(updated)
     } catch {
-        return NextResponse.json({ error: "Server error" }, { status: 500 })
+        return NextResponse.json({ error: "Server error or placement not found in this memory" }, { status: 500 })
     }
 }
 
@@ -145,9 +148,15 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
         const placementId = url.searchParams.get("placementId")
         if (!placementId) return NextResponse.json({ error: "placementId required" }, { status: 400 })
 
-        await prisma.memoryStickerPlacement.delete({ where: { id: placementId } })
+        // Ensure the placement belongs to the memory we just verified ownership for
+        await prisma.memoryStickerPlacement.delete({ 
+            where: { 
+                id: placementId,
+                memoryId: memoryId
+            } 
+        })
         return NextResponse.json({ ok: true })
     } catch {
-        return NextResponse.json({ error: "Server error" }, { status: 500 })
+        return NextResponse.json({ error: "Server error or placement not found in this memory" }, { status: 500 })
     }
 }

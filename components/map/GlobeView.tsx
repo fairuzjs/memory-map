@@ -576,7 +576,7 @@ export default function GlobeView({ memories }: GlobeViewProps) {
       </Canvas>
 
       <div
-        className="absolute bottom-4 left-4 z-20 flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-neutral-400 backdrop-blur-md border border-white/10 pointer-events-none"
+        className="absolute top-6 right-6 z-20 hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-neutral-400 backdrop-blur-md border border-white/10 pointer-events-none"
         style={{ background: "rgba(8,8,16,0.7)" }}
       >
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">

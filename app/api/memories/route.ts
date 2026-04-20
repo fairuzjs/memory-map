@@ -2,6 +2,10 @@ import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { memorySchema } from "@/lib/validations"
+import { Prisma } from "@prisma/client"
+import { getCachedPublicMemories } from "@/lib/services/memory-service"
+import { revalidateTag } from "next/cache"
+import { CACHE_TAGS } from "@/lib/cache"
 
 export async function GET(req: Request) {
     try {
@@ -16,7 +20,7 @@ export async function GET(req: Request) {
         const limit      = Math.min(24, Math.max(1, parseInt(searchParams.get("limit") ?? "12", 10)))
 
         // Base object untuk include dan orderBy
-        const baseInclude: any = {
+        const baseInclude: Prisma.MemoryInclude = {
             user: {
                 select: {
                     id: true,
@@ -48,8 +52,8 @@ export async function GET(req: Request) {
             const currentUserId = session.user.id
 
             // Fetch memory milik user sendiri
-            const ownMemoriesWhere: any = { userId: currentUserId }
-            if (emotion) ownMemoriesWhere.emotion = emotion
+            const ownMemoriesWhere: Prisma.MemoryWhereInput = { userId: currentUserId }
+            if (emotion) ownMemoriesWhere.emotion = emotion as Prisma.EnumEmotionFilter
 
             const ownMemories = await prisma.memory.findMany({
                 where: ownMemoriesWhere,
@@ -78,13 +82,30 @@ export async function GET(req: Request) {
                 ...collabMemories
             ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
+            // Terapkan pagination jika diminta
+            const usePaginationMine = searchParams.has("page") || searchParams.has("limit")
+            if (usePaginationMine) {
+                const total  = combined.length
+                const sliced = combined.slice((page - 1) * limit, page * limit)
+                return NextResponse.json({
+                    data: sliced,
+                    pagination: {
+                        page,
+                        limit,
+                        total,
+                        totalPages: Math.ceil(total / limit),
+                        hasMore: page * limit < total,
+                    }
+                })
+            }
+
             return NextResponse.json(combined)
         }
 
         const currentUserId = session?.user?.id
-        const where: any = {}
+        const where: Prisma.MemoryWhereInput = {}
 
-        if (emotion) where.emotion = emotion
+        if (emotion) where.emotion = emotion as Prisma.EnumEmotionFilter
 
         if (!userId) {
             // 1. Public Feed: tanpa userId dan tanpa mine. Wajib public-only!
@@ -109,15 +130,13 @@ export async function GET(req: Request) {
         }
 
         // Sorting
-        let orderBy: any
-        if (sort === "popular") {
-            orderBy = [
-                { reactions: { _count: "desc" } },
-                { comments:  { _count: "desc" } },
-            ]
-        } else {
-            orderBy = { createdAt: "desc" }
-        }
+        const orderBy: Prisma.MemoryOrderByWithRelationInput | Prisma.MemoryOrderByWithRelationInput[] =
+            sort === "popular"
+                ? [
+                    { reactions: { _count: "desc" } } as Prisma.MemoryOrderByWithRelationInput,
+                    { comments:  { _count: "desc" } } as Prisma.MemoryOrderByWithRelationInput,
+                ]
+                : { createdAt: "desc" }
 
         // Hanya pakai pagination jika client eksplisit kirim ?page=
         const usePagination = searchParams.has("page") || searchParams.has("limit")
@@ -143,6 +162,12 @@ export async function GET(req: Request) {
             })
         }
 
+        // Optimized path for profile page public memories
+        if (userId && publicOnly && !searchParams.has("page") && !searchParams.has("limit") && sort !== "popular") {
+            const memories = await getCachedPublicMemories(userId)
+            return NextResponse.json(memories)
+        }
+
         // Backward-compatible: kembalikan array biasa
         const memories = await prisma.memory.findMany({
             where,
@@ -150,9 +175,10 @@ export async function GET(req: Request) {
             orderBy,
         })
         return NextResponse.json(memories)
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const msg = error instanceof Error ? error.message : String(error)
         console.error("GET memories error:", error)
-        return NextResponse.json({ error: "Failed to fetch memories", details: error.message || String(error) }, { status: 500 })
+        return NextResponse.json({ error: "Failed to fetch memories", details: msg }, { status: 500 })
     }
 }
 
@@ -252,6 +278,11 @@ export async function POST(req: Request) {
 
             return newMemory
         })
+
+        // Revalidate cache for the user who created it
+        ;(revalidateTag as any)(CACHE_TAGS.userMemories(session.user.id))
+        // Also revalidate the user object because _count.memories changed
+        ;(revalidateTag as any)(CACHE_TAGS.user(session.user.id))
 
         return NextResponse.json(memory, { status: 201 })
     } catch (error) {

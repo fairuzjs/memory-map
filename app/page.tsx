@@ -50,9 +50,13 @@ export default function LandingPage() {
 
   // Fetch public memories for the globe
   useEffect(() => {
-    fetch("/api/memories?public=true")
+    fetch("/api/memories?public=true&limit=100&page=1")
       .then((res) => res.json())
-      .then((data) => setMemories(Array.isArray(data) ? data : []))
+      .then((res) => {
+        // API returns paginated shape { data: Memory[] } when ?page= is present
+        const list = Array.isArray(res) ? res : (res.data ?? [])
+        setMemories(list)
+      })
       .catch(() => setMemories([]))
       .finally(() => setLoading(false))
   }, [])
@@ -73,19 +77,18 @@ export default function LandingPage() {
       {/* ── Ambient Background ─────────────────────────────────────────────── */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <div
-          className="absolute inset-0 opacity-[0.04]"
+          className="absolute inset-0 opacity-[0.03]"
           style={{
-            backgroundImage: `linear-gradient(rgba(99,102,241,0.5) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(99,102,241,0.5) 1px, transparent 1px)`,
+            backgroundImage: `linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px)`,
             backgroundSize: "60px 60px",
           }}
         />
-        <div className="absolute top-[-15%] left-[-5%] w-[55%] h-[55%] bg-indigo-600/[0.12] rounded-full blur-[140px]" />
-        <div className="absolute bottom-[-10%] right-[-5%] w-[50%] h-[50%] bg-violet-600/[0.12] rounded-full blur-[140px]" />
-        <div className="absolute top-[35%] left-[50%] w-[30%] h-[30%] bg-emerald-600/[0.06] rounded-full blur-[100px]" />
-        <div className="absolute top-[60%] left-[20%] w-[25%] h-[25%] bg-rose-600/[0.05] rounded-full blur-[100px]" />
+        <div className="absolute top-[-20%] left-[10%] w-[60%] h-[60%] bg-indigo-600/[0.08] rounded-full blur-[120px]" />
+        <div className="absolute top-[20%] right-[-10%] w-[50%] h-[50%] bg-violet-600/[0.08] rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-20%] left-[20%] w-[40%] h-[40%] bg-indigo-500/[0.05] rounded-full blur-[120px]" />
         <div
-          className="absolute inset-0 opacity-[0.025] mix-blend-overlay"
+          className="absolute inset-0 opacity-[0.02] mix-blend-overlay"
           style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")" }}
         />
       </div>

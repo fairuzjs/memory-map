@@ -4,33 +4,40 @@ import { prisma } from "@/lib/prisma"
 import { NotificationType } from "@prisma/client"
 import { checkRateLimit, rateLimitResponse, RATE_LIMITS } from "@/lib/rate-limit"
 
+import { commentSchema } from "@/lib/validations"
+import DOMPurify from "isomorphic-dompurify"
+
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         const { id } = await params;
         const session = await auth()
         if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-        // Rate Limit — 30 komentar per jam per user
+        // 1. Validasi Input (Hardening)
+        const body = await req.json()
+        const result = commentSchema.safeParse(body)
+        if (!result.success) {
+            return NextResponse.json({ error: "Invalid input", details: result.error.format() }, { status: 400 })
+        }
+
+        const { content: rawContent, parentId } = result.data
+
+        // 2. Sanitasi Lanjutan (XSS Protection)
+        const content = DOMPurify.sanitize(rawContent.trim())
+        if (!content) {
+            return NextResponse.json({ error: "Komentar tidak valid setelah sanitasi" }, { status: 400 })
+        }
+
+        // 3. Cek Eksistensi Memori (Data Consistency)
+        const memory = await prisma.memory.findUnique({
+            where: { id },
+            select: { id: true, userId: true }
+        })
+        if (!memory) return NextResponse.json({ error: "Memory not found" }, { status: 404 })
+
+        // 4. Rate Limit — 30 komentar per jam per user
         const rl = checkRateLimit(`comment:${session.user.id}`, RATE_LIMITS.COMMENT.limit, RATE_LIMITS.COMMENT.windowMs)
         if (!rl.success) return rateLimitResponse(rl.reset)
-
-        const { content: rawContent, parentId } = await req.json()
-
-        // Sanitasi dasar: trim whitespace & hapus null bytes
-        const content = typeof rawContent === "string"
-            ? rawContent.replace(/\0/g, "").trim()
-            : ""
-
-        // Validasi: tidak boleh kosong dan maksimum 1000 karakter
-        if (!content) {
-            return NextResponse.json({ error: "Komentar tidak boleh kosong" }, { status: 400 })
-        }
-        if (content.length > 1000) {
-            return NextResponse.json(
-                { error: `Komentar terlalu panjang. Maksimum 1000 karakter (sekarang: ${content.length})` },
-                { status: 400 }
-            )
-        }
 
 
         const comment = await prisma.comment.create({

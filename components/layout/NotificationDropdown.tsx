@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Bell, MessageCircle, Heart, Loader2, X, Users, CheckCircle2, XCircle, UserPlus } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
@@ -43,6 +43,21 @@ export function NotificationDropdown() {
     const [unreadCount, setUnreadCount] = useState(0)
     const [respondingId, setRespondingId] = useState<string | null>(null)
     const { confirmProps, openConfirm } = useConfirm()
+    const dropdownRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsOpen(false)
+            }
+        }
+        if (isOpen) {
+            document.addEventListener("mousedown", handleClickOutside)
+        }
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside)
+        }
+    }, [isOpen])
 
     const fetchNotifications = async () => {
         setLoading(true)
@@ -177,13 +192,13 @@ export function NotificationDropdown() {
 
     return (
         <>
-            <div className="relative">
+            <div className="relative" ref={dropdownRef}>
                 <button
                 onClick={() => {
                     setIsOpen(!isOpen)
                     if (!isOpen) fetchNotifications()
                 }}
-                className={`flex items-center justify-center w-9 h-9 rounded-full bg-white/[0.05] border transition-all relative ${isOpen ? "border-indigo-500/50 bg-white/[0.08]" : "border-white/[0.08] hover:border-indigo-500/30 hover:bg-white/[0.08]"
+                className={`flex items-center justify-center w-9 h-9 rounded-xl bg-white/[0.05] border transition-all relative ${isOpen ? "border-indigo-500/50 bg-white/[0.08]" : "border-white/[0.08] hover:border-indigo-500/30 hover:bg-white/[0.08]"
                     }`}
                 title="Notifications"
             >
@@ -198,14 +213,12 @@ export function NotificationDropdown() {
             <AnimatePresence>
                 {isOpen && (
                     <>
-                        {/* Backdrop to close */}
-                        <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
 
                         <motion.div
                             initial={{ opacity: 0, y: 10, scale: 0.95 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                            className="fixed inset-x-4 top-[80px] sm:absolute sm:inset-auto sm:right-0 sm:mt-3 sm:w-96 z-50 bg-[#11111a] border border-white/[0.08] rounded-[1.5rem] shadow-2xl overflow-hidden"
+                            className="fixed left-1/2 -translate-x-1/2 top-[88px] w-[calc(100vw-32px)] max-w-[400px] sm:absolute sm:left-auto sm:translate-x-0 sm:right-0 sm:top-full sm:mt-3 sm:w-80 md:w-96 z-[200] bg-[#11111a] border border-white/[0.08] rounded-2xl shadow-2xl overflow-hidden"
                         >
                             <div className="p-4 border-b border-white/[0.06] flex items-center justify-between bg-white/[0.02] relative z-20">
                                 <h3 className="text-sm font-bold text-white flex items-center gap-2">
@@ -232,7 +245,7 @@ export function NotificationDropdown() {
                                 </div>
                             </div>
 
-                            <div className="max-h-[380px] overflow-y-auto custom-scrollbar relative z-10">
+                            <div className="max-h-[360px] overflow-y-auto custom-scrollbar relative z-10">
                                 {loading && notifications.length === 0 ? (
                                     <div className="flex flex-col items-center justify-center py-12 gap-3">
                                         <Loader2 className="w-6 h-6 text-indigo-500 animate-spin" />
