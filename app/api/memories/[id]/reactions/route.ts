@@ -1,12 +1,17 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { checkRateLimit, rateLimitResponse, RATE_LIMITS } from "@/lib/rate-limit"
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         const { id } = await params;
         const session = await auth()
         if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+
+        // Rate Limit — 60 reactions per jam per user
+        const rl = checkRateLimit(`reaction:${session.user.id}`, RATE_LIMITS.REACTION.limit, RATE_LIMITS.REACTION.windowMs)
+        if (!rl.success) return rateLimitResponse(rl.reset)
 
         const { type } = await req.json()
         if (!type) return NextResponse.json({ error: "Reaction type required" }, { status: 400 })

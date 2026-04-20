@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
+import { checkRateLimit, rateLimitResponse, RATE_LIMITS } from "@/lib/rate-limit"
 
 // ── Tier Configuration ──────────────────────────────────────────
 // Drop rates must sum to 100
@@ -56,6 +57,10 @@ export async function POST(req: Request) {
     if (!session?.user?.id) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
+
+    // Rate Limit — 50 gacha per jam per user
+    const rl = checkRateLimit(`gacha:${session.user.id}`, RATE_LIMITS.GACHA.limit, RATE_LIMITS.GACHA.windowMs)
+    if (!rl.success) return rateLimitResponse(rl.reset)
 
     const userId = session.user.id
     const body = await req.json()

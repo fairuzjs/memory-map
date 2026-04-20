@@ -1,13 +1,18 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import { NotificationType } from "@prisma/client" // Tambahkan import ini
+import { NotificationType } from "@prisma/client"
+import { checkRateLimit, rateLimitResponse, RATE_LIMITS } from "@/lib/rate-limit"
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         const { id } = await params;
         const session = await auth()
         if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+
+        // Rate Limit — 30 komentar per jam per user
+        const rl = checkRateLimit(`comment:${session.user.id}`, RATE_LIMITS.COMMENT.limit, RATE_LIMITS.COMMENT.windowMs)
+        if (!rl.success) return rateLimitResponse(rl.reset)
 
         const { content, parentId } = await req.json()
         if (!content?.trim()) return NextResponse.json({ error: "Content is required" }, { status: 400 })

@@ -3,8 +3,14 @@ import { prisma } from "@/lib/prisma"
 import crypto from "crypto"
 import { forgotPasswordSchema } from "@/lib/validations"
 import { sendPasswordResetEmail } from "@/lib/mail"
+import { checkRateLimit, getClientIP, rateLimitResponse, RATE_LIMITS } from "@/lib/rate-limit"
 
 export async function POST(req: Request) {
+    // ── Rate Limit: 3 permintaan reset password per jam per IP ──
+    const ip = getClientIP(req)
+    const rl = checkRateLimit(`forgot-password:${ip}`, RATE_LIMITS.FORGOT_PASSWORD.limit, RATE_LIMITS.FORGOT_PASSWORD.windowMs)
+    if (!rl.success) return rateLimitResponse(rl.reset)
+
     try {
         const body = await req.json()
         const result = forgotPasswordSchema.safeParse(body)

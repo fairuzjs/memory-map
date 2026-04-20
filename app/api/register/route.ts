@@ -2,8 +2,14 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
 import { registerSchema } from "@/lib/validations"
+import { checkRateLimit, getClientIP, rateLimitResponse, RATE_LIMITS } from "@/lib/rate-limit"
 
 export async function POST(req: Request) {
+    // ── Rate Limit: 5 pendaftaran per jam per IP ──────────────
+    const ip = getClientIP(req)
+    const rl = checkRateLimit(`register:${ip}`, RATE_LIMITS.REGISTER.limit, RATE_LIMITS.REGISTER.windowMs)
+    if (!rl.success) return rateLimitResponse(rl.reset)
+
     try {
         const body = await req.json()
         const result = registerSchema.safeParse(body)

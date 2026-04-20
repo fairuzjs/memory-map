@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
+import { checkRateLimit, rateLimitResponse, RATE_LIMITS } from "@/lib/rate-limit"
 
 // POST /api/shop/purchase  { itemId: string }
 export async function POST(req: Request) {
@@ -8,6 +9,10 @@ export async function POST(req: Request) {
     if (!session?.user?.id) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
+
+    // Rate Limit — 20 pembelian per jam per user
+    const rl = checkRateLimit(`shop:${session.user.id}`, RATE_LIMITS.SHOP_PURCHASE.limit, RATE_LIMITS.SHOP_PURCHASE.windowMs)
+    if (!rl.success) return rateLimitResponse(rl.reset)
 
     const userId = session.user.id
     const { itemId } = await req.json()
