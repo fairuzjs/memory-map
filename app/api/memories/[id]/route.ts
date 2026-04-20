@@ -6,6 +6,7 @@ import { memorySchema } from "@/lib/validations"
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         const { id } = await params;
+
         const memory = await prisma.memory.findUnique({
             where: { id },
             include: {
@@ -32,15 +33,52 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
             }
         })
 
+        // Memory tidak ditemukan
         if (!memory) {
             return NextResponse.json({ error: "Memory not found" }, { status: 404 })
         }
 
-        return NextResponse.json(memory)
+        // ── Access Control ─────────────────────────────────────────────
+        // Public memory → siapapun boleh akses (termasuk unauthenticated)
+        if (memory.isPublic) {
+            return NextResponse.json(memory)
+        }
+
+        // Private memory → wajib login
+        const session = await auth()
+        if (!session?.user?.id) {
+            // Return 404, bukan 401/403 — agar tidak bocorkan eksistensi memory
+            return NextResponse.json({ error: "Memory not found" }, { status: 404 })
+        }
+
+        const currentUserId = session.user.id
+
+        // Admin bisa akses semua
+        if (session.user.role === "ADMIN") {
+            return NextResponse.json(memory)
+        }
+
+        // Owner bisa akses memorynya sendiri
+        if (memory.userId === currentUserId) {
+            return NextResponse.json(memory)
+        }
+
+        // Collaborator yang sudah ACCEPTED bisa akses
+        const isCollaborator = memory.collaborators.some(
+            (c) => c.user.id === currentUserId
+        )
+        if (isCollaborator) {
+            return NextResponse.json(memory)
+        }
+
+        // Semua kondisi lain → 404 (jangan reveal eksistensi memory)
+        return NextResponse.json({ error: "Memory not found" }, { status: 404 })
+
     } catch (error) {
         return NextResponse.json({ error: "Server error" }, { status: 500 })
     }
 }
+
 
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
