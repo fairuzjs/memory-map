@@ -18,7 +18,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
             where: { id: session.user.id },
             select: { isEmailVerified: true }
         })
-        if (!currentUser?.isEmailVerified) {
+
+        if (!currentUser || currentUser.isEmailVerified === false) {
             return NextResponse.json(
                 { error: "EMAIL_NOT_VERIFIED", message: "Verifikasi email kamu terlebih dahulu sebelum berkomentar." },
                 { status: 403 }

@@ -156,7 +156,7 @@ export function Comments({ memoryId, initialComments }: { memoryId: string, init
                         <Link href="/login" className="text-indigo-400 hover:text-indigo-300 font-semibold">Masuk</Link> untuk meninggalkan komentar.
                     </p>
                 </div>
-            ) : (session.user as any).isEmailVerified === false ? (
+                        ) : (session?.user as any)?.isEmailVerified === false ? (
                 <div
                     className="mb-8 rounded-2xl overflow-hidden"
                     style={{ border: "1px solid rgba(245,158,11,0.2)" }}

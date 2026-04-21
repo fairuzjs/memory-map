@@ -195,7 +195,7 @@ export async function POST(req: Request) {
             where: { id: session.user.id },
             select: { isEmailVerified: true }
         })
-        if (!currentUser?.isEmailVerified) {
+        if (!currentUser || currentUser.isEmailVerified === false) {
             return NextResponse.json(
                 { error: "EMAIL_NOT_VERIFIED", message: "Verifikasi email kamu terlebih dahulu sebelum membuat memory." },
                 { status: 403 }
