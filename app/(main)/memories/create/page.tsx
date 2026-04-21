@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { memorySchema, type MemoryInput } from "@/lib/validations"
@@ -17,8 +18,10 @@ import { CollaboratorPicker } from "@/components/memories/CollaboratorPicker"
 import { motion, AnimatePresence } from "framer-motion"
 import {
     BookText, MapPin, Smile, ImagePlus, Users, Globe, Music,
-    ArrowRight, ArrowLeft, Sparkles, Save, ChevronRight, Crown
+    ArrowRight, ArrowLeft, Sparkles, Save, ChevronRight, Crown,
+    ShieldAlert, Settings
 } from "lucide-react"
+import Link from "next/link"
 
 import dynamic from "next/dynamic"
 
@@ -52,6 +55,7 @@ const slideVariants = {
 
 export default function CreateMemoryPage() {
     const router = useRouter()
+    const { data: session } = useSession()
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [currentStep, setCurrentStep] = useState(0)
     const [direction, setDirection] = useState(0)
@@ -59,6 +63,16 @@ export default function CreateMemoryPage() {
     const [hasSpotifyPremium, setHasSpotifyPremium] = useState(false)
     const [premiumPoints, setPremiumPoints] = useState(0)
     const [premiumLoading, setPremiumLoading] = useState(true)
+    const [isEmailVerified, setIsEmailVerified] = useState<boolean | null>(null)
+
+    // Check email verification status
+    useEffect(() => {
+        if (!session?.user?.id) return
+        fetch(`/api/users/${session.user.id}`)
+            .then(r => r.json())
+            .then(data => setIsEmailVerified(data.isEmailVerified ?? false))
+            .catch(() => setIsEmailVerified(true)) // fail open
+    }, [session?.user?.id])
 
     // Check premium feature access
     useEffect(() => {
@@ -159,7 +173,89 @@ export default function CreateMemoryPage() {
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-64 bg-indigo-500/10 blur-[120px] pointer-events-none rounded-full" />
             <div className="absolute bottom-0 right-0 w-64 h-64 bg-fuchsia-500/5 blur-[100px] pointer-events-none rounded-full" />
 
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="relative z-10">
+            {/* ── Unverified Email Gate ──────────────────────────── */}
+            <AnimatePresence>
+                {isEmailVerified === false && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        className="relative z-20 flex flex-col items-center justify-center min-h-[60vh] text-center px-4"
+                    >
+                        {/* Icon */}
+                        <div
+                            className="w-20 h-20 rounded-3xl flex items-center justify-center mb-6 mx-auto"
+                            style={{
+                                background: "linear-gradient(135deg, rgba(245,158,11,0.15), rgba(234,88,12,0.1))",
+                                border: "1px solid rgba(245,158,11,0.3)",
+                                boxShadow: "0 0 60px rgba(245,158,11,0.1)"
+                            }}
+                        >
+                            <ShieldAlert className="w-9 h-9 text-amber-400" />
+                        </div>
+
+                        {/* Text */}
+                        <h1 className="text-2xl sm:text-3xl font-bold font-[Outfit] text-white mb-3">
+                            Email Belum Diverifikasi
+                        </h1>
+                        <p className="text-neutral-400 text-sm leading-relaxed max-w-sm mb-8">
+                            Kamu perlu memverifikasi email sebelum dapat membuat memory baru.
+                            Ini hanya perlu dilakukan sekali untuk menjaga keamanan platform.
+                        </p>
+
+                        {/* Feature preview — blurred cards */}
+                        <div className="relative w-full max-w-md mb-8 pointer-events-none select-none">
+                            <div className="space-y-3" style={{ filter: "blur(3px)", opacity: 0.4 }}>
+                                {["Judul memory", "Cerita & momen", "Lokasi di peta"].map(label => (
+                                    <div
+                                        key={label}
+                                        className="h-12 rounded-xl flex items-center px-4 bg-neutral-900/60 border border-white/[0.05]"
+                                    >
+                                        <span className="text-sm text-neutral-500">{label}</span>
+                                    </div>
+                                ))}
+                            </div>
+                            {/* Lock badge overlay */}
+                            <div
+                                className="absolute inset-0 flex items-center justify-center rounded-2xl"
+                                style={{ background: "rgba(8,8,16,0.7)", backdropFilter: "blur(2px)" }}
+                            >
+                                <div
+                                    className="flex items-center gap-2 px-4 py-2 rounded-full"
+                                    style={{ background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.3)" }}
+                                >
+                                    <ShieldAlert className="w-4 h-4 text-amber-400" />
+                                    <span className="text-sm font-semibold text-amber-300">Konten terkunci</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* CTA Buttons */}
+                        <div className="flex flex-col sm:flex-row items-center gap-3">
+                            <Link
+                                href="/settings?tab=security"
+                                className="flex items-center gap-2.5 px-6 py-3 rounded-xl text-sm font-bold text-white transition-all hover:brightness-110 active:scale-95 shadow-lg"
+                                style={{
+                                    background: "linear-gradient(135deg, #f59e0b, #d97706)",
+                                    boxShadow: "0 10px 30px -10px rgba(245,158,11,0.5)"
+                                }}
+                            >
+                                Verifikasi Email Sekarang
+                            </Link>
+                            <button
+                                onClick={() => router.back()}
+                                className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-medium text-neutral-400 hover:text-white transition-colors"
+                            >
+                                Kembali
+                            </button>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* ── Main Form (only shown when verified or loading) ── */}
+            {isEmailVerified !== false && (
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="relative z-10">
 
                 {/* Page Header */}
                 <div className="mb-8 text-center">
@@ -572,7 +668,8 @@ export default function CreateMemoryPage() {
                         )}
                     </AnimatePresence>
                 </form>
-            </motion.div>
+                </motion.div>
+            )}
         </div>
     )
 }

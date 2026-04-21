@@ -11,6 +11,8 @@ import {
 import { motion, useInView } from "framer-motion"
 import { DashboardSkeleton } from "@/components/dashboard/DashboardSkeleton"
 
+import { formatDate } from "@/lib/utils"
+
 // ─── Animation Variants ───────────────────────────────────────────────────────
 const fadeUp = {
     hidden: { opacity: 0, y: 18 },
@@ -36,12 +38,14 @@ function toWIBKey(date: Date): string {
     return wib.toISOString().slice(0, 10)
 }
 
-/** Reconstruct active dates from memory dates + streak claim history */
-function buildActiveDates(memories: any[], currentStreak: number, lastClaimedAt: string | null): Set<string> {
+/** Reconstruct active dates from memory dates + streak claim history + permanent activeDates records */
+function buildActiveDates(memories: any[], currentStreak: number, lastClaimedAt: string | null, permanentDates: string[] = []): Set<string> {
     const active = new Set<string>()
     for (const m of memories) {
         try { active.add(toWIBKey(new Date(m.date ?? m.createdAt))) } catch { /* skip */ }
     }
+    
+    // Fallback untuk history lama (kalau user punya streak panjang, tapi activeDates blm tersimpan di db)
     if (lastClaimedAt && currentStreak > 0) {
         const last = new Date(lastClaimedAt)
         last.setHours(12, 0, 0, 0)
@@ -50,6 +54,12 @@ function buildActiveDates(memories: any[], currentStreak: number, lastClaimedAt:
             active.add(toWIBKey(d))
         }
     }
+    
+    // Masukkan data permanen dari db
+    for (const d of permanentDates) {
+        active.add(d)
+    }
+    
     return active
 }
 
@@ -197,7 +207,7 @@ function ActivityHeatmap({ memories }: { memories: any[] }) {
                         <span style={{ fontWeight: 700, color: '#fff' }}>
                             {tooltip.cell.isFuture ? 'Akan datang' : tooltip.cell.count === 0 ? 'Tidak ada kenangan' : `${tooltip.cell.count} kenangan`}
                         </span>
-                        <span style={{ color: 'rgba(115,115,115,1)', marginLeft: 6, fontSize: 10 }}>{tooltip.cell.dateKey}</span>
+                        <span style={{ color: 'rgba(115,115,115,1)', marginLeft: 6, fontSize: 10 }}>{formatDate(tooltip.cell.dayObj)}</span>
                     </div>
                 </div>
             )}
@@ -237,12 +247,12 @@ function build30DayCalendar(activeDates: Set<string>): { weeks: CalDay[][]; acti
 }
 
 function ActivityCalendar({
-    memories, currentStreak, lastClaimedAt, longestStreak, totalActiveDays, nextMilestone, daysToNext, alreadyClaimed
+    memories, currentStreak, lastClaimedAt, longestStreak, totalActiveDays, nextMilestone, daysToNext, alreadyClaimed, permanentDates
 }: {
     memories: any[]; currentStreak: number; lastClaimedAt: string | null
-    longestStreak: number; totalActiveDays: number; nextMilestone: number | null; daysToNext: number | null; alreadyClaimed: boolean
+    longestStreak: number; totalActiveDays: number; nextMilestone: number | null; daysToNext: number | null; alreadyClaimed: boolean; permanentDates: string[]
 }) {
-    const activeDates = useMemo(() => buildActiveDates(memories, currentStreak, lastClaimedAt), [memories, currentStreak, lastClaimedAt])
+    const activeDates = useMemo(() => buildActiveDates(memories, currentStreak, lastClaimedAt, permanentDates), [memories, currentStreak, lastClaimedAt, permanentDates])
     const { weeks, activeDaysCount } = useMemo(() => build30DayCalendar(activeDates), [activeDates])
 
     return (
@@ -329,7 +339,7 @@ export default function DashboardPage() {
     const [streakData, setStreakData] = useState<{
         currentStreak: number; longestStreak: number; totalActiveDays: number
         lastClaimedAt: string | null; alreadyClaimed: boolean
-        nextMilestone: number | null; daysToNext: number | null
+        nextMilestone: number | null; daysToNext: number | null; activeDates: string[]
     } | null>(null)
     const [showStreakBanner, setShowStreakBanner] = useState(true)
 
@@ -359,6 +369,7 @@ export default function DashboardPage() {
                 currentStreak: d.currentStreak, longestStreak: d.longestStreak,
                 totalActiveDays: d.totalActiveDays, lastClaimedAt: d.lastClaimedAt,
                 alreadyClaimed: d.alreadyClaimed, nextMilestone: d.nextMilestone, daysToNext: d.daysToNext,
+                activeDates: d.activeDates || [],
             }))
             .catch(() => { })
     }, [session?.user?.id])
@@ -566,6 +577,7 @@ export default function DashboardPage() {
                                 nextMilestone={streakData.nextMilestone}
                                 daysToNext={streakData.daysToNext}
                                 alreadyClaimed={streakData.alreadyClaimed}
+                                permanentDates={streakData.activeDates}
                             />
                         ) : (
                             <div className="flex items-center justify-center h-48">

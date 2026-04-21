@@ -4,6 +4,7 @@ import { useRef, useState, useMemo, useCallback, Suspense } from "react"
 import { Canvas, useFrame } from "@react-three/fiber"
 import { OrbitControls, Stars, Html, useTexture } from "@react-three/drei"
 import * as THREE from "three"
+import { formatDate } from "@/lib/utils"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface Memory {
@@ -437,11 +438,7 @@ function HoverCard({ memory, position }: HoverCardProps) {
               {memory.user?.name ?? "Anonim"}
             </span>
             <span style={{ fontSize: "10px", color: theme?.storyColor ?? "#475569" }}>
-              {new Date(memory.date).toLocaleDateString("id-ID", {
-                day: "numeric",
-                month: "short",
-                year: "numeric",
-              })}
+              {formatDate(memory.date)}
             </span>
           </div>
         </div>

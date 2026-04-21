@@ -17,6 +17,7 @@ import { StickerLayer, StickerPlacement } from "@/components/memories/StickerLay
 import { StickerPanel } from "@/components/memories/StickerPanel"
 import { MemoryMusicPlayer } from "@/components/memories/MemoryMusicPlayer"
 import { ConfirmDialog, useConfirm } from "@/components/ui/ConfirmDialog"
+import { formatDate } from "@/lib/utils"
 
 export default function MemoryDetailPage() {
     const { id } = useParams()
@@ -124,9 +125,7 @@ export default function MemoryDetailPage() {
     const heroPhoto = validPhotos[0]
     const galleryPhotos = validPhotos.slice(1)
     const allPhotos = validPhotos
-    const formattedDate = new Date(memory.date).toLocaleDateString("en-US", {
-        year: "numeric", month: "long", day: "numeric"
-    })
+    const formattedDate = formatDate(memory.date)
 
     const emotionGradient = (() => {
         switch(memory.emotion) {

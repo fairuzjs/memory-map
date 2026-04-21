@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { MapPin, Calendar, Heart, MessageCircle, Users, Music } from "lucide-react"
 import { StickerRenderer, StickerConfig } from "./StickerRenderer"
+import { formatDate } from "@/lib/utils"
 
 interface MemoryCardProps {
     memory: any
@@ -168,7 +169,7 @@ export function MemoryCard({ memory, isCollaboration, placements = [] }: MemoryC
                         <div className="flex items-center gap-3 text-[11px] mt-1" style={{ color: theme?.storyColor ?? "#737373" }}>
                             <span className="flex items-center gap-1">
                                 <Calendar className="w-3 h-3 shrink-0" />
-                                {new Date(memory.date).toLocaleDateString()}
+                                {formatDate(memory.date)}
                             </span>
                             {memory.locationName && (
                                 <Link

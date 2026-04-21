@@ -10,6 +10,7 @@ import { Calendar, MapPin, Search, Loader2, Layers, X } from "lucide-react"
 import { StickerRenderer, StickerConfig } from "@/components/memories/StickerRenderer"
 import { PopupMiniPlayer } from "@/components/memories/PopupMiniPlayer"
 import useSupercluster from "use-supercluster"
+import { formatDate } from "@/lib/utils"
 
 interface MapViewProps {
     memories: any[]
@@ -539,7 +540,7 @@ export default function MapView({ memories }: MapViewProps) {
                                         >
                                             <div className="flex items-center gap-1.5 text-[10px] font-medium" style={{ color: theme?.storyColor ?? "#a3a3a3" }}>
                                                 <Calendar className="w-3 h-3 text-indigo-400" />
-                                                {new Date(selectedMemory.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}
+                                                {formatDate(selectedMemory.date)}
                                             </div>
                                             <div className="flex items-center gap-1.5 text-[10px] font-semibold bg-white/[0.05] px-1.5 py-0.5 rounded-full" style={{ color: theme?.titleColor ?? "#e5e5e5" }}>
                                                 <span className="w-1 h-1 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.8)]" />

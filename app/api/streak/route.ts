@@ -49,6 +49,7 @@ export async function GET() {
         longestStreak: streak.longestStreak,
         totalActiveDays: streak.totalActiveDays,
         lastClaimedAt: streak.lastClaimedAt,
+        activeDates: streak.activeDates,
         alreadyClaimed,
         badges: badges.map((b) => ({ milestone: b.milestone, earnedAt: b.earnedAt })),
         nextMilestone,

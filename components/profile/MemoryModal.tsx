@@ -3,6 +3,7 @@ import { motion } from "framer-motion"
 import { X, MapPin, Heart, MessageCircle, ChevronLeft, ChevronRight } from "lucide-react"
 import Link from "next/link"
 import { EMOTION_LABEL, EMOTION_COLOR, EMOTION_BG } from "./ProfileUtils"
+import { formatDate } from "@/lib/utils"
 
 interface MemoryModalProps {
     memory: any
@@ -101,7 +102,7 @@ export function MemoryModal({ memory, onClose, onReact }: MemoryModalProps) {
                                 {EMOTION_LABEL[memory.emotion] ?? memory.emotion}
                             </span>
                             <span className="text-[10px] text-neutral-600">
-                                {new Date(memory.date).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
+                                {formatDate(memory.date)}
                             </span>
                         </div>
                         <h3 className="text-lg font-black text-white leading-snug mb-1" style={{ fontFamily: "'Syne',sans-serif" }}>

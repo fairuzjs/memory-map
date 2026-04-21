@@ -37,6 +37,18 @@ export function CollaboratorPicker({ value, onChange }: CollaboratorPickerProps)
         return () => document.removeEventListener("mousedown", handleClickOutside)
     }, [])
 
+    // Fetch initial selected users if value is populated but selectedUsers is empty
+    useEffect(() => {
+        if (value.length > 0 && selectedUsers.length === 0) {
+            Promise.all(value.map(id => fetch(`/api/users/${id}`).then(res => res.json())))
+                .then(users => {
+                    const validUsers = users.filter((u): u is User => !!u && !u.error);
+                    setSelectedUsers(validUsers);
+                })
+                .catch(err => console.error("Failed to fetch initial collaborators:", err));
+        }
+    }, [value]);
+
     // Debounce search
     useEffect(() => {
         if (debounceRef.current) clearTimeout(debounceRef.current)

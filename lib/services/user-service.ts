@@ -15,6 +15,7 @@ export const getCachedUser = (id: string) => {
                         bio: true,
                         image: true,
                         isVerified: true,
+                        isEmailVerified: true,
                         instagram: true,
                         tiktok: true,
                         facebook: true,
@@ -108,6 +109,7 @@ export const getCachedLeaderboard = () => {
                             username: true,
                             image: true,
                             isVerified: true,
+                            isEmailVerified: true,
                             inventories: {
                                 where: { isEquipped: true, item: { type: "USERNAME_DECORATION" } },
                                 select: { item: { select: { name: true, value: true } } }
@@ -123,6 +125,7 @@ export const getCachedLeaderboard = () => {
                 name: s.user.username || s.user.name,
                 image: s.user.image,
                 isVerified: s.user.isVerified,
+                isEmailVerified: s.user.isEmailVerified,
                 longestStreak: s.longestStreak,
                 currentStreak: s.currentStreak,
                 equippedDecoration: s.user.inventories[0]?.item ?? null,

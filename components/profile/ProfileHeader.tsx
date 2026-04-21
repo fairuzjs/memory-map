@@ -3,6 +3,7 @@ import { BadgeCheck, Calendar, Instagram, Facebook, UserCheck, UserPlus, Package
 import Link from "next/link"
 import { getFrameClass, getDecorationClass } from "./ProfileUtils"
 import { getBadgeConfig } from "./BadgeConfigs"
+import { formatDate } from "@/lib/utils"
 
 function TikTokIcon({ className }: { className?: string }) {
     return (
@@ -31,7 +32,7 @@ export function ProfileHeader({
     countMemories, countFollowers, countFollowing, onShowFollowers, onShowFollowing
 }: ProfileHeaderProps) {
     const avatarSrc = user.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`
-    const joinDate = new Date(user.createdAt).toLocaleDateString("id-ID", { month: "long", year: "numeric" })
+    const joinDate = formatDate(user.createdAt)
     const hasSocials = user.instagram || user.tiktok || user.facebook
 
     return (

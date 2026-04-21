@@ -13,6 +13,18 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         const session = await auth()
         if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
+        // Blokir user yang belum verifikasi email
+        const currentUser = await prisma.user.findUnique({
+            where: { id: session.user.id },
+            select: { isEmailVerified: true }
+        })
+        if (!currentUser?.isEmailVerified) {
+            return NextResponse.json(
+                { error: "EMAIL_NOT_VERIFIED", message: "Verifikasi email kamu terlebih dahulu sebelum berkomentar." },
+                { status: 403 }
+            )
+        }
+
         // 1. Validasi Input (Hardening)
         const body = await req.json()
         const result = commentSchema.safeParse(body)

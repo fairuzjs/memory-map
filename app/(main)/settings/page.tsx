@@ -2,11 +2,11 @@
 
 import { useSession } from "next-auth/react"
 import { useEffect, useRef, useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import {
     Instagram, Facebook, Settings, Loader2, Check, AlertCircle,
     Camera, User, FileText, Share2, ArrowLeft, Mail, AtSign, Link as LinkIcon,
-    Sparkles, Shield, Globe, ExternalLink
+    Sparkles, Shield, Globe, ExternalLink, ShieldCheck, ShieldAlert, Timer, KeyRound, RefreshCw, X
 } from "lucide-react"
 import Link from "next/link"
 import toast from "react-hot-toast"
@@ -81,6 +81,7 @@ const PREDEFINED_AVATARS = [
 const TABS = [
     { id: "profile", label: "Profil", icon: User, desc: "Foto & info dasar" },
     { id: "social", label: "Sosial", icon: Globe, desc: "Link media sosial" },
+    { id: "security", label: "Keamanan", icon: Shield, desc: "Email & verifikasi" },
 ] as const
 
 type TabId = typeof TABS[number]["id"]
@@ -110,12 +111,25 @@ const inputClass = "w-full bg-[#0d0d18] border border-white/[0.07] rounded-xl px
 export default function SettingsPage() {
     const { data: session, status, update } = useSession()
     const router = useRouter()
+    const searchParams = useSearchParams()
     const avatarInputRef = useRef<HTMLInputElement>(null)
 
-    const [tab, setTab] = useState<TabId>("profile")
+    const [tab, setTab] = useState<TabId>(() => {
+        // Will be corrected by useEffect after mount (searchParams not reliable in useState init)
+        return "profile"
+    })
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
     const [uploadingPhoto, setUploadingPhoto] = useState(false)
+
+    // Sync tab from URL query param on mount
+    useEffect(() => {
+        const paramTab = searchParams.get("tab")
+        const validTabs = TABS.map(t => t.id)
+        if (paramTab && validTabs.includes(paramTab as TabId)) {
+            setTab(paramTab as TabId)
+        }
+    }, [searchParams])
 
     const [name, setName] = useState("")
     const [username, setUsername] = useState("")
@@ -123,6 +137,21 @@ export default function SettingsPage() {
     const [bio, setBio] = useState("")
     const [image, setImage] = useState("")
     const [previewImage, setPreviewImage] = useState("")
+    const [isVerified, setIsVerified] = useState(false)
+    const [isEmailVerified, setIsEmailVerified] = useState(false)
+    const [userEmail, setUserEmail] = useState("")
+
+    // ── Email Verification Modal State ────────────────────────
+    const [showVerifyModal, setShowVerifyModal] = useState(false)
+    const [verifyStep, setVerifyStep] = useState<1 | 2>(1)
+    const [targetEmail, setTargetEmail] = useState("")
+    const [targetEmailError, setTargetEmailError] = useState("")
+    const [otp, setOtp] = useState(["" ,"", "", "", "", ""])
+    const [sendingOtp, setSendingOtp] = useState(false)
+    const [verifyingOtp, setVerifyingOtp] = useState(false)
+    const [cooldown, setCooldown] = useState(0)
+    const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null)
+    const otpInputRefs = useRef<(HTMLInputElement | null)[]>([])
 
     const [crop, setCrop] = useState({ x: 0, y: 0 })
     const [zoom, setZoom] = useState(1)
@@ -149,6 +178,9 @@ export default function SettingsPage() {
                 setBio(data.bio || "")
                 setImage(data.image || "")
                 setPreviewImage(data.image || "")
+                setIsVerified(data.isVerified ?? false)
+                setIsEmailVerified(data.isEmailVerified ?? false)
+                setUserEmail(data.email || session?.user?.email || "")
                 setSocials({
                     instagram: data.instagram || "",
                     tiktok: data.tiktok || "",
@@ -157,6 +189,121 @@ export default function SettingsPage() {
                 setLoading(false)
             })
     }, [session?.user?.id])
+
+    // ── OTP Cooldown timer ───────────────────────────────────
+    const startCooldown = (seconds = 60) => {
+        setCooldown(seconds)
+        if (cooldownRef.current) clearInterval(cooldownRef.current)
+        cooldownRef.current = setInterval(() => {
+            setCooldown(prev => {
+                if (prev <= 1) {
+                    clearInterval(cooldownRef.current!)
+                    return 0
+                }
+                return prev - 1
+            })
+        }, 1000)
+    }
+
+    // ── Send OTP handler ─────────────────────────────────────
+    const handleSendOtp = async () => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!targetEmail.trim() || !emailRegex.test(targetEmail.trim())) {
+            setTargetEmailError("Masukkan alamat email yang valid")
+            return
+        }
+        setTargetEmailError("")
+        setSendingOtp(true)
+        try {
+            const res = await fetch("/api/auth/send-verification", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: targetEmail.trim() }),
+            })
+            const data = await res.json()
+            if (!res.ok) {
+                if (res.status === 429) {
+                    startCooldown(data.cooldown)
+                    toast.error(data.error)
+                } else {
+                    toast.error(data.error || "Gagal mengirim kode")
+                }
+                return
+            }
+            toast.success("Kode OTP berhasil dikirim ke email Anda!")
+            startCooldown(60)
+            setVerifyStep(2)
+            setOtp(["", "", "", "", "", ""])
+            setTimeout(() => otpInputRefs.current[0]?.focus(), 100)
+        } catch {
+            toast.error("Gagal mengirim kode. Coba lagi.")
+        } finally {
+            setSendingOtp(false)
+        }
+    }
+
+    // ── Verify OTP handler ───────────────────────────────────
+    const handleVerifyOtp = async () => {
+        const code = otp.join("")
+        if (code.length < 6) {
+            toast.error("Masukkan 6 digit kode verifikasi")
+            return
+        }
+        setVerifyingOtp(true)
+        try {
+            const res = await fetch("/api/auth/verify-email", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: targetEmail.trim(), code }),
+            })
+            const data = await res.json()
+            if (!res.ok) {
+                toast.error(data.error || "Kode salah atau sudah kadaluwarsa")
+                return
+            }
+            setIsEmailVerified(true)
+            setUserEmail(targetEmail.trim())
+            setShowVerifyModal(false)
+            setVerifyStep(1)
+            setOtp(["", "", "", "", "", ""])
+            if (cooldownRef.current) clearInterval(cooldownRef.current)
+            setCooldown(0)
+            
+            // Sync status to session
+            await update({ isEmailVerified: true })
+            
+            toast.success("🎉 Email berhasil diverifikasi!")
+        } catch {
+            toast.error("Terjadi kesalahan. Coba lagi.")
+        } finally {
+            setVerifyingOtp(false)
+        }
+    }
+
+    // ── OTP input per-box handler ────────────────────────────
+    const handleOtpInput = (index: number, value: string) => {
+        const digit = value.replace(/\D/g, "").slice(-1)
+        const newOtp = [...otp]
+        newOtp[index] = digit
+        setOtp(newOtp)
+        if (digit && index < 5) {
+            otpInputRefs.current[index + 1]?.focus()
+        }
+    }
+
+    const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Backspace" && !otp[index] && index > 0) {
+            otpInputRefs.current[index - 1]?.focus()
+        }
+    }
+
+    const handleOtpPaste = (e: React.ClipboardEvent) => {
+        const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6)
+        if (pasted.length === 6) {
+            setOtp(pasted.split(""))
+            otpInputRefs.current[5]?.focus()
+        }
+    }
 
     const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
@@ -540,16 +687,19 @@ export default function SettingsPage() {
 
                                 <div className="p-6 space-y-5">
                                     {/* Email (read-only) */}
-                                    <FieldGroup label="Email" icon={Mail} hint="Alamat email yang terdaftar tidak dapat diubah.">
+                                    <FieldGroup label="Email" icon={Mail} hint="Untuk mengganti atau memverifikasi email, buka tab Keamanan.">
                                         <div className="relative">
                                             <input
                                                 type="email"
-                                                value={session?.user?.email || ""}
+                                                value={userEmail}
                                                 readOnly
-                                                className="w-full bg-white/[0.02] border border-white/[0.05] rounded-xl px-4 py-3 text-neutral-600 cursor-not-allowed focus:outline-none text-sm"
+                                                className="w-full bg-white/[0.02] border border-white/[0.05] rounded-xl px-4 py-3 text-neutral-500 cursor-not-allowed focus:outline-none text-sm pr-28"
                                             />
                                             <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                                                <Shield className="w-3.5 h-3.5 text-neutral-700" />
+                                                {isEmailVerified
+                                                    ? <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded-full"><ShieldCheck className="w-3 h-3" />Terverifikasi</span>
+                                                    : <span className="flex items-center gap-1 text-[10px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-1 rounded-full"><ShieldAlert className="w-3 h-3" />Belum Diverifikasi</span>
+                                                }
                                             </div>
                                         </div>
                                     </FieldGroup>
@@ -728,6 +878,97 @@ export default function SettingsPage() {
                             </div>
                         </motion.div>
                     )}
+
+                    {/* ── Security Tab ─────────────────────────── */}
+                    {tab === "security" && (
+                        <motion.div
+                            key="security-tab"
+                            initial={{ opacity: 0, y: 12 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -8 }}
+                            transition={{ duration: 0.22 }}
+                            className="space-y-5"
+                        >
+                            {/* Email Verification Card */}
+                            <div
+                                className="rounded-3xl overflow-hidden"
+                                style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}
+                            >
+                                <div className="px-6 pt-5 pb-4 flex items-center gap-2 border-b border-white/[0.04]">
+                                    <KeyRound className="w-4 h-4 text-indigo-400" />
+                                    <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Verifikasi Email</span>
+                                </div>
+
+                                <div className="p-6 space-y-5">
+                                    {/* Status banner */}
+                                    <div
+                                        className="flex items-center gap-4 p-4 rounded-2xl"
+                                        style={{
+                                            background: isEmailVerified ? "rgba(16,185,129,0.06)" : "rgba(245,158,11,0.06)",
+                                            border: isEmailVerified ? "1px solid rgba(16,185,129,0.2)" : "1px solid rgba(245,158,11,0.2)"
+                                        }}
+                                    >
+                                        <div
+                                            className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                                            style={{ background: isEmailVerified ? "rgba(16,185,129,0.1)" : "rgba(245,158,11,0.1)" }}
+                                        >
+                                            {isEmailVerified
+                                                ? <ShieldCheck className="w-5 h-5 text-emerald-400" />
+                                                : <ShieldAlert className="w-5 h-5 text-amber-400" />
+                                            }
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-bold" style={{ color: isEmailVerified ? "#34d399" : "#fbbf24" }}>
+                                                {isEmailVerified ? "Email Sudah Terverifikasi" : "Email Belum Diverifikasi"}
+                                            </p>
+                                            <p className="text-xs text-neutral-500 mt-0.5 truncate">{userEmail}</p>
+                                        </div>
+                                        {isEmailVerified && (
+                                            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 shrink-0">
+                                                <Check className="w-3.5 h-3.5 text-emerald-400" />
+                                                <span className="text-[11px] font-bold text-emerald-400">Aktif</span>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Description */}
+                                    {!isEmailVerified && (
+                                        <div
+                                            className="flex items-start gap-3 px-4 py-3 rounded-xl text-xs text-neutral-500"
+                                            style={{ background: "rgba(245,158,11,0.04)", border: "1px solid rgba(245,158,11,0.1)" }}
+                                        >
+                                            <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-amber-500" />
+                                            <span>Akun dengan email tidak terverifikasi <strong className="text-neutral-400">tidak dapat membuat memory atau berkomentar</strong>. Verifikasi email kamu sekarang untuk mengakses seluruh fitur.</span>
+                                        </div>
+                                    )}
+
+                                    {/* Action button */}
+                                    <button
+                                        id="btn-open-verify-modal"
+                                        onClick={() => {
+                                            setTargetEmail(userEmail)
+                                            setVerifyStep(1)
+                                            setOtp(["", "", "", "", "", ""])
+                                            setCooldown(0)
+                                            setShowVerifyModal(true)
+                                        }}
+                                        className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:brightness-110 active:scale-95 shadow-lg"
+                                        style={{
+                                            background: isEmailVerified
+                                                ? "linear-gradient(135deg, rgba(16,185,129,0.8), rgba(5,150,105,0.8))"
+                                                : "linear-gradient(135deg, #f59e0b, #d97706)",
+                                            boxShadow: isEmailVerified ? "0 10px 25px -10px rgba(16,185,129,0.3)" : "0 10px 25px -10px rgba(245,158,11,0.4)"
+                                        }}
+                                    >
+                                        {isEmailVerified
+                                            ? <><RefreshCw className="w-4 h-4" /> Ganti Email</>  
+                                            : <><ShieldCheck className="w-4 h-4" /> Verifikasi Sekarang</>
+                                        }
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
                 </AnimatePresence>
 
                 {/* ── Save Button ─────────────────────────────── */}
@@ -748,8 +989,178 @@ export default function SettingsPage() {
                             : <>Simpan Perubahan</>
                         }
                     </button>
-                </motion.div>
+                 </motion.div>
             </div>
+
+            {/* ─────────────── VERIFICATION MODAL ─────────────── */}
+            <AnimatePresence>
+                {showVerifyModal && (
+                    <motion.div
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[70] flex items-center justify-center p-4"
+                        style={{ background: "rgba(4,4,12,0.92)", backdropFilter: "blur(16px)" }}
+                        onClick={(e) => { if (e.target === e.currentTarget) setShowVerifyModal(false) }}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.92, y: 24 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.92, y: 24 }}
+                            transition={{ type: "spring", bounce: 0.22, duration: 0.38 }}
+                            className="w-full max-w-md shadow-2xl overflow-hidden"
+                            style={{ background: "rgba(10,10,20,0.97)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "1.75rem" }}
+                        >
+                            {/* Modal Header */}
+                            <div className="px-6 pt-6 pb-4 border-b border-white/[0.06] flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "rgba(99,102,241,0.12)", border: "1px solid rgba(99,102,241,0.2)" }}>
+                                        <KeyRound className="w-4 h-4 text-indigo-400" />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-base font-bold text-white">Verifikasi Email</h2>
+                                        <p className="text-xs text-neutral-500">Langkah {verifyStep} dari 2</p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setShowVerifyModal(false)}
+                                    className="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-500 hover:text-white hover:bg-white/[0.06] transition-all"
+                                >
+                                    <X className="w-4 h-4" />
+                                </button>
+                            </div>
+
+                            {/* Step indicators */}
+                            <div className="px-6 pt-5 flex items-center gap-2">
+                                {[1, 2].map(s => (
+                                    <div key={s} className="flex items-center gap-2">
+                                        <div
+                                            className="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold transition-all"
+                                            style={{
+                                                background: verifyStep >= s ? "linear-gradient(135deg,#6366f1,#8b5cf6)" : "rgba(255,255,255,0.05)",
+                                                color: verifyStep >= s ? "#fff" : "#525252",
+                                                border: verifyStep >= s ? "none" : "1px solid rgba(255,255,255,0.08)"
+                                            }}
+                                        >{s}</div>
+                                        {s < 2 && <div className="w-8 h-px" style={{ background: verifyStep > 1 ? "rgba(99,102,241,0.5)" : "rgba(255,255,255,0.06)" }} />}
+                                    </div>
+                                ))}
+                                <span className="ml-2 text-xs text-neutral-600">
+                                    {verifyStep === 1 ? "Masukkan Email" : "Masukkan Kode OTP"}
+                                </span>
+                            </div>
+
+                            <div className="p-6 space-y-5">
+                                {/* ── STEP 1: Email input ── */}
+                                {verifyStep === 1 && (
+                                    <>
+                                        <p className="text-sm text-neutral-400 leading-relaxed">
+                                            Masukkan alamat email aktif yang ingin kamu verifikasi. Kode OTP 6 digit akan dikirimkan ke email tersebut.
+                                        </p>
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-semibold text-neutral-400 flex items-center gap-1.5">
+                                                <Mail className="w-3.5 h-3.5 text-indigo-400" /> Alamat Email
+                                            </label>
+                                            <input
+                                                id="input-verify-email"
+                                                type="email"
+                                                value={targetEmail}
+                                                onChange={e => { setTargetEmail(e.target.value); setTargetEmailError("") }}
+                                                onKeyDown={e => e.key === "Enter" && handleSendOtp()}
+                                                placeholder="email@contoh.com"
+                                                className={`${inputClass} ${targetEmailError ? "border-red-500/30 focus:ring-red-500/20" : ""}`}
+                                            />
+                                            {targetEmailError && (
+                                                <p className="text-xs text-red-400 flex items-center gap-1.5">
+                                                    <AlertCircle className="w-3 h-3 shrink-0" />{targetEmailError}
+                                                </p>
+                                            )}
+                                        </div>
+
+                                        <button
+                                            id="btn-send-otp"
+                                            onClick={handleSendOtp}
+                                            disabled={sendingOtp || cooldown > 0}
+                                            className="w-full py-3 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2 transition-all hover:brightness-110 active:scale-95 disabled:opacity-50"
+                                            style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
+                                        >
+                                            {sendingOtp
+                                                ? <><Loader2 className="w-4 h-4 animate-spin" /> Mengirim...</>
+                                                : cooldown > 0
+                                                    ? <><Timer className="w-4 h-4" /> Tunggu {cooldown}s</>
+                                                    : <><Mail className="w-4 h-4" /> Kirim Kode OTP</>
+                                            }
+                                        </button>
+                                    </>
+                                )}
+
+                                {/* ── STEP 2: OTP input ── */}
+                                {verifyStep === 2 && (
+                                    <>
+                                        <p className="text-sm text-neutral-400 leading-relaxed">
+                                            Kode OTP telah dikirim ke <strong className="text-indigo-300">{targetEmail}</strong>. Periksa inbox dan masukkan 6 digit kode di bawah.
+                                        </p>
+
+                                        {/* OTP boxes */}
+                                        <div className="flex items-center justify-center gap-2.5" onPaste={handleOtpPaste}>
+                                            {otp.map((digit, i) => (
+                                                <input
+                                                    key={i}
+                                                    id={`otp-input-${i}`}
+                                                    ref={el => { otpInputRefs.current[i] = el }}
+                                                    type="text"
+                                                    inputMode="numeric"
+                                                    maxLength={1}
+                                                    value={digit}
+                                                    onChange={e => handleOtpInput(i, e.target.value)}
+                                                    onKeyDown={e => handleOtpKeyDown(i, e)}
+                                                    className="w-11 h-14 text-center text-xl font-black text-white rounded-xl transition-all focus:outline-none"
+                                                    style={{
+                                                        background: digit ? "rgba(99,102,241,0.15)" : "rgba(255,255,255,0.04)",
+                                                        border: digit ? "2px solid rgba(99,102,241,0.6)" : "1px solid rgba(255,255,255,0.08)",
+                                                        boxShadow: digit ? "0 0 12px rgba(99,102,241,0.2)" : "none"
+                                                    }}
+                                                />
+                                            ))}
+                                        </div>
+
+                                        {/* Resend + back */}
+                                        <div className="flex items-center justify-between text-xs">
+                                            <button
+                                                onClick={() => setVerifyStep(1)}
+                                                className="text-neutral-500 hover:text-neutral-300 transition-colors"
+                                            >
+                                                ← Ganti email
+                                            </button>
+                                            <button
+                                                id="btn-resend-otp"
+                                                onClick={handleSendOtp}
+                                                disabled={cooldown > 0 || sendingOtp}
+                                                className="flex items-center gap-1.5 font-semibold transition-colors disabled:opacity-40"
+                                                style={{ color: cooldown > 0 ? "#525252" : "#818cf8" }}
+                                            >
+                                                {cooldown > 0
+                                                    ? <><Timer className="w-3.5 h-3.5" /> Kirim ulang ({cooldown}s)</>
+                                                    : <><RefreshCw className="w-3.5 h-3.5" /> Kirim ulang kode</>
+                                                }
+                                            </button>
+                                        </div>
+
+                                        <button
+                                            id="btn-verify-otp"
+                                            onClick={handleVerifyOtp}
+                                            disabled={verifyingOtp || otp.join("").length < 6}
+                                            className="w-full py-3 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2 transition-all hover:brightness-110 active:scale-95 disabled:opacity-50"
+                                            style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
+                                        >
+                                            {verifyingOtp
+                                                ? <><Loader2 className="w-4 h-4 animate-spin" /> Memverifikasi...</>
+                                                : <><ShieldCheck className="w-4 h-4" /> Verifikasi Email</>
+                                            }
+                                        </button>
+                                    </>
+                                )}
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     )
 }

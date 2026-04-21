@@ -73,6 +73,9 @@ export async function POST() {
                 longestStreak: newLongest,
                 totalActiveDays: newTotalDays,
                 lastClaimedAt: now,
+                activeDates: {
+                    push: todayWIB
+                }
             },
         }),
         prisma.user.update({

@@ -44,10 +44,14 @@ export const authConfig = {
             if (user) {
                 token.id = user.id
                 token.role = user.role
+                token.isVerified = user.isVerified
+                token.isEmailVerified = user.isEmailVerified
             }
             if (trigger === "update" && session) {
                 if (session.name) token.name = session.name
                 if (session.image) token.picture = session.image
+                if (typeof session.isVerified !== 'undefined') token.isVerified = session.isVerified
+                if (typeof session.isEmailVerified !== 'undefined') token.isEmailVerified = session.isEmailVerified
             }
             return token
         },
@@ -55,6 +59,8 @@ export const authConfig = {
             if (token && session.user) {
                 session.user.id = token.id as string
                 session.user.role = token.role as string
+                session.user.isVerified = token.isVerified as boolean | undefined
+                session.user.isEmailVerified = token.isEmailVerified as boolean | undefined
             }
             return session
         }

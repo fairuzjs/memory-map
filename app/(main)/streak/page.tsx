@@ -7,6 +7,7 @@ import { Trophy, Calendar, Zap, Medal, Star, Crown, Users, ChevronRight, Loader2
 import Link from "next/link"
 import { BadgeUnlockModal } from "@/components/ui/BadgeUnlockModal"
 import { LeaderboardModal } from "@/components/ui/LeaderboardModal"
+import { formatDate } from "@/lib/utils"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface StreakData {
@@ -681,9 +682,7 @@ export default function StreakPage() {
                                         <p className="text-[11px] font-bold text-white leading-tight">{m.label}</p>
                                         {badge && (
                                             <p className="text-[9px] text-neutral-500">
-                                                {new Date(badge.earnedAt).toLocaleDateString("id-ID", {
-                                                    day: "numeric", month: "short", year: "numeric",
-                                                })}
+                                                {formatDate(badge.earnedAt)}
                                             </p>
                                         )}
                                     </div>

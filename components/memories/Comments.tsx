@@ -6,6 +6,8 @@ import toast from "react-hot-toast"
 import Link from "next/link"
 import { Button } from "@/components/ui/Button"
 import { ConfirmDialog, useConfirm } from "@/components/ui/ConfirmDialog"
+import { formatDate } from "@/lib/utils"
+import { ShieldAlert, Lock, ArrowRight } from "lucide-react"
 
 export function Comments({ memoryId, initialComments }: { memoryId: string, initialComments: any[] }) {
     const { data: session } = useSession()
@@ -61,7 +63,13 @@ export function Comments({ memoryId, initialComments }: { memoryId: string, init
                 body: JSON.stringify({ content: text, parentId })
             })
             const data = await res.json()
-            if (!res.ok) throw new Error(data.error)
+            if (!res.ok) {
+                const errCode = data.error
+                if (errCode === "EMAIL_NOT_VERIFIED") {
+                    throw new Error("Verifikasi email kamu dulu sebelum berkomentar.")
+                }
+                throw new Error(errCode || "Failed to post comment")
+            }
 
             // 2. Sync with server data (replace optimistic with real data)
             setComments(prev => {
@@ -137,21 +145,77 @@ export function Comments({ memoryId, initialComments }: { memoryId: string, init
                 )}
             </div>
 
-            <form onSubmit={(e) => handleSubmit(e)} className="mb-8 flex gap-3">
-                <img src={session?.user?.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${session?.user?.name || 'guest'}`} className="w-10 h-10 rounded-full bg-neutral-800 border-neutral-700 border" alt="" />
-                <div className="flex-1">
-                    <textarea
-                        value={content}
-                        onChange={(e) => setContent(e.target.value)}
-                        placeholder="Share your thoughts..."
-                        className="w-full bg-neutral-900 border border-neutral-800 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none resize-none min-h-[80px]"
-                        disabled={submitting}
-                    />
-                    <div className="mt-2 flex justify-end">
-                        <Button type="submit" disabled={submitting || !content.trim()} className="text-sm px-3 py-1.5 h-auto">Post Comment</Button>
+            {/* ── Comment Form: locked if unverified ── */}
+            {!session?.user ? (
+                <div
+                    className="mb-8 flex items-center gap-4 px-5 py-4 rounded-2xl"
+                    style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}
+                >
+                    <Lock className="w-4 h-4 text-neutral-600 shrink-0" />
+                    <p className="text-sm text-neutral-500">
+                        <Link href="/login" className="text-indigo-400 hover:text-indigo-300 font-semibold">Masuk</Link> untuk meninggalkan komentar.
+                    </p>
+                </div>
+            ) : (session.user as any).isEmailVerified === false ? (
+                <div
+                    className="mb-8 rounded-2xl overflow-hidden"
+                    style={{ border: "1px solid rgba(245,158,11,0.2)" }}
+                >
+                    {/* Fake blurred textarea */}
+                    <div className="relative">
+                        <textarea
+                            readOnly
+                            placeholder="Tulis komentar..."
+                            className="w-full bg-neutral-900/50 p-4 text-sm resize-none h-[80px] text-transparent cursor-not-allowed select-none outline-none"
+                            style={{ filter: "blur(3px)", userSelect: "none" }}
+                        />
+                        {/* Lock overlay */}
+                        <div
+                            className="absolute inset-0 flex flex-col items-center justify-center gap-2.5"
+                            style={{ background: "rgba(10,10,15,0.75)", backdropFilter: "blur(4px)" }}
+                        >
+                            <div className="flex items-center gap-2.5">
+                                <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: "rgba(245,158,11,0.12)", border: "1px solid rgba(245,158,11,0.25)" }}>
+                                    <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
+                                </div>
+                                <p className="text-sm font-semibold text-amber-300">Email belum diverifikasi</p>
+                            </div>
+                            <p className="text-xs text-neutral-500 text-center px-4">
+                                Verifikasi email untuk bisa berkomentar
+                            </p>
+                        </div>
+                    </div>
+                    {/* CTA footer */}
+                    <div
+                        className="flex items-center justify-between px-4 py-3"
+                        style={{ background: "rgba(245,158,11,0.05)", borderTop: "1px solid rgba(245,158,11,0.15)" }}
+                    >
+                        <p className="text-xs text-neutral-600">Diperlukan untuk menggunakan fitur komentar</p>
+                        <Link
+                            href="/settings?tab=security"
+                            className="flex items-center gap-1.5 text-xs font-bold text-amber-400 hover:text-amber-300 transition-colors"
+                        >
+                            Verifikasi Sekarang <ArrowRight className="w-3 h-3" />
+                        </Link>
                     </div>
                 </div>
-            </form>
+            ) : (
+                <form onSubmit={(e) => handleSubmit(e)} className="mb-8 flex gap-3">
+                    <img src={session?.user?.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${session?.user?.name || 'guest'}`} className="w-10 h-10 rounded-full bg-neutral-800 border-neutral-700 border" alt="" />
+                    <div className="flex-1">
+                        <textarea
+                            value={content}
+                            onChange={(e) => setContent(e.target.value)}
+                            placeholder="Share your thoughts..."
+                            className="w-full bg-neutral-900 border border-neutral-800 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none resize-none min-h-[80px]"
+                            disabled={submitting}
+                        />
+                        <div className="mt-2 flex justify-end">
+                            <Button type="submit" disabled={submitting || !content.trim()} className="text-sm px-3 py-1.5 h-auto">Post Comment</Button>
+                        </div>
+                    </div>
+                </form>
+            )}
 
             {/* Scrollable comment list — max ~3 comments visible */}
             <div
@@ -184,7 +248,7 @@ export function Comments({ memoryId, initialComments }: { memoryId: string, init
                                         </Link>
                                         <div className="flex items-center gap-2">
                                             {comment.isOptimistic && <span className="text-[9px] uppercase tracking-widest text-indigo-400 animate-pulse font-bold">Sending...</span>}
-                                            <span className="text-[10px] text-neutral-500">{new Date(comment.createdAt).toLocaleDateString()}</span>
+                                            <span className="text-[10px] text-neutral-500">{formatDate(comment.createdAt)}</span>
                                         </div>
                                     </div>
                                     <p className="text-sm text-neutral-300 whitespace-pre-wrap">{comment.content}</p>
