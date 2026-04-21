@@ -5,7 +5,6 @@ import { NotificationType } from "@prisma/client"
 import { checkRateLimit, rateLimitResponse, RATE_LIMITS } from "@/lib/rate-limit"
 
 import { commentSchema } from "@/lib/validations"
-import DOMPurify from "isomorphic-dompurify"
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
@@ -35,10 +34,12 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 
         const { content: rawContent, parentId } = result.data
 
-        // 2. Sanitasi Lanjutan (XSS Protection)
-        const content = DOMPurify.sanitize(rawContent.trim())
+        // 2. Sanitasi (Basic)
+        // Menghapus DOMPurify karena React otomatis melakukan escaping XSS,
+        // dan isomorphic-dompurify menyebabkan segfault/crash di Vercel Node 24.
+        const content = rawContent.trim()
         if (!content) {
-            return NextResponse.json({ error: "Komentar tidak valid setelah sanitasi" }, { status: 400 })
+            return NextResponse.json({ error: "Komentar tidak valid" }, { status: 400 })
         }
 
         // 3. Cek Eksistensi Memori (Data Consistency)
