@@ -8,6 +8,7 @@ import {
   Bell, BookOpen, Heart, ImagePlus, ArrowRight, Loader2, Play, SkipForward
 } from "lucide-react"
 import { useEffect, useState } from "react"
+import { TermsModal } from "@/components/ui/TermsModal"
 
 // ─── Animated Counter ──────────────────────────────────────────────────────────
 function AnimatedCounter({ value, suffix = "" }: { value: number; suffix?: string }) {
@@ -84,71 +85,7 @@ function ModalHeader({ title, onClose, icon }: { title: string; onClose: () => v
   )
 }
 
-// ─── Privacy Modal ─────────────────────────────────────────────────────────────
-function PrivacyModal({ onClose }: { onClose: () => void }) {
-  return (
-    <ModalWrapper onClose={onClose}>
-      <ModalHeader title="Kebijakan Privasi" onClose={onClose} />
-      <div className="p-6 overflow-y-auto custom-scrollbar text-neutral-300 text-sm leading-relaxed space-y-6">
-        <div>
-          <h4 className="text-white font-semibold mb-2">1. Pengumpulan Informasi</h4>
-          <p>Kami mengumpulkan informasi yang Anda berikan secara langsung kepada kami saat Anda membuat akun, memposting kenangan, atau berkomunikasi dengan kami. Informasi ini dapat mencakup nama pengguna, alamat email, foto, teks kenangan, dan data lokasi geografis (koordinat peta) yang Anda sertakan pada setiap memori Anda.</p>
-        </div>
-        <div>
-          <h4 className="text-white font-semibold mb-2">2. Penggunaan Informasi</h4>
-          <p>Informasi yang kami kumpulkan digunakan untuk menyediakan, memelihara, dan meningkatkan layanan MemoryMap, termasuk untuk memetakan kenangan Anda secara akurat, menampilkan profil Anda, dan memungkinkan fitur sosial jika Anda memilih untuk membuat kenangan Anda menjadi publik.</p>
-        </div>
-        <div>
-          <h4 className="text-white font-semibold mb-2">3. Keamanan Data</h4>
-          <p>Kami menerapkan langkah-langkah keamanan yang dirancang untuk melindungi informasi Anda dari akses, penggunaan, atau pengungkapan yang tidak sah. Namun, perlu diingat bahwa tidak ada sistem transmisi atau penyimpanan elektronik yang aman di internet secara absolut.</p>
-        </div>
-        <div>
-          <h4 className="text-white font-semibold mb-2">4. Kontrol Pengguna</h4>
-          <p>Anda selalu memiliki kendali atas kenangan yang Anda buat. Anda dapat mengatur privasi memori (publik atau privat), mengubah detail memori, atau menghapus akun dan seluruh data terkait kapan saja melalui pengaturan akun Anda.</p>
-        </div>
-        <p className="text-neutral-500 text-xs mt-8">
-          Pembaruan Terakhir: {new Date().toLocaleDateString("id-ID", { year: "numeric", month: "long", day: "numeric" })}
-        </p>
-      </div>
-    </ModalWrapper>
-  )
-}
-
-// ─── Terms Modal ───────────────────────────────────────────────────────────────
-function TermsModal({ onClose }: { onClose: () => void }) {
-  return (
-    <ModalWrapper onClose={onClose}>
-      <ModalHeader title="Ketentuan Layanan" onClose={onClose} />
-      <div className="p-6 overflow-y-auto custom-scrollbar text-neutral-300 text-sm leading-relaxed space-y-6">
-        <div>
-          <h4 className="text-white font-semibold mb-2">1. Penerimaan Syarat</h4>
-          <p>Dengan mengakses atau menggunakan platform MemoryMap, Anda menyetujui untuk terikat dengan Ketentuan Layanan ini.</p>
-        </div>
-        <div>
-          <h4 className="text-white font-semibold mb-2">2. Pengguna Akun</h4>
-          <p>Anda bertanggung jawab untuk menjaga kerahasiaan kata sandi dan akun Anda, serta sepenuhnya bertanggung jawab atas seluruh aktivitas yang terjadi menggunakan kata sandi atau akun Anda.</p>
-        </div>
-        <div>
-          <h4 className="text-white font-semibold mb-2">3. Pedoman Konten</h4>
-          <p>Anda setuju untuk tidak memposting, mengunggah, atau mendistribusikan kenangan yang mengandung materi yang:</p>
-          <ul className="list-disc leading-relaxed pl-5 mt-2 space-y-1 text-neutral-400">
-            <li>Ilegal, memfitnah, atau mengancam</li>
-            <li>Melanggar hak cipta, merek dagang, atau kekayaan intelektual orang lain</li>
-            <li>Mengandung virus atau kode komputer berbahaya</li>
-            <li>Mempromosikan kebencian, kekerasan, atau diskriminasi</li>
-          </ul>
-        </div>
-        <div>
-          <h4 className="text-white font-semibold mb-2">4. Hak Penghentian</h4>
-          <p>Kami dapat menghentikan atau membekukan akun Anda segera, tanpa pemberitahuan sebelumnya, untuk alasan apa pun, termasuk tanpa batas jika Anda melanggar Ketentuan Layanan ini.</p>
-        </div>
-        <p className="text-neutral-500 text-xs mt-8">
-          Pembaruan Terakhir: {new Date().toLocaleDateString("id-ID", { year: "numeric", month: "long", day: "numeric" })}
-        </p>
-      </div>
-    </ModalWrapper>
-  )
-}
+// ─── Modals (Replaced by Global TermsModal) ────────────────────────────────────
 
 // ─── Changelog Modal ───────────────────────────────────────────────────────────
 function ChangelogModal({ onClose }: { onClose: () => void }) {
@@ -587,62 +524,7 @@ function MobileAppModal({ onClose }: { onClose: () => void }) {
   )
 }
 
-// ─── Blog Modal ────────────────────────────────────────────────────────────────
-function BlogModal({ onClose }: { onClose: () => void }) {
-  return (
-    <ModalWrapper onClose={onClose} maxWidth="max-w-4xl">
-      <ModalHeader title="Blog MemoryMap" onClose={onClose} />
-      <div className="p-6 overflow-y-auto custom-scrollbar">
-        <div className="group relative rounded-2xl overflow-hidden mb-6 border border-white/[0.08]">
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c16] via-[#0c0c16]/80 to-transparent z-10" />
-          <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=2070&auto=format&fit=crop" alt="Featured Post" className="w-full h-[300px] object-cover group-hover:scale-105 transition-transform duration-700" />
-          <div className="absolute bottom-0 left-0 p-6 sm:p-8 z-20 w-full">
-            <div className="flex items-center gap-3 mb-3">
-              <span className="px-3 py-1 bg-indigo-500/20 text-indigo-300 text-xs font-semibold rounded-full border border-indigo-500/30">Pengumuman</span>
-              <span className="text-xs text-neutral-400">10 Maret 2026</span>
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-bold font-[Outfit] text-white mb-2 leading-tight">Memperkenalkan MemoryMap V2: Jurnal Interaktif Era Baru</h2>
-            <p className="text-neutral-300 text-sm sm:text-base max-w-2xl line-clamp-2 mb-4">Pembaruan terbesar kami menghadirkan tampilan antarmuka yang lebih segar, performa peta yang melesat, dan peluncuran portal komunitas real-time...</p>
-            <button className="flex items-center gap-2 text-indigo-400 font-medium hover:text-indigo-300 transition-colors text-sm">
-              Baca Selengkapnya <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[
-            { img: "https://images.unsplash.com/photo-1522204523234-8729aa6e3d5f?q=80&w=2070&auto=format&fit=crop", category: "Tips", categoryColor: "text-emerald-400", date: "5 Mar 2026", title: "7 Lokasi Tersembunyi di Peta Dunia", desc: "Temukan spot-spot rahasia yang jarang diketahui orang untuk mengabadikan kenangan terbaik Anda musim liburan ini." },
-            { img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2073&auto=format&fit=crop", category: "Cerita", categoryColor: "text-violet-400", date: "28 Feb 2026", title: "Bagaimana MemoryMap Membantu Saya Mengingat", desc: "Wawancara eksklusif bersama komunitas mengenai dampak menyimpan kenangan visual yang terikat pada lokasi." },
-            { img: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=2072&auto=format&fit=crop", category: "Teknologi", categoryColor: "text-rose-400", date: "15 Feb 2026", title: "Arsitektur Dibalik Peta Interaktif Kami", desc: "Membongkar stack teknologi dan trik rendering yang kami gunakan untuk membuat jutaan token memori tanpa lag." },
-          ].map((post, i) => (
-            <div key={i} className="group relative rounded-2xl overflow-hidden border border-white/[0.08] hover:border-white/20 transition-colors flex flex-col" style={{ background: "rgba(255,255,255,0.02)" }}>
-              <div className="relative h-48 overflow-hidden">
-                <img src={post.img} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-              </div>
-              <div className="p-5 flex-1 flex flex-col">
-                <div className="flex items-center gap-3 mb-3">
-                  <span className={`text-xs font-semibold ${post.categoryColor} uppercase tracking-wider`}>{post.category}</span>
-                  <span className="text-[11px] text-neutral-500">{post.date}</span>
-                </div>
-                <h4 className="text-white font-bold text-lg mb-2 leading-snug group-hover:text-indigo-400 transition-colors">{post.title}</h4>
-                <p className="text-neutral-400 text-sm line-clamp-3 mb-4 flex-1">{post.desc}</p>
-                <button className="text-xs font-medium text-neutral-300 hover:text-white transition-colors flex items-center gap-1.5 self-start">
-                  Baca Artikel <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-8 flex justify-center">
-          <button className="px-5 py-2.5 rounded-xl border border-white/10 text-neutral-300 hover:text-white hover:bg-white/[0.05] transition-colors text-sm font-semibold flex items-center gap-2">
-            Muat Lebih Banyak Artikel <Loader2 className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
-    </ModalWrapper>
-  )
-}
 
 // ─── Main Modals Export ────────────────────────────────────────────────────────
 export interface LandingModalsProps {
@@ -650,13 +532,11 @@ export interface LandingModalsProps {
   isTermsOpen: boolean
   isChangelogOpen: boolean
   isContactOpen: boolean
-  isBlogOpen: boolean
   isMobileAppOpen: boolean
   onPrivacyClose: () => void
   onTermsClose: () => void
   onChangelogClose: () => void
   onContactClose: () => void
-  onBlogClose: () => void
   onMobileAppClose: () => void
 }
 
@@ -665,23 +545,22 @@ export function LandingModals({
   isTermsOpen,
   isChangelogOpen,
   isContactOpen,
-  isBlogOpen,
   isMobileAppOpen,
   onPrivacyClose,
   onTermsClose,
   onChangelogClose,
   onContactClose,
-  onBlogClose,
   onMobileAppClose,
 }: LandingModalsProps) {
   return (
-    <AnimatePresence>
-      {isPrivacyOpen && <PrivacyModal onClose={onPrivacyClose} />}
-      {isTermsOpen && <TermsModal onClose={onTermsClose} />}
-      {isChangelogOpen && <ChangelogModal onClose={onChangelogClose} />}
-      {isContactOpen && <ContactModal onClose={onContactClose} />}
-      {isBlogOpen && <BlogModal onClose={onBlogClose} />}
-      {isMobileAppOpen && <MobileAppModal onClose={onMobileAppClose} />}
-    </AnimatePresence>
+    <>
+      <AnimatePresence>
+        {isChangelogOpen && <ChangelogModal onClose={onChangelogClose} />}
+        {isContactOpen && <ContactModal onClose={onContactClose} />}
+        {isMobileAppOpen && <MobileAppModal onClose={onMobileAppClose} />}
+      </AnimatePresence>
+      <TermsModal isOpen={isPrivacyOpen} onClose={onPrivacyClose} type="privacy" />
+      <TermsModal isOpen={isTermsOpen} onClose={onTermsClose} type="terms" />
+    </>
   )
 }

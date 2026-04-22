@@ -233,7 +233,7 @@ export function LandingFeatures() {
                   <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-400/70 mb-1.5">Multimedia</div>
                   <h3 className="text-lg font-bold font-[Outfit] text-white leading-snug">Jurnal Lengkap</h3>
                   <p className="text-neutral-500 text-sm leading-relaxed mt-1.5">
-                    Cerita, emosi, foto, dan musik — semua tersimpan rapi di setiap momen geografis dalam hidupmu.
+                    Cerita, emosi, foto, dan musik semua tersimpan rapi di setiap momen geografis dalam hidupmu.
                   </p>
                 </div>
               </div>
@@ -283,7 +283,7 @@ export function LandingFeatures() {
                   <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-400/70 mb-1">Cepat</div>
                   <h3 className="text-base font-bold font-[Outfit] text-white">Temukan Secepat Kilat</h3>
                   <p className="text-neutral-500 text-sm leading-relaxed mt-1">
-                    Pencarian teks penuh dan filter tanggal — balik ke momen apa pun dalam hitungan detik.
+                    Pencarian teks penuh dan filter tanggal, balik ke momen apa pun dalam hitungan detik.
                   </p>
                 </div>
                 {/* Fake search bar */}
@@ -307,7 +307,7 @@ export function LandingFeatures() {
                   <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-400/70 mb-1.5">Shareable</div>
                   <h3 className="text-lg font-bold font-[Outfit] text-white">Bagikan Ceritamu Tanpa Batas</h3>
                   <p className="text-neutral-500 text-sm leading-relaxed mt-1.5 max-w-lg">
-                    Bagikan kenangan pilihanmu ke teman lewat link unik — nggak perlu akun buat bisa melihatnya. Sesederhana itu.
+                    Bagikan kenangan pilihanmu ke teman lewat link unik, nggak perlu akun buat bisa melihatnya. Sesederhana itu.
                   </p>
                 </div>
               </div>

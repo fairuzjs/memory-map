@@ -49,18 +49,34 @@ export async function POST(req: Request) {
             const bytes = await image.arrayBuffer();
             const buffer = Buffer.from(bytes);
 
-            // Ensure upload directory exists
-            const uploadDir = join(process.cwd(), "public", "uploads", "feedbacks");
-            await mkdir(uploadDir, { recursive: true });
+            // Upload to Supabase Storage instead of local filesystem
+            const { createClient } = await import("@supabase/supabase-js");
+            const supabase = createClient(
+                process.env.NEXT_PUBLIC_SUPABASE_URL!,
+                process.env.SUPABASE_SERVICE_ROLE_KEY!
+            );
 
-            // Generate unique filename
+            const fileExt = image.name.split('.').pop() || 'jpg';
             const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
-            const filename = `${uniqueSuffix}-${image.name.replace(/[^a-zA-Z0-9.\-_]/g, '')}`;
-            const filepath = join(uploadDir, filename);
+            const filename = `feedbacks/${session.user.id}/${uniqueSuffix}.${fileExt}`;
 
-            // Save file
-            await writeFile(filepath, buffer);
-            imageUrl = `/uploads/feedbacks/${filename}`;
+            const { data, error } = await supabase.storage
+                .from("public_uploads")
+                .upload(filename, buffer, {
+                    contentType: image.type,
+                    upsert: false
+                });
+
+            if (error) {
+                console.error("Supabase upload error:", error);
+                return NextResponse.json({ error: "Failed to upload image to storage" }, { status: 500 });
+            }
+
+            const { data: publicData } = supabase.storage
+                .from("public_uploads")
+                .getPublicUrl(data.path);
+
+            imageUrl = publicData.publicUrl;
         }
 
         const feedback = await prisma.feedback.create({

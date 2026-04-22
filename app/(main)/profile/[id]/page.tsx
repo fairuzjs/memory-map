@@ -182,6 +182,38 @@ export default function UserProfilePage() {
         }
     }
 
+    const handlePin = async (memoryId: string) => {
+        try {
+            const memory = memories.find((m: any) => m.id === memoryId)
+            if (!memory) return
+
+            const isPinning = !memory.isPinned
+            if (isPinning) {
+                const pinnedCount = memories.filter((m: any) => m.isPinned).length
+                if (pinnedCount >= 3) {
+                    toast.error("Maksimal 3 kenangan yang bisa disematkan")
+                    return
+                }
+            }
+
+            const previousMemories = [...memories]
+            setMemories((prev: any[]) => prev.map(m => m.id === memoryId ? { ...m, isPinned: isPinning } : m))
+
+            const res = await fetch(`/api/memories/${memoryId}/pin`, { method: "POST" })
+            const data = await res.json()
+
+            if (!res.ok) {
+                setMemories(previousMemories)
+                toast.error(data.error || "Gagal menyematkan kenangan")
+                return
+            }
+
+            toast.success(data.message)
+        } catch (error) {
+            toast.error("Terjadi kesalahan")
+        }
+    }
+
     if (loading) return <ProfileSkeleton />
 
     const isOwner = session?.user?.id === id
@@ -265,6 +297,7 @@ export default function UserProfilePage() {
                     isOwner={isOwner} 
                     profileId={id as string} 
                     onReact={handleReact}
+                    onPin={handlePin}
                 />
             </div>
 

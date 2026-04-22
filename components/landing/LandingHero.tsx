@@ -69,11 +69,11 @@ export function LandingHero() {
           </motion.p>
 
           {/* CTA Buttons */}
-          <motion.div variants={fadeUp} className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <motion.div variants={fadeUp} className="flex flex-row items-center justify-center gap-3 w-full max-w-sm sm:max-w-none mx-auto">
             {session?.user ? (
               <Link
                 href="/dashboard"
-                className="group flex items-center justify-center gap-2 px-8 py-4 rounded-full text-base font-semibold text-neutral-900 bg-white hover:bg-neutral-100 transition-colors shadow-lg shadow-white/10"
+                className="group flex flex-1 sm:flex-none items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 rounded-full text-sm sm:text-base font-semibold text-neutral-900 bg-white hover:bg-neutral-100 transition-colors shadow-lg shadow-white/10"
               >
                 Kembali ke Dashboard
               </Link>
@@ -81,13 +81,13 @@ export function LandingHero() {
               <>
                 <Link
                   href="/register"
-                  className="group relative flex items-center justify-center gap-2 px-8 py-4 rounded-full text-base font-semibold text-neutral-900 bg-white hover:bg-neutral-100 transition-all shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] hover:shadow-[0_0_60px_-10px_rgba(255,255,255,0.4)]"
+                  className="group relative flex flex-1 sm:flex-none items-center justify-center gap-2 px-4 sm:px-8 py-3.5 sm:py-4 rounded-full text-sm sm:text-base font-semibold text-neutral-900 bg-white hover:bg-neutral-100 transition-all shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] hover:shadow-[0_0_60px_-10px_rgba(255,255,255,0.4)]"
                 >
                   Mulai Sekarang
                 </Link>
                 <Link
                   href="/login"
-                  className="flex items-center justify-center gap-2 px-8 py-4 rounded-full text-base font-medium text-white border border-white/15 bg-white/5 hover:bg-white/10 transition-all backdrop-blur-sm"
+                  className="flex flex-1 sm:flex-none items-center justify-center gap-2 px-4 sm:px-8 py-3.5 sm:py-4 rounded-full text-sm sm:text-base font-medium text-white border border-white/15 bg-white/5 hover:bg-white/10 transition-all backdrop-blur-sm"
                 >
                   Masuk ke Akun
                 </Link>

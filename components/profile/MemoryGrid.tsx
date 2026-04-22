@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { MapPin, Heart, MessageCircle, Plus, Users, Music, Image as ImageIcon } from "lucide-react"
+import { MapPin, Heart, MessageCircle, Plus, Users, Music, Image as ImageIcon, Pin } from "lucide-react"
 import Link from "next/link"
 import { EMOTION_COLOR, EMOTION_BG, EMOTION_LABEL } from "./ProfileUtils"
 import { MemoryModal } from "./MemoryModal"
@@ -88,18 +88,25 @@ export function MemoryGridCell({ memory, onClick, profileId }: { memory: any; on
                 </div>
             </div>
 
-            {memory.photos?.length > 1 && (
-                <div className="absolute top-2 right-2 flex items-center gap-0.5 px-1.5 py-0.5 rounded-md opacity-90"
-                    style={{ background: "rgba(0,0,0,0.65)", backdropFilter: "blur(4px)" }}>
-                    <ImageIcon className="w-2.5 h-2.5 text-white" />
-                    <span className="text-[9px] font-bold text-white">{memory.photos.length}</span>
-                </div>
-            )}
+            <div className="absolute top-2 right-2 flex items-center gap-1.5 z-20">
+                {memory.isPinned && (
+                    <div className="flex items-center justify-center w-6 h-6 rounded-full bg-indigo-500/80 backdrop-blur-md border border-indigo-300/30 shadow-sm" title="Disematkan">
+                        <Pin className="w-3 h-3 text-white fill-white" />
+                    </div>
+                )}
+                {memory.photos?.length > 1 && (
+                    <div className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-md opacity-90"
+                        style={{ background: "rgba(0,0,0,0.65)", backdropFilter: "blur(4px)" }}>
+                        <ImageIcon className="w-2.5 h-2.5 text-white" />
+                        <span className="text-[9px] font-bold text-white">{memory.photos.length}</span>
+                    </div>
+                )}
+            </div>
         </motion.div>
     )
 }
 
-export function MemoryGrid({ memories, isOwner, profileId, onReact }: { memories: any[]; isOwner: boolean; profileId: string; onReact: (id: string) => Promise<void> }) {
+export function MemoryGrid({ memories, isOwner, profileId, onReact, onPin }: { memories: any[]; isOwner: boolean; profileId: string; onReact: (id: string) => Promise<void>; onPin?: (id: string) => Promise<void> }) {
     const [selectedMemory, setSelectedMemory] = useState<any | null>(null)
 
     if (memories.length === 0) return null
@@ -134,8 +141,27 @@ export function MemoryGrid({ memories, isOwner, profileId, onReact }: { memories
                 )}
             </div>
 
+            {memories.filter(m => m.isPinned).length > 0 && (
+                <div className="mb-8">
+                    <div className="flex items-center gap-2 mb-3 px-1">
+                        <Pin className="w-4 h-4 text-indigo-400 fill-indigo-400" />
+                        <h3 className="text-sm font-bold text-white">Disematkan</h3>
+                    </div>
+                    <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-4 gap-1 sm:gap-1.5">
+                        {memories.filter(m => m.isPinned).map((memory) => (
+                            <MemoryGridCell
+                                key={memory.id}
+                                memory={memory}
+                                onClick={() => setSelectedMemory(memory)}
+                                profileId={profileId}
+                            />
+                        ))}
+                    </div>
+                </div>
+            )}
+
             <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-4 gap-1 sm:gap-1.5">
-                {memories.map((memory) => (
+                {memories.filter(m => !m.isPinned).map((memory) => (
                     <MemoryGridCell
                         key={memory.id}
                         memory={memory}
@@ -151,6 +177,8 @@ export function MemoryGrid({ memories, isOwner, profileId, onReact }: { memories
                         memory={memories.find(m => m.id === selectedMemory.id) || selectedMemory} 
                         onClose={() => setSelectedMemory(null)} 
                         onReact={() => onReact(selectedMemory.id)}
+                        isOwner={isOwner}
+                        onPin={onPin ? () => onPin(selectedMemory.id) : undefined}
                     />
                 )}
             </AnimatePresence>

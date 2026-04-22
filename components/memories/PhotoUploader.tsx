@@ -133,7 +133,10 @@ export function PhotoUploader({ photos, onChange, isPublic }: PhotoUploaderProps
                         <ImagePlus className="w-8 h-8 text-neutral-400 mb-2" />
                     )}
                     <span className="text-sm font-medium text-neutral-300">
-                        {isUploading ? "Uploading..." : "Click to select photos (Maks 3)"}
+                        {isUploading ? "Uploading..." : "Click to select photos"}
+                    </span>
+                    <span className="text-xs text-neutral-500 mt-1">
+                        Maksimal 3 foto, ukuran max 5MB per foto
                     </span>
                 </button>
             )}

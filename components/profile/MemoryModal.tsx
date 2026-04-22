@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { X, MapPin, Heart, MessageCircle, ChevronLeft, ChevronRight } from "lucide-react"
+import { X, MapPin, Heart, MessageCircle, ChevronLeft, ChevronRight, Pin } from "lucide-react"
 import Link from "next/link"
 import { EMOTION_LABEL, EMOTION_COLOR, EMOTION_BG } from "./ProfileUtils"
 import { formatDate } from "@/lib/utils"
@@ -9,9 +9,11 @@ interface MemoryModalProps {
     memory: any
     onClose: () => void
     onReact?: () => void
+    isOwner?: boolean
+    onPin?: () => void
 }
 
-export function MemoryModal({ memory, onClose, onReact }: MemoryModalProps) {
+export function MemoryModal({ memory, onClose, onReact, isOwner, onPin }: MemoryModalProps) {
     const [photoIdx, setPhotoIdx] = useState(0)
     const photos = (memory.photos ?? []).map((p: any) => {
         try {
@@ -51,10 +53,10 @@ export function MemoryModal({ memory, onClose, onReact }: MemoryModalProps) {
                 </button>
 
                 {/* Left: Photo / Visual */}
-                <div className="relative sm:w-[55%] aspect-square sm:aspect-auto bg-black flex-shrink-0">
+                <div className="relative sm:w-[55%] aspect-[4/5] sm:aspect-square bg-black flex-shrink-0">
                     {photos.length > 0 ? (
                         <>
-                            <img src={photos[photoIdx].url} alt="" className="w-full h-full object-cover" />
+                            <img src={photos[photoIdx].url} alt="" className="absolute inset-0 w-full h-full object-cover" />
                             {/* Photo navigation */}
                             {photos.length > 1 && (
                                 <>
@@ -94,16 +96,27 @@ export function MemoryModal({ memory, onClose, onReact }: MemoryModalProps) {
                 {/* Right: Info */}
                 <div className="flex flex-col flex-1 overflow-y-auto">
                     {/* Header */}
-                    <div className="px-5 pt-5 pb-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                        {/* Emotion badge */}
-                        <div className="flex items-center gap-2 mb-3">
-                            <span className="text-[10px] font-bold uppercase tracking-[0.1em] px-2.5 py-1 rounded-full"
-                                style={{ background: emotionBg, color: emotionColor, border: `1px solid ${emotionColor}40` }}>
-                                {EMOTION_LABEL[memory.emotion] ?? memory.emotion}
-                            </span>
-                            <span className="text-[10px] text-neutral-600">
-                                {formatDate(memory.date)}
-                            </span>
+                    <div className="pl-5 pr-5 sm:pr-14 pt-5 pb-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                        {/* Emotion badge and Pin button */}
+                        <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center gap-2">
+                                <span className="text-[10px] font-bold uppercase tracking-[0.1em] px-2.5 py-1 rounded-full"
+                                    style={{ background: emotionBg, color: emotionColor, border: `1px solid ${emotionColor}40` }}>
+                                    {EMOTION_LABEL[memory.emotion] ?? memory.emotion}
+                                </span>
+                                <span className="text-[10px] text-neutral-600">
+                                    {formatDate(memory.date)}
+                                </span>
+                            </div>
+                            {isOwner && onPin && (
+                                <button
+                                    onClick={onPin}
+                                    className={`flex items-center justify-center w-8 h-8 rounded-full transition-all border ${memory.isPinned ? "bg-indigo-500/20 border-indigo-500/50 text-indigo-400" : "bg-white/5 border-white/10 text-white hover:bg-white/10"}`}
+                                    title={memory.isPinned ? "Batal Sematkan" : "Sematkan Kenangan"}
+                                >
+                                    <Pin className={`w-4 h-4 ${memory.isPinned ? "fill-indigo-400" : ""}`} />
+                                </button>
+                            )}
                         </div>
                         <h3 className="text-lg font-black text-white leading-snug mb-1" style={{ fontFamily: "'Syne',sans-serif" }}>
                             {memory.title}

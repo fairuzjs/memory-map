@@ -48,7 +48,7 @@ export function EditorStepMedia({
                         </div>
                         <div>
                             <h2 className="text-lg font-semibold font-[Outfit] text-white">Galeri Foto</h2>
-                            <p className="text-xs text-neutral-500">Upload visual kenangan (Maks 3 foto)</p>
+                            <p className="text-xs text-neutral-500">Upload visual kenangan (Maks 3 foto, ukuran max 5MB/foto)</p>
                         </div>
                     </div>
                     <Controller

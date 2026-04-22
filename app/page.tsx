@@ -32,7 +32,6 @@ export default function LandingPage() {
   const [isTermsOpen,     setIsTermsOpen]     = useState(false)
   const [isChangelogOpen, setIsChangelogOpen] = useState(false)
   const [isContactOpen,   setIsContactOpen]   = useState(false)
-  const [isBlogOpen,      setIsBlogOpen]      = useState(false)
   const [isMobileAppOpen, setIsMobileAppOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
@@ -121,7 +120,6 @@ export default function LandingPage() {
         onTermsOpen={() => setIsTermsOpen(true)}
         onChangelogOpen={() => setIsChangelogOpen(true)}
         onContactOpen={() => setIsContactOpen(true)}
-        onBlogOpen={() => setIsBlogOpen(true)}
         onMobileAppOpen={() => setIsMobileAppOpen(true)}
       />
 
@@ -131,13 +129,11 @@ export default function LandingPage() {
         isTermsOpen={isTermsOpen}
         isChangelogOpen={isChangelogOpen}
         isContactOpen={isContactOpen}
-        isBlogOpen={isBlogOpen}
         isMobileAppOpen={isMobileAppOpen}
         onPrivacyClose={() => setIsPrivacyOpen(false)}
         onTermsClose={() => setIsTermsOpen(false)}
         onChangelogClose={() => setIsChangelogOpen(false)}
         onContactClose={() => setIsContactOpen(false)}
-        onBlogClose={() => setIsBlogOpen(false)}
         onMobileAppClose={() => setIsMobileAppOpen(false)}
       />
 

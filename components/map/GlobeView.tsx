@@ -43,7 +43,7 @@ interface GlobeViewProps {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const GLOBE_RADIUS = 2.2
-const DOT_RADIUS = 0.028
+const DOT_RADIUS = 0.035
 
 /**
  * Jarak minimum antar-pin (world-space). DOT_RADIUS * 2.8 memberi
@@ -307,26 +307,53 @@ function MemoryDot({ memory, position, onHover }: MemoryDotProps) {
     [color, hovered]
   )
 
+  const handlePointerEnter = (e: any) => {
+    e.stopPropagation()
+    setHovered(true)
+    onHover(memory, position)
+    document.body.style.cursor = "pointer"
+  }
+
+  const handlePointerLeave = (e: any) => {
+    e.stopPropagation()
+    setHovered(false)
+    onHover(null, null)
+    document.body.style.cursor = "default"
+  }
+
+  const handleClick = (e: any) => {
+    e.stopPropagation()
+    setHovered(true)
+    onHover(memory, position)
+  }
+
+  const handlePointerMissed = () => {
+    if (hovered) {
+      setHovered(false)
+      onHover(null, null)
+      document.body.style.cursor = "default"
+    }
+  }
+
   return (
-    <mesh
-      ref={meshRef}
-      position={position}
-      onPointerEnter={(e) => {
-        e.stopPropagation()
-        setHovered(true)
-        onHover(memory, position)
-        document.body.style.cursor = "pointer"
-      }}
-      onPointerLeave={(e) => {
-        e.stopPropagation()
-        setHovered(false)
-        onHover(null, null)
-        document.body.style.cursor = "default"
-      }}
-    >
-      <sphereGeometry args={[DOT_RADIUS, 12, 12]} />
-      <primitive object={mat} attach="material" />
-    </mesh>
+    <group position={position}>
+      {/* Hitbox tidak terlihat, ukurannya 3.5x lebih besar untuk memudahkan klik/tap di mobile */}
+      <mesh
+        onPointerEnter={handlePointerEnter}
+        onPointerLeave={handlePointerLeave}
+        onClick={handleClick}
+        onPointerMissed={handlePointerMissed}
+      >
+        <sphereGeometry args={[DOT_RADIUS * 3.5, 12, 12]} />
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+      </mesh>
+
+      {/* Visual Dot */}
+      <mesh ref={meshRef}>
+        <sphereGeometry args={[DOT_RADIUS, 12, 12]} />
+        <primitive object={mat} attach="material" />
+      </mesh>
+    </group>
   )
 }
 

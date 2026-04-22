@@ -52,7 +52,16 @@ export function LandingNavbar({ isMobileMenuOpen, setIsMobileMenuOpen, scrollToS
 
           <div className="flex items-center justify-between h-[64px] px-5">
             {/* ── Logo ─────────────────────────────────────────────────────── */}
-            <Link href="/" className="flex items-center gap-2.5 group">
+            <Link 
+              href="/" 
+              className="flex items-center gap-2.5 group"
+              onClick={(e) => {
+                if (window.location.pathname === "/") {
+                  e.preventDefault()
+                  window.scrollTo({ top: 0, behavior: "smooth" })
+                }
+              }}
+            >
               <div className="relative w-9 h-9 flex items-center justify-center shrink-0">
                 <div className="absolute inset-0 bg-indigo-600 rounded-xl rotate-[-8deg] group-hover:rotate-0 transition-transform duration-300 shadow-lg shadow-indigo-500/30" />
                 <MapPin className="relative w-4 h-4 text-white z-10" />

@@ -122,6 +122,8 @@ model Memory {
 
   // Spotify integration
   spotifyTrackId String?   // Spotify Track ID
+
+  isPinned       Boolean   @default(false)
 }
 
 enum Emotion {

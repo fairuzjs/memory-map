@@ -13,6 +13,7 @@ import {
     Check, X, ArrowLeft, Mail, Timer, RefreshCw, ShieldCheck, Loader2
 } from "lucide-react"
 import { motion, AnimatePresence, Variants } from "framer-motion"
+import { TermsModal } from "@/components/ui/TermsModal"
 
 const fadeUp: Variants = {
     hidden: { opacity: 0, y: 24 },
@@ -46,6 +47,7 @@ const inputCls = "h-11 w-full rounded-xl border border-white/[0.08] bg-white/[0.
 export default function RegisterPage() {
     const router = useRouter()
     const [showOtpModal, setShowOtpModal] = useState(false)
+    const [modalType, setModalType] = useState<"terms" | "privacy" | null>(null)
 
     // Form state
     const [isLoading, setIsLoading] = useState(false)
@@ -381,9 +383,9 @@ export default function RegisterPage() {
                             <motion.div custom={5} variants={fadeUp} initial="hidden" animate="show">
                                 <p className="text-xs text-neutral-600 leading-relaxed">
                                     Dengan membuat akun, Anda menyetujui{" "}
-                                    <Link href="#" className="text-indigo-400 hover:text-indigo-300 transition-colors">Syarat Layanan</Link>
+                                    <button type="button" onClick={() => setModalType("terms")} className="text-indigo-400 hover:text-indigo-300 transition-colors font-semibold">Syarat Layanan</button>
                                     {" "}dan{" "}
-                                    <Link href="#" className="text-indigo-400 hover:text-indigo-300 transition-colors">Kebijakan Privasi</Link> kami.
+                                    <button type="button" onClick={() => setModalType("privacy")} className="text-indigo-400 hover:text-indigo-300 transition-colors font-semibold">Kebijakan Privasi</button> kami.
                                 </p>
                             </motion.div>
 
@@ -557,6 +559,13 @@ export default function RegisterPage() {
                     </div>
                 )}
             </AnimatePresence>
+
+            {/* ── Terms & Privacy Modal ───────────────────────────────── */}
+            <TermsModal 
+                isOpen={modalType !== null} 
+                onClose={() => setModalType(null)} 
+                type={modalType || "terms"} 
+            />
         </div>
     )
 }

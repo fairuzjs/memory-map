@@ -83,11 +83,11 @@ export function LandingCTABanner() {
             </motion.p>
 
             {/* CTA */}
-            <motion.div variants={fadeUp} className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <motion.div variants={fadeUp} className="flex flex-row items-center justify-center gap-3 w-full max-w-sm sm:max-w-none mx-auto">
               {session?.user ? (
                 <Link
                   href="/dashboard"
-                  className="group inline-flex items-center gap-2.5 px-8 py-4 rounded-2xl text-base font-semibold text-neutral-900 bg-white hover:bg-neutral-100 transition-all shadow-[0_0_40px_-10px_rgba(255,255,255,0.4)] hover:shadow-[0_0_60px_-8px_rgba(255,255,255,0.5)]"
+                  className="group flex flex-1 sm:flex-none items-center justify-center gap-2.5 px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl text-sm sm:text-base font-semibold text-neutral-900 bg-white hover:bg-neutral-100 transition-all shadow-[0_0_40px_-10px_rgba(255,255,255,0.4)] hover:shadow-[0_0_60px_-8px_rgba(255,255,255,0.5)]"
                 >
                   Buka Dashboard
                 </Link>
@@ -95,13 +95,13 @@ export function LandingCTABanner() {
                 <>
                   <Link
                     href="/register"
-                    className="group inline-flex items-center gap-2.5 px-8 py-4 rounded-2xl text-base font-semibold text-neutral-900 bg-white hover:bg-neutral-100 transition-all shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] hover:shadow-[0_0_60px_-8px_rgba(255,255,255,0.45)]"
+                    className="group flex flex-1 sm:flex-none items-center justify-center gap-2.5 px-4 sm:px-8 py-3.5 sm:py-4 rounded-2xl text-[13px] sm:text-base font-semibold text-neutral-900 bg-white hover:bg-neutral-100 transition-all shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] hover:shadow-[0_0_60px_-8px_rgba(255,255,255,0.45)] text-center leading-tight"
                   >
                     Buat Akun Gratis
                   </Link>
                   <Link
                     href="/login"
-                    className="inline-flex items-center gap-2 px-7 py-4 rounded-2xl text-base font-medium text-neutral-400 hover:text-white border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.07] transition-all backdrop-blur-sm"
+                    className="flex flex-1 sm:flex-none items-center justify-center gap-2 px-4 sm:px-7 py-3.5 sm:py-4 rounded-2xl text-[13px] sm:text-base font-medium text-neutral-400 hover:text-white border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.07] transition-all backdrop-blur-sm text-center leading-tight"
                   >
                     Sudah punya akun
                   </Link>

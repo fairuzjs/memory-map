@@ -9,7 +9,6 @@ interface LandingFooterProps {
   onTermsOpen: () => void
   onChangelogOpen: () => void
   onContactOpen: () => void
-  onBlogOpen: () => void
   onMobileAppOpen: () => void
 }
 
@@ -19,12 +18,11 @@ export function LandingFooter({
   onTermsOpen,
   onChangelogOpen,
   onContactOpen,
-  onBlogOpen,
   onMobileAppOpen,
 }: LandingFooterProps) {
   const socialLinks = [
     { icon: Twitter, href: "#", label: "Twitter" },
-    { icon: Instagram, href: "#", label: "Instagram" },
+    { icon: Instagram, href: "https://www.instagram.com/draafrzz_", label: "Instagram" },
     { icon: Github, href: "#", label: "GitHub" },
   ]
 
@@ -117,11 +115,6 @@ export function LandingFooter({
                   </a>
                 </li>
                 <li>
-                  <button onClick={onBlogOpen} className="text-[13px] text-neutral-600 hover:text-indigo-400 transition-colors">
-                    Blog
-                  </button>
-                </li>
-                <li>
                   <button onClick={onContactOpen} className="text-[13px] text-neutral-600 hover:text-indigo-400 transition-colors">
                     Kontak
                   </button>
@@ -141,11 +134,6 @@ export function LandingFooter({
                 <li>
                   <button onClick={onChangelogOpen} className="text-[13px] text-neutral-600 hover:text-indigo-400 transition-colors">
                     Changelog
-                  </button>
-                </li>
-                <li>
-                  <button onClick={onChangelogOpen} className="text-[13px] text-neutral-600 hover:text-indigo-400 transition-colors">
-                    Status Sistem
                   </button>
                 </li>
               </ul>
@@ -169,9 +157,6 @@ export function LandingFooter({
               Cookie
             </a>
           </div>
-          <p className="text-[12px] text-neutral-800 hidden lg:block order-3">
-            Dibuat dengan ♥ di Indonesia
-          </p>
         </div>
       </div>
     </footer>
