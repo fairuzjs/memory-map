@@ -8,6 +8,8 @@ const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 import { Providers } from "./providers";
 import { IdleTimeout } from "@/components/layout/IdleTimeout";
 
+import { Analytics } from "@vercel/analytics/react";
+
 export const metadata: Metadata = {
   title: "Memory Map",
   description: "Map your precious life memories",
@@ -63,6 +65,7 @@ export default function RootLayout({
             }}
           />
         </Providers>
+        <Analytics />
       </body>
     </html>
   );
