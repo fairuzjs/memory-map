@@ -55,6 +55,16 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
             return NextResponse.json({ error: "Name is required" }, { status: 400 })
         }
 
+        // Validate pinnedBadge if not null
+        if (pinnedBadge !== null && pinnedBadge !== undefined) {
+            const hasBadge = await prisma.userStreakBadge.findFirst({
+                where: { userId: id, milestone: pinnedBadge }
+            })
+            if (!hasBadge) {
+                return NextResponse.json({ error: "Kamu belum membuka badge ini." }, { status: 403 })
+            }
+        }
+
         // Validate & sanitize username
         let cleanUsername: string | null | undefined = undefined // undefined = don't touch
         if (username !== undefined) {

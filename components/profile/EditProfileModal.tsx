@@ -232,10 +232,21 @@ export function EditProfileModal({ isOpen, onClose, user, onSave }: EditProfileM
                                             const cfg = getBadgeConfig(m)
                                             const Icon = cfg.icon
                                             const active = editPinnedBadge === m
+                                            const isUnlocked = user.streakBadges?.some((b: any) => b.milestone === m)
                                             return (
-                                                <button key={m} onClick={() => setEditPinnedBadge(m)} className={`p-4 rounded-2xl border transition-all flex flex-col items-center gap-2 ${active ? 'bg-indigo-500/10 border-indigo-500' : 'bg-white/5 border-white/5'}`}>
+                                                <button 
+                                                    key={m} 
+                                                    onClick={() => {
+                                                        if (isUnlocked) setEditPinnedBadge(m)
+                                                        else toast.error(`Capai streak ${m} hari untuk membuka badge ini`)
+                                                    }} 
+                                                    className={`p-4 rounded-2xl border transition-all flex flex-col items-center gap-2 relative ${active ? 'bg-indigo-500/10 border-indigo-500' : 'bg-white/5 border-white/5'} ${!isUnlocked ? 'opacity-40 grayscale cursor-not-allowed' : ''}`}
+                                                >
                                                     <Icon className={`w-6 h-6 ${cfg.iconClassProfile}`} />
                                                     <span className="text-[10px] font-bold text-white uppercase tracking-wider">{cfg.name}</span>
+                                                    {!isUnlocked && (
+                                                        <span className="absolute top-2 right-2 text-xs">🔒</span>
+                                                    )}
                                                 </button>
                                             )
                                         })}
