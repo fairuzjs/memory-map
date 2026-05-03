@@ -46,12 +46,16 @@ export const authConfig = {
                 token.role = user.role
                 token.isVerified = user.isVerified
                 token.isEmailVerified = user.isEmailVerified
+                token.isPremium = user.isPremium
+                token.premiumExpiresAt = user.premiumExpiresAt
             }
             if (trigger === "update" && session) {
                 if (session.name) token.name = session.name
                 if (session.image) token.picture = session.image
                 if (typeof session.isVerified !== 'undefined') token.isVerified = session.isVerified
                 if (typeof session.isEmailVerified !== 'undefined') token.isEmailVerified = session.isEmailVerified
+                if (typeof session.isPremium !== 'undefined') token.isPremium = session.isPremium
+                if (typeof session.premiumExpiresAt !== 'undefined') token.premiumExpiresAt = session.premiumExpiresAt
             }
             return token
         },
@@ -61,6 +65,8 @@ export const authConfig = {
                 session.user.role = token.role as string
                 session.user.isVerified = token.isVerified as boolean | undefined
                 session.user.isEmailVerified = token.isEmailVerified as boolean | undefined
+                session.user.isPremium = token.isPremium as boolean | undefined
+                session.user.premiumExpiresAt = token.premiumExpiresAt as string | null | undefined
             }
             return session
         }

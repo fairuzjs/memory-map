@@ -7,7 +7,11 @@ export async function GET() {
     const session = await auth()
     const userId = session?.user?.id ?? null
 
+    // Exclude premium-exclusive items (granted via premium activation, not for sale)
+    const PREMIUM_EXCLUSIVE_NAMES = ["Mahkota Royale", "Langit Kerajaan"]
+
     const items = await prisma.shopItem.findMany({
+        where: { name: { notIn: PREMIUM_EXCLUSIVE_NAMES } },
         orderBy: [{ type: "asc" }, { price: "asc" }],
     })
 

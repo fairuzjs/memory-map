@@ -58,3 +58,80 @@ export function HutanBanner() {
         </svg>
     )
 }
+
+export function PremiumRoyalBanner() {
+    return (
+        <>
+            {/* Neubrutalism grid pattern */}
+            <div className="absolute inset-0" style={{
+                backgroundImage: "linear-gradient(rgba(255,215,0,0.08) 2px, transparent 2px), linear-gradient(90deg, rgba(255,215,0,0.08) 2px, transparent 2px)",
+                backgroundSize: "24px 24px",
+            }} />
+
+            {/* Thick horizontal gold stripes — animated glow */}
+            <div className="absolute top-[18%] left-0 right-0 h-[6px] neoban-stripe-pulse" style={{ background: "#ffd700", boxShadow: "0 3px 0 #000" }} />
+            <div className="absolute bottom-[22%] left-0 right-0 h-[4px] neoban-stripe-pulse" style={{ background: "#b8860b", boxShadow: "0 2px 0 #000", animationDelay: "1s" }} />
+
+            {/* Geometric crown shape — left (animated float) */}
+            <div className="absolute top-[15%] left-[8%] w-10 h-10 sm:w-12 sm:h-12 neoban-float-a" style={{
+                background: "#ffd700",
+                border: "3px solid #000",
+                boxShadow: "3px 3px 0 #000",
+            }} />
+            <div className="absolute top-[20%] left-[10%] w-6 h-6 sm:w-7 sm:h-7 neoban-float-b" style={{
+                background: "#fff5cc",
+                border: "2px solid #000",
+                boxShadow: "2px 2px 0 #b8860b",
+            }} />
+
+            {/* Crown icon — center (animated pulse) */}
+            <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center neoban-crown-pulse" style={{
+                background: "#ffd700",
+                border: "3px solid #000",
+                boxShadow: "3px 3px 0 #000",
+            }}>
+                <span className="text-lg sm:text-xl select-none" style={{ filter: "drop-shadow(1px 1px 0 #b8860b)" }}>👑</span>
+            </div>
+
+            {/* Diamond shapes — right (animated float) */}
+            <div className="absolute top-[12%] right-[12%] w-8 h-8 sm:w-10 sm:h-10 neoban-spin-slow" style={{
+                background: "#b8860b",
+                border: "3px solid #000",
+                boxShadow: "3px 3px 0 #000",
+            }} />
+            <div className="absolute bottom-[18%] right-[8%] w-5 h-5 neoban-float-c" style={{
+                background: "#ffd700",
+                border: "2px solid #000",
+                boxShadow: "2px 2px 0 #000",
+            }} />
+
+            {/* Small accent blocks (animated) */}
+            <div className="absolute bottom-[30%] left-[22%] w-3 h-3 sm:w-4 sm:h-4 neoban-float-b" style={{
+                background: "#fff5cc",
+                border: "2px solid #000",
+                boxShadow: "2px 2px 0 #b8860b",
+            }} />
+            <div className="absolute top-[35%] right-[25%] w-3 h-3 sm:w-3.5 sm:h-3.5 neoban-float-a" style={{
+                background: "#ffd700",
+                border: "2px solid #000",
+                boxShadow: "1px 1px 0 #000",
+                animationDelay: "0.5s",
+            }} />
+
+            {/* "PREMIUM" text stamp — centered below crown */}
+            <div className="absolute top-[68%] left-[50%] -translate-x-1/2 px-2 py-px neoban-stamp-glow" style={{
+                background: "#000",
+                border: "1.5px solid #ffd700",
+                boxShadow: "1px 1px 0 #b8860b",
+            }}>
+                <span className="text-[6px] sm:text-[7px] font-black tracking-[0.2em] uppercase" style={{ color: "#ffd700" }}>★ PREMIUM ★</span>
+            </div>
+
+            {/* Star accents (animated twinkle) */}
+            <div className="absolute top-[10%] left-[40%] text-[10px] font-black select-none neoban-twinkle" style={{ color: "#ffd700", textShadow: "1px 1px 0 #000" }}>✦</div>
+            <div className="absolute top-[60%] left-[18%] text-[8px] font-black select-none neoban-twinkle" style={{ color: "#b8860b", textShadow: "1px 1px 0 #000", animationDelay: "0.8s" }}>✦</div>
+            <div className="absolute top-[25%] right-[32%] text-[12px] font-black select-none neoban-twinkle" style={{ color: "#fff5cc", textShadow: "1px 1px 0 #000", animationDelay: "1.6s" }}>✦</div>
+            <div className="absolute bottom-[35%] right-[18%] text-[9px] font-black select-none neoban-twinkle" style={{ color: "#ffd700", textShadow: "1px 1px 0 #000", animationDelay: "2.4s" }}>★</div>
+        </>
+    )
+}

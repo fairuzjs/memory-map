@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
 import { checkRateLimit, rateLimitResponse, RATE_LIMITS } from "@/lib/rate-limit"
+import { isPremiumActive, getUserLimits } from "@/lib/premium-config"
 
 // POST /api/shop/purchase  { itemId: string }
 export async function POST(req: Request) {
@@ -23,17 +24,32 @@ export async function POST(req: Request) {
 
     const [item, user, existingInventory] = await Promise.all([
         prisma.shopItem.findUnique({ where: { id: itemId } }),
-        prisma.user.findUnique({ where: { id: userId }, select: { points: true } }),
+        prisma.user.findUnique({ where: { id: userId }, select: { points: true, premiumExpiresAt: true } }),
         prisma.userInventory.findUnique({ where: { userId_itemId: { userId, itemId } } }),
     ])
 
     if (!item) {
         return NextResponse.json({ error: "Item not found" }, { status: 404 })
     }
+
+    // Block purchase of premium-exclusive items
+    const PREMIUM_EXCLUSIVE_NAMES = ["Mahkota Royale", "Langit Kerajaan"]
+    if (PREMIUM_EXCLUSIVE_NAMES.includes(item.name)) {
+        return NextResponse.json({ error: "Item ini eksklusif untuk member Premium" }, { status: 403 })
+    }
+
     if (existingInventory) {
         return NextResponse.json({ error: "Item already owned" }, { status: 409 })
     }
-    if (!user || user.points < item.price) {
+
+    // ── Premium discount ──
+    const userIsPremium = isPremiumActive(user?.premiumExpiresAt ?? null)
+    const limits = getUserLimits(userIsPremium)
+    const discountPercent = limits.shopDiscountPercent
+    const discountAmount = Math.floor(item.price * discountPercent / 100)
+    const finalPrice = item.price - discountAmount
+
+    if (!user || user.points < finalPrice) {
         return NextResponse.json({ error: "Insufficient points" }, { status: 402 })
     }
 
@@ -41,7 +57,7 @@ export async function POST(req: Request) {
     const [, inventory] = await prisma.$transaction([
         prisma.user.update({
             where: { id: userId },
-            data: { points: { decrement: item.price } },
+            data: { points: { decrement: finalPrice } },
         }),
         prisma.userInventory.create({
             data: { userId, itemId },
@@ -57,5 +73,9 @@ export async function POST(req: Request) {
         success: true,
         inventory,
         newPoints: updatedUser?.points ?? 0,
+        originalPrice: item.price,
+        discountPercent,
+        discountAmount,
+        finalPrice,
     })
 }

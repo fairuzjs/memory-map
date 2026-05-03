@@ -15,7 +15,7 @@ import { ProfileMapTeaser } from "@/components/profile/ProfileMapTeaser"
 import { MemoryGrid } from "@/components/profile/MemoryGrid"
 import { EditProfileModal } from "@/components/profile/EditProfileModal"
 import { FollowsModal } from "@/components/profile/FollowsModal"
-import { GalaxyBanner, SamudraBanner, HutanBanner } from "@/components/profile/ProfileBanners"
+import { GalaxyBanner, SamudraBanner, HutanBanner, PremiumRoyalBanner } from "@/components/profile/ProfileBanners"
 import { ProfileSkeleton } from "@/components/profile/ProfileSkeleton"
 
 // Utils
@@ -236,21 +236,23 @@ export default function UserProfilePage() {
             {/* ─────────────── PROFILE CARD ─────────────── */}
             <motion.div
                 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-                className="rounded-[2rem] overflow-hidden mb-8 relative w-full bg-[#0a0a10] border border-white/5 backdrop-blur-3xl shadow-2xl"
+                className="overflow-hidden mb-8 relative w-full bg-[#0a0a10] border-[4px] border-black shadow-[8px_8px_0_#000]"
             >
-                {/* Banner Section */}
+                {/* Banner Section — PRESERVED for equipped banners */}
                 <div className="relative h-32 sm:h-40 overflow-hidden">
                     {(() => {
                         const bn = user.equippedBanner?.name?.toLowerCase() ?? ""
                         const isHutan = bn.includes("hutan")
                         const isGalaxy = bn.includes("galax")
                         const isSamudra = bn.includes("samudra")
+                        const isKerajaan = bn.includes("kerajaan")
                         const bg = user.equippedBanner ? (isHutan ? "linear-gradient(135deg, #001a0a 0%, #007a4d 100%)" : user.equippedBanner.value) : "linear-gradient(135deg, #0f0f23 0%, #0a0f1e 100%)"
                         return (
                             <div className={`absolute inset-0 ${getBannerClass(user.equippedBanner?.name)}`} style={{ background: bg }}>
                                 {isGalaxy && <GalaxyBanner />}
                                 {isSamudra && <SamudraBanner />}
                                 {isHutan && <HutanBanner />}
+                                {isKerajaan && <PremiumRoyalBanner />}
                             </div>
                         )
                     })()}
@@ -318,37 +320,37 @@ export default function UserProfilePage() {
                 onAction={handleFollowsAction} 
             />
 
-            {/* Photo Preview Modal Simplified */}
+            {/* Photo Preview Modal */}
             <AnimatePresence>
                 {isPhotoModalOpen && (
                     <motion.div
                         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[70] flex flex-col items-center justify-center p-6 bg-black/95 backdrop-blur-md"
+                        className="fixed inset-0 z-[70] flex flex-col items-center justify-center p-6 bg-black/90"
                         onClick={() => setIsPhotoModalOpen(false)}
                     >
                         <motion.img
                             initial={{ scale: 0.8 }} animate={{ scale: 1 }} exit={{ scale: 0.8 }}
                             src={user.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`}
-                            className="w-64 h-64 sm:w-80 sm:h-80 rounded-full object-cover mb-12 border-2 border-white/5"
+                            className="w-64 h-64 sm:w-80 sm:h-80 rounded-full object-cover mb-12 border-[4px] border-black shadow-[8px_8px_0_#000]"
                         />
                         <div className="flex flex-wrap justify-center gap-4" onClick={e => e.stopPropagation()}>
                             {isOwner ? (
-                                <button onClick={() => { setIsPhotoModalOpen(false); setIsEditOpen(true) }} className="flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 hover:bg-white/15 border border-white/20 transition-all text-white font-bold text-sm">
-                                    <Camera className="w-4 h-4 text-white/80" />
+                                <button onClick={() => { setIsPhotoModalOpen(false); setIsEditOpen(true) }} className="flex items-center gap-2 px-6 py-3 bg-[#FFFF00] border-[3px] border-black text-black font-black uppercase text-sm shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all">
+                                    <Camera className="w-4 h-4" />
                                     <span>Ubah Foto</span>
                                 </button>
                             ) : (
-                                <button onClick={() => { handleFollow() }} className={`flex items-center gap-2 px-6 py-3 rounded-[1rem] transition-all font-bold text-sm border ${user.isFollowing ? 'bg-neutral-800/80 border-neutral-700 text-neutral-300 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30' : 'bg-gradient-to-tr from-indigo-600 to-purple-600 border-transparent text-white hover:scale-105'}`}>
+                                <button onClick={() => { handleFollow() }} className={`flex items-center gap-2 px-6 py-3 border-[3px] border-black font-black uppercase text-sm shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all ${user.isFollowing ? 'bg-white text-black' : 'bg-[#FF00FF] text-white'}`}>
                                     {user.isFollowing ? <UserCheck className="w-5 h-5" /> : <UserPlus className="w-5 h-5" />}
                                     <span>{user.isFollowing ? "Mengikuti" : "Ikuti"}</span>
                                 </button>
                             )}
-                            <button onClick={copyProfileLink} className="flex items-center gap-2 px-6 py-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 transition-all text-white font-bold text-sm">
-                                <LinkIcon className="w-4 h-4 text-white/80" />
+                            <button onClick={copyProfileLink} className="flex items-center gap-2 px-6 py-3 bg-white border-[3px] border-black text-black font-black uppercase text-sm shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all">
+                                <LinkIcon className="w-4 h-4" />
                                 <span>Salin Tautan</span>
                             </button>
                         </div>
-                        <button className="absolute top-6 right-6 p-2 w-10 h-10 flex items-center justify-center rounded-full bg-white/5 text-white/40 hover:text-white hover:bg-white/10 transition-colors" onClick={() => setIsPhotoModalOpen(false)}><X className="w-5 h-5" /></button>
+                        <button className="absolute top-6 right-6 p-2 w-10 h-10 flex items-center justify-center bg-white border-[3px] border-black text-black shadow-[2px_2px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all" onClick={() => setIsPhotoModalOpen(false)}><X className="w-5 h-5" /></button>
                     </motion.div>
                 )}
             </AnimatePresence>

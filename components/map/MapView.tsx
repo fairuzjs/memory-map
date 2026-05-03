@@ -4,7 +4,7 @@ import { useEffect, useState, useRef, useMemo } from "react"
 import Map, { Marker, Popup, NavigationControl, MapRef } from "react-map-gl/mapbox"
 import { useSearchParams } from "next/navigation"
 import "mapbox-gl/dist/mapbox-gl.css"
-import { getEmotionConfig } from "./MapIcons"
+import { getEmotionConfig, getPremiumMarkerStyle, type PremiumMarkerStyle } from "./MapIcons"
 import Link from "next/link"
 import { Calendar, MapPin, Search, Loader2, Layers, X } from "lucide-react"
 import { StickerRenderer, StickerConfig } from "@/components/memories/StickerRenderer"
@@ -237,6 +237,49 @@ function StyleSwitcher({ current, onChange }: { current: string; onChange: (styl
     )
 }
 
+// ── Premium Marker Renderer (no emoji, shape only) ─────────────
+function PremiumMarkerPin({ style }: { style: PremiumMarkerStyle }) {
+    const shapeClass = style.shape !== "circle" ? `pm-shape-${style.shape}` : "rounded-full"
+
+    return (
+        <div className={`${style.animation}`}>
+            {/* Outer glow ring */}
+            <div
+                className="absolute inset-0 rounded-full opacity-40 blur-sm"
+                style={{ background: `radial-gradient(circle, ${style.glowColor}, transparent 70%)`, transform: "scale(2)" }}
+            />
+            {/* Main marker body — shape only, no emoji */}
+            <div
+                className={`relative w-10 h-10 ${shapeClass}`}
+                style={{
+                    background: `linear-gradient(135deg, ${style.gradient[0]}, ${style.gradient[1]})`,
+                    border: `2.5px solid ${style.borderColor}`,
+                    boxShadow: `0 0 12px ${style.glowColor}, 0 2px 8px rgba(0,0,0,0.4)`,
+                    ["--pm-glow" as any]: style.glowColor,
+                }}
+            >
+                {/* Inner highlight */}
+                <div
+                    className={`absolute inset-[3px] opacity-20 ${shapeClass}`}
+                    style={{ background: `radial-gradient(circle at 35% 35%, white, transparent 60%)` }}
+                />
+                {/* Tiny crown badge */}
+                <div
+                    className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full flex items-center justify-center z-20"
+                    style={{ background: `linear-gradient(135deg, ${style.gradient[0]}, ${style.gradient[1]})`, border: `1.5px solid ${style.borderColor}` }}
+                >
+                    <span className="text-[7px]">👑</span>
+                </div>
+            </div>
+            {/* Arrow pointer */}
+            <div
+                className="w-0 h-0 border-l-[9px] border-l-transparent border-r-[9px] border-r-transparent border-t-[11px] mx-auto -mt-0.5"
+                style={{ borderTopColor: style.gradient[1] }}
+            />
+        </div>
+    )
+}
+
 export default function MapView({ memories }: MapViewProps) {
     const mapRef = useRef<MapRef>(null)
     const [viewState, setViewState] = useState({
@@ -393,6 +436,7 @@ export default function MapView({ memories }: MapViewProps) {
 
                     const memory = cluster.properties.memory
                     const { iconChar, color } = getEmotionConfig(memory.emotion)
+                    const hasPremiumMarker = !!memory.markerStyle
 
                     return (
                         <Marker
@@ -402,7 +446,7 @@ export default function MapView({ memories }: MapViewProps) {
                             anchor="bottom"
                         >
                             <div
-                                className="cursor-pointer transition-transform hover:scale-110 active:scale-95"
+                                className="cursor-pointer transition-transform hover:scale-110 active:scale-95 relative"
                                 onClick={(e) => {
                                     e.stopPropagation()
                                     setSelectedMemory(memory)
@@ -413,10 +457,18 @@ export default function MapView({ memories }: MapViewProps) {
                                     })
                                 }}
                             >
-                                <div style={{ backgroundColor: color }} className="w-8 h-8 rounded-full border-3 border-white flex items-center justify-center shadow-lg">
-                                    <span className="text-base">{iconChar}</span>
-                                </div>
-                                <div style={{ borderTopColor: color }} className="w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[10px] mx-auto -mt-0.5"></div>
+                                {hasPremiumMarker ? (
+                                    <PremiumMarkerPin
+                                        style={getPremiumMarkerStyle(memory.markerStyle)}
+                                    />
+                                ) : (
+                                    <>
+                                        <div style={{ backgroundColor: color }} className="w-8 h-8 rounded-full border-3 border-white flex items-center justify-center shadow-lg">
+                                            <span className="text-base">{iconChar}</span>
+                                        </div>
+                                        <div style={{ borderTopColor: color }} className="w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[10px] mx-auto -mt-0.5"></div>
+                                    </>
+                                )}
                             </div>
                         </Marker>
                     )

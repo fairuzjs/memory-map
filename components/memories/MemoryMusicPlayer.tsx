@@ -112,13 +112,13 @@ export function MemoryMusicPlayer({
 
             ws = WaveSurfer.create({
                 container: waveformRef.current!,
-                waveColor: "rgba(192, 132, 252, 0.35)",
-                progressColor: "rgba(232, 121, 249, 0.75)",
-                cursorColor: "rgba(232, 121, 249, 0.6)",
+                waveColor: "rgba(0, 0, 0, 0.2)",
+                progressColor: "#FF00FF",
+                cursorColor: "#FF00FF",
                 cursorWidth: 2,
-                barWidth: 2,
+                barWidth: 3,
                 barGap: 1.5,
-                barRadius: 2,
+                barRadius: 0,
                 height: 36,
                 normalize: true,
                 interact: false,
@@ -269,7 +269,7 @@ export function MemoryMusicPlayer({
             {[0, 1, 2, 3].map((i) => (
                 <div
                     key={i}
-                    className="w-[3px] rounded-full bg-fuchsia-400"
+                    className="w-[3px] bg-[#FF00FF]"
                     style={{
                         height: isPlaying ? undefined : "4px",
                         animation: isPlaying
@@ -291,27 +291,27 @@ export function MemoryMusicPlayer({
                 }
             `}</style>
 
-            <div className="bg-neutral-900/70 backdrop-blur-xl border border-white/[0.06] rounded-2xl overflow-hidden shadow-xl">
+            <div className="bg-white border-[3px] border-black shadow-[4px_4px_0_#000] overflow-hidden">
                 {/* Header */}
                 <div className="flex items-center gap-3 px-4 pt-4 pb-2">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-fuchsia-500/20 to-violet-500/20 flex items-center justify-center shrink-0 border border-fuchsia-500/20">
+                    <div className="w-8 h-8 bg-[#FF00FF] border-[2px] border-black shadow-[2px_2px_0_#000] flex items-center justify-center shrink-0">
                         <EqualizerBars />
                     </div>
                     <div className="min-w-0 flex-1">
-                        <p className="text-[13px] font-semibold text-neutral-200 truncate">{fileName}</p>
-                        <p className="text-[11px] text-neutral-500">
+                        <p className="text-[13px] font-black text-black truncate uppercase">{fileName}</p>
+                        <p className="text-[11px] text-neutral-500 font-bold">
                             {formatTime(startTime)} — {formatTime(endTime)} · {duration}s klip
                         </p>
                     </div>
                     <button
                         onClick={toggleMute}
-                        className="p-1.5 rounded-lg hover:bg-white/5 transition-colors shrink-0"
+                        className="w-8 h-8 flex items-center justify-center border-[2px] border-black bg-[#E5E5E5] hover:bg-[#FFFF00] transition-colors shrink-0"
                         title={isMuted ? "Unmute" : "Mute"}
                     >
                         {isMuted ? (
-                            <VolumeX className="w-4 h-4 text-neutral-500" />
+                            <VolumeX className="w-4 h-4 text-black" />
                         ) : (
-                            <Volume2 className="w-4 h-4 text-neutral-400" />
+                            <Volume2 className="w-4 h-4 text-black" />
                         )}
                     </button>
                 </div>
@@ -322,9 +322,9 @@ export function MemoryMusicPlayer({
 
                     {/* Progress overlay on waveform */}
                     {waveformReady && (
-                        <div className="absolute bottom-2 left-4 right-4 h-[2px] bg-neutral-800 rounded-full overflow-hidden">
+                        <div className="absolute bottom-2 left-4 right-4 h-[3px] bg-[#E5E5E5] border border-black/20 overflow-hidden">
                             <div
-                                className="h-full bg-gradient-to-r from-fuchsia-500 to-violet-500 rounded-full transition-all duration-150 ease-linear"
+                                className="h-full bg-[#FF00FF] transition-all duration-150 ease-linear"
                                 style={{ width: `${progress * 100}%` }}
                             />
                         </div>
@@ -336,7 +336,7 @@ export function MemoryMusicPlayer({
                                 {[0, 1, 2].map(i => (
                                     <div
                                         key={i}
-                                        className="w-1.5 h-1.5 rounded-full bg-fuchsia-500/40 animate-pulse"
+                                        className="w-2 h-2 bg-[#FF00FF] animate-pulse"
                                         style={{ animationDelay: `${i * 150}ms` }}
                                     />
                                 ))}
@@ -348,25 +348,25 @@ export function MemoryMusicPlayer({
                 {/* Controls */}
                 <div className="flex items-center justify-between px-4 pb-4 pt-1">
                     {/* Time display */}
-                    <span className="text-[11px] font-mono text-neutral-500 tabular-nums w-16">
+                    <span className="text-[11px] font-black font-mono text-neutral-500 tabular-nums w-16 uppercase">
                         {formatTime(elapsedTime)} / {formatTime(duration)}
                     </span>
 
                     {/* Buttons */}
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-2">
                         {/* Stop */}
                         <button
                             onClick={handleStop}
-                            className="p-2 rounded-lg text-neutral-500 hover:text-neutral-200 hover:bg-white/5 transition-all"
+                            className="w-8 h-8 flex items-center justify-center border-[2px] border-black bg-white hover:bg-[#E5E5E5] transition-all"
                             title="Stop"
                         >
-                            <Square className="w-3.5 h-3.5" />
+                            <Square className="w-3.5 h-3.5 text-black" />
                         </button>
 
                         {/* Play / Pause */}
                         <button
                             onClick={isPlaying ? handlePause : handlePlay}
-                            className="relative p-2.5 rounded-xl bg-gradient-to-br from-fuchsia-500 to-violet-600 text-white shadow-lg shadow-fuchsia-500/20 hover:shadow-fuchsia-500/35 hover:scale-105 active:scale-95 transition-all"
+                            className="w-10 h-10 flex items-center justify-center bg-[#FF00FF] border-[3px] border-black shadow-[3px_3px_0_#000] text-white hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all"
                             title={isPlaying ? "Pause" : "Play"}
                         >
                             {isPlaying ? (

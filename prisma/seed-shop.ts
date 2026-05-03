@@ -786,6 +786,23 @@ const SHOP_ITEMS = [
         }),
         previewColor: "#f8d0e0",
     },
+    // ── Premium-Exclusive Items (auto-granted, NOT in shop/gacha) ────
+    {
+        name: "Mahkota Royale",
+        description: "Bingkai premium neubrutalism dengan aksen emas tebal — eksklusif Premium member.",
+        price: 0,
+        type: "AVATAR_FRAME" as const,
+        value: "repeating-conic-gradient(from 0deg, #ffd700 0deg 30deg, #000 30deg 60deg, #b8860b 60deg 90deg, #000 90deg 120deg)",
+        previewColor: "#ffd700",
+    },
+    {
+        name: "Langit Kerajaan",
+        description: "Banner premium bergaya neubrutalism dengan aksen emas kerajaan — eksklusif Premium member.",
+        price: 0,
+        type: "PROFILE_BANNER" as const,
+        value: "linear-gradient(135deg, #1a1508 0%, #2a2010 30%, #1a1508 50%, #2a2010 70%, #1a1508 100%)",
+        previewColor: "#ffd700",
+    },
 ]
 
 async function main() {

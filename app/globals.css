@@ -124,6 +124,14 @@
     @apply border-border outline-ring/50;
   }
 
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
   body {
     @apply bg-neutral-950 text-neutral-100;
   }
@@ -671,4 +679,247 @@
   0%   { opacity: 0.15; }
   60%  { opacity: 1; }
   100% { opacity: 0.3; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   PREMIUM-EXCLUSIVE Animations
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Premium Frame: Mahkota Royale (Neubrutalism) ────────── */
+.anim-frame-mahkota {
+  animation: frameMahkotaNeo 30s linear infinite !important;
+}
+@keyframes frameMahkotaNeo {
+  0% {
+    filter: brightness(1);
+    transform: rotate(0deg);
+  }
+  50% {
+    filter: brightness(1.15);
+  }
+  100% {
+    filter: brightness(1);
+    transform: rotate(360deg);
+  }
+}
+
+.anim-frame-mahkota-glow {
+  animation: frameMahkotaGlowNeo 3s ease-in-out infinite !important;
+}
+@keyframes frameMahkotaGlowNeo {
+  0%, 100% { opacity: 0.25; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(1.08); }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   NEUBRUTALISM BANNER — Langit Kerajaan Animations
+   ══════════════════════════════════════════════════════════════ */
+
+/* Float A: gentle up-down + subtle rotation */
+.neoban-float-a {
+  animation: neobanFloatA 4s ease-in-out infinite;
+}
+@keyframes neobanFloatA {
+  0%, 100% { transform: translateY(0) rotate(12deg); }
+  50% { transform: translateY(-6px) rotate(18deg); }
+}
+
+/* Float B: opposite phase */
+.neoban-float-b {
+  animation: neobanFloatB 5s ease-in-out infinite;
+}
+@keyframes neobanFloatB {
+  0%, 100% { transform: translateY(0) rotate(-6deg); }
+  50% { transform: translateY(-8px) rotate(-12deg); }
+}
+
+/* Float C: lateral drift */
+.neoban-float-c {
+  animation: neobanFloatC 3.5s ease-in-out infinite;
+}
+@keyframes neobanFloatC {
+  0%, 100% { transform: translateX(0) rotate(12deg); }
+  50% { transform: translateX(4px) rotate(20deg); }
+}
+
+/* Slow spin for diamond */
+.neoban-spin-slow {
+  animation: neobanSpinSlow 12s linear infinite;
+}
+@keyframes neobanSpinSlow {
+  from { transform: rotate(45deg); }
+  to { transform: rotate(405deg); }
+}
+
+/* Crown center pulse */
+.neoban-crown-pulse {
+  animation: neobanCrownPulse 2.5s ease-in-out infinite;
+}
+@keyframes neobanCrownPulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); box-shadow: 3px 3px 0 #000; }
+  50% { transform: translate(-50%, -50%) scale(1.08); box-shadow: 4px 4px 0 #000, 0 0 12px rgba(255,215,0,0.4); }
+}
+
+/* Stripe glow pulse */
+.neoban-stripe-pulse {
+  animation: neobanStripePulse 3s ease-in-out infinite;
+}
+@keyframes neobanStripePulse {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 1; box-shadow: 0 3px 0 #000, 0 0 8px rgba(255,215,0,0.3); }
+}
+
+/* Star twinkle */
+.neoban-twinkle {
+  animation: neobanTwinkle 2s ease-in-out infinite;
+}
+@keyframes neobanTwinkle {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
+
+/* Stamp glow */
+.neoban-stamp-glow {
+  animation: neobanStampGlow 3s ease-in-out infinite;
+}
+@keyframes neobanStampGlow {
+  0%, 100% { box-shadow: 1px 1px 0 #b8860b; }
+  50% { box-shadow: 1px 1px 0 #b8860b, 0 0 6px rgba(255,215,0,0.35); }
+}
+
+/* ── Premium Crown (positioned on top of avatar) ─────────── */
+.premium-crown {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  filter: drop-shadow(0 2px 8px rgba(255,215,0,0.6));
+  animation: crownFloat 3s ease-in-out infinite;
+}
+.premium-crown svg {
+  overflow: visible;
+}
+@keyframes crownFloat {
+  0%, 100% { transform: translateX(-50%) translateY(0px); }
+  50% { transform: translateX(-50%) translateY(-3px); }
+}
+
+
+
+/* Crown sparkle particles */
+.crown-sparkle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #ffd700;
+  animation: sparkleFloat 2s ease-in-out infinite;
+  pointer-events: none;
+}
+.crown-sparkle:nth-child(1) { top: 20%; left: 15%; animation-delay: 0s; animation-duration: 1.8s; }
+.crown-sparkle:nth-child(2) { top: 10%; left: 50%; animation-delay: 0.6s; animation-duration: 2.2s; }
+.crown-sparkle:nth-child(3) { top: 25%; left: 80%; animation-delay: 1.2s; animation-duration: 2s; }
+@keyframes sparkleFloat {
+  0%, 100% { opacity: 0; transform: scale(0.3) translateY(0); }
+  30% { opacity: 1; transform: scale(1) translateY(-4px); }
+  70% { opacity: 0.6; transform: scale(0.6) translateY(-8px); }
+}
+
+/* ── Premium Banner: Langit Kerajaan ─────────────────────── */
+.anim-banner-kerajaan {
+  animation: bannerKerajaanShift 12s ease-in-out infinite alternate !important;
+  background-size: 200% 200% !important;
+}
+@keyframes bannerKerajaanShift {
+  0%   { background-position: 0% 0%;     filter: brightness(0.9) saturate(1.1); }
+  50%  { background-position: 60% 40%;   filter: brightness(1.1) saturate(1.3); }
+  100% { background-position: 100% 100%; filter: brightness(1.0) saturate(1.2); }
+}
+
+/* SVG gold particles floating */
+.gold-particle {
+  animation: goldParticleDrift var(--dur, 4s) ease-in-out infinite;
+  transform-box: fill-box;
+}
+@keyframes goldParticleDrift {
+  0%   { opacity: 0.1; transform: translateY(0) scale(1); }
+  30%  { opacity: 0.8; transform: translateY(-6px) scale(1.3); }
+  60%  { opacity: 0.5; transform: translateY(-12px) scale(0.9); }
+  100% { opacity: 0.1; transform: translateY(-18px) scale(0.5); }
+}
+
+/* Gold shimmer line across banner */
+.gold-shimmer-line {
+  animation: goldShimmerLine 6s ease-in-out infinite;
+}
+@keyframes goldShimmerLine {
+  0%, 100% { opacity: 0; transform: translateX(-100%); }
+  40%, 60% { opacity: 0.3; transform: translateX(0%); }
+  50%      { opacity: 0.6; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   PREMIUM MAP MARKER Animations
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* Style 1 — Royal Gold: subtle pulse */
+.premium-marker-pulse {
+  animation: pmPulse 2s ease-in-out infinite;
+}
+@keyframes pmPulse {
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.08); filter: brightness(1.2); }
+}
+
+/* Style 2 — Aurora Crystal: shimmer sweep */
+.premium-marker-shimmer {
+  animation: pmShimmer 3s ease-in-out infinite;
+  position: relative;
+}
+@keyframes pmShimmer {
+  0%, 100% { filter: brightness(1) saturate(1); }
+  50% { filter: brightness(1.35) saturate(1.3); }
+}
+
+/* Style 3 — Emerald Flame: outer glow throb */
+.premium-marker-glow {
+  animation: pmGlow 2.5s ease-in-out infinite;
+}
+@keyframes pmGlow {
+  0%, 100% { box-shadow: 0 0 6px var(--pm-glow), 0 0 12px var(--pm-glow); filter: brightness(1); }
+  50% { box-shadow: 0 0 12px var(--pm-glow), 0 0 24px var(--pm-glow), 0 0 36px var(--pm-glow); filter: brightness(1.15); }
+}
+
+/* Style 4 — Cosmic Rose: gentle float */
+.premium-marker-float {
+  animation: pmFloat 3s ease-in-out infinite;
+}
+@keyframes pmFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+}
+
+/* Style 5 — Nebula Blue: slow rotation glow */
+.premium-marker-rotate {
+  animation: pmRotate 6s linear infinite;
+}
+@keyframes pmRotate {
+  0% { filter: hue-rotate(0deg) brightness(1); }
+  50% { filter: hue-rotate(15deg) brightness(1.2); }
+  100% { filter: hue-rotate(0deg) brightness(1); }
+}
+
+/* Premium marker shapes — shared */
+.pm-shape-diamond {
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+.pm-shape-hexagon {
+  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+}
+.pm-shape-star {
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+.pm-shape-shield {
+  clip-path: polygon(50% 0%, 100% 20%, 100% 65%, 50% 100%, 0% 65%, 0% 20%);
 }

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { memorySchema } from "@/lib/validations"
+import { isPremiumActive, getUserLimits } from "@/lib/premium-config"
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
@@ -15,8 +16,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
                 tags: true,
                 comments: {
                     include: {
-                        user: { select: { id: true, name: true, image: true } },
-                        replies: { include: { user: { select: { id: true, name: true, image: true } } }, orderBy: { createdAt: "asc" } }
+                        user: { select: { id: true, name: true, image: true, premiumExpiresAt: true, isVerified: true } },
+                        replies: { include: { user: { select: { id: true, name: true, image: true, premiumExpiresAt: true, isVerified: true } } }, orderBy: { createdAt: "asc" } }
                     },
                     where: { parentId: null },
                     orderBy: { createdAt: "asc" }
@@ -93,14 +94,40 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         if (!memory) return NextResponse.json({ error: "Not found" }, { status: 404 })
         if (memory.userId !== session.user.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
 
+        // ── Determine premium limits ──
+        const currentUser = await prisma.user.findUnique({
+            where: { id: session.user.id },
+            select: { premiumExpiresAt: true }
+        })
+        const userIsPremium = isPremiumActive(currentUser?.premiumExpiresAt ?? null)
+        const limits = getUserLimits(userIsPremium)
+
         const body = await req.json()
         const result = memorySchema.safeParse(body)
         if (!result.success) return NextResponse.json({ error: "Invalid data", details: result.error.flatten() }, { status: 400 })
 
-        const { photos, tags, date, collaborators, audio, ...data } = result.data
+        const { photos, tags, date, collaborators, audio, markerStyle, ...data } = result.data
+
+        // ── Enforce dynamic photo limit ──
+        if (photos && photos.length > limits.maxPhotos) {
+            return NextResponse.json(
+                { error: `Maksimal ${limits.maxPhotos} foto diperbolehkan. ${!userIsPremium ? "Upgrade ke Premium untuk upload hingga 10 foto!" : ""}` },
+                { status: 400 }
+            )
+        }
+
+        // ── Enforce dynamic collaborator limit ──
+        const requestedCollabs = [...new Set(collaborators || [])].filter((uid: any) => uid !== session.user.id)
+        if (requestedCollabs.length > limits.maxCollaborators) {
+            return NextResponse.json(
+                { error: `Maksimal ${limits.maxCollaborators} kolaborator diperbolehkan. ${!userIsPremium ? "Upgrade ke Premium untuk mengundang hingga 10 orang!" : ""}` },
+                { status: 400 }
+            )
+        }
 
         // ── Premium feature gate: Spotify integration ──
-        if (data.spotifyTrackId) {
+        // Premium users get auto-unlock, free users need shop item
+        if (data.spotifyTrackId && !userIsPremium) {
             const hasSpotifyPremium = await prisma.userInventory.findFirst({
                 where: {
                     userId: session.user.id,
@@ -109,7 +136,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
             })
             if (!hasSpotifyPremium) {
                 return NextResponse.json(
-                    { error: "Fitur Spotify adalah fitur premium. Silakan beli di Memory Shop terlebih dahulu." },
+                    { error: "Fitur Spotify adalah fitur premium. Silakan beli di Memory Shop atau upgrade ke Premium!" },
                     { status: 403 }
                 )
             }
@@ -142,6 +169,8 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
                     
                     // Spotify integration
                     spotifyTrackId: data.spotifyTrackId ?? null,
+                    // Premium map marker
+                    markerStyle: markerStyle ?? null,
                 },
                 include: { photos: true, tags: true }
             })
@@ -149,7 +178,6 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
             // Handle Collaborators Update
             const existingCollabs = await tx.memoryCollaborator.findMany({ where: { memoryId: id } })
             const existingUserIds = existingCollabs.map(c => c.userId)
-            const requestedCollabs = [...new Set(collaborators || [])].filter((uid: any) => uid !== session.user.id)
 
             const toDelete = existingUserIds.filter(uid => !requestedCollabs.includes(uid))
             const toAdd = requestedCollabs.filter(uid => !existingUserIds.includes(uid))

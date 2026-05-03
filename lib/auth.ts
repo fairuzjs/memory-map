@@ -3,6 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials"
 import { prisma } from "./prisma"
 import bcrypt from "bcryptjs"
 import { authConfig } from "./auth.config"
+import { isPremiumActive } from "./premium-config"
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     ...authConfig,
@@ -51,8 +52,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     role: user.role,
                     isVerified: user.isVerified,
                     isEmailVerified: user.isEmailVerified,
+                    isPremium: isPremiumActive(user.premiumExpiresAt),
+                    premiumExpiresAt: user.premiumExpiresAt?.toISOString() ?? null,
                 }
             }
         })
     ],
 })
+

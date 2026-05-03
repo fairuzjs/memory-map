@@ -3,7 +3,7 @@
 import { useSession } from "next-auth/react"
 import { useEffect, useState, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Trophy, Calendar, Zap, Medal, Star, Crown, Users, ChevronRight, Loader2, CheckCircle2, ShoppingBag, BadgeCheck } from "lucide-react"
+import { Trophy, Calendar, Zap, Medal, Star, Crown, Users, ChevronRight, Loader2, CheckCircle2, ShoppingBag, BadgeCheck, Shield, Sparkles } from "lucide-react"
 import Link from "next/link"
 import { BadgeUnlockModal } from "@/components/ui/BadgeUnlockModal"
 import { LeaderboardModal } from "@/components/ui/LeaderboardModal"
@@ -32,214 +32,118 @@ interface LeaderboardEntry {
     isVerified?: boolean
 }
 
-function getDecorationClass(name?: string) {
-    if (!name) return "";
-    const n = name.toLowerCase();
-    if (n.includes("kristal")) return "anim-kristal";
-    if (n.includes("api")) return "anim-api";
-    if (n.includes("neon")) return "anim-neon";
-    if (n.includes("emas")) return "anim-emas";
-    if (n.includes("pelangi")) return "anim-pelangi";
-    if (n.includes("glitch")) return "anim-glitch";
-    if (n.includes("quasar")) return "anim-quasar";
-    if (n.includes("celestial")) return "anim-celestial";
-    if (n.includes("supernova")) return "anim-supernova";
-    if (n.includes("rune")) return "anim-rune";
-    return "";
-}
-
 // ─── Constants ────────────────────────────────────────────────────────────────
 const MILESTONES = [
     {
         days: 7,
         label: "Baru Panas",
         desc: "Login 7 hari berturut-turut",
-        glow: "rgba(245,158,11,0.3)",
-        barColor: "linear-gradient(90deg, #f59e0b, #ea580c)",
-        iconColor: "rgba(245,158,11,0.15)",
-        iconBorder: "rgba(245,158,11,0.3)",
+        barColor: "#FFFF00", // Yellow
         icon: (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2C9 7 6 9 6 14a6 6 0 0 0 12 0c0-3-1.5-5.5-3-7.5C14 9 13.5 11 12 12c-.5-2-1.5-4-0-10z" fill="#f59e0b" />
-            </svg>
-        ),
-        badgeBg: "rgba(245,158,11,0.08)",
-        badgeBorder: "rgba(245,158,11,0.25)",
-        badgeIconBg: "linear-gradient(135deg, rgba(245,158,11,0.4), rgba(234,88,12,0.2))",
-        badgeIcon: (
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2C9 7 6 9 6 14a6 6 0 0 0 12 0c0-3-1.5-5.5-3-7.5C14 9 13.5 11 12 12c-.5-2-1.5-4-0-10z" fill="#fbbf24" />
+                <path d="M12 2C9 7 6 9 6 14a6 6 0 0 0 12 0c0-3-1.5-5.5-3-7.5C14 9 13.5 11 12 12c-.5-2-1.5-4-0-10z" fill="#000" />
             </svg>
         ),
+        badgeBg: "#FFFF00",
     },
     {
         days: 30,
         label: "Menyala Terus",
         desc: "Login 30 hari berturut-turut",
-        glow: "rgba(99,102,241,0.3)",
-        barColor: "linear-gradient(90deg, #6366f1, #8b5cf6)",
-        iconColor: "rgba(99,102,241,0.15)",
-        iconBorder: "rgba(99,102,241,0.3)",
+        barColor: "#FF9900", // Orange
         icon: (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="#818cf8" strokeWidth="1.5" strokeLinejoin="round" fill="rgba(129,140,248,0.3)" />
-            </svg>
-        ),
-        badgeBg: "rgba(99,102,241,0.08)",
-        badgeBorder: "rgba(99,102,241,0.25)",
-        badgeIconBg: "linear-gradient(135deg, rgba(99,102,241,0.4), rgba(139,92,246,0.2))",
-        badgeIcon: (
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="#a5b4fc" strokeWidth="1.5" strokeLinejoin="round" fill="rgba(165,180,252,0.4)" />
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="#000" strokeWidth="2" strokeLinejoin="round" fill="#FF9900" />
             </svg>
         ),
+        badgeBg: "#FF9900",
     },
     {
         days: 60,
         label: "Anti Kendor",
         desc: "Login 60 hari berturut-turut",
-        glow: "rgba(16,185,129,0.3)",
-        barColor: "linear-gradient(90deg, #10b981, #14b8a6)",
-        iconColor: "rgba(16,185,129,0.1)",
-        iconBorder: "rgba(16,185,129,0.2)",
+        barColor: "#FF0000", // Red
         icon: (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="9" stroke="#34d399" strokeWidth="1.5" />
-                <path d="M8 12l3 3 5-5" stroke="#34d399" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-        ),
-        badgeBg: "rgba(16,185,129,0.08)",
-        badgeBorder: "rgba(16,185,129,0.25)",
-        badgeIconBg: "linear-gradient(135deg, rgba(16,185,129,0.4), rgba(20,184,166,0.2))",
-        badgeIcon: (
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="9" stroke="#6ee7b7" strokeWidth="1.5" />
-                <path d="M8 12l3 3 5-5" stroke="#6ee7b7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <circle cx="12" cy="12" r="9" stroke="#000" strokeWidth="2" fill="#FF0000"/>
+                <path d="M8 12l3 3 5-5" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
         ),
+        badgeBg: "#FF0000",
     },
     {
         days: 90,
         label: "GOAT Streak",
         desc: "Login 90 hari berturut-turut",
-        glow: "rgba(244,63,94,0.3)",
-        barColor: "linear-gradient(90deg, #f43f5e, #ec4899)",
-        iconColor: "rgba(244,63,94,0.1)",
-        iconBorder: "rgba(244,63,94,0.2)",
+        barColor: "#FF00FF", // Pink
         icon: (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M5 3h14l2 4-9 13L3 7z" stroke="#fb7185" strokeWidth="1.5" strokeLinejoin="round" fill="rgba(251,113,133,0.2)" />
-                <path d="M3 7h18M9 3l3 17M15 3l-3 17" stroke="#fb7185" strokeWidth="1" opacity="0.5" />
-            </svg>
-        ),
-        badgeBg: "rgba(244,63,94,0.08)",
-        badgeBorder: "rgba(244,63,94,0.25)",
-        badgeIconBg: "linear-gradient(135deg, rgba(244,63,94,0.4), rgba(236,72,153,0.2))",
-        badgeIcon: (
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M5 3h14l2 4-9 13L3 7z" stroke="#fda4af" strokeWidth="1.5" strokeLinejoin="round" fill="rgba(253,164,175,0.3)" />
+                <path d="M5 3h14l2 4-9 13L3 7z" stroke="#000" strokeWidth="2" strokeLinejoin="round" fill="#FF00FF" />
             </svg>
         ),
+        badgeBg: "#FF00FF",
     },
 ]
 
 // ─── Fade-up animation ────────────────────────────────────────────────────────
 const fadeUp = {
     hidden: { opacity: 0, y: 16 },
-    show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 280, damping: 24 } },
+    show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 400, damping: 20 } },
 }
 
 // ─── SVG Icons ────────────────────────────────────────────────────────────────
 function FlameIcon({ size = 16, className }: { size?: number; className?: string }) {
     return (
         <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
-            <path d="M12 2C9 7 6 9 6 14a6 6 0 0 0 12 0c0-3-1.5-5.5-3-7.5C14 9 13.5 11 12 12c-.5-2-1.5-4-0-10z" fill="#fb923c" />
+            <path d="M12 2C9 7 6 9 6 14a6 6 0 0 0 12 0c0-3-1.5-5.5-3-7.5C14 9 13.5 11 12 12c-.5-2-1.5-4-0-10z" stroke="#000" strokeWidth="2" fill="#FF4500" />
         </svg>
     )
 }
 
 function HeroFlameIcon() {
     return (
-        <svg width="36" height="40" viewBox="0 0 36 44" fill="none">
-            <defs>
-                <linearGradient id="heroFg" x1="18" y1="44" x2="18" y2="0" gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stopColor="#fff" stopOpacity="0.9" />
-                    <stop offset="40%" stopColor="#fed7aa" />
-                    <stop offset="100%" stopColor="#fdba74" stopOpacity="0.7" />
-                </linearGradient>
-            </defs>
+        <svg width="40" height="44" viewBox="0 0 36 44" fill="none">
             <path
                 d="M18 2C13 12 6 16 6 26a12 12 0 0 0 24 0c0-6-3-11-6-15C22 16 21 20 18 22c-1-5-3-9 0-20z"
-                fill="url(#heroFg)"
+                fill="#FFFF00"
+                stroke="#000"
+                strokeWidth="2"
             />
-            <ellipse cx="18" cy="34" rx="5" ry="3" fill="rgba(255,255,255,0.2)" />
+            <path
+                d="M18 12C15 18 10 22 10 28a8 8 0 0 0 16 0c0-4-2-8-4-11C21 19 20 22 18 24c-1-3-2-6 0-12z"
+                fill="#FF0000"
+            />
         </svg>
     )
 }
 
 function CrownIconSm() {
     return (
-        <svg width="18" height="16" viewBox="0 0 38 32" fill="none">
-            <defs>
-                <linearGradient id="cg" x1="0" y1="0" x2="38" y2="32" gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stopColor="#fde68a" />
-                    <stop offset="50%" stopColor="#fbbf24" />
-                    <stop offset="100%" stopColor="#d97706" />
-                </linearGradient>
-            </defs>
-            <path d="M3 26L6 10L13 18L19 4L25 18L32 10L35 26Z" fill="url(#cg)" stroke="#f59e0b" strokeWidth="0.8" strokeLinejoin="round" />
-            <rect x="3" y="25" width="32" height="5" rx="2" fill="#f59e0b" />
-            <circle cx="19" cy="27.5" r="2" fill="#fff" opacity="0.9" />
+        <svg width="20" height="18" viewBox="0 0 38 32" fill="none">
+            <path d="M3 26L6 10L13 18L19 4L25 18L32 10L35 26Z" fill="#FFFF00" stroke="#000" strokeWidth="2" strokeLinejoin="round" />
+            <rect x="3" y="25" width="32" height="5" rx="0" fill="#FFFF00" stroke="#000" strokeWidth="2" />
         </svg>
     )
 }
 
 function SilverMedalIconSm() {
     return (
-        <svg width="16" height="18" viewBox="0 0 30 34" fill="none">
-            <circle cx="15" cy="20" r="12" fill="rgba(203,213,225,0.1)" stroke="#cbd5e1" strokeWidth="1.2" />
-            <path d="M10 10L6 2L12 5L15 8Z" fill="#94a3b8" opacity="0.8" />
-            <path d="M20 10L24 2L18 5L15 8Z" fill="#64748b" opacity="0.8" />
-            <text x="15" y="25" textAnchor="middle" fontSize="10" fontWeight="700" fill="#cbd5e1" fontFamily="sans-serif">2</text>
+        <svg width="18" height="20" viewBox="0 0 30 34" fill="none">
+            <circle cx="15" cy="20" r="12" fill="#E5E5E5" stroke="#000" strokeWidth="2" />
+            <path d="M10 10L6 2L12 5L15 8Z" fill="#E5E5E5" stroke="#000" strokeWidth="2" />
+            <path d="M20 10L24 2L18 5L15 8Z" fill="#E5E5E5" stroke="#000" strokeWidth="2" />
+            <text x="15" y="25" textAnchor="middle" fontSize="12" fontWeight="900" fill="#000" fontFamily="sans-serif">2</text>
         </svg>
     )
 }
 
 function BronzeMedalIconSm() {
     return (
-        <svg width="16" height="18" viewBox="0 0 30 34" fill="none">
-            <circle cx="15" cy="20" r="12" fill="rgba(251,146,60,0.1)" stroke="#fb923c" strokeWidth="1.2" />
-            <path d="M10 10L6 2L12 5L15 8Z" fill="#ea7c3a" opacity="0.8" />
-            <path d="M20 10L24 2L18 5L15 8Z" fill="#c2601e" opacity="0.8" />
-            <text x="15" y="25" textAnchor="middle" fontSize="10" fontWeight="700" fill="#fb923c" fontFamily="sans-serif">3</text>
-        </svg>
-    )
-}
-
-function TrophyIconSvg() {
-    return (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-            <path d="M12 15c-3.314 0-6-2.686-6-6V4h12v5c0 3.314-2.686 6-6 6z" stroke="#f59e0b" strokeWidth="1.5" />
-            <path d="M12 15v4M9 19h6" stroke="#f59e0b" strokeWidth="1.5" strokeLinecap="round" />
-        </svg>
-    )
-}
-
-function StarIconSvg() {
-    return (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"
-                stroke="#f59e0b" strokeWidth="1.5" strokeLinejoin="round" fill="rgba(245,158,11,0.1)" />
-        </svg>
-    )
-}
-
-function UsersIconSvg() {
-    return (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="#818cf8" strokeWidth="1.5" strokeLinecap="round" />
-            <circle cx="9" cy="7" r="4" stroke="#818cf8" strokeWidth="1.5" />
-            <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="#818cf8" strokeWidth="1.5" strokeLinecap="round" />
+        <svg width="18" height="20" viewBox="0 0 30 34" fill="none">
+            <circle cx="15" cy="20" r="12" fill="#FF9900" stroke="#000" strokeWidth="2" />
+            <path d="M10 10L6 2L12 5L15 8Z" fill="#FF9900" stroke="#000" strokeWidth="2" />
+            <path d="M20 10L24 2L18 5L15 8Z" fill="#FF9900" stroke="#000" strokeWidth="2" />
+            <text x="15" y="25" textAnchor="middle" fontSize="12" fontWeight="900" fill="#000" fontFamily="sans-serif">3</text>
         </svg>
     )
 }
@@ -247,29 +151,21 @@ function UsersIconSvg() {
 function LockIcon() {
     return (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <rect x="5" y="11" width="14" height="10" rx="2" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
-            <path d="M8 11V7a4 4 0 018 0v4" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" strokeLinecap="round" />
+            <rect x="5" y="11" width="14" height="10" rx="0" fill="#E5E5E5" stroke="#000" strokeWidth="2" />
+            <path d="M8 11V7a4 4 0 018 0v4" stroke="#000" strokeWidth="2" strokeLinecap="round" />
         </svg>
     )
 }
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
 function RankIcon({ rank }: { rank: number }) {
     if (rank === 1) return <CrownIconSm />
     if (rank === 2) return <SilverMedalIconSm />
     if (rank === 3) return <BronzeMedalIconSm />
     return (
-        <span style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.3)" }}>
+        <span className="text-[13px] font-black text-black/40">
             #{rank}
         </span>
     )
-}
-
-function StreakColor(rank: number) {
-    if (rank === 1) return "#fbbf24"
-    if (rank === 2) return "#cbd5e1"
-    if (rank === 3) return "#fb923c"
-    return "rgba(255,255,255,0.7)"
 }
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
@@ -284,6 +180,11 @@ export default function StreakPage() {
     const [justClaimed, setJustClaimed] = useState(false)
     const [lastPointsEarned, setLastPointsEarned] = useState<number | null>(null)
     const [isLeaderboardModalOpen, setIsLeaderboardModalOpen] = useState(false)
+    const [premiumInfo, setPremiumInfo] = useState<{ isPremium: boolean; multiplier: number; freezesRemaining: number } | null>(null)
+
+    // Freeze confirmation state
+    const [showFreezeConfirm, setShowFreezeConfirm] = useState(false)
+    const [freezeConfirmData, setFreezeConfirmData] = useState<{ currentStreak: number; freezesRemaining: number } | null>(null)
 
     const fetchData = useCallback(async () => {
         try {
@@ -302,15 +203,44 @@ export default function StreakPage() {
     }, [])
 
     useEffect(() => {
-        if (session?.user?.id) fetchData()
+        if (session?.user?.id) {
+            fetchData()
+            fetch("/api/premium/status")
+                .then(res => res.ok ? res.json() : null)
+                .then(data => {
+                    if (data) {
+                        setPremiumInfo({
+                            isPremium: data.isPremium,
+                            multiplier: data.isPremium ? 2 : 1,
+                            freezesRemaining: data.streakFreezesRemaining ?? 0,
+                        })
+                    }
+                })
+                .catch(() => {})
+        }
     }, [session?.user?.id, fetchData])
 
-    const handleClaim = async () => {
+    const handleClaim = async (useFreeze?: boolean) => {
         if (!streak || streak.alreadyClaimed || claiming) return
         setClaiming(true)
         try {
-            const res = await fetch("/api/streak/claim", { method: "POST" })
+            const res = await fetch("/api/streak/claim", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ useFreeze: useFreeze === true }),
+            })
             const data = await res.json()
+
+            // API asks for freeze confirmation
+            if (data.needsFreezeConfirmation) {
+                setFreezeConfirmData({
+                    currentStreak: data.currentStreak,
+                    freezesRemaining: data.freezesRemaining,
+                })
+                setShowFreezeConfirm(true)
+                return
+            }
+
             if (!data.alreadyClaimed) {
                 setStreak({
                     currentStreak: data.streak.currentStreak,
@@ -329,6 +259,51 @@ export default function StreakPage() {
                 setLastPointsEarned(data.pointsEarned ?? null)
                 setJustClaimed(true)
                 setTimeout(() => { setJustClaimed(false); setLastPointsEarned(null) }, 3500)
+
+                // Update freeze count if a freeze was used
+                if (data.freezeUsed && premiumInfo) {
+                    setPremiumInfo(prev => prev ? { ...prev, freezesRemaining: data.streakFreezesRemaining ?? 0 } : prev)
+                }
+            }
+        } finally {
+            setClaiming(false)
+        }
+    }
+
+    // User confirms using freeze
+    const handleFreezeConfirm = async () => {
+        setShowFreezeConfirm(false)
+        setFreezeConfirmData(null)
+        await handleClaim(true)
+    }
+
+    // User declines freeze — streak resets, but still claim today
+    const handleFreezeDecline = async () => {
+        setShowFreezeConfirm(false)
+        setFreezeConfirmData(null)
+        // Claim without freeze — will reset streak to 1
+        setClaiming(true)
+        try {
+            const res = await fetch("/api/streak/claim", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ useFreeze: false, skipFreeze: true }),
+            })
+            const data = await res.json()
+            if (!data.alreadyClaimed && !data.needsFreezeConfirmation) {
+                setStreak({
+                    currentStreak: data.streak.currentStreak,
+                    longestStreak: data.streak.longestStreak,
+                    totalActiveDays: data.streak.totalActiveDays,
+                    lastClaimedAt: data.streak.lastClaimedAt,
+                    alreadyClaimed: true,
+                    badges: data.badges,
+                    nextMilestone: data.nextMilestone,
+                    daysToNext: data.daysToNext,
+                })
+                setLastPointsEarned(data.pointsEarned ?? null)
+                setJustClaimed(true)
+                setTimeout(() => { setJustClaimed(false); setLastPointsEarned(null) }, 3500)
             }
         } finally {
             setClaiming(false)
@@ -339,8 +314,8 @@ export default function StreakPage() {
         return (
             <div className="flex-1 flex items-center justify-center min-h-[500px]">
                 <div className="flex flex-col items-center gap-3">
-                    <Loader2 className="w-6 h-6 text-amber-400 animate-spin" />
-                    <span className="text-neutral-500 text-sm">Memuat data streak…</span>
+                    <Loader2 className="w-8 h-8 text-black animate-spin" />
+                    <span className="text-black font-black uppercase text-sm">Memuat data streak…</span>
                 </div>
             </div>
         )
@@ -352,7 +327,7 @@ export default function StreakPage() {
     const claimedToday = streak.alreadyClaimed
 
     return (
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-5">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-6 pb-32">
 
             {/* ── Badge Unlock Modal ── */}
             <BadgeUnlockModal
@@ -375,12 +350,12 @@ export default function StreakPage() {
                         initial={{ opacity: 0, y: -20, scale: 0.9 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -16, scale: 0.95 }}
-                        className="fixed top-20 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 px-5 py-3 rounded-2xl shadow-xl"
-                        style={{ background: "rgba(20,15,5,0.95)", border: "1px solid rgba(251,191,36,0.35)", backdropFilter: "blur(12px)" }}
+                        className="fixed top-20 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-6 py-4 bg-[#FFFF00] border-[4px] border-black shadow-[8px_8px_0_#000]"
                     >
-                        <Star className="w-5 h-5 text-amber-400 fill-amber-400" />
-                        <span className="text-sm font-bold text-white">
-                            +{lastPointsEarned} <span className="text-amber-400">Memory Points</span> didapat!
+                        <Star className="w-6 h-6 text-black fill-black" />
+                        <span className="text-base font-black text-black uppercase tracking-wide">
+                            +{lastPointsEarned} <span className="text-[#FF00FF]">Memory Points</span> didapat!
+                            {premiumInfo?.isPremium && <span className="text-[#00FF00] ml-2 border-[2px] border-black px-1.5 py-0.5 bg-white">(x2 Premium)</span>}
                         </span>
                     </motion.div>
                 )}
@@ -394,12 +369,11 @@ export default function StreakPage() {
                         initial={{ opacity: 0, y: -20, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -16, scale: 0.95 }}
-                        className="fixed top-24 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-5 py-3 rounded-2xl border border-amber-500/30 shadow-xl"
-                        style={{ background: "rgba(20,15,5,0.92)", backdropFilter: "blur(12px)" }}
+                        className="fixed top-24 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-6 py-4 bg-[#00FFFF] border-[4px] border-black shadow-[8px_8px_0_#000]"
                     >
-                        <Star className="w-5 h-5 text-amber-400" />
-                        <span className="text-sm font-semibold text-white">
-                            🎉 Badge baru! <span className="text-amber-400">Streak {m} Hari</span> diraih!
+                        <Star className="w-6 h-6 text-black fill-black" />
+                        <span className="text-base font-black text-black uppercase tracking-wide">
+                            🎉 Badge baru! <span className="text-white bg-black px-2 py-0.5 ml-1">Streak {m} Hari</span> diraih!
                         </span>
                     </motion.div>
                 ))}
@@ -407,149 +381,120 @@ export default function StreakPage() {
 
             {/* ── Page Header ── */}
             <motion.div initial="hidden" animate="show" variants={fadeUp}>
-                <div className="flex items-center justify-between gap-2 mb-1">
-                    <div className="flex items-center gap-2">
-                        <FlameIcon size={18} />
-                        <h1 className="text-2xl font-extrabold text-white" style={{ letterSpacing: "-0.5px" }}>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-2">
+                    <div className="flex items-center gap-3 bg-white border-[3px] border-black px-4 py-2 shadow-[4px_4px_0_#FF4500]">
+                        <FlameIcon size={24} />
+                        <h1 className="text-2xl font-black text-black uppercase tracking-widest">
                             Daily Streak
                         </h1>
                     </div>
                     <Link
                         href="/shop"
-                        className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all hover:scale-[1.03] relative overflow-hidden group"
-                        style={{
-                            background: "rgba(251,191,36,0.08)",
-                            border: "1px solid rgba(251,191,36,0.25)",
-                            color: "#fbbf24",
-                        }}
+                        className="flex items-center gap-2 px-5 py-3 text-sm font-black text-black bg-[#FFFF00] border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all uppercase"
                     >
-                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                            style={{ background: "rgba(251,191,36,0.08)" }} />
-                        <ShoppingBag className="w-4 h-4 relative z-10" />
-                        <span className="relative z-10">Memory Shop</span>
+                        <ShoppingBag className="w-5 h-5" />
+                        <span>Memory Shop</span>
                     </Link>
                 </div>
-                <p className="text-sm text-neutral-500">Login setiap hari untuk membangun streak dan kumpulkan poin nya</p>
+                <p className="text-sm font-bold text-black/60 mt-2">Login setiap hari untuk membangun streak dan kumpulkan poin nya</p>
+                
+                {/* Premium Status Indicators */}
+                {premiumInfo?.isPremium && (
+                    <div className="flex items-center gap-3 mt-4 flex-wrap">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-black uppercase tracking-widest bg-[#FFFF00] border-[2px] border-black text-black shadow-[2px_2px_0_#000]">
+                            <Sparkles className="w-4 h-4 fill-black" />
+                            x{premiumInfo.multiplier} Poin
+                        </span>
+                        {premiumInfo.freezesRemaining > 0 && (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-black uppercase tracking-widest bg-[#00FFFF] border-[2px] border-black text-black shadow-[2px_2px_0_#000]">
+                                <Shield className="w-4 h-4 fill-black" />
+                                {premiumInfo.freezesRemaining} Freeze
+                            </span>
+                        )}
+                    </div>
+                )}
             </motion.div>
 
             {/* ── Hero Banner ── */}
             <motion.div variants={fadeUp} initial="hidden" animate="show">
-                <div
-                    className="relative rounded-2xl overflow-hidden"
-                    style={{ boxShadow: "0 20px 60px rgba(180,60,0,0.3)" }}
-                >
-                    {/* Background gradient */}
-                    <div className="absolute inset-0" style={{
-                        background: "linear-gradient(135deg, #7c1d06 0%, #b83200 30%, #ea580c 65%, #f97316 100%)",
-                    }} />
-
-                    {/* Decorative circles */}
-                    <div className="absolute top-0 right-0 w-72 h-72 rounded-full pointer-events-none"
-                        style={{
-                            background: "radial-gradient(circle, rgba(255,255,255,0.12), transparent 70%)",
-                            transform: "translate(30%, -30%)",
-                        }} />
-                    <div className="absolute bottom-0 left-0 w-52 h-52 rounded-full pointer-events-none"
-                        style={{
-                            background: "radial-gradient(circle, rgba(255,255,255,0.08), transparent 70%)",
-                            transform: "translate(-30%, 30%)",
-                        }} />
+                <div className="relative border-[4px] border-black bg-[#FF3300] shadow-[8px_8px_0_#000] overflow-hidden">
+                    {/* Background Pattern */}
+                    <div className="absolute inset-0 opacity-[0.15]" style={{ backgroundImage: "radial-gradient(black 2px, transparent 2px)", backgroundSize: "20px 20px" }} />
 
                     {/* Content */}
-                    <div className="relative px-6 sm:px-8 pt-7">
-                        {/* Top row: flame + number + stats */}
-                        <div className="flex items-start justify-between gap-4 flex-wrap">
+                    <div className="relative px-6 sm:px-8 pt-8 pb-6">
+                        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 flex-wrap">
 
                             {/* Left: flame icon + streak number */}
                             <div className="flex items-end gap-5">
-                                <div
-                                    className="w-[72px] h-[72px] rounded-[18px] flex items-center justify-center flex-shrink-0"
-                                    style={{
-                                        background: "rgba(0,0,0,0.25)",
-                                        border: "1px solid rgba(255,255,255,0.15)",
-                                    }}
-                                >
+                                <div className="w-[88px] h-[88px] bg-white border-[4px] border-black shadow-[4px_4px_0_#000] flex items-center justify-center flex-shrink-0 -rotate-3 hover:rotate-0 transition-transform">
                                     <HeroFlameIcon />
                                 </div>
                                 <div>
-                                    <p className="text-white/65 text-[11px] font-semibold mb-1">Streak saat ini</p>
-                                    <p
-                                        className="text-white leading-none font-black"
-                                        style={{ fontSize: 72, letterSpacing: "-3px" }}
-                                    >
-                                        {streak.currentStreak}
-                                    </p>
-                                    <p className="text-white/70 text-sm font-semibold mt-1">hari berturut-turut</p>
+                                    <p className="text-black text-[12px] font-black uppercase tracking-widest mb-1 bg-white border-[2px] border-black px-2 py-0.5 inline-block">Streak saat ini</p>
+                                    <div className="flex items-baseline gap-2">
+                                        <p className="text-white leading-none font-black" style={{ fontSize: 80, textShadow: "4px 4px 0 #000" }}>
+                                            {streak.currentStreak}
+                                        </p>
+                                        <p className="text-black font-black uppercase tracking-wider text-sm mt-2">Hari</p>
+                                    </div>
                                 </div>
                             </div>
 
                             {/* Right: stat chips */}
-                            <div className="flex flex-col max-[420px]:flex-row max-[420px]:w-full gap-2 items-end max-[420px]:items-center max-[420px]:justify-between">
+                            <div className="flex flex-row gap-4 items-end">
                                 {[
-                                    { value: streak.longestStreak, label: "Terpanjang" },
-                                    { value: streak.totalActiveDays, label: "Total Hari" },
+                                    { value: streak.longestStreak, label: "Terpanjang", bg: "#FFFF00" },
+                                    { value: streak.totalActiveDays, label: "Total Hari", bg: "#00FFFF" },
                                 ].map((s) => (
                                     <div
                                         key={s.label}
-                                        className="px-5 py-2.5 rounded-xl text-center w-[115px] max-[420px]:flex-1 max-[420px]:w-auto"
-                                        style={{
-                                            background: "rgba(0,0,0,0.25)",
-                                            border: "1px solid rgba(255,255,255,0.12)",
-                                        }}
+                                        className="px-5 py-3 border-[3px] border-black shadow-[4px_4px_0_#000] text-center w-[120px]"
+                                        style={{ background: s.bg }}
                                     >
-                                        <p className="text-white font-black text-xl">{s.value}</p>
-                                        <p className="text-white/55 text-[9px] uppercase tracking-widest mt-0.5">{s.label}</p>
+                                        <p className="text-black font-black text-3xl">{s.value}</p>
+                                        <p className="text-black text-[10px] font-black uppercase tracking-widest mt-1">{s.label}</p>
                                     </div>
                                 ))}
                             </div>
                         </div>
 
                         {/* Bottom row: status + claim button */}
-                        <div
-                            className="mt-5 pt-4 pb-6 flex items-center justify-between gap-3"
-                            style={{ borderTop: "1px solid rgba(255,255,255,0.15)" }}
-                        >
+                        <div className="mt-8 pt-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-t-[4px] border-black">
                             <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-3">
                                     {claimedToday ? (
-                                        <>
-                                            <span className="text-sm font-semibold text-green-200">Anda sudah aktif hari ini!</span>
-                                        </>
+                                        <span className="text-sm font-black text-black bg-[#00FF00] border-[2px] border-black px-3 py-1 uppercase tracking-wider">Sudah Aktif Hari Ini!</span>
                                     ) : (
                                         <>
-                                            <span className="w-2 h-2 rounded-full bg-yellow-300 animate-pulse flex-shrink-0" />
-                                            <span className="text-sm font-semibold text-white/90">Belum klaim streakmu hari ini</span>
+                                            <span className="w-3 h-3 border-[2px] border-black bg-[#FFFF00] animate-pulse flex-shrink-0 shadow-[1px_1px_0_#000]" />
+                                            <span className="text-sm font-black text-white uppercase tracking-wider text-shadow-sm">Belum klaim streakmu hari ini</span>
                                         </>
                                     )}
                                 </div>
                                 {streak.daysToNext !== null && streak.daysToNext > 0 && (
-                                    <p className="text-xs font-semibold mt-1" style={{ color: "rgba(255,220,160,0.9)" }}>
+                                    <p className="text-[11px] font-black mt-2 text-white bg-black px-2 py-0.5 inline-block uppercase">
                                         {streak.daysToNext} hari lagi untuk badge {streak.nextMilestone} Hari
                                     </p>
                                 )}
                             </div>
 
-                            {/* Claim button — inside hero */}
                             <button
-                                onClick={handleClaim}
+                                onClick={() => handleClaim()}
                                 disabled={claimedToday || claiming}
-                                className="flex-shrink-0 flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-[14px] text-sm font-bold transition-all disabled:cursor-not-allowed"
-                                style={{
-                                    background: claimedToday ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.15)",
-                                    border: claimedToday ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(255,255,255,0.25)",
-                                    color: claimedToday ? "rgba(255,255,255,0.45)" : "#fff",
-                                    backdropFilter: "blur(8px)",
-                                }}
+                                className={`flex-shrink-0 flex items-center justify-center gap-2 px-6 py-3 text-sm font-black uppercase tracking-wider border-[3px] border-black transition-all ${
+                                    claimedToday 
+                                    ? "bg-neutral-300 text-neutral-500 cursor-not-allowed shadow-[4px_4px_0_#000]" 
+                                    : "bg-[#FFFF00] text-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000]"
+                                }`}
                             >
                                 {claiming ? (
                                     <><Loader2 className="w-4 h-4 animate-spin" /><span>Mengklaim…</span></>
                                 ) : claimedToday ? (
-                                    <>
-                                        <span>Sudah diklaim</span>
-                                    </>
+                                    <span>Sudah diklaim</span>
                                 ) : (
                                     <>
-                                        <FlameIcon size={15} />
+                                        <FlameIcon size={18} />
                                         <span>Klaim Hari Ini</span>
                                     </>
                                 )}
@@ -559,54 +504,114 @@ export default function StreakPage() {
                 </div>
             </motion.div>
 
+            {/* ── Freeze Confirmation Dialog ── */}
+            <AnimatePresence>
+                {showFreezeConfirm && freezeConfirmData && (
+                    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="absolute inset-0 bg-black/70"
+                            onClick={() => setShowFreezeConfirm(false)}
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.88, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.88, y: 20 }}
+                            transition={{ type: "spring", stiffness: 380, damping: 28 }}
+                            className="relative w-full max-w-sm overflow-hidden bg-white border-[4px] border-black shadow-[8px_8px_0_#000]"
+                        >
+                            <div className="p-6">
+                                {/* Icon */}
+                                <div className="w-14 h-14 bg-[#00FFFF] border-[3px] border-black shadow-[3px_3px_0_#000] flex items-center justify-center mb-5">
+                                    <Shield className="w-7 h-7 text-black fill-black" />
+                                </div>
+
+                                {/* Text */}
+                                <h3 className="text-[18px] font-black text-black uppercase mb-2 leading-snug">
+                                    Gunakan Streak Freeze?
+                                </h3>
+                                <p className="text-sm text-neutral-600 font-bold leading-relaxed mb-2">
+                                    Kamu melewatkan 1 hari! Streak-mu saat ini <span className="text-black bg-[#FFFF00] border-[2px] border-black px-1.5 py-0.5 font-black inline-block mx-0.5">{freezeConfirmData.currentStreak} hari</span> akan direset ke 1 jika tidak menggunakan freeze.
+                                </p>
+                                <div className="flex items-center gap-2 mb-6 mt-4">
+                                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-black uppercase tracking-widest bg-[#00FFFF] border-[2px] border-black text-black shadow-[2px_2px_0_#000]">
+                                        <Shield className="w-3.5 h-3.5 fill-black" />
+                                        {freezeConfirmData.freezesRemaining} Freeze tersisa bulan ini
+                                    </span>
+                                </div>
+
+                                {/* Actions */}
+                                <div className="flex flex-col gap-3">
+                                    <button
+                                        onClick={handleFreezeConfirm}
+                                        disabled={claiming}
+                                        className="w-full py-3 text-sm font-black text-black uppercase bg-[#00FF00] border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                    >
+                                        <Shield className="w-4 h-4" />
+                                        {claiming ? "Menggunakan..." : "Ya, Gunakan Freeze"}
+                                    </button>
+                                    <button
+                                        onClick={handleFreezeDecline}
+                                        disabled={claiming}
+                                        className="w-full py-3 text-sm font-black text-black uppercase bg-white border-[3px] border-black shadow-[3px_3px_0_#000] hover:bg-[#FF3300] hover:text-white hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all disabled:opacity-50"
+                                    >
+                                        {claiming ? "Mengklaim..." : "Tidak, Reset Streak Saja"}
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
             {/* ── Grid: Milestone + Badge ── */}
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
 
                 {/* Milestone Progress (3/5) */}
                 <motion.div
                     variants={fadeUp} initial="hidden" animate="show"
-                    className="lg:col-span-3 rounded-2xl border border-white/[0.06] p-5"
-                    style={{ background: "linear-gradient(160deg, rgba(255,255,255,0.025), rgba(255,255,255,0.01))" }}
+                    className="lg:col-span-3 bg-white border-[4px] border-black shadow-[8px_8px_0_#000] p-6"
                 >
-                    <div className="flex items-center gap-2 mb-5">
-                        <TrophyIconSvg />
-                        <h2 className="font-bold text-white text-[11px] uppercase tracking-widest">Milestone Progress</h2>
-                        <span className="ml-auto text-xs text-neutral-500">{earnedMilestones.length}/4 badge</span>
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="w-10 h-10 bg-[#FF00FF] border-[3px] border-black shadow-[3px_3px_0_#000] flex items-center justify-center">
+                            <Trophy className="w-5 h-5 text-white" />
+                        </div>
+                        <h2 className="font-black text-black text-[15px] uppercase tracking-widest">Milestone Progress</h2>
+                        <span className="ml-auto text-[11px] font-black bg-[#FFFF00] border-[2px] border-black px-2 py-1 uppercase">{earnedMilestones.length}/4 badge</span>
                     </div>
 
-                    <div className="flex flex-col gap-5">
+                    <div className="flex flex-col gap-6">
                         {MILESTONES.map((m) => {
                             const earned = earnedMilestones.includes(m.days)
                             const progress = Math.min((streak.currentStreak / m.days) * 100, 100)
                             const remaining = Math.max(m.days - streak.currentStreak, 0)
 
                             return (
-                                <div key={m.days} className="flex items-start gap-3">
+                                <div key={m.days} className="flex items-start gap-4">
                                     {/* Icon */}
                                     <div
-                                        className="w-[38px] h-[38px] rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5"
-                                        style={{
-                                            background: earned ? m.iconColor : "rgba(255,255,255,0.04)",
-                                            border: earned ? `1px solid ${m.iconBorder}` : "1px solid rgba(255,255,255,0.06)",
-                                        }}
+                                        className={`w-12 h-12 flex items-center justify-center flex-shrink-0 border-[3px] border-black ${earned ? 'shadow-[3px_3px_0_#000]' : ''}`}
+                                        style={{ background: earned ? m.badgeBg : "#E5E5E5" }}
                                     >
-                                        {m.icon}
+                                        {earned ? m.icon : <LockIcon />}
                                     </div>
 
                                     {/* Details */}
                                     <div className="flex-1 min-w-0">
-                                        <div className="flex items-center justify-between mb-0.5">
-                                            <span className={`text-sm font-bold ${earned ? "text-white" : "text-neutral-400"}`}>
+                                        <div className="flex items-center justify-between mb-1">
+                                            <span className={`text-base font-black uppercase tracking-wide ${earned ? "text-black" : "text-black/40"}`}>
                                                 {m.label}
                                             </span>
-                                            <span className="text-[11px] text-neutral-600">{m.days} hari</span>
+                                            <span className="text-[11px] font-black text-black/60 uppercase">{m.days} hari</span>
                                         </div>
-                                        <p className="text-[11px] text-neutral-600 mb-2">{m.desc}</p>
+                                        <p className="text-[11px] font-bold text-black/50 mb-3">{m.desc}</p>
 
                                         {/* Progress bar */}
-                                        <div className="h-1.5 w-full rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
+                                        <div className="h-3 w-full border-[2px] border-black bg-white overflow-hidden shadow-[inset_2px_2px_0_rgba(0,0,0,0.1)]">
                                             <motion.div
-                                                className="h-full rounded-full"
+                                                className="h-full border-r-[2px] border-black"
                                                 style={{ background: m.barColor }}
                                                 initial={{ width: 0 }}
                                                 animate={{ width: `${progress}%` }}
@@ -614,14 +619,14 @@ export default function StreakPage() {
                                             />
                                         </div>
 
-                                        <div className="flex items-center justify-between mt-1">
-                                            <span className="text-[10px] text-neutral-600">
-                                                {streak.currentStreak}/{m.days} hari
+                                        <div className="flex items-center justify-between mt-2">
+                                            <span className="text-[11px] font-black text-black uppercase">
+                                                {streak.currentStreak} / {m.days} hari
                                             </span>
                                             {earned ? (
-                                                <span className="text-[10px] font-bold text-green-400">✓ Diraih!</span>
+                                                <span className="text-[11px] font-black text-black bg-[#00FF00] border-[2px] border-black px-2 py-0.5 uppercase">✓ Diraih!</span>
                                             ) : (
-                                                <span className="text-[10px] text-neutral-600">Sisa {remaining} hari</span>
+                                                <span className="text-[10px] font-bold text-black/50 uppercase">Sisa {remaining} hari</span>
                                             )}
                                         </div>
                                     </div>
@@ -634,35 +639,24 @@ export default function StreakPage() {
                 {/* Badge Saya (2/5) */}
                 <motion.div
                     variants={fadeUp} initial="hidden" animate="show"
-                    className="lg:col-span-2 rounded-2xl border border-white/[0.06] p-5 flex flex-col"
-                    style={{ background: "linear-gradient(160deg, rgba(255,255,255,0.025), rgba(255,255,255,0.01))" }}
+                    className="lg:col-span-2 bg-white border-[4px] border-black shadow-[8px_8px_0_#000] p-6 flex flex-col"
                 >
-                    <div className="flex items-center gap-2 mb-5">
-                        <StarIconSvg />
-                        <h2 className="font-bold text-white text-[11px] uppercase tracking-widest">Badge Saya</h2>
-                        <span
-                            className="ml-auto text-xs px-2 py-0.5 rounded-full"
-                            style={{
-                                background: "rgba(245,158,11,0.12)",
-                                color: "#f59e0b",
-                                border: "1px solid rgba(245,158,11,0.2)",
-                            }}
-                        >
-                            {earnedMilestones.length} Badge
-                        </span>
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="w-10 h-10 bg-[#FFFF00] border-[3px] border-black shadow-[3px_3px_0_#000] flex items-center justify-center">
+                            <Star className="w-5 h-5 text-black fill-black" />
+                        </div>
+                        <h2 className="font-black text-black text-[15px] uppercase tracking-widest">Badge Saya</h2>
+                        <span className="ml-auto text-[11px] font-black bg-black text-white px-2 py-1 uppercase">{earnedMilestones.length} Badge</span>
                     </div>
 
                     {earnedMilestones.length === 0 ? (
-                        <div className="flex-1 flex flex-col items-center justify-center text-center py-8">
-                            <div className="w-16 h-16 rounded-2xl border border-dashed border-white/10 flex items-center justify-center mb-3">
-                                <Medal className="w-7 h-7 text-neutral-700" />
-                            </div>
-                            <p className="text-sm text-neutral-500 font-medium">Belum Ada Badge</p>
-                            <p className="text-xs text-neutral-700 mt-1">Login setiap hari untuk mendapat badge!</p>
+                        <div className="flex-1 flex flex-col items-center justify-center text-center py-8 bg-[#E5E5E5] border-[3px] border-black">
+                            <Medal className="w-10 h-10 text-black mb-3" />
+                            <p className="text-sm text-black font-black uppercase">Belum Ada Badge</p>
+                            <p className="text-xs font-bold text-black/60 mt-1">Login setiap hari untuk mendapat badge!</p>
                         </div>
                     ) : (
-                        /* Show all 4 milestones — earned ones bright, locked ones dimmed */
-                        <div className="grid grid-cols-2 gap-3 flex-1">
+                        <div className="grid grid-cols-2 gap-4 flex-1">
                             {MILESTONES.map((m) => {
                                 const earned = earnedMilestones.includes(m.days)
                                 const badge = streak.badges.find((b) => b.milestone === m.days)
@@ -670,18 +664,15 @@ export default function StreakPage() {
                                 return earned ? (
                                     <div
                                         key={m.days}
-                                        className="flex flex-col items-center justify-center gap-2 p-3 rounded-[14px] border text-center"
-                                        style={{ background: m.badgeBg, borderColor: m.badgeBorder }}
+                                        className="flex flex-col items-center justify-center gap-2 p-4 border-[3px] border-black text-center shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all cursor-default"
+                                        style={{ background: m.badgeBg }}
                                     >
-                                        <div
-                                            className="w-11 h-11 rounded-full flex items-center justify-center"
-                                            style={{ background: m.badgeIconBg }}
-                                        >
-                                            {m.badgeIcon}
+                                        <div className="w-12 h-12 border-[2px] border-black bg-white flex items-center justify-center mb-1">
+                                            {m.icon}
                                         </div>
-                                        <p className="text-[11px] font-bold text-white leading-tight">{m.label}</p>
+                                        <p className="text-[12px] font-black text-black leading-tight uppercase">{m.label}</p>
                                         {badge && (
-                                            <p className="text-[9px] text-neutral-500">
+                                            <p className="text-[10px] font-bold text-black/60 bg-white border-[1px] border-black px-1.5 mt-1">
                                                 {formatDate(badge.earnedAt)}
                                             </p>
                                         )}
@@ -689,23 +680,13 @@ export default function StreakPage() {
                                 ) : (
                                     <div
                                         key={m.days}
-                                        className="flex flex-col items-center justify-center gap-2 p-3 rounded-[14px] border text-center"
-                                        style={{
-                                            background: "rgba(255,255,255,0.02)",
-                                            borderColor: "rgba(255,255,255,0.07)",
-                                            opacity: 0.45,
-                                        }}
+                                        className="flex flex-col items-center justify-center gap-2 p-4 border-[3px] border-black bg-[#E5E5E5] text-center opacity-60"
                                     >
-                                        <div
-                                            className="w-11 h-11 rounded-full flex items-center justify-center"
-                                            style={{ background: "rgba(255,255,255,0.05)" }}
-                                        >
+                                        <div className="w-12 h-12 border-[2px] border-black bg-white flex items-center justify-center mb-1">
                                             <LockIcon />
                                         </div>
-                                        <p className="text-[11px] font-bold leading-tight" style={{ color: "rgba(255,255,255,0.3)" }}>
-                                            {m.label}
-                                        </p>
-                                        <p className="text-[9px] text-neutral-600">{m.days} hari</p>
+                                        <p className="text-[12px] font-black text-black/40 leading-tight uppercase">{m.label}</p>
+                                        <p className="text-[10px] font-bold text-black/40">{m.days} hari</p>
                                     </div>
                                 )
                             })}
@@ -718,47 +699,37 @@ export default function StreakPage() {
             {leaderboard.length > 0 && (
                 <motion.div
                     variants={fadeUp} initial="hidden" animate="show"
-                    className="rounded-2xl border border-white/[0.06] p-5"
-                    style={{ background: "linear-gradient(160deg, rgba(255,255,255,0.025), rgba(255,255,255,0.01))" }}
+                    className="bg-white border-[4px] border-black shadow-[8px_8px_0_#000] p-6"
                 >
-                    <div className="flex items-center gap-2 mb-5">
-                        <UsersIconSvg />
-                        <h2 className="font-bold text-white text-[11px] uppercase tracking-widest">Top Streakers</h2>
-                        <span className="ml-auto text-xs text-neutral-500">Streak terpanjang</span>
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="w-10 h-10 bg-[#00FFFF] border-[3px] border-black shadow-[3px_3px_0_#000] flex items-center justify-center">
+                            <Users className="w-5 h-5 text-black" />
+                        </div>
+                        <h2 className="font-black text-black text-[15px] uppercase tracking-widest">Top Streakers</h2>
+                        <span className="ml-auto text-[11px] font-black bg-black text-white px-3 py-1 uppercase">Streak terpanjang</span>
                     </div>
 
-                    <div className="flex flex-col gap-1">
-                        {leaderboard.slice(0, 5).map((entry) => {
+                    <div className="flex flex-col">
+                        {leaderboard.slice(0, 5).map((entry, index) => {
                             const isMe = entry.userId === session?.user?.id
-                            const streakColor = StreakColor(entry.rank)
 
                             return (
                                 <motion.div
                                     key={entry.userId}
-                                    whileHover={{ x: 3, transition: { type: "spring", stiffness: 400, damping: 28 } }}
-                                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
-                                    style={{
-                                        background: isMe ? "rgba(99,102,241,0.08)" : "transparent",
-                                        border: isMe ? "1px solid rgba(99,102,241,0.2)" : "1px solid transparent",
-                                    }}
+                                    whileHover={{ x: 4, transition: { type: "spring", stiffness: 400, damping: 28 } }}
+                                    className={`flex items-center gap-4 px-4 py-3 transition-all border-b-[3px] border-black last:border-b-0 ${isMe ? "bg-[#FFFF00]" : "hover:bg-[#FFFDF0]"}`}
                                 >
                                     {/* Rank icon */}
-                                    <div className="w-7 flex items-center justify-center flex-shrink-0">
+                                    <div className="w-8 flex items-center justify-center flex-shrink-0">
                                         <RankIcon rank={entry.rank} />
                                     </div>
 
                                     {/* Avatar */}
-                                    <div
-                                        className="w-[34px] h-[34px] rounded-full flex-shrink-0 overflow-hidden flex items-center justify-center"
-                                        style={{
-                                            background: "rgba(255,255,255,0.06)",
-                                            border: "1px solid rgba(255,255,255,0.09)",
-                                        }}
-                                    >
+                                    <div className="w-10 h-10 border-[3px] border-black flex-shrink-0 overflow-hidden flex items-center justify-center bg-white">
                                         {entry.image ? (
                                             <img src={entry.image} alt="" className="w-full h-full object-cover" />
                                         ) : (
-                                            <span className="text-sm font-bold text-white">
+                                            <span className="text-sm font-black text-black">
                                                 {entry.name.charAt(0).toUpperCase()}
                                             </span>
                                         )}
@@ -766,22 +737,15 @@ export default function StreakPage() {
 
                                     {/* Name */}
                                     <div className="flex-1 min-w-0">
-                                        <Link href={`/profile/${entry.userId}`} className="group flex items-center gap-1.5 min-w-0">
+                                        <Link href={`/profile/${entry.userId}`} className="group flex items-center gap-2 min-w-0">
                                             <div className="flex items-center gap-1 truncate">
-                                                <span className="text-sm font-semibold text-white group-hover:text-indigo-300 transition-colors truncate">
+                                                <span className="text-sm font-black text-black uppercase group-hover:underline truncate">
                                                     {entry.name}
                                                 </span>
-                                                {entry.isVerified && <BadgeCheck className="w-3.5 h-3.5 text-white shrink-0 fill-[#0095F6] relative -top-[1px]" />}
+                                                {entry.isVerified && <BadgeCheck className="w-4 h-4 text-black shrink-0 fill-[#00FFFF]" />}
                                             </div>
                                             {isMe && (
-                                                <span
-                                                    className="text-[9px] px-1.5 py-0.5 rounded-full font-bold flex-shrink-0"
-                                                    style={{
-                                                        background: "rgba(99,102,241,0.2)",
-                                                        color: "#a5b4fc",
-                                                        border: "1px solid rgba(99,102,241,0.3)",
-                                                    }}
-                                                >
+                                                <span className="text-[9px] px-2 py-0.5 border-[2px] border-black bg-[#FF00FF] text-white font-black uppercase flex-shrink-0 shadow-[2px_2px_0_#000]">
                                                     Kamu
                                                 </span>
                                             )}
@@ -789,9 +753,9 @@ export default function StreakPage() {
                                     </div>
 
                                     {/* Streak */}
-                                    <div className="flex items-center gap-1.5 flex-shrink-0">
-                                        <FlameIcon size={13} />
-                                        <span className="text-sm font-bold" style={{ color: streakColor }}>
+                                    <div className="flex items-center gap-2 flex-shrink-0 bg-[#FF3300] border-[2px] border-black px-3 py-1 shadow-[2px_2px_0_#000]">
+                                        <FlameIcon size={14} />
+                                        <span className="text-sm font-black text-white">
                                             {entry.longestStreak}
                                         </span>
                                     </div>
@@ -803,25 +767,10 @@ export default function StreakPage() {
                     {leaderboard.length > 5 && (
                         <button
                             onClick={() => setIsLeaderboardModalOpen(true)}
-                            className="mt-4 w-full py-3 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 group"
-                            style={{
-                                border: "1px solid rgba(255,255,255,0.08)",
-                                color: "rgba(255,255,255,0.5)",
-                                background: "transparent",
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.background = "rgba(255,255,255,0.04)"
-                                e.currentTarget.style.color = "#fff"
-                                e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.background = "transparent"
-                                e.currentTarget.style.color = "rgba(255,255,255,0.5)"
-                                e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"
-                            }}
+                            className="mt-6 w-full py-4 text-sm font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 bg-white border-[3px] border-black text-black shadow-[4px_4px_0_#000] hover:bg-[#FFFF00] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000]"
                         >
                             Lihat Semua Leaderboard
-                            <ChevronRight className="w-4 h-4" />
+                            <ChevronRight className="w-5 h-5" />
                         </button>
                     )}
                 </motion.div>

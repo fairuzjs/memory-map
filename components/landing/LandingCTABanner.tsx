@@ -7,8 +7,8 @@ import { ArrowRight, MapPin } from "lucide-react"
 import { useSession } from "next-auth/react"
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 240, damping: 24 } },
+  hidden: { opacity: 0, y: 40 },
+  show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 400, damping: 15 } },
 }
 const stagger = {
   hidden: { opacity: 0 },
@@ -29,65 +29,37 @@ export function LandingCTABanner() {
         variants={stagger}
         className="max-w-4xl mx-auto"
       >
-        <motion.div variants={fadeUp} className="relative rounded-3xl overflow-hidden">
-          {/* Background layer */}
-          <div
-            className="absolute inset-0 -z-10"
-            style={{ background: "linear-gradient(135deg, rgba(15,15,25,0.95) 0%, rgba(10,10,18,0.98) 100%)" }}
-          />
-
-          {/* Indigo glow at center-top */}
-          <div
-            className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-64 -z-10 opacity-40 pointer-events-none"
-            style={{ background: "radial-gradient(ellipse at top, rgba(99,102,241,0.3) 0%, transparent 70%)" }}
-          />
-
-          {/* Top accent line */}
-          <div
-            className="absolute top-0 left-1/2 -translate-x-1/2 h-px w-2/3 pointer-events-none"
-            style={{ background: "linear-gradient(90deg, transparent, rgba(129,140,248,0.6), transparent)" }}
-          />
-
-          {/* Border */}
-          <div className="absolute inset-0 rounded-3xl border border-white/[0.07] pointer-events-none" />
-
+        <motion.div variants={fadeUp} className="relative bg-[#FFFF00] border-[4px] border-black shadow-[8px_8px_0_#000]">
           {/* Content */}
           <div className="relative px-8 py-16 md:px-16 md:py-20 text-center">
             {/* Badge */}
             <motion.div variants={fadeUp} className="inline-flex items-center gap-2 mb-8">
-              <div className="w-8 h-8 rounded-xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center">
-                <MapPin className="w-4 h-4 text-indigo-400" />
+              <div className="w-8 h-8 bg-black border-[3px] border-black flex items-center justify-center">
+                <MapPin className="w-4 h-4 text-[#FFFF00]" />
               </div>
-              <span className="text-sm font-medium text-indigo-300/80">Mulai perjalananmu</span>
+              <span className="text-sm font-black text-black uppercase tracking-wider">Mulai perjalananmu</span>
             </motion.div>
 
             {/* Headline */}
-            <motion.h2 variants={fadeUp} className="text-4xl md:text-[56px] font-extrabold font-[Outfit] text-white leading-[1.1] mb-5 tracking-tight">
+            <motion.h2 variants={fadeUp} className="text-4xl md:text-[56px] font-black font-[Outfit] text-black leading-[1.1] mb-5 tracking-tight">
               Kenanganmu layak punya
               <br />
-              <span
-                style={{
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundImage: "linear-gradient(135deg, #a5b4fc 0%, #818cf8 100%)",
-                  backgroundClip: "text",
-                }}
-              >
+              <span className="inline-block bg-[#FF00FF] text-white px-4 py-1 -rotate-1 border-[3px] border-black shadow-[3px_3px_0_#000] mt-2">
                 tempat yang indah.
               </span>
             </motion.h2>
 
             {/* Subtext */}
-            <motion.p variants={fadeUp} className="text-neutral-500 text-lg mb-12 max-w-7xl mx-auto font-light leading-relaxed">
-              Tandai momen paling bermakna dalam hidupmu ke peta dunia <span className="text-white">sepenuhnya gratis, selamanya.</span>
+            <motion.p variants={fadeUp} className="text-black/60 text-lg mb-12 max-w-7xl mx-auto font-bold leading-relaxed">
+              Tandai momen paling bermakna dalam hidupmu ke peta dunia <span className="text-black font-black">sepenuhnya gratis, selamanya.</span>
             </motion.p>
 
             {/* CTA */}
-            <motion.div variants={fadeUp} className="flex flex-row items-center justify-center gap-3 w-full max-w-sm sm:max-w-none mx-auto">
+            <motion.div variants={fadeUp} className="flex flex-row items-center justify-center gap-4 w-full max-w-sm sm:max-w-none mx-auto">
               {session?.user ? (
                 <Link
                   href="/dashboard"
-                  className="group flex flex-1 sm:flex-none items-center justify-center gap-2.5 px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl text-sm sm:text-base font-semibold text-neutral-900 bg-white hover:bg-neutral-100 transition-all shadow-[0_0_40px_-10px_rgba(255,255,255,0.4)] hover:shadow-[0_0_60px_-8px_rgba(255,255,255,0.5)]"
+                  className="group flex flex-1 sm:flex-none items-center justify-center gap-2.5 px-6 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base font-black text-[#FFFF00] bg-black border-[3px] border-black shadow-[4px_4px_0_rgba(0,0,0,0.3)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_rgba(0,0,0,0.3)] transition-all uppercase tracking-wide"
                 >
                   Buka Dashboard
                 </Link>
@@ -95,13 +67,13 @@ export function LandingCTABanner() {
                 <>
                   <Link
                     href="/register"
-                    className="group flex flex-1 sm:flex-none items-center justify-center gap-2.5 px-4 sm:px-8 py-3.5 sm:py-4 rounded-2xl text-[13px] sm:text-base font-semibold text-neutral-900 bg-white hover:bg-neutral-100 transition-all shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] hover:shadow-[0_0_60px_-8px_rgba(255,255,255,0.45)] text-center leading-tight"
+                    className="group flex flex-1 sm:flex-none items-center justify-center gap-2.5 px-4 sm:px-8 py-3.5 sm:py-4 text-[13px] sm:text-base font-black text-[#FFFF00] bg-black border-[3px] border-black shadow-[4px_4px_0_rgba(0,0,0,0.3)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_rgba(0,0,0,0.3)] transition-all text-center leading-tight uppercase tracking-wide"
                   >
                     Buat Akun Gratis
                   </Link>
                   <Link
                     href="/login"
-                    className="flex flex-1 sm:flex-none items-center justify-center gap-2 px-4 sm:px-7 py-3.5 sm:py-4 rounded-2xl text-[13px] sm:text-base font-medium text-neutral-400 hover:text-white border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.07] transition-all backdrop-blur-sm text-center leading-tight"
+                    className="flex flex-1 sm:flex-none items-center justify-center gap-2 px-4 sm:px-7 py-3.5 sm:py-4 text-[13px] sm:text-base font-bold text-black bg-white border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] hover:bg-[#00FFFF] transition-all text-center leading-tight"
                   >
                     Sudah punya akun
                   </Link>

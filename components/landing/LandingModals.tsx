@@ -43,20 +43,20 @@ function ModalWrapper({
   maxWidth?: string
 }) {
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={onClose}
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
       />
       <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        className={`relative w-full ${maxWidth} max-h-[90vh] overflow-hidden rounded-2xl border border-white/10 shadow-2xl flex flex-col`}
-        style={{ background: "rgba(12, 12, 22, 0.95)" }}
+        initial={{ opacity: 0, scale: 0.9, y: 20, rotate: -1 }}
+        animate={{ opacity: 1, scale: 1, y: 0, rotate: 0 }}
+        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+        transition={{ type: "spring", stiffness: 400, damping: 20 }}
+        className={`relative w-full ${maxWidth} max-h-[90vh] overflow-hidden border-[4px] border-black shadow-[12px_12px_0_#000] bg-white flex flex-col`}
       >
         {children}
       </motion.div>
@@ -66,18 +66,14 @@ function ModalWrapper({
 
 function ModalHeader({ title, onClose, icon }: { title: string; onClose: () => void; icon?: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between p-6 border-b border-white/[0.06]">
-      {icon ? (
-        <div className="flex items-center gap-3">
-          {icon}
-          <h3 className="text-xl font-bold text-white font-[Outfit]">{title}</h3>
-        </div>
-      ) : (
-        <h3 className="text-xl font-bold text-white font-[Outfit]">{title}</h3>
-      )}
+    <div className="flex items-center justify-between p-5 sm:p-6 border-b-[4px] border-black bg-[#E5E5E5]">
+      <div className="flex items-center gap-4">
+        {icon}
+        <h3 className="text-[20px] font-black text-black uppercase tracking-wider">{title}</h3>
+      </div>
       <button
         onClick={onClose}
-        className="p-2 -mr-2 text-neutral-500 hover:text-white hover:bg-white/5 rounded-full transition-colors"
+        className="w-10 h-10 bg-[#FF00FF] text-white border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all flex items-center justify-center shrink-0 ml-4"
       >
         <X className="w-5 h-5" />
       </button>
@@ -85,41 +81,36 @@ function ModalHeader({ title, onClose, icon }: { title: string; onClose: () => v
   )
 }
 
-// ─── Modals (Replaced by Global TermsModal) ────────────────────────────────────
-
 // ─── Changelog Modal ───────────────────────────────────────────────────────────
 function ChangelogModal({ onClose }: { onClose: () => void }) {
   const metrics = [
-    { icon: Server, label: "Uptime", value: 99.9, isNumber: true, suffix: "%", color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/15" },
-    { icon: Zap, label: "Respons", value: 42, isNumber: true, suffix: "ms", color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/15" },
-    { icon: Globe, label: "API", value: "Aktif", isNumber: false, suffix: "", color: "text-sky-400", bg: "bg-sky-500/10", border: "border-sky-500/15" },
-    { icon: Users, label: "Pengguna", value: "Online", isNumber: false, suffix: "", color: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/15" },
+    { icon: Server, label: "Uptime", value: 99.9, isNumber: true, suffix: "%", bg: "bg-[#00FF00]" },
+    { icon: Zap, label: "Respons", value: 42, isNumber: true, suffix: "ms", bg: "bg-[#FFFF00]" },
+    { icon: Globe, label: "API", value: "Aktif", isNumber: false, suffix: "", bg: "bg-[#00FFFF]" },
+    { icon: Users, label: "Pengguna", value: "Online", isNumber: false, suffix: "", bg: "bg-[#FF00FF]", text: "text-white" },
   ]
 
   return (
     <ModalWrapper onClose={onClose} maxWidth="max-w-3xl">
       <ModalHeader
-        title="Status Sistem & Changelog"
+        title="Status & Changelog"
         onClose={onClose}
         icon={
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-            <Activity className="w-4 h-4 text-white" />
+          <div className="w-12 h-12 bg-[#00FF00] border-[3px] border-black shadow-[4px_4px_0_#000] flex items-center justify-center">
+            <Activity className="w-6 h-6 text-black" />
           </div>
         }
       />
-      <div className="p-6 overflow-y-auto custom-scrollbar">
+      <div className="p-6 sm:p-8 overflow-y-auto custom-scrollbar bg-white">
         {/* System Status */}
-        <div className="relative overflow-hidden rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.06] p-5 mb-6">
+        <div className="border-[4px] border-black bg-[#E5E5E5] p-5 mb-8 shadow-[6px_6px_0_#000]">
           <div className="flex items-start gap-4">
-            <div className="w-11 h-11 rounded-xl bg-emerald-500/15 flex items-center justify-center shrink-0 border border-emerald-500/20">
-              <div className="relative">
-                <span className="animate-ping absolute inset-0 rounded-full bg-emerald-400 opacity-40"></span>
-                <Shield className="relative w-5 h-5 text-emerald-400" />
-              </div>
+            <div className="w-12 h-12 bg-[#00FF00] flex items-center justify-center shrink-0 border-[3px] border-black shadow-[2px_2px_0_#000]">
+              <Shield className="w-6 h-6 text-black" />
             </div>
             <div>
-              <h4 className="text-emerald-300 font-bold text-[15px] mb-1.5 font-[Outfit]">Semua Sistem Berjalan Normal</h4>
-              <p className="text-neutral-400 text-sm leading-relaxed">
+              <h4 className="text-black font-black text-[16px] uppercase tracking-wide mb-1">Semua Sistem Berjalan Normal</h4>
+              <p className="text-black/80 font-bold text-[12px] leading-relaxed">
                 Layanan MemoryMap saat ini beroperasi dengan lancar tanpa ada gangguan yang dilaporkan. Kami terus memantau performa sistem secara real-time.
               </p>
             </div>
@@ -127,62 +118,85 @@ function ChangelogModal({ onClose }: { onClose: () => void }) {
         </div>
 
         {/* Metrics */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
           {metrics.map((metric, i) => {
             const Icon = metric.icon
             return (
-              <div key={i} className={`p-3.5 rounded-xl border ${metric.border} bg-white/[0.02] text-center`}>
-                <div className={`w-8 h-8 rounded-lg ${metric.bg} flex items-center justify-center mx-auto mb-2`}>
-                  <Icon className={`w-4 h-4 ${metric.color}`} />
+              <div key={i} className={`p-4 border-[3px] border-black shadow-[4px_4px_0_#000] text-center flex flex-col items-center justify-center ${metric.bg}`}>
+                <div className="w-8 h-8 flex items-center justify-center mb-2">
+                  <Icon className={`w-6 h-6 ${metric.text || "text-black"}`} />
                 </div>
-                <p className={`text-lg font-bold ${metric.color} font-[Outfit]`}>
+                <p className={`text-[20px] font-black leading-none mb-1 ${metric.text || "text-black"}`}>
                   {metric.isNumber ? <AnimatedCounter value={metric.value as number} suffix={metric.suffix} /> : metric.value}
                 </p>
-                <p className="text-[11px] text-neutral-500 mt-0.5 uppercase tracking-wider font-medium">{metric.label}</p>
+                <p className={`text-[10px] font-black uppercase tracking-widest ${metric.text || "text-black"}`}>{metric.label}</p>
               </div>
             )
           })}
         </div>
 
         {/* Changelog */}
-        <div className="border-t border-white/[0.06] pt-6">
-          <div className="flex items-center gap-2.5 mb-6">
-            <div className="w-7 h-7 rounded-lg bg-indigo-500/15 border border-indigo-500/20 flex items-center justify-center">
-              <GitBranch className="w-3.5 h-3.5 text-indigo-400" />
+        <div className="border-t-[4px] border-black pt-8">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-10 h-10 bg-[#FF3300] border-[3px] border-black shadow-[4px_4px_0_#000] flex items-center justify-center">
+              <GitBranch className="w-5 h-5 text-white" />
             </div>
-            <h4 className="text-white font-bold text-lg font-[Outfit]">Changelog Terbaru</h4>
-            <span className="ml-auto px-2.5 py-1 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold rounded-full border border-emerald-500/20 uppercase tracking-wider">Live</span>
+            <h4 className="text-black font-black text-[20px] uppercase">Changelog Terbaru</h4>
+            <span className="ml-auto px-3 py-1 bg-[#00FF00] border-[3px] border-black shadow-[2px_2px_0_#000] text-black text-[12px] font-black uppercase tracking-wider transform rotate-2">
+              Live
+            </span>
           </div>
 
-          <div className="relative space-y-3">
-            <div className="absolute left-[19px] top-8 bottom-8 w-[1px] bg-gradient-to-b from-[#1DB954]/40 via-indigo-500/20 to-transparent pointer-events-none" />
+          <div className="space-y-6">
+            {/* V2.4 */}
+            <div className="border-[4px] border-black bg-white shadow-[6px_6px_0_#000] p-5">
+              <div className="flex items-center gap-3 mb-4 flex-wrap">
+                <span className="px-3 py-1 bg-[#FFD700] text-black text-[10px] font-black border-[2px] border-black shadow-[2px_2px_0_#000] uppercase tracking-wider">Terbaru</span>
+                <span className="px-3 py-1 bg-[#E5E5E5] text-black text-[10px] font-black border-[2px] border-black uppercase tracking-wider">v2.4</span>
+                <span className="text-[12px] font-bold text-black/60 ml-auto">Mei 2026</span>
+              </div>
+              <h5 className="text-black font-black text-[18px] uppercase mb-4 underline decoration-[#FFD700] decoration-4 underline-offset-4">Akun Premium</h5>
+              <div className="space-y-3">
+                {[
+                  { text: "Peluncuran fitur Akun Premium dengan harga Rp 20.000/bulan untuk pengalaman eksklusif.", tag: "Fitur Baru", bg: "bg-[#FFD700]" },
+                  { text: "Benefit premium: 5x gacha gratis/minggu, streak freeze 2x/bulan, multiplier streak 2x.", tag: "Benefit", bg: "bg-[#00FF00]" },
+                  { text: "Badge Crown eksklusif, bingkai avatar Mahkota Royale, dan banner Langit Kerajaan.", tag: "Eksklusif", bg: "bg-[#FF00FF]" },
+                  { text: "Custom Map Markers premium dengan 5 desain unik untuk menandai kenangan.", tag: "Fitur Baru", bg: "bg-[#FFFF00]" },
+                  { text: "Diskon 10% untuk semua pembelian di shop dan bonus 250 Memory Point saat upgrade.", tag: "Benefit", bg: "bg-[#00FFFF]" },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-start gap-3 bg-neutral-100 p-3 border-[2px] border-black">
+                    <div className="w-3 h-3 bg-black mt-1.5 shrink-0" />
+                    <div className="flex-1">
+                      <span className="text-[14px] font-bold text-black/80">{item.text}</span>
+                      <span className={`ml-2 px-2 py-0.5 text-[9px] font-black text-black border-[2px] border-black uppercase tracking-wider ${item.bg}`}>
+                        {item.tag}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
 
             {/* V2.3 */}
-            <div className="relative overflow-hidden rounded-2xl border border-[#1DB954]/30 p-5" style={{ background: "linear-gradient(135deg, rgba(29,185,84,0.06), rgba(0,0,0,0), rgba(29,185,84,0.03))" }}>
-              <div className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-2xl" style={{ background: "linear-gradient(180deg, #1DB954, rgba(29,185,84,0.2))" }} />
-              <div className="flex items-center gap-2.5 mb-3 pl-1">
-                <div className="absolute left-[14px] w-[11px] h-[11px] rounded-full border-2 border-[#1DB954] bg-[#0a0f0a] shadow-[0_0_8px_rgba(29,185,84,0.6)]" />
-                <span className="px-2.5 py-1 text-[10px] font-bold rounded-full uppercase tracking-wider border" style={{ backgroundColor: "rgba(29,185,84,0.15)", color: "#1DB954", borderColor: "rgba(29,185,84,0.35)" }}>Terbaru</span>
-                <span className="px-2.5 py-1 bg-white/[0.05] text-neutral-400 text-[10px] font-semibold rounded-full border border-white/[0.08] uppercase tracking-wider">v2.3</span>
-                <span className="text-[11px] text-neutral-500 ml-auto">April 2026</span>
+            <div className="border-[4px] border-black bg-white shadow-[6px_6px_0_#000] p-5">
+              <div className="flex items-center gap-3 mb-4 flex-wrap">
+                <span className="px-3 py-1 bg-[#E5E5E5] text-black text-[10px] font-black border-[2px] border-black uppercase tracking-wider">v2.3</span>
+                <span className="text-[12px] font-bold text-black/60 ml-auto">April 2026</span>
               </div>
-              <div className="flex items-center gap-2.5 mb-3 pl-1">
-                <svg viewBox="0 0 24 24" className="w-4 h-4 shrink-0" fill="#1DB954"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
-                <h5 className="text-white font-bold text-[15px] font-[Outfit]">Spotify Music Integration</h5>
-              </div>
-              <div className="space-y-2 pl-1">
+              <h5 className="text-black font-black text-[18px] uppercase mb-4 underline decoration-[#00FF00] decoration-4 underline-offset-4">Spotify Music Integration</h5>
+              <div className="space-y-3">
                 {[
-                  { text: "Integrasi Spotify API untuk mencari dan memilih lagu langsung dari platform.", tag: "Integrasi" },
-                  { text: "Lampirkan lagu Spotify ke setiap kenangan untuk menciptakan soundtrack memorimu.", tag: "Fitur Baru" },
-                  { text: "Pemutar Spotify Embed terintegrasi pada detail kenangan dan peta interaktif.", tag: "Fitur Baru" },
+                  { text: "Integrasi Spotify API untuk mencari dan memilih lagu langsung dari platform.", tag: "Integrasi", bg: "bg-[#00FFFF]" },
+                  { text: "Lampirkan lagu Spotify ke setiap kenangan untuk menciptakan soundtrack memorimu.", tag: "Fitur Baru", bg: "bg-[#FFFF00]" },
+                  { text: "Pemutar Spotify Embed terintegrasi pada detail kenangan dan peta interaktif.", tag: "Fitur Baru", bg: "bg-[#FFFF00]" },
                 ].map((item, i) => (
-                  <div key={i} className="flex items-start gap-2.5">
-                    <div className="w-5 h-5 rounded-md flex items-center justify-center shrink-0 mt-0.5" style={{ backgroundColor: "rgba(29,185,84,0.12)", border: "1px solid rgba(29,185,84,0.25)" }}>
-                      <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "#1DB954" }} />
-                    </div>
+                  <div key={i} className="flex items-start gap-3 bg-neutral-100 p-3 border-[2px] border-black">
+                    <div className="w-3 h-3 bg-black mt-1.5 shrink-0" />
                     <div className="flex-1">
-                      <span className="text-sm text-neutral-300 leading-relaxed">{item.text}</span>
-                      <span className="ml-2 px-1.5 py-0.5 text-[9px] font-bold rounded uppercase tracking-wider" style={{ backgroundColor: "rgba(29,185,84,0.1)", color: "#1DB954" }}>{item.tag}</span>
+                      <span className="text-[14px] font-bold text-black/80">{item.text}</span>
+                      <span className={`ml-2 px-2 py-0.5 text-[9px] font-black text-black border-[2px] border-black uppercase tracking-wider ${item.bg}`}>
+                        {item.tag}
+                      </span>
                     </div>
                   </div>
                 ))}
@@ -190,82 +204,51 @@ function ChangelogModal({ onClose }: { onClose: () => void }) {
             </div>
 
             {/* V2.2 */}
-            <div className="relative overflow-hidden rounded-2xl border border-amber-500/20 bg-amber-500/[0.03] p-5">
-              <div className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-2xl bg-amber-500/40" />
-              <div className="flex items-center gap-2.5 mb-3 pl-1">
-                <div className="absolute left-[14px] w-[11px] h-[11px] rounded-full border-2 border-amber-500/60 bg-[#0c0a06]" />
-                <span className="px-2.5 py-1 bg-white/[0.05] text-neutral-400 text-[10px] font-semibold rounded-full border border-white/[0.08] uppercase tracking-wider">v2.2</span>
-                <span className="text-[11px] text-neutral-500 ml-auto">April 2026</span>
+            <div className="border-[4px] border-black bg-white shadow-[6px_6px_0_#000] p-5">
+              <div className="flex items-center gap-3 mb-4 flex-wrap">
+                <span className="px-3 py-1 bg-[#E5E5E5] text-black text-[10px] font-black border-[2px] border-black uppercase tracking-wider">v2.2</span>
+                <span className="text-[12px] font-bold text-black/60 ml-auto">April 2026</span>
               </div>
-              <div className="flex items-center gap-2.5 mb-3 pl-1">
-                <Star className="w-4 h-4 text-amber-400 shrink-0" />
-                <h5 className="text-white font-bold text-[15px] font-[Outfit]">Sistem Memory Point</h5>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-[#FFFF00] border-[2px] border-black flex items-center justify-center shadow-[2px_2px_0_#000]">
+                  <Star className="w-4 h-4 text-black" />
+                </div>
+                <h5 className="text-black font-black text-[18px] uppercase">Sistem Memory Point</h5>
               </div>
-              <div className="space-y-2 pl-1">
+              <div className="space-y-3">
                 {[
                   "Integrasi fitur Exchange Memory Point untuk menukar poin dengan item eksklusif.",
                   "Peluncuran fitur Topup Memory Point secara manual dengan konfirmasi admin.",
                 ].map((text, i) => (
-                  <div key={i} className="flex items-start gap-2.5">
-                    <div className="w-5 h-5 rounded-md bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0 mt-0.5">
-                      <Sparkles className="w-3 h-3 text-amber-400" />
-                    </div>
-                    <span className="text-sm text-neutral-300 leading-relaxed">{text}</span>
+                  <div key={i} className="flex items-start gap-3 bg-neutral-100 p-3 border-[2px] border-black">
+                    <div className="w-3 h-3 bg-black mt-1.5 shrink-0" />
+                    <span className="text-[14px] font-bold text-black/80">{text}</span>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* V2.1 */}
-            <div className="relative overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.015] p-5">
-              <div className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-2xl bg-sky-500/30" />
-              <div className="flex items-center gap-2.5 mb-3 pl-1">
-                <div className="absolute left-[14px] w-[11px] h-[11px] rounded-full border-2 border-sky-500/40 bg-[#06090c]" />
-                <span className="px-2.5 py-1 bg-white/[0.05] text-neutral-400 text-[10px] font-semibold rounded-full border border-white/[0.08] uppercase tracking-wider">v2.1</span>
-                <span className="text-[11px] text-neutral-500 ml-auto">Maret 2026</span>
+            <div className="border-[4px] border-black bg-white shadow-[6px_6px_0_#000] p-5">
+              <div className="flex items-center gap-3 mb-4 flex-wrap">
+                <span className="px-3 py-1 bg-[#E5E5E5] text-black text-[10px] font-black border-[2px] border-black uppercase tracking-wider">v2.1</span>
+                <span className="text-[12px] font-bold text-black/60 ml-auto">Maret 2026</span>
               </div>
-              <div className="flex items-center gap-2.5 mb-3 pl-1">
-                <Users className="w-4 h-4 text-sky-400 shrink-0" />
-                <h5 className="text-white font-bold text-[15px] font-[Outfit]">Fitur Komunitas & Peningkatan Performa</h5>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-[#00FFFF] border-[2px] border-black flex items-center justify-center shadow-[2px_2px_0_#000]">
+                  <Users className="w-4 h-4 text-black" />
+                </div>
+                <h5 className="text-black font-black text-[18px] uppercase">Fitur Komunitas</h5>
               </div>
-              <div className="space-y-2 pl-1">
+              <div className="space-y-3">
                 {[
-                  { icon: Globe, text: "Penambahan halaman jelajah real-time untuk melihat kenangan dari komunitas global.", color: "text-sky-400", bg: "bg-sky-500/10", border: "border-sky-500/20" },
-                  { icon: Zap, text: "Optimasi kecepatan rendering peta interaktif hingga 30% lebih cepat pada perangkat mobile.", color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
-                  { icon: Bug, text: "Perbaikan bug minor terkait sinkronisasi data profil pengguna.", color: "text-neutral-400", bg: "bg-white/[0.06]", border: "border-white/[0.08]" },
+                  { text: "Penambahan halaman jelajah real-time untuk komunitas global." },
+                  { text: "Optimasi kecepatan rendering peta interaktif hingga 30%." },
+                  { text: "Perbaikan bug minor terkait sinkronisasi data profil." },
                 ].map((item, i) => (
-                  <div key={i} className="flex items-start gap-2.5">
-                    <div className={`w-5 h-5 rounded-md ${item.bg} border ${item.border} flex items-center justify-center shrink-0 mt-0.5`}>
-                      <item.icon className={`w-3 h-3 ${item.color}`} />
-                    </div>
-                    <span className="text-sm text-neutral-400 leading-relaxed">{item.text}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* V2.0 */}
-            <div className="relative overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.015] p-5">
-              <div className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-2xl bg-violet-500/30" />
-              <div className="flex items-center gap-2.5 mb-3 pl-1">
-                <div className="absolute left-[14px] w-[11px] h-[11px] rounded-full border-2 border-violet-500/40 bg-[#09060c]" />
-                <span className="px-2.5 py-1 bg-white/[0.05] text-neutral-400 text-[10px] font-semibold rounded-full border border-white/[0.08] uppercase tracking-wider">v2.0</span>
-                <span className="text-[11px] text-neutral-500 ml-auto">Februari 2026</span>
-              </div>
-              <div className="flex items-center gap-2.5 mb-3 pl-1">
-                <Palette className="w-4 h-4 text-violet-400 shrink-0" />
-                <h5 className="text-white font-bold text-[15px] font-[Outfit]">Desain Ulang Dashboard</h5>
-              </div>
-              <div className="space-y-2 pl-1">
-                {[
-                  { icon: Palette, text: "Pembaruan antarmuka pengguna secara menyeluruh dengan elemen glassmorphism.", color: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/20" },
-                  { icon: Sparkles, text: "Mode gelap cerdas (smart dark mode) dengan kontras yang disempurnakan.", color: "text-indigo-400", bg: "bg-indigo-500/10", border: "border-indigo-500/20" },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-start gap-2.5">
-                    <div className={`w-5 h-5 rounded-md ${item.bg} border ${item.border} flex items-center justify-center shrink-0 mt-0.5`}>
-                      <item.icon className={`w-3 h-3 ${item.color}`} />
-                    </div>
-                    <span className="text-sm text-neutral-400 leading-relaxed">{item.text}</span>
+                  <div key={i} className="flex items-start gap-3 bg-neutral-100 p-3 border-[2px] border-black">
+                    <div className="w-3 h-3 bg-black mt-1.5 shrink-0" />
+                    <span className="text-[14px] font-bold text-black/80">{item.text}</span>
                   </div>
                 ))}
               </div>
@@ -273,9 +256,9 @@ function ChangelogModal({ onClose }: { onClose: () => void }) {
           </div>
         </div>
 
-        <div className="mt-6 p-4 rounded-xl border border-indigo-500/15 bg-indigo-500/[0.04] text-center">
-          <p className="text-sm text-neutral-300 mb-1">Ada kendala atau saran?</p>
-          <p className="text-xs text-neutral-500">Hubungi tim dukungan kami melalui halaman Kontak untuk melaporkan masalah atau memberikan masukan.</p>
+        <div className="mt-10 p-5 border-[4px] border-black bg-[#FFFF00] text-center shadow-[6px_6px_0_#000]">
+          <p className="text-[16px] font-black text-black uppercase mb-2">Ada kendala atau saran?</p>
+          <p className="text-[12px] font-bold text-black/80">Hubungi tim dukungan kami melalui halaman Kontak untuk melaporkan masalah atau memberikan masukan.</p>
         </div>
       </div>
     </ModalWrapper>
@@ -290,79 +273,81 @@ function ContactModal({ onClose }: { onClose: () => void }) {
         title="Hubungi Kami"
         onClose={onClose}
         icon={
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center shadow-lg shadow-sky-500/20">
-            <Headphones className="w-4 h-4 text-white" />
+          <div className="w-12 h-12 bg-[#00FFFF] border-[3px] border-black shadow-[4px_4px_0_#000] flex items-center justify-center">
+            <Headphones className="w-6 h-6 text-black" />
           </div>
         }
       />
-      <div className="p-6 overflow-y-auto custom-scrollbar">
-        <div className="relative overflow-hidden rounded-2xl border border-sky-500/20 bg-sky-500/[0.06] p-5 mb-6">
+      <div className="p-6 sm:p-8 overflow-y-auto custom-scrollbar bg-white">
+        <div className="border-[4px] border-black bg-[#E5E5E5] p-5 mb-8 shadow-[6px_6px_0_#000]">
           <div className="flex items-start gap-4">
-            <div className="w-11 h-11 rounded-xl bg-sky-500/15 flex items-center justify-center shrink-0 border border-sky-500/20">
-              <MessageCircle className="w-5 h-5 text-sky-400" />
+            <div className="w-12 h-12 bg-[#FF00FF] flex items-center justify-center shrink-0 border-[3px] border-black shadow-[2px_2px_0_#000]">
+              <MessageCircle className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h4 className="text-sky-300 font-bold text-[15px] mb-1.5 font-[Outfit]">Kami Siap Membantu Anda</h4>
-              <p className="text-neutral-400 text-sm leading-relaxed">
+              <h4 className="text-black font-black text-[16px] uppercase tracking-wide mb-1">Kami Siap Membantu Anda</h4>
+              <p className="text-black/80 font-bold text-[12px] leading-relaxed">
                 Punya pertanyaan, masukan, atau kendala terkait MemoryMap? Tim dukungan kami siap membantu melalui berbagai saluran komunikasi di bawah ini.
               </p>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <a href="mailto:support@memorymap.app" className="group relative overflow-hidden p-5 rounded-xl border border-indigo-500/15 bg-white/[0.02] hover:bg-indigo-500/[0.06] hover:border-indigo-500/25 transition-all">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+          <a href="mailto:support@memorymap.app" className="group p-5 border-[4px] border-black bg-white shadow-[6px_6px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0_#000] transition-all hover:bg-[#FFFF00]">
             <div className="flex items-start gap-4">
-              <div className="w-11 h-11 rounded-xl bg-indigo-500/10 flex items-center justify-center shrink-0 border border-indigo-500/15 group-hover:bg-indigo-500 group-hover:border-indigo-500 transition-all">
-                <Mail className="w-5 h-5 text-indigo-400 group-hover:text-white transition-colors" />
+              <div className="w-12 h-12 bg-[#00FFFF] border-[3px] border-black shadow-[2px_2px_0_#000] flex items-center justify-center shrink-0">
+                <Mail className="w-6 h-6 text-black" />
               </div>
               <div>
-                <h4 className="text-white font-bold text-[15px] mb-1 font-[Outfit]">Email Dukungan</h4>
-                <p className="text-indigo-400 text-sm font-medium">support@memorymap.app</p>
-                <div className="flex items-center gap-1.5 mt-2.5">
-                  <Clock className="w-3 h-3 text-neutral-500" />
-                  <span className="text-[11px] text-neutral-500">Balasan dalam 1x24 jam kerja</span>
+                <h4 className="text-black font-black text-[16px] uppercase mb-1">Email Dukungan</h4>
+                <p className="text-[14px] font-bold text-black/80">support@memorymap.app</p>
+                <div className="flex items-center gap-2 mt-3 bg-white border-[2px] border-black px-2 py-1 inline-flex">
+                  <Clock className="w-3 h-3 text-black" />
+                  <span className="text-[10px] font-black text-black uppercase">Balasan 1x24 jam</span>
                 </div>
               </div>
             </div>
           </a>
-          <a href="https://wa.me/6285883917835" target="_blank" rel="noopener noreferrer" className="group relative overflow-hidden p-5 rounded-xl border border-emerald-500/15 bg-white/[0.02] hover:bg-emerald-500/[0.06] hover:border-emerald-500/25 transition-all">
+          <a href="https://wa.me/6285883917835" target="_blank" rel="noopener noreferrer" className="group p-5 border-[4px] border-black bg-white shadow-[6px_6px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0_#000] transition-all hover:bg-[#00FF00]">
             <div className="flex items-start gap-4">
-              <div className="w-11 h-11 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0 border border-emerald-500/15 group-hover:bg-emerald-500 group-hover:border-emerald-500 transition-all">
-                <Phone className="w-5 h-5 text-emerald-400 group-hover:text-white transition-colors" />
+              <div className="w-12 h-12 bg-white border-[3px] border-black shadow-[2px_2px_0_#000] flex items-center justify-center shrink-0">
+                <Phone className="w-6 h-6 text-black" />
               </div>
               <div>
-                <h4 className="text-white font-bold text-[15px] mb-1 font-[Outfit]">WhatsApp</h4>
-                <p className="text-emerald-400 text-sm font-medium">+62 858 8391 7835</p>
-                <div className="flex items-center gap-1.5 mt-2.5">
-                  <Clock className="w-3 h-3 text-neutral-500" />
-                  <span className="text-[11px] text-neutral-500">Senin - Jumat, 09:00 - 17:00 WIB</span>
+                <h4 className="text-black font-black text-[16px] uppercase mb-1">WhatsApp</h4>
+                <p className="text-[14px] font-bold text-black/80">+62 858 8391 7835</p>
+                <div className="flex items-center gap-2 mt-3 bg-white border-[2px] border-black px-2 py-1 inline-flex">
+                  <Clock className="w-3 h-3 text-black" />
+                  <span className="text-[10px] font-black text-black uppercase">Sen-Jum, 09:00 - 17:00</span>
                 </div>
               </div>
             </div>
           </a>
         </div>
 
-        <div className="border-t border-white/[0.06] pt-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Share2 className="w-4 h-4 text-violet-400" />
-            <h4 className="text-white font-bold text-sm font-[Outfit] uppercase tracking-wider">Media Sosial</h4>
+        <div className="border-t-[4px] border-black pt-8">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 bg-[#FF3300] border-[3px] border-black flex items-center justify-center shadow-[2px_2px_0_#000]">
+              <Share2 className="w-5 h-5 text-white" />
+            </div>
+            <h4 className="text-black font-black text-[18px] uppercase">Media Sosial</h4>
           </div>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
-              { icon: Twitter, label: "Twitter", handle: "@memorymap_id", color: "text-sky-400", bg: "bg-sky-500/10", border: "border-sky-500/15" },
-              { icon: Instagram, label: "Instagram", handle: "@memorymap.app", color: "text-pink-400", bg: "bg-pink-500/10", border: "border-pink-500/15" },
-              { icon: Github, label: "GitHub", handle: "memorymap", color: "text-neutral-300", bg: "bg-white/[0.08]", border: "border-white/[0.1]" },
+              { icon: Twitter, label: "Twitter", handle: "@memorymap_id", bg: "bg-[#00FFFF]" },
+              { icon: Instagram, label: "Instagram", handle: "@memorymap.app", bg: "bg-[#FF00FF]", text: "text-white" },
+              { icon: Github, label: "GitHub", handle: "memorymap", bg: "bg-black", text: "text-white" },
             ].map((social, i) => {
               const Icon = social.icon
               return (
-                <a key={i} href="#" className={`group flex flex-col items-center gap-2.5 p-4 rounded-xl border ${social.border} bg-white/[0.02] hover:border-opacity-40 transition-all text-center`}>
-                  <div className={`w-10 h-10 rounded-xl ${social.bg} flex items-center justify-center`}>
-                    <Icon className={`w-5 h-5 ${social.color}`} />
+                <a key={i} href="#" className="flex flex-col items-center gap-3 p-5 border-[4px] border-black bg-white shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all group">
+                  <div className={`w-12 h-12 border-[3px] border-black shadow-[2px_2px_0_#000] flex items-center justify-center ${social.bg}`}>
+                    <Icon className={`w-6 h-6 ${social.text || "text-black"}`} />
                   </div>
-                  <div>
-                    <p className="text-xs font-bold text-white">{social.label}</p>
-                    <p className={`text-[11px] ${social.color} mt-0.5`}>{social.handle}</p>
+                  <div className="text-center">
+                    <p className="text-[14px] font-black uppercase text-black">{social.label}</p>
+                    <p className="text-[12px] font-bold text-black/60">{social.handle}</p>
                   </div>
                 </a>
               )
@@ -377,154 +362,114 @@ function ContactModal({ onClose }: { onClose: () => void }) {
 // ─── Mobile App Modal ──────────────────────────────────────────────────────────
 function MobileAppModal({ onClose }: { onClose: () => void }) {
   return (
-    <ModalWrapper onClose={onClose} maxWidth="max-w-3xl">
+    <ModalWrapper onClose={onClose} maxWidth="max-w-4xl">
       <ModalHeader
         title="Aplikasi Mobile"
         onClose={onClose}
         icon={
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-            <Smartphone className="w-4 h-4 text-white" />
+          <div className="w-12 h-12 bg-[#FFFF00] border-[3px] border-black shadow-[4px_4px_0_#000] flex items-center justify-center">
+            <Smartphone className="w-6 h-6 text-black" />
           </div>
         }
       />
-      <div className="p-6 overflow-y-auto custom-scrollbar">
-        <div className="relative overflow-hidden rounded-2xl border border-amber-500/20 bg-amber-500/[0.06] p-5 mb-8">
-          <div className="flex items-start gap-4">
-            <div>
-              <h4 className="text-amber-300 font-bold text-[15px] mb-1.5 font-[Outfit]">Sedang Dalam Tahap Pengembangan</h4>
-              <p className="text-neutral-400 text-sm leading-relaxed">
-                Aplikasi mobile MemoryMap saat ini sedang dalam proses pengembangan aktif oleh tim kami. Kami akan menghadirkan pengalaman terbaik dalam mengabadikan kenangan langsung dari genggaman tangan Anda.
-              </p>
-            </div>
-          </div>
+      <div className="p-6 sm:p-8 overflow-y-auto custom-scrollbar bg-white">
+        <div className="border-[4px] border-black bg-[#E5E5E5] p-5 mb-10 shadow-[6px_6px_0_#000]">
+          <h4 className="text-black font-black text-[16px] uppercase mb-2">Sedang Dalam Tahap Pengembangan</h4>
+          <p className="text-black/80 font-bold text-[12px] leading-relaxed">
+            Aplikasi mobile MemoryMap saat ini sedang dalam proses pengembangan aktif oleh tim kami. Kami akan menghadirkan pengalaman terbaik dalam mengabadikan kenangan langsung dari genggaman tangan Anda.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center mb-10">
           {/* Phone mockup */}
           <div className="flex justify-center">
-            <div className="relative">
-              <div className="absolute inset-0 bg-indigo-500/20 rounded-[3rem] blur-[60px] scale-90" />
-              <div className="relative w-[240px] h-[490px] rounded-[2.5rem] border-[3px] border-white/[0.15] bg-[#0a0a14] shadow-2xl overflow-hidden">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[100px] h-[28px] bg-[#0a0a14] rounded-b-2xl z-20 flex items-center justify-center">
-                  <div className="w-[50px] h-[5px] bg-white/10 rounded-full" />
-                </div>
-                <div className="relative w-full h-full overflow-hidden">
-                  <img src="/mobile-preview.png" alt="MemoryMap Mobile Preview" className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a14] via-transparent to-[#0a0a14]/30" />
-                  <div className="absolute top-[32px] left-0 right-0 px-5 flex items-center justify-between z-10">
-                    <span className="text-[10px] text-white/70 font-semibold">9:41</span>
-                  </div>
-                  <div className="absolute top-[54px] left-0 right-0 px-4 flex items-center justify-between z-10">
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-lg bg-indigo-500 flex items-center justify-center">
-                        <MapPin className="w-3 h-3 text-white" />
-                      </div>
-                      <span className="text-[11px] font-bold text-white font-[Outfit]">MemoryMap</span>
-                    </div>
-                    <Bell className="w-3.5 h-3.5 text-white/50" />
-                  </div>
-                  <div className="absolute bottom-0 left-0 right-0 bg-[#0c0c16]/95 backdrop-blur-xl border-t border-white/[0.06] px-4 py-2.5 flex items-center justify-around z-10">
-                    {[
-                      { Icon: Globe, label: "Peta", active: true },
-                      { Icon: BookOpen, label: "Jurnal", active: false },
-                      { Icon: Heart, label: "Favorit", active: false },
-                      { Icon: Users, label: "Profil", active: false },
-                    ].map(({ Icon, label, active }, i) => (
-                      <div key={i} className="flex flex-col items-center gap-0.5">
-                        <Icon className={`w-4 h-4 ${active ? "text-indigo-400" : "text-white/30"}`} />
-                        <span className={`text-[8px] font-medium ${active ? "text-indigo-400" : "text-white/30"}`}>{label}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+            <div className="relative border-[6px] border-black rounded-[2.5rem] bg-white shadow-[12px_12px_0_#000] w-[260px] h-[520px] overflow-hidden">
+              {/* Notch */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[120px] h-[30px] bg-black rounded-b-[1rem] z-20" />
+              {/* Screen */}
+              <div className="relative w-full h-full bg-black">
+                <img src="/mobile-preview.png" alt="MemoryMap Mobile Preview" className="w-full h-full object-cover opacity-90" />
               </div>
             </div>
           </div>
 
           {/* App info */}
-          <div className="space-y-6">
+          <div className="space-y-8">
             <div>
-              <h4 className="text-2xl font-bold text-white font-[Outfit] mb-3 leading-tight">
-                Kenangan di{" "}
-                <span style={{ WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundImage: "linear-gradient(135deg, #818cf8 0%, #c084fc 100%)", backgroundClip: "text" }}>
-                  Genggamanmu
-                </span>
+              <h4 className="text-[32px] font-black text-black uppercase leading-none mb-4">
+                Kenangan di <span className="bg-[#FF00FF] text-white px-2 border-[4px] border-black shadow-[4px_4px_0_#000] inline-block mt-2 transform -rotate-2">Genggamanmu</span>
               </h4>
-              <p className="text-neutral-400 text-sm leading-relaxed">
+              <p className="text-[14px] font-bold text-black/80 leading-relaxed bg-[#00FFFF] p-3 border-[3px] border-black shadow-[4px_4px_0_#000]">
                 Nikmati semua fitur MemoryMap langsung dari smartphone. Tandai kenangan di mana pun, kapan pun, bahkan saat offline.
               </p>
             </div>
-            <div className="space-y-3">
+            
+            <div className="space-y-4">
               {[
-                { icon: MapPin, text: "Tandai lokasi dengan GPS real-time", color: "text-indigo-400", bg: "bg-indigo-500/10" },
-                { icon: ImagePlus, text: "Ambil foto langsung dari kamera", color: "text-violet-400", bg: "bg-violet-500/10" },
-                { icon: Bell, text: "Notifikasi push untuk interaksi", color: "text-sky-400", bg: "bg-sky-500/10" },
-                { icon: Zap, text: "Mode offline — simpan lalu sync", color: "text-amber-400", bg: "bg-amber-500/10" },
+                { icon: MapPin, text: "Tandai lokasi dengan GPS real-time", bg: "bg-[#00FF00]" },
+                { icon: ImagePlus, text: "Ambil foto langsung dari kamera", bg: "bg-[#FFFF00]" },
+                { icon: Bell, text: "Notifikasi push untuk interaksi", bg: "bg-[#00FFFF]" },
+                { icon: Zap, text: "Mode offline — simpan lalu sync", bg: "bg-[#FF3300]", iconText: "text-white" },
               ].map((feature, i) => {
                 const Icon = feature.icon
                 return (
-                  <div key={i} className="flex items-center gap-3 p-3 rounded-xl border border-white/[0.06] bg-white/[0.02]">
-                    <div className={`w-8 h-8 rounded-lg ${feature.bg} flex items-center justify-center shrink-0`}>
-                      <Icon className={`w-4 h-4 ${feature.color}`} />
+                  <div key={i} className="flex items-center gap-4 p-3 border-[3px] border-black bg-white shadow-[4px_4px_0_#000]">
+                    <div className={`w-10 h-10 border-[2px] border-black flex items-center justify-center shrink-0 ${feature.bg}`}>
+                      <Icon className={`w-5 h-5 ${feature.iconText || "text-black"}`} />
                     </div>
-                    <span className="text-sm text-neutral-300">{feature.text}</span>
+                    <span className="text-[14px] font-black text-black uppercase">{feature.text}</span>
                   </div>
                 )
               })}
             </div>
-            <div className="p-4 rounded-xl border border-white/[0.06] bg-white/[0.02]">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold text-neutral-300 uppercase tracking-wider">Progress Pengembangan</span>
-                <span className="text-xs font-bold text-indigo-400">20%</span>
+
+            <div className="p-5 border-[4px] border-black bg-[#E5E5E5] shadow-[6px_6px_0_#000]">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[12px] font-black text-black uppercase tracking-wider">Progress Pengembangan</span>
+                <span className="text-[14px] font-black text-black bg-[#00FF00] border-[2px] border-black px-2 shadow-[2px_2px_0_#000]">20%</span>
               </div>
-              <div className="w-full h-2 bg-white/[0.06] rounded-full overflow-hidden">
+              <div className="w-full h-4 border-[2px] border-black bg-white">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: "20%" }}
                   transition={{ duration: 1.5, ease: "easeOut", delay: 0.3 }}
-                  className="h-full rounded-full"
-                  style={{ background: "linear-gradient(90deg, #6366f1, #8b5cf6, #a855f7)" }}
+                  className="h-full bg-[#FF00FF] border-r-[2px] border-black"
                 />
               </div>
-              <p className="text-[11px] text-neutral-500 mt-2">Estimasi rilis: Q4 2026</p>
+              <p className="text-[10px] font-black text-black/60 uppercase mt-3 text-right">Estimasi rilis: Q4 2026</p>
             </div>
           </div>
         </div>
 
-        <div className="border-t border-white/[0.06] pt-6">
-          <p className="text-center text-neutral-500 text-sm mb-5">Segera tersedia di platform favoritmu</p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button className="group relative flex items-center gap-3 px-6 py-3.5 rounded-xl border border-white/[0.1] bg-white/[0.03] hover:bg-white/[0.06] transition-all w-full sm:w-auto">
+        <div className="border-t-[4px] border-black pt-8 text-center">
+          <p className="text-[16px] font-black text-black uppercase mb-6 bg-[#FFFF00] inline-block px-4 py-2 border-[3px] border-black shadow-[4px_4px_0_#000] transform rotate-1">
+            Segera tersedia di platform favoritmu
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-5">
+            <button className="w-full sm:w-auto flex items-center gap-4 px-8 py-4 border-[4px] border-black bg-white shadow-[6px_6px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0_#000] transition-all hover:bg-[#E5E5E5]">
               <svg className="w-8 h-8 shrink-0" viewBox="0 0 512 512" fill="none">
-                <path d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.2 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z" fill="url(#play_g)"/>
-                <defs><linearGradient id="play_g" x1="25.3" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor="#4285F4"/><stop offset="25%" stopColor="#34A853"/><stop offset="50%" stopColor="#FBBC04"/><stop offset="100%" stopColor="#EA4335"/></linearGradient></defs>
+                <path d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.2 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z" fill="currentColor"/>
               </svg>
               <div className="text-left">
-                <p className="text-[10px] text-neutral-500 uppercase tracking-wider leading-none">Segera di</p>
-                <p className="text-[15px] font-bold text-white leading-tight mt-0.5">Google Play</p>
+                <p className="text-[10px] font-black text-black/60 uppercase tracking-wider leading-none">Segera di</p>
+                <p className="text-[18px] font-black text-black uppercase leading-tight mt-0.5">Google Play</p>
               </div>
             </button>
-            <button className="group relative flex items-center gap-3 px-6 py-3.5 rounded-xl border border-white/[0.1] bg-white/[0.03] hover:bg-white/[0.06] transition-all w-full sm:w-auto">
-              <svg className="w-8 h-8 shrink-0 text-white" viewBox="0 0 384 512" fill="currentColor">
+            <button className="w-full sm:w-auto flex items-center gap-4 px-8 py-4 border-[4px] border-black bg-white shadow-[6px_6px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0_#000] transition-all hover:bg-[#E5E5E5]">
+              <svg className="w-8 h-8 shrink-0 text-black" viewBox="0 0 384 512" fill="currentColor">
                 <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-27.1-46.8-42.3-83.6-45.8-35.3-3.5-73.8 20.6-88 20.6-15.2 0-48-19.4-73.4-19.4C76.4 140.5 0 186 0 273.5c0 26.2 4.8 53.3 14.4 81.2 12.8 36.9 59 127.2 107.2 125.7 25-0.6 42.7-18 75.3-18s46.3 18 77.8 17.4c49.1-0.8 89.7-82.3 101.9-119.3-65.2-30.7-96.9-90.4-97-91.8zM257.2 76.3c27.1-32.7 24.4-62.6 23.6-73.3-23.6 1.5-51 15.8-66.9 34.3-17.4 19.8-27.6 44.4-25.4 71.1 25.6 1.8 51.7-12.3 68.7-32.1z"/>
               </svg>
               <div className="text-left">
-                <p className="text-[10px] text-neutral-500 uppercase tracking-wider leading-none">Segera di</p>
-                <p className="text-[15px] font-bold text-white leading-tight mt-0.5">App Store</p>
+                <p className="text-[10px] font-black text-black/60 uppercase tracking-wider leading-none">Segera di</p>
+                <p className="text-[18px] font-black text-black uppercase leading-tight mt-0.5">App Store</p>
               </div>
             </button>
-          </div>
-          <div className="mt-6 p-4 rounded-xl border border-indigo-500/15 bg-indigo-500/[0.04] text-center">
-            <p className="text-sm text-neutral-300 mb-1">Ingin jadi yang pertama tahu saat aplikasi rilis?</p>
-            <p className="text-xs text-neutral-500">Ikuti akun sosial media kami untuk mendapatkan notifikasi peluncuran terbaru.</p>
           </div>
         </div>
       </div>
     </ModalWrapper>
   )
 }
-
-
 
 // ─── Main Modals Export ────────────────────────────────────────────────────────
 export interface LandingModalsProps {

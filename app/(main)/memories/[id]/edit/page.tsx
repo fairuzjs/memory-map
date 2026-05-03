@@ -45,6 +45,9 @@ export default function EditMemoryPage() {
     const [musicTab, setMusicTab] = useState<"upload" | "spotify">("upload")
     const [hasSpotifyPremium, setHasSpotifyPremium] = useState(false)
     const [premiumPoints, setPremiumPoints] = useState(0)
+    const [maxPhotos, setMaxPhotos] = useState(3)
+    const [maxCollaborators, setMaxCollaborators] = useState(5)
+    const [isPremium, setIsPremium] = useState(false)
 
     const {
         register,
@@ -61,15 +64,27 @@ export default function EditMemoryPage() {
 
     const isPublic = watch("isPublic")
 
-    // Check premium feature access
+    // Check premium feature access + premium subscription status
     useEffect(() => {
         const checkPremium = async () => {
             try {
-                const res = await fetch("/api/inventory/premium")
-                if (res.ok) {
-                    const data = await res.json()
-                    setHasSpotifyPremium(data.features?.includes("spotify_integration") ?? false)
+                const invRes = await fetch("/api/inventory/premium")
+                if (invRes.ok) {
+                    const data = await invRes.json()
                     setPremiumPoints(data.points ?? 0)
+                    const hasShopSpotify = data.features?.includes("spotify_integration") ?? false
+                    setHasSpotifyPremium(hasShopSpotify)
+                }
+
+                const statusRes = await fetch("/api/premium/status")
+                if (statusRes.ok) {
+                    const status = await statusRes.json()
+                    if (status.isPremium) {
+                        setMaxPhotos(status.limits.maxPhotos)
+                        setMaxCollaborators(status.limits.maxCollaborators)
+                        setIsPremium(true)
+                        setHasSpotifyPremium(true)
+                    }
                 }
             } catch {}
         }
@@ -129,6 +144,7 @@ export default function EditMemoryPage() {
                         fileName: data.audioFileName || "audio.mp3",
                     } : null,
                     spotifyTrackId: data.spotifyTrackId || null,
+                    markerStyle: data.markerStyle || null,
                 })
                 
                 if (data.spotifyTrackId) {
@@ -163,6 +179,7 @@ export default function EditMemoryPage() {
                 ) || [],
                 audio: data.audio || null,
                 spotifyTrackId: data.spotifyTrackId || null,
+                markerStyle: data.markerStyle || null,
             }
 
             const res = await fetch(`/api/memories/${id}`, {
@@ -204,16 +221,18 @@ export default function EditMemoryPage() {
     if (loading) {
         return (
             <div className="flex-1 flex items-center justify-center min-h-[400px]">
-                <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-16 h-16 bg-[#FFFF00] border-[3px] border-black shadow-[4px_4px_0_#000] flex items-center justify-center">
+                        <Loader2 className="w-7 h-7 text-black animate-spin" />
+                    </div>
+                    <p className="text-sm font-black text-black uppercase tracking-wider">Memuat kenangan...</p>
+                </div>
             </div>
         )
     }
 
     return (
         <div className="max-w-6xl mx-auto px-4 py-8 sm:py-12 w-full relative">
-            {/* Background Effects */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-64 bg-indigo-500/10 blur-[120px] pointer-events-none rounded-full" />
-            <div className="absolute bottom-0 right-0 w-64 h-64 bg-emerald-500/5 blur-[100px] pointer-events-none rounded-full" />
 
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="relative z-10">
                 
@@ -240,6 +259,7 @@ export default function EditMemoryPage() {
                                     control={control}
                                     errors={errors}
                                     isSubmitting={isSubmitting}
+                                    isPremium={isPremium}
                                 />
                                 <EditorNavigation 
                                     currentStep={0}
@@ -270,6 +290,8 @@ export default function EditMemoryPage() {
                                     setHasSpotifyPremium={setHasSpotifyPremium}
                                     premiumPoints={premiumPoints}
                                     isPublic={isPublic}
+                                    maxPhotos={maxPhotos}
+                                    maxCollaborators={maxCollaborators}
                                 />
                                 <EditorNavigation 
                                     currentStep={1}

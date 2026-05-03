@@ -4,14 +4,16 @@ import { useEffect, useState, useCallback, useRef } from "react"
 import Map, { Marker, NavigationControl, MapRef } from "react-map-gl/mapbox"
 import "mapbox-gl/dist/mapbox-gl.css"
 import { MapPin, Search, Layers, X } from "lucide-react"
-import { Input } from "@/components/ui/Input"
-import { Button } from "@/components/ui/Button"
+
+
+import { getPremiumMarkerStyle } from "@/components/map/MapIcons"
 
 interface LocationPickerProps {
     latitude: number
     longitude: number
     locationName: string
     onChange: (lat: number, lng: number, name: string) => void
+    markerStyle?: string | null
 }
 
 // ── Map Style Definitions ───────────────────────────────────────────────
@@ -23,7 +25,7 @@ const MAP_STYLES = [
     { id: "light-v11",             label: "Light",     style: "mapbox://styles/mapbox/light-v11",                 preview: "#f8f8f8" },
 ]
 
-export default function LocationPicker({ latitude, longitude, locationName, onChange }: LocationPickerProps) {
+export default function LocationPicker({ latitude, longitude, locationName, onChange, markerStyle }: LocationPickerProps) {
     const mapRef = useRef<MapRef>(null)
     const [mounted, setMounted] = useState(false)
     const [searchQuery, setSearchQuery] = useState(locationName || "")
@@ -103,7 +105,7 @@ export default function LocationPicker({ latitude, longitude, locationName, onCh
         setShowSuggestions(false)
     }
 
-    if (!mounted) return <div className="h-64 bg-neutral-900 animate-pulse rounded-2xl" />
+    if (!mounted) return <div className="h-64 bg-[#E5E5E5] animate-pulse border-[3px] border-black" />
 
     const initialCenter = position ? [position.lng, position.lat] : [118.0149, -2.5489]
     const activeStyleLabel = MAP_STYLES.find(s => s.style === mapStyle)?.label ?? "Dark"
@@ -113,8 +115,8 @@ export default function LocationPicker({ latitude, longitude, locationName, onCh
             {/* Search Bar */}
             <div className="flex gap-2">
                 <div className="relative flex-1">
-                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
-                    <Input
+                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black" />
+                    <input
                         value={searchQuery}
                         onChange={(e) => { setSearchQuery(e.target.value); setShowSuggestions(true) }}
                         onKeyDown={(e) => {
@@ -122,22 +124,22 @@ export default function LocationPicker({ latitude, longitude, locationName, onCh
                         }}
                         onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                         placeholder="Cari lokasi (cth: Bali, Jakarta)"
-                        className="pl-9 pr-10"
+                        className="w-full pl-9 pr-10 py-2.5 bg-[#E5E5E5] border-[3px] border-black text-black font-bold placeholder:text-neutral-400 outline-none focus:bg-[#FFFF00] transition-all text-sm"
                     />
                     {searchQuery && (
                         <button
                             type="button"
                             onClick={() => { setSearchQuery(""); setSuggestions([]); setShowSuggestions(false) }}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-200 transition-colors"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-black transition-colors"
                         >
                             <X className="w-4 h-4" />
                         </button>
                     )}
                     {showSuggestions && suggestions.length > 0 && (
-                        <div className="absolute z-50 w-full mt-1 bg-neutral-900 border border-neutral-700 rounded-lg shadow-xl overflow-hidden max-h-64 overflow-y-auto">
+                        <div className="absolute z-50 w-full mt-1 bg-white border-[3px] border-black shadow-[4px_4px_0_#000] overflow-hidden max-h-64 overflow-y-auto">
                             {suggestions.map((s, i) => (
                                 <button key={i} type="button"
-                                    className="w-full text-left px-4 py-2 text-sm text-neutral-300 hover:bg-neutral-800 transition-colors border-b border-neutral-800 last:border-b-0 truncate"
+                                    className="w-full text-left px-4 py-2.5 text-sm text-black font-bold hover:bg-[#FFFF00] transition-colors border-b-[2px] border-black last:border-b-0 truncate"
                                     onClick={() => handleSelectSuggestion(s)}
                                 >
                                     {s.display_name}
@@ -146,14 +148,19 @@ export default function LocationPicker({ latitude, longitude, locationName, onCh
                         </div>
                     )}
                 </div>
-                <Button type="button" onClick={(e) => handleSearch(e)} disabled={isSearching} className="gap-2">
+                <button
+                    type="button"
+                    onClick={(e) => handleSearch(e)}
+                    disabled={isSearching}
+                    className="flex items-center gap-2 px-4 py-2.5 bg-[#00FFFF] border-[3px] border-black shadow-[3px_3px_0_#000] text-black font-black text-sm uppercase hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all disabled:opacity-50 shrink-0"
+                >
                     <Search className="w-4 h-4" />
                     {isSearching ? "..." : "Cari"}
-                </Button>
+                </button>
             </div>
 
             {/* Map */}
-            <div className="h-64 sm:h-80 w-full rounded-2xl overflow-hidden border border-neutral-700 relative z-0">
+            <div className="h-64 sm:h-80 w-full overflow-hidden border-[3px] border-black relative z-0">
                 <Map
                     ref={mapRef}
                     mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
@@ -173,14 +180,14 @@ export default function LocationPicker({ latitude, longitude, locationName, onCh
                                         key={s.id}
                                         type="button"
                                         onClick={() => { setMapStyle(s.style); setStyleOpen(false) }}
-                                        className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold backdrop-blur-md transition-all duration-150 shadow-md border ${
+                                        className={`flex items-center gap-2 px-2.5 py-1.5 text-xs font-black uppercase transition-all duration-150 border-[2px] border-black ${
                                             mapStyle === s.style
-                                                ? "bg-white/20 border-white/30 text-white"
-                                                : "bg-neutral-900/85 border-neutral-700/50 text-neutral-300 hover:bg-neutral-800 hover:text-white"
+                                                ? "bg-[#FFFF00] text-black shadow-[2px_2px_0_#000]"
+                                                : "bg-white text-black hover:bg-[#E5E5E5]"
                                         }`}
                                     >
                                         <span
-                                            className="w-3 h-3 rounded-full border border-white/30 shrink-0"
+                                            className="w-3 h-3 border-[1.5px] border-black shrink-0"
                                             style={{ backgroundColor: s.preview }}
                                         />
                                         {s.label}
@@ -191,10 +198,10 @@ export default function LocationPicker({ latitude, longitude, locationName, onCh
                         <button
                             type="button"
                             onClick={() => setStyleOpen(o => !o)}
-                            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold backdrop-blur-md transition-all duration-150 shadow-lg border ${
+                            className={`flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-black uppercase transition-all duration-150 border-[2px] border-black ${
                                 styleOpen
-                                    ? "bg-indigo-600/90 border-indigo-400/50 text-white"
-                                    : "bg-neutral-900/85 border-neutral-700/50 text-neutral-200 hover:bg-neutral-800 hover:text-white"
+                                    ? "bg-[#FFFF00] text-black shadow-[2px_2px_0_#000]"
+                                    : "bg-white text-black hover:bg-[#E5E5E5]"
                             }`}
                             title="Ganti tampilan peta"
                         >
@@ -206,22 +213,51 @@ export default function LocationPicker({ latitude, longitude, locationName, onCh
                     {/* Location Pin Marker */}
                     {position && (
                         <Marker longitude={position.lng} latitude={position.lat} anchor="center">
-                            <div style={{
-                                backgroundColor: '#6366f1',
-                                width: '32px', height: '32px',
-                                borderRadius: '50%',
-                                border: '3px solid white',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                boxShadow: '0 4px 12px rgba(99,102,241,0.5)'
-                            }}>
-                                <span style={{ fontSize: '16px' }}>📍</span>
-                            </div>
+                            {markerStyle ? (() => {
+                                const style = getPremiumMarkerStyle(markerStyle)
+                                const shapeClass = style.shape !== "circle" ? `pm-shape-${style.shape}` : "rounded-full"
+                                return (
+                                    <div className={`${style.animation}`}>
+                                        <div
+                                            className={`relative w-10 h-10 ${shapeClass}`}
+                                            style={{
+                                                background: `linear-gradient(135deg, ${style.gradient[0]}, ${style.gradient[1]})`,
+                                                border: `2.5px solid ${style.borderColor}`,
+                                                boxShadow: `0 0 16px ${style.glowColor}, 0 2px 8px rgba(0,0,0,0.4)`,
+                                                ["--pm-glow" as any]: style.glowColor,
+                                            }}
+                                        >
+                                            <div
+                                                className={`absolute inset-[3px] opacity-25 ${shapeClass}`}
+                                                style={{ background: `radial-gradient(circle at 35% 35%, white, transparent 60%)` }}
+                                            />
+                                            <div
+                                                className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full flex items-center justify-center z-20"
+                                                style={{ background: `linear-gradient(135deg, ${style.gradient[0]}, ${style.gradient[1]})`, border: `1.5px solid ${style.borderColor}` }}
+                                            >
+                                                <span className="text-[7px]">👑</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )
+                            })() : (
+                                <div style={{
+                                    backgroundColor: '#6366f1',
+                                    width: '32px', height: '32px',
+                                    borderRadius: '50%',
+                                    border: '3px solid white',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    boxShadow: '0 4px 12px rgba(99,102,241,0.5)'
+                                }}>
+                                    <span style={{ fontSize: '16px' }}>📍</span>
+                                </div>
+                            )}
                         </Marker>
                     )}
                 </Map>
             </div>
 
-            <p className="text-xs text-neutral-500">
+            <p className="text-xs text-neutral-500 font-bold">
                 Klik di peta untuk menjatuhkan pin, atau gunakan pencarian untuk menemukan tempat terindah.
             </p>
         </div>

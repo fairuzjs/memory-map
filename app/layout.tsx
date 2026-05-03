@@ -31,35 +31,38 @@ export default function RootLayout({
             toastOptions={{
               duration: 4000,
               style: {
-                background: "rgba(17, 17, 26, 0.8)",
-                color: "#fff",
-                backdropFilter: "blur(12px)",
-                border: "1px solid rgba(255, 255, 255, 0.1)",
-                borderRadius: "1.25rem",
+                background: "#fff",
+                color: "#000",
+                border: "3px solid #000",
+                borderRadius: "0px",
                 padding: "12px 20px",
                 fontSize: "14px",
-                fontWeight: "600",
+                fontWeight: "900",
                 fontFamily: "var(--font-outfit)",
-                boxShadow: "0 20px 40px -15px rgba(0, 0, 0, 0.5)",
+                boxShadow: "4px 4px 0 #000",
+                textTransform: "uppercase" as const,
+                letterSpacing: "0.02em",
               },
               success: {
                 iconTheme: {
-                  primary: "#34d399",
-                  secondary: "#fff",
+                  primary: "#000",
+                  secondary: "#00FF00",
                 },
                 style: {
-                  border: "1px solid rgba(52, 211, 153, 0.2)",
-                  background: "linear-gradient(135deg, rgba(17, 17, 26, 0.95), rgba(20, 30, 25, 0.95))",
+                  background: "#00FF00",
+                  color: "#000",
+                  border: "3px solid #000",
                 }
               },
               error: {
                 iconTheme: {
-                  primary: "#f87171",
-                  secondary: "#fff",
+                  primary: "#fff",
+                  secondary: "#FF0000",
                 },
                 style: {
-                  border: "1px solid rgba(248, 113, 113, 0.2)",
-                  background: "linear-gradient(135deg, rgba(17, 17, 26, 0.95), rgba(30, 20, 20, 0.95))",
+                  background: "#FF3300",
+                  color: "#fff",
+                  border: "3px solid #000",
                 }
               }
             }}

@@ -95,17 +95,17 @@ function FieldGroup({ label, icon: Icon, hint, children }: {
 }) {
     return (
         <div className="space-y-2">
-            <label className="flex items-center gap-2 text-sm font-semibold text-neutral-300">
-                {Icon && <Icon className="w-3.5 h-3.5 text-indigo-400" />}
+            <label className="flex items-center gap-2 text-sm font-black text-black uppercase tracking-wider">
+                {Icon && <Icon className="w-3.5 h-3.5 text-black" />}
                 {label}
             </label>
             {children}
-            {hint && <p className="text-[11px] text-neutral-600 leading-relaxed">{hint}</p>}
+            {hint && <p className="text-[11px] text-neutral-500 leading-relaxed font-bold">{hint}</p>}
         </div>
     )
 }
 
-const inputClass = "w-full bg-[#0d0d18] border border-white/[0.07] rounded-xl px-4 py-3 text-white placeholder-neutral-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/25 focus:border-indigo-500/40 text-sm transition-all"
+const inputClass = "w-full bg-[#E5E5E5] border-[3px] border-black px-4 py-3 text-black font-bold placeholder-neutral-400 focus:outline-none focus:bg-[#FFFF00] text-sm transition-all"
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function SettingsPage() {
@@ -372,13 +372,10 @@ export default function SettingsPage() {
         return (
             <div className="flex-1 flex items-center justify-center min-h-[70vh]">
                 <div className="flex flex-col items-center gap-4">
-                    <div className="relative w-12 h-12">
-                        <div className="absolute inset-0 rounded-full bg-indigo-500/20 animate-ping" />
-                        <div className="relative w-12 h-12 rounded-full bg-white/[0.04] border border-white/[0.08] flex items-center justify-center">
-                            <Loader2 className="w-5 h-5 text-indigo-400 animate-spin" />
-                        </div>
+                    <div className="w-12 h-12 bg-[#FFFF00] border-[3px] border-black shadow-[4px_4px_0_#000] flex items-center justify-center">
+                        <Loader2 className="w-5 h-5 text-black animate-spin" />
                     </div>
-                    <p className="text-sm text-neutral-500">Memuat pengaturan...</p>
+                    <p className="text-sm text-black font-black uppercase">Memuat pengaturan...</p>
                 </div>
             </div>
         )
@@ -394,33 +391,27 @@ export default function SettingsPage() {
                 {isCropping && (
                     <motion.div
                         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[60] flex items-center justify-center p-4"
-                        style={{ background: "rgba(4,4,12,0.90)", backdropFilter: "blur(12px)" }}
+                        className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/90"
                     >
                         <motion.div
                             initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
-                            className="w-full max-w-lg shadow-2xl overflow-hidden"
-                            style={{
-                                background: "rgba(12,12,22,0.95)",
-                                border: "1px solid rgba(255,255,255,0.08)",
-                                borderRadius: "1.5rem",
-                            }}
+                            className="w-full max-w-lg bg-white border-[4px] border-black shadow-[8px_8px_0_#000] overflow-hidden"
                         >
                             {/* Modal header */}
-                            <div className="px-6 pt-6 pb-4 border-b border-white/[0.06]">
+                            <div className="px-6 pt-6 pb-4 border-b-[3px] border-black">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-9 h-9 rounded-xl bg-indigo-500/15 border border-indigo-500/20 flex items-center justify-center">
-                                        <Camera className="w-4 h-4 text-indigo-400" />
+                                    <div className="w-9 h-9 flex items-center justify-center bg-[#00FFFF] border-[3px] border-black shadow-[2px_2px_0_#000]">
+                                        <Camera className="w-4 h-4 text-black" />
                                     </div>
                                     <div>
-                                        <h2 className="text-base font-bold text-white">Sesuaikan Foto</h2>
-                                        <p className="text-xs text-neutral-500">Geser dan zoom untuk mendapatkan hasil terbaik</p>
+                                        <h2 className="text-base font-black text-black uppercase">Sesuaikan Foto</h2>
+                                        <p className="text-xs text-neutral-500 font-bold">Geser dan zoom untuk mendapatkan hasil terbaik</p>
                                     </div>
                                 </div>
                             </div>
 
                             <div className="p-6 space-y-5">
-                                <div className="relative w-full h-64 rounded-2xl overflow-hidden" style={{ background: "rgba(0,0,0,0.6)" }}>
+                                <div className="relative w-full h-64 overflow-hidden border-[3px] border-black" style={{ background: "rgba(0,0,0,0.6)" }}>
                                     <Cropper
                                         image={cropImageUrl}
                                         crop={crop}
@@ -438,26 +429,24 @@ export default function SettingsPage() {
                                 <div className="space-y-4">
                                     <div>
                                         <div className="flex items-center justify-between mb-2">
-                                            <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Zoom</label>
-                                            <span className="text-xs text-indigo-400 font-mono">{zoom.toFixed(1)}×</span>
+                                            <label className="text-xs font-black text-black uppercase tracking-wider">Zoom</label>
+                                            <span className="text-xs text-black font-black font-mono bg-[#FFFF00] border-[2px] border-black px-2 py-0.5">{zoom.toFixed(1)}×</span>
                                         </div>
                                         <input
                                             type="range" min={1} max={3} step={0.1} value={zoom}
                                             onChange={(e) => setZoom(Number(e.target.value))}
-                                            className="w-full h-1.5 rounded-full appearance-none accent-indigo-500 cursor-pointer"
-                                            style={{ background: `linear-gradient(to right, #6366f1 ${((zoom - 1) / 2) * 100}%, rgba(255,255,255,0.1) 0%)` }}
+                                            className="w-full h-2 appearance-none accent-black cursor-pointer bg-[#E5E5E5] border-[2px] border-black"
                                         />
                                     </div>
                                     <div>
                                         <div className="flex items-center justify-between mb-2">
-                                            <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Rotasi</label>
-                                            <span className="text-xs text-indigo-400 font-mono">{rotation}°</span>
+                                            <label className="text-xs font-black text-black uppercase tracking-wider">Rotasi</label>
+                                            <span className="text-xs text-black font-black font-mono bg-[#00FFFF] border-[2px] border-black px-2 py-0.5">{rotation}°</span>
                                         </div>
                                         <input
                                             type="range" min={0} max={360} step={1} value={rotation}
                                             onChange={(e) => setRotation(Number(e.target.value))}
-                                            className="w-full h-1.5 rounded-full appearance-none accent-indigo-500 cursor-pointer"
-                                            style={{ background: `linear-gradient(to right, #6366f1 ${(rotation / 360) * 100}%, rgba(255,255,255,0.1) 0%)` }}
+                                            className="w-full h-2 appearance-none accent-black cursor-pointer bg-[#E5E5E5] border-[2px] border-black"
                                         />
                                     </div>
                                 </div>
@@ -465,15 +454,13 @@ export default function SettingsPage() {
                                 <div className="flex gap-3 pt-1">
                                     <button
                                         onClick={() => setIsCropping(false)}
-                                        className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-neutral-400 transition-all"
-                                        style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+                                        className="flex-1 py-2.5 text-sm font-black text-black uppercase bg-white border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all"
                                     >
                                         Batal
                                     </button>
                                     <button
                                         onClick={saveCrop}
-                                        className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2 transition-all hover:brightness-110 active:scale-95"
-                                        style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
+                                        className="flex-1 py-2.5 text-sm font-black text-black uppercase flex items-center justify-center gap-2 bg-[#00FF00] border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all"
                                     >
                                         <Check className="w-4 h-4" /> Simpan
                                     </button>
@@ -490,42 +477,30 @@ export default function SettingsPage() {
                     {/* Back link */}
                     <Link
                         href={`/profile/${session?.user?.id}`}
-                        className="inline-flex items-center gap-2 text-sm text-neutral-500 hover:text-neutral-300 transition-colors group mb-8"
+                        className="inline-flex items-center gap-2 text-sm text-black font-black uppercase bg-white border-[2px] border-black px-3 py-1.5 shadow-[2px_2px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all group mb-8"
                     >
-                        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+                        <ArrowLeft className="w-4 h-4" />
                         Kembali ke Profil
                     </Link>
 
                     {/* Page header */}
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div className="flex items-center gap-4">
-                            {/* Icon badge */}
-                            <div
-                                className="relative w-14 h-14 rounded-2xl flex items-center justify-center shrink-0"
-                                style={{
-                                    background: "linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.1))",
-                                    border: "1px solid rgba(99,102,241,0.2)",
-                                    boxShadow: "0 0 30px rgba(99,102,241,0.1)",
-                                }}
-                            >
-                                <Settings className="w-6 h-6 text-indigo-400" />
-                                <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-indigo-500 border-2 border-[#0a0a10] animate-pulse" />
+                            <div className="w-14 h-14 flex items-center justify-center shrink-0 bg-[#FFFF00] border-[3px] border-black shadow-[4px_4px_0_#000]">
+                                <Settings className="w-6 h-6 text-black" />
                             </div>
                             <div>
-                                <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">Pengaturan Akun</h1>
-                                <p className="text-sm text-neutral-500 mt-0.5">Kelola profil dan tautan media sosialmu</p>
+                                <h1 className="text-2xl sm:text-3xl font-black text-black tracking-tight uppercase">Pengaturan Akun</h1>
+                                <p className="text-sm text-neutral-500 mt-0.5 font-bold">Kelola profil dan tautan media sosialmu</p>
                             </div>
                         </div>
 
                         {/* Avatar preview pill */}
-                        <div
-                            className="hidden sm:flex items-center gap-3 px-4 py-2.5 rounded-2xl shrink-0"
-                            style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
-                        >
-                            <img src={avatarSrc} alt="Avatar" className="w-9 h-9 rounded-full object-cover border border-white/10" />
+                        <div className="hidden sm:flex items-center gap-3 px-4 py-2.5 shrink-0 bg-white border-[3px] border-black shadow-[3px_3px_0_#000]">
+                            <img src={avatarSrc} alt="Avatar" className="w-9 h-9 rounded-full object-cover border-[2px] border-black" />
                             <div>
-                                <p className="text-sm font-semibold text-white leading-none">{name || "Nama Belum Diisi"}</p>
-                                <p className="text-[11px] text-neutral-500 mt-0.5">{username ? `@${username}` : session?.user?.email}</p>
+                                <p className="text-sm font-black text-black leading-none">{name || "Nama Belum Diisi"}</p>
+                                <p className="text-[11px] text-neutral-500 mt-0.5 font-bold">{username ? `@${username}` : session?.user?.email}</p>
                             </div>
                         </div>
                     </div>
@@ -536,34 +511,16 @@ export default function SettingsPage() {
             <div className="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
 
                 {/* Tab bar */}
-                <div
-                    className="flex gap-1 mb-8 p-1 rounded-2xl"
-                    style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}
-                >
-                    {TABS.map(t => (
+                <div className="flex gap-0 mb-8 overflow-hidden border-[3px] border-black shadow-[4px_4px_0_#000]">
+                    {TABS.map((t, i, arr) => (
                         <button
                             key={t.id}
                             onClick={() => setTab(t.id)}
-                            className="relative flex-1 flex items-center justify-center gap-2.5 py-3 rounded-xl text-sm font-medium transition-all"
+                            className={`relative flex-1 flex items-center justify-center gap-2.5 py-3 text-sm font-black uppercase transition-all ${i < arr.length - 1 ? 'border-r-[3px] border-black' : ''} ${tab === t.id ? 'bg-[#FFFF00] text-black' : 'bg-white text-neutral-400 hover:bg-[#E5E5E5] hover:text-black'}`}
                         >
-                            {tab === t.id && (
-                                <motion.div
-                                    layoutId="tab-indicator"
-                                    className="absolute inset-0 rounded-xl"
-                                    style={{
-                                        background: "linear-gradient(135deg, rgba(99,102,241,0.12), rgba(139,92,246,0.08))",
-                                        border: "1px solid rgba(99,102,241,0.2)",
-                                    }}
-                                    transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
-                                />
-                            )}
-                            <t.icon className={`relative w-4 h-4 transition-colors ${tab === t.id ? "text-indigo-400" : "text-neutral-600"}`} />
-                            <span className={`relative transition-colors ${tab === t.id ? "text-indigo-300" : "text-neutral-500 hover:text-neutral-400"}`}>
-                                {t.label}
-                            </span>
-                            <span className={`relative text-[10px] hidden sm:block transition-colors ${tab === t.id ? "text-indigo-500" : "text-neutral-700"}`}>
-                                · {t.desc}
-                            </span>
+                            <t.icon className="w-4 h-4" />
+                            <span>{t.label}</span>
+                            <span className="text-[10px] hidden sm:block">· {t.desc}</span>
                         </button>
                     ))}
                 </div>
@@ -582,24 +539,19 @@ export default function SettingsPage() {
                         >
                             {/* Avatar Card */}
                             <div
-                                className="rounded-3xl overflow-hidden"
-                                style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}
+                                className="overflow-hidden bg-white border-[3px] border-black shadow-[4px_4px_0_#000]"
                             >
                                 {/* Card header */}
-                                <div className="px-6 pt-5 pb-4 flex items-center gap-2 border-b border-white/[0.04]">
-                                    <Camera className="w-4 h-4 text-indigo-400" />
-                                    <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Foto Profil</span>
+                                <div className="px-6 pt-5 pb-4 flex items-center gap-2 border-b-[3px] border-black">
+                                    <Camera className="w-4 h-4 text-black" />
+                                    <span className="text-xs font-black text-black uppercase tracking-wider">Foto Profil</span>
                                 </div>
 
                                 <div className="p-6">
                                     {/* Current avatar + upload */}
                                     <div className="flex items-center gap-5 mb-6">
                                         <div className="relative group shrink-0">
-                                            <div
-                                                className="absolute -inset-1 rounded-full opacity-60 group-hover:opacity-100 transition-opacity blur-sm"
-                                                style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
-                                            />
-                                            <div className="relative w-20 h-20 rounded-full overflow-hidden" style={{ border: "2px solid rgba(10,10,16,1)" }}>
+                                            <div className="relative w-20 h-20 rounded-full overflow-hidden border-[3px] border-black shadow-[3px_3px_0_#000]">
                                                 <img src={avatarSrc} alt="Avatar" className="w-full h-full object-cover" />
                                                 {uploadingPhoto && (
                                                     <div className="absolute inset-0 flex items-center justify-center bg-black/60">
@@ -629,21 +581,20 @@ export default function SettingsPage() {
                                                 type="button"
                                                 onClick={() => avatarInputRef.current?.click()}
                                                 disabled={uploadingPhoto}
-                                                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-indigo-400 transition-all hover:text-indigo-300 hover:bg-indigo-500/10 active:scale-95"
-                                                style={{ border: "1px solid rgba(99,102,241,0.2)" }}
+                                                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-black text-black uppercase bg-[#00FFFF] border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all"
                                             >
                                                 <Camera className="w-3.5 h-3.5" />
                                                 {uploadingPhoto ? "Mengunggah..." : "Unggah Foto Baru"}
                                             </button>
-                                            <p className="text-xs text-neutral-600 mt-2">JPG, PNG, GIF · Maks. 5MB · Otomatis dipotong menjadi lingkaran</p>
+                                            <p className="text-xs text-neutral-500 mt-2 font-bold">JPG, PNG, GIF · Maks. 5MB · Otomatis dipotong menjadi lingkaran</p>
                                         </div>
                                     </div>
 
                                     {/* Predefined Avatars */}
-                                    <div className="pt-5 border-t border-white/[0.05]">
+                                    <div className="pt-5 border-t-[3px] border-dashed border-black">
                                         <div className="flex items-center gap-2 mb-4">
-                                            <Sparkles className="w-3.5 h-3.5 text-violet-400" />
-                                            <p className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Avatar Instan</p>
+                                            <Sparkles className="w-3.5 h-3.5 text-black" />
+                                            <p className="text-xs font-black text-black uppercase tracking-wider">Avatar Instan</p>
                                         </div>
                                         <div className="flex flex-wrap gap-3">
                                             {PREDEFINED_AVATARS.map((url, idx) => {
@@ -655,14 +606,14 @@ export default function SettingsPage() {
                                                         onClick={() => { setImage(url); setPreviewImage(url) }}
                                                         className="relative rounded-full overflow-hidden w-12 h-12 transition-all hover:scale-110 active:scale-95 shrink-0"
                                                         style={{
-                                                            border: isSelected ? "2px solid #6366f1" : "2px solid rgba(255,255,255,0.08)",
-                                                            boxShadow: isSelected ? "0 0 0 3px rgba(99,102,241,0.25), 0 0 15px rgba(99,102,241,0.2)" : "none",
+                                                            border: isSelected ? "3px solid #000" : "3px solid #E5E5E5",
+                                                            boxShadow: isSelected ? "3px 3px 0 #000" : "none",
                                                         }}
                                                         title={`Avatar ${idx + 1}`}
                                                     >
                                                         <img src={url} alt={`Avatar ${idx + 1}`} className="w-full h-full object-cover" />
                                                         {isSelected && (
-                                                            <div className="absolute inset-0 flex items-center justify-center bg-indigo-600/30">
+                                                            <div className="absolute inset-0 flex items-center justify-center bg-black/40">
                                                                 <Check className="w-4 h-4 text-white" />
                                                             </div>
                                                         )}
@@ -670,19 +621,18 @@ export default function SettingsPage() {
                                                 )
                                             })}
                                         </div>
-                                        <p className="text-[11px] text-neutral-700 mt-3">Pilih ikon karakter secara instan tanpa perlu mengunggah foto.</p>
+                                        <p className="text-[11px] text-neutral-500 mt-3 font-bold">Pilih ikon karakter secara instan tanpa perlu mengunggah foto.</p>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Basic Info Card */}
                             <div
-                                className="rounded-3xl overflow-hidden"
-                                style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}
+                                className="overflow-hidden bg-white border-[3px] border-black shadow-[4px_4px_0_#000]"
                             >
-                                <div className="px-6 pt-5 pb-4 flex items-center gap-2 border-b border-white/[0.04]">
-                                    <User className="w-4 h-4 text-indigo-400" />
-                                    <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Informasi Dasar</span>
+                                <div className="px-6 pt-5 pb-4 flex items-center gap-2 border-b-[3px] border-black">
+                                    <User className="w-4 h-4 text-black" />
+                                    <span className="text-xs font-black text-black uppercase tracking-wider">Informasi Dasar</span>
                                 </div>
 
                                 <div className="p-6 space-y-5">
@@ -693,12 +643,12 @@ export default function SettingsPage() {
                                                 type="email"
                                                 value={userEmail}
                                                 readOnly
-                                                className="w-full bg-white/[0.02] border border-white/[0.05] rounded-xl px-4 py-3 text-neutral-500 cursor-not-allowed focus:outline-none text-sm pr-28"
+                                                className="w-full bg-[#E5E5E5] border-[3px] border-black px-4 py-3 text-neutral-500 cursor-not-allowed focus:outline-none text-sm pr-28 font-bold"
                                             />
                                             <div className="absolute right-3 top-1/2 -translate-y-1/2">
                                                 {isEmailVerified
-                                                    ? <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded-full"><ShieldCheck className="w-3 h-3" />Terverifikasi</span>
-                                                    : <span className="flex items-center gap-1 text-[10px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-1 rounded-full"><ShieldAlert className="w-3 h-3" />Belum Diverifikasi</span>
+                                                    ? <span className="flex items-center gap-1 text-[10px] font-black text-black bg-[#00FF00] border-[2px] border-black px-2 py-1"><ShieldCheck className="w-3 h-3" />Terverifikasi</span>
+                                                    : <span className="flex items-center gap-1 text-[10px] font-black text-black bg-[#FFFF00] border-[2px] border-black px-2 py-1"><ShieldAlert className="w-3 h-3" />Belum Diverifikasi</span>
                                                 }
                                             </div>
                                         </div>
@@ -733,7 +683,7 @@ export default function SettingsPage() {
                                                 }}
                                                 placeholder="namauser"
                                                 maxLength={30}
-                                                className={`${inputClass} pl-9 font-mono ${usernameError ? "border-red-500/30 focus:ring-red-500/20 focus:border-red-500/30" : ""}`}
+                                                className={`${inputClass} pl-9 font-mono ${usernameError ? "border-[#FF0000]" : ""}`}
                                             />
                                         </div>
                                         <AnimatePresence>
@@ -748,11 +698,10 @@ export default function SettingsPage() {
                                             {username && !usernameError && (
                                                 <motion.div
                                                     initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
-                                                    className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl"
-                                                    style={{ background: "rgba(99,102,241,0.07)", border: "1px solid rgba(99,102,241,0.15)" }}
+                                                    className="flex items-center gap-2 px-3.5 py-2.5 bg-[#00FFFF] border-[2px] border-black shadow-[2px_2px_0_#000]"
                                                 >
-                                                    <LinkIcon className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-                                                    <span className="text-xs text-indigo-300 font-mono">
+                                                    <LinkIcon className="w-3.5 h-3.5 text-black shrink-0" />
+                                                    <span className="text-xs text-black font-black font-mono">
                                                         {typeof window !== "undefined" ? window.location.origin : "https://memorymap.app"}/u/<strong>{username}</strong>
                                                     </span>
                                                 </motion.div>
@@ -773,7 +722,7 @@ export default function SettingsPage() {
                                             />
                                             <span
                                                 className="absolute bottom-3 right-3 text-[11px] font-mono"
-                                                style={{ color: bio.length > 180 ? "#f87171" : bio.length > 150 ? "#fb923c" : "rgba(255,255,255,0.2)" }}
+                                                style={{ color: bio.length > 180 ? "#f87171" : bio.length > 150 ? "#fb923c" : "#999" }}
                                             >
                                                 {bio.length}/200
                                             </span>
@@ -794,44 +743,36 @@ export default function SettingsPage() {
                             transition={{ duration: 0.22 }}
                         >
                             <div
-                                className="rounded-3xl overflow-hidden"
-                                style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}
+                                className="overflow-hidden bg-white border-[3px] border-black shadow-[4px_4px_0_#000]"
                             >
                                 {/* Card header */}
-                                <div className="px-6 pt-5 pb-4 border-b border-white/[0.04]">
+                                <div className="px-6 pt-5 pb-4 border-b-[3px] border-black">
                                     <div className="flex items-center gap-2 mb-1">
-                                        <Share2 className="w-4 h-4 text-indigo-400" />
-                                        <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Media Sosial</span>
+                                        <Share2 className="w-4 h-4 text-black" />
+                                        <span className="text-xs font-black text-black uppercase tracking-wider">Media Sosial</span>
                                     </div>
-                                    <p className="text-sm text-neutral-500">Links yang kamu tambahkan akan ditampilkan secara publik di profilmu.</p>
+                                    <p className="text-sm text-neutral-500 font-bold">Links yang kamu tambahkan akan ditampilkan secara publik di profilmu.</p>
                                 </div>
 
                                 <div className="p-6 space-y-5">
                                     {SOCIALS.map(s => (
                                         <div
                                             key={s.key}
-                                            className="rounded-2xl p-4 transition-all"
-                                            style={{
-                                                background: socials[s.key] ? "rgba(255,255,255,0.03)" : "transparent",
-                                                border: socials[s.key] ? "1px solid rgba(255,255,255,0.06)" : "1px solid transparent",
-                                            }}
+                                            className="p-4 transition-all border-[2px] border-black bg-white"
                                         >
                                             {/* Platform Label */}
                                             <label className="flex items-center gap-3 mb-3 cursor-default">
-                                                <div
-                                                    className={`w-8 h-8 rounded-xl flex items-center justify-center ${s.bg} shrink-0`}
-                                                    style={{ border: `1px solid ${s.border.replace("border-", "").replace("/20", "")}` }}
-                                                >
-                                                    <s.icon className={`w-4 h-4 ${s.text}`} />
+                                                <div className="w-8 h-8 flex items-center justify-center shrink-0 bg-[#E5E5E5] border-[2px] border-black">
+                                                    <s.icon className="w-4 h-4 text-black" />
                                                 </div>
                                                 <div>
-                                                    <p className="text-sm font-semibold text-neutral-300">{s.label}</p>
-                                                    <p className="text-[11px] text-neutral-600">{s.placeholder}</p>
+                                                    <p className="text-sm font-black text-black">{s.label}</p>
+                                                    <p className="text-[11px] text-neutral-500 font-bold">{s.placeholder}</p>
                                                 </div>
                                                 {socials[s.key] && (
-                                                    <div className="ml-auto flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-                                                        <Check className="w-3 h-3 text-emerald-400" />
-                                                        <span className="text-[10px] font-bold text-emerald-400">Terhubung</span>
+                                                    <div className="ml-auto flex items-center gap-1.5 px-2.5 py-1 bg-[#00FF00] border-[2px] border-black">
+                                                        <Check className="w-3 h-3 text-black" />
+                                                        <span className="text-[10px] font-black text-black">Terhubung</span>
                                                     </div>
                                                 )}
                                             </label>
@@ -843,7 +784,7 @@ export default function SettingsPage() {
                                                     value={socials[s.key]}
                                                     onChange={e => setSocials(prev => ({ ...prev, [s.key]: e.target.value }))}
                                                     placeholder={s.placeholder}
-                                                    className={`${inputClass} ${s.ring} ${socials[s.key] ? 'pr-28' : ''}`}
+                                                    className={`${inputClass} ${socials[s.key] ? 'pr-28' : ''}`}
                                                 />
                                                 {socials[s.key] && (
                                                     <div className="absolute right-2 top-1/2 -translate-y-1/2">
@@ -856,7 +797,7 @@ export default function SettingsPage() {
                                                                 const top = (window.screen.height / 2) - (h / 2)
                                                                 window.open(url, "VerifyLink", `width=${w},height=${h},top=${top},left=${left},scrollbars=yes,status=no`)
                                                             }}
-                                                            className="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 hover:bg-indigo-500/25 transition-all active:scale-95"
+                                                            className="flex items-center gap-1.5 text-xs font-black px-3 py-1.5 uppercase bg-white text-black border-[2px] border-black shadow-[2px_2px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all"
                                                         >
                                                             <ExternalLink className="w-3.5 h-3.5" />
                                                             Cek URL
@@ -868,11 +809,10 @@ export default function SettingsPage() {
                                     ))}
 
                                     <div
-                                        className="flex items-start gap-2.5 px-4 py-3 rounded-xl text-xs text-neutral-600"
-                                        style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.04)" }}
+                                        className="flex items-start gap-2.5 px-4 py-3 text-xs text-neutral-500 font-bold bg-[#FFFF00] border-[2px] border-black"
                                     >
-                                        <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-neutral-700" />
-                                        <span>Tempel URL lengkap termasuk <code className="text-neutral-500 font-mono">https://</code> untuk setiap link yang ingin kamu tambahkan.</span>
+                                        <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-black" />
+                                        <span className="text-black">Tempel URL lengkap termasuk <code className="font-mono font-black">https://</code> untuk setiap link yang ingin kamu tambahkan.</span>
                                     </div>
                                 </div>
                             </div>
@@ -891,42 +831,34 @@ export default function SettingsPage() {
                         >
                             {/* Email Verification Card */}
                             <div
-                                className="rounded-3xl overflow-hidden"
-                                style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}
+                                className="overflow-hidden bg-white border-[3px] border-black shadow-[4px_4px_0_#000]"
                             >
-                                <div className="px-6 pt-5 pb-4 flex items-center gap-2 border-b border-white/[0.04]">
-                                    <KeyRound className="w-4 h-4 text-indigo-400" />
-                                    <span className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Verifikasi Email</span>
+                                <div className="px-6 pt-5 pb-4 flex items-center gap-2 border-b-[3px] border-black">
+                                    <KeyRound className="w-4 h-4 text-black" />
+                                    <span className="text-xs font-black text-black uppercase tracking-wider">Verifikasi Email</span>
                                 </div>
 
                                 <div className="p-6 space-y-5">
                                     {/* Status banner */}
                                     <div
-                                        className="flex items-center gap-4 p-4 rounded-2xl"
-                                        style={{
-                                            background: isEmailVerified ? "rgba(16,185,129,0.06)" : "rgba(245,158,11,0.06)",
-                                            border: isEmailVerified ? "1px solid rgba(16,185,129,0.2)" : "1px solid rgba(245,158,11,0.2)"
-                                        }}
+                                        className={`flex items-center gap-4 p-4 border-[2px] border-black ${isEmailVerified ? 'bg-[#00FF00]' : 'bg-[#FFFF00]'}`}
                                     >
-                                        <div
-                                            className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                                            style={{ background: isEmailVerified ? "rgba(16,185,129,0.1)" : "rgba(245,158,11,0.1)" }}
-                                        >
+                                        <div className="w-10 h-10 flex items-center justify-center shrink-0 bg-white border-[2px] border-black">
                                             {isEmailVerified
-                                                ? <ShieldCheck className="w-5 h-5 text-emerald-400" />
-                                                : <ShieldAlert className="w-5 h-5 text-amber-400" />
+                                                ? <ShieldCheck className="w-5 h-5 text-black" />
+                                                : <ShieldAlert className="w-5 h-5 text-black" />
                                             }
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-bold" style={{ color: isEmailVerified ? "#34d399" : "#fbbf24" }}>
+                                            <p className="text-sm font-black text-black">
                                                 {isEmailVerified ? "Email Sudah Terverifikasi" : "Email Belum Diverifikasi"}
                                             </p>
-                                            <p className="text-xs text-neutral-500 mt-0.5 truncate">{userEmail}</p>
+                                            <p className="text-xs text-black/60 mt-0.5 truncate font-bold">{userEmail}</p>
                                         </div>
                                         {isEmailVerified && (
-                                            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 shrink-0">
-                                                <Check className="w-3.5 h-3.5 text-emerald-400" />
-                                                <span className="text-[11px] font-bold text-emerald-400">Aktif</span>
+                                            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white border-[2px] border-black shrink-0">
+                                                <Check className="w-3.5 h-3.5 text-black" />
+                                                <span className="text-[11px] font-black text-black">Aktif</span>
                                             </div>
                                         )}
                                     </div>
@@ -934,11 +866,10 @@ export default function SettingsPage() {
                                     {/* Description */}
                                     {!isEmailVerified && (
                                         <div
-                                            className="flex items-start gap-3 px-4 py-3 rounded-xl text-xs text-neutral-500"
-                                            style={{ background: "rgba(245,158,11,0.04)", border: "1px solid rgba(245,158,11,0.1)" }}
+                                            className="flex items-start gap-3 px-4 py-3 text-xs text-black font-bold bg-[#FFFF00] border-[2px] border-black"
                                         >
-                                            <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-amber-500" />
-                                            <span>Akun dengan email tidak terverifikasi <strong className="text-neutral-400">tidak dapat membuat memory atau berkomentar</strong>. Verifikasi email kamu sekarang untuk mengakses seluruh fitur.</span>
+                                            <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-black" />
+                                            <span>Akun dengan email tidak terverifikasi <strong className="font-black">tidak dapat membuat memory atau berkomentar</strong>. Verifikasi email kamu sekarang untuk mengakses seluruh fitur.</span>
                                         </div>
                                     )}
 
@@ -952,13 +883,7 @@ export default function SettingsPage() {
                                             setCooldown(0)
                                             setShowVerifyModal(true)
                                         }}
-                                        className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:brightness-110 active:scale-95 shadow-lg"
-                                        style={{
-                                            background: isEmailVerified
-                                                ? "linear-gradient(135deg, rgba(16,185,129,0.8), rgba(5,150,105,0.8))"
-                                                : "linear-gradient(135deg, #f59e0b, #d97706)",
-                                            boxShadow: isEmailVerified ? "0 10px 25px -10px rgba(16,185,129,0.3)" : "0 10px 25px -10px rgba(245,158,11,0.4)"
-                                        }}
+                                        className={`inline-flex items-center gap-2.5 px-5 py-2.5 text-sm font-black text-black uppercase border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all ${isEmailVerified ? 'bg-[#00FFFF]' : 'bg-[#FF00FF] text-white'}`}
                                     >
                                         {isEmailVerified
                                             ? <><RefreshCw className="w-4 h-4" /> Ganti Email</>  
@@ -974,15 +899,13 @@ export default function SettingsPage() {
                 {/* ── Save Button ─────────────────────────────── */}
                 <motion.div
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
-                    className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 p-4 rounded-2xl"
-                    style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}
+                    className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 p-4 bg-white border-[3px] border-black shadow-[4px_4px_0_#000]"
                 >
-                    <p className="text-sm text-neutral-500 hidden sm:block">Perubahan disimpan ke akun dan akan langsung terlihat di profil.</p>
+                    <p className="text-sm text-neutral-500 hidden sm:block font-bold">Perubahan disimpan ke akun dan akan langsung terlihat di profil.</p>
                     <button
                         onClick={handleSave}
                         disabled={saving || uploadingPhoto}
-                        className="inline-flex items-center justify-center gap-2.5 px-8 py-3 rounded-xl text-sm font-bold text-white disabled:opacity-50 transition-all hover:brightness-110 active:scale-95 shrink-0 shadow-lg shadow-indigo-900/20"
-                        style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
+                        className="inline-flex items-center justify-center gap-2.5 px-8 py-3 text-sm font-black text-black uppercase bg-[#00FF00] border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none disabled:opacity-50 transition-all shrink-0"
                     >
                         {saving
                             ? <><Loader2 className="w-4 h-4 animate-spin" /> Menyimpan...</>
@@ -997,30 +920,28 @@ export default function SettingsPage() {
                 {showVerifyModal && (
                     <motion.div
                         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[70] flex items-center justify-center p-4"
-                        style={{ background: "rgba(4,4,12,0.92)", backdropFilter: "blur(16px)" }}
+                        className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/90"
                         onClick={(e) => { if (e.target === e.currentTarget) setShowVerifyModal(false) }}
                     >
                         <motion.div
                             initial={{ scale: 0.92, y: 24 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.92, y: 24 }}
                             transition={{ type: "spring", bounce: 0.22, duration: 0.38 }}
-                            className="w-full max-w-md shadow-2xl overflow-hidden"
-                            style={{ background: "rgba(10,10,20,0.97)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "1.75rem" }}
+                            className="w-full max-w-md bg-white border-[4px] border-black shadow-[8px_8px_0_#000] overflow-hidden"
                         >
                             {/* Modal Header */}
-                            <div className="px-6 pt-6 pb-4 border-b border-white/[0.06] flex items-center justify-between">
+                            <div className="px-6 pt-6 pb-4 border-b-[3px] border-black flex items-center justify-between">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "rgba(99,102,241,0.12)", border: "1px solid rgba(99,102,241,0.2)" }}>
-                                        <KeyRound className="w-4 h-4 text-indigo-400" />
+                                    <div className="w-9 h-9 flex items-center justify-center bg-[#FF00FF] border-[3px] border-black shadow-[2px_2px_0_#000]">
+                                        <KeyRound className="w-4 h-4 text-white" />
                                     </div>
                                     <div>
-                                        <h2 className="text-base font-bold text-white">Verifikasi Email</h2>
-                                        <p className="text-xs text-neutral-500">Langkah {verifyStep} dari 2</p>
+                                        <h2 className="text-base font-black text-black uppercase">Verifikasi Email</h2>
+                                        <p className="text-xs text-neutral-500 font-bold">Langkah {verifyStep} dari 2</p>
                                     </div>
                                 </div>
                                 <button
                                     onClick={() => setShowVerifyModal(false)}
-                                    className="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-500 hover:text-white hover:bg-white/[0.06] transition-all"
+                                    className="w-8 h-8 flex items-center justify-center text-black bg-white border-[2px] border-black shadow-[2px_2px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all"
                                 >
                                     <X className="w-4 h-4" />
                                 </button>
@@ -1031,17 +952,12 @@ export default function SettingsPage() {
                                 {[1, 2].map(s => (
                                     <div key={s} className="flex items-center gap-2">
                                         <div
-                                            className="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold transition-all"
-                                            style={{
-                                                background: verifyStep >= s ? "linear-gradient(135deg,#6366f1,#8b5cf6)" : "rgba(255,255,255,0.05)",
-                                                color: verifyStep >= s ? "#fff" : "#525252",
-                                                border: verifyStep >= s ? "none" : "1px solid rgba(255,255,255,0.08)"
-                                            }}
+                                            className={`w-6 h-6 flex items-center justify-center text-[11px] font-black transition-all border-[2px] border-black ${verifyStep >= s ? 'bg-[#FFFF00] text-black' : 'bg-[#E5E5E5] text-neutral-400'}`}
                                         >{s}</div>
-                                        {s < 2 && <div className="w-8 h-px" style={{ background: verifyStep > 1 ? "rgba(99,102,241,0.5)" : "rgba(255,255,255,0.06)" }} />}
+                                        {s < 2 && <div className={`w-8 h-0.5 ${verifyStep > 1 ? 'bg-black' : 'bg-[#E5E5E5]'}`} />}
                                     </div>
                                 ))}
-                                <span className="ml-2 text-xs text-neutral-600">
+                                <span className="ml-2 text-xs text-neutral-500 font-bold">
                                     {verifyStep === 1 ? "Masukkan Email" : "Masukkan Kode OTP"}
                                 </span>
                             </div>
@@ -1050,12 +966,12 @@ export default function SettingsPage() {
                                 {/* ── STEP 1: Email input ── */}
                                 {verifyStep === 1 && (
                                     <>
-                                        <p className="text-sm text-neutral-400 leading-relaxed">
+                                        <p className="text-sm text-neutral-600 leading-relaxed font-bold">
                                             Masukkan alamat email aktif yang ingin kamu verifikasi. Kode OTP 6 digit akan dikirimkan ke email tersebut.
                                         </p>
                                         <div className="space-y-2">
-                                            <label className="text-xs font-semibold text-neutral-400 flex items-center gap-1.5">
-                                                <Mail className="w-3.5 h-3.5 text-indigo-400" /> Alamat Email
+                                            <label className="text-xs font-black text-black uppercase tracking-wider flex items-center gap-1.5">
+                                                <Mail className="w-3.5 h-3.5 text-black" /> Alamat Email
                                             </label>
                                             <input
                                                 id="input-verify-email"
@@ -1064,7 +980,7 @@ export default function SettingsPage() {
                                                 onChange={e => { setTargetEmail(e.target.value); setTargetEmailError("") }}
                                                 onKeyDown={e => e.key === "Enter" && handleSendOtp()}
                                                 placeholder="email@contoh.com"
-                                                className={`${inputClass} ${targetEmailError ? "border-red-500/30 focus:ring-red-500/20" : ""}`}
+                                                className={`${inputClass} ${targetEmailError ? "border-[#FF0000]" : ""}`}
                                             />
                                             {targetEmailError && (
                                                 <p className="text-xs text-red-400 flex items-center gap-1.5">
@@ -1077,8 +993,7 @@ export default function SettingsPage() {
                                             id="btn-send-otp"
                                             onClick={handleSendOtp}
                                             disabled={sendingOtp || cooldown > 0}
-                                            className="w-full py-3 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2 transition-all hover:brightness-110 active:scale-95 disabled:opacity-50"
-                                            style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
+                                            className="w-full py-3 text-sm font-black text-black uppercase flex items-center justify-center gap-2 bg-[#FF00FF] text-white border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all disabled:opacity-50"
                                         >
                                             {sendingOtp
                                                 ? <><Loader2 className="w-4 h-4 animate-spin" /> Mengirim...</>
@@ -1093,8 +1008,8 @@ export default function SettingsPage() {
                                 {/* ── STEP 2: OTP input ── */}
                                 {verifyStep === 2 && (
                                     <>
-                                        <p className="text-sm text-neutral-400 leading-relaxed">
-                                            Kode OTP telah dikirim ke <strong className="text-indigo-300">{targetEmail}</strong>. Periksa inbox dan masukkan 6 digit kode di bawah.
+                                        <p className="text-sm text-neutral-600 leading-relaxed font-bold">
+                                            Kode OTP telah dikirim ke <strong className="text-black font-black">{targetEmail}</strong>. Periksa inbox dan masukkan 6 digit kode di bawah.
                                         </p>
 
                                         {/* OTP boxes */}
@@ -1110,11 +1025,11 @@ export default function SettingsPage() {
                                                     value={digit}
                                                     onChange={e => handleOtpInput(i, e.target.value)}
                                                     onKeyDown={e => handleOtpKeyDown(i, e)}
-                                                    className="w-11 h-14 text-center text-xl font-black text-white rounded-xl transition-all focus:outline-none"
+                                                    className="w-11 h-14 text-center text-xl font-black text-black transition-all focus:outline-none focus:bg-[#FFFF00]"
                                                     style={{
-                                                        background: digit ? "rgba(99,102,241,0.15)" : "rgba(255,255,255,0.04)",
-                                                        border: digit ? "2px solid rgba(99,102,241,0.6)" : "1px solid rgba(255,255,255,0.08)",
-                                                        boxShadow: digit ? "0 0 12px rgba(99,102,241,0.2)" : "none"
+                                                        background: digit ? "#FFFF00" : "#E5E5E5",
+                                                        border: digit ? "3px solid #000" : "3px solid #000",
+                                                        boxShadow: digit ? "2px 2px 0 #000" : "none"
                                                     }}
                                                 />
                                             ))}
@@ -1124,7 +1039,7 @@ export default function SettingsPage() {
                                         <div className="flex items-center justify-between text-xs">
                                             <button
                                                 onClick={() => setVerifyStep(1)}
-                                                className="text-neutral-500 hover:text-neutral-300 transition-colors"
+                                                className="text-neutral-500 hover:text-black transition-colors font-black"
                                             >
                                                 ← Ganti email
                                             </button>
@@ -1132,8 +1047,8 @@ export default function SettingsPage() {
                                                 id="btn-resend-otp"
                                                 onClick={handleSendOtp}
                                                 disabled={cooldown > 0 || sendingOtp}
-                                                className="flex items-center gap-1.5 font-semibold transition-colors disabled:opacity-40"
-                                                style={{ color: cooldown > 0 ? "#525252" : "#818cf8" }}
+                                                className="flex items-center gap-1.5 font-black transition-colors disabled:opacity-40"
+                                                style={{ color: cooldown > 0 ? "#999" : "#000" }}
                                             >
                                                 {cooldown > 0
                                                     ? <><Timer className="w-3.5 h-3.5" /> Kirim ulang ({cooldown}s)</>
@@ -1146,8 +1061,7 @@ export default function SettingsPage() {
                                             id="btn-verify-otp"
                                             onClick={handleVerifyOtp}
                                             disabled={verifyingOtp || otp.join("").length < 6}
-                                            className="w-full py-3 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2 transition-all hover:brightness-110 active:scale-95 disabled:opacity-50"
-                                            style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
+                                            className="w-full py-3 text-sm font-black text-black uppercase flex items-center justify-center gap-2 bg-[#00FF00] border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all disabled:opacity-50"
                                         >
                                             {verifyingOtp
                                                 ? <><Loader2 className="w-4 h-4 animate-spin" /> Memverifikasi...</>

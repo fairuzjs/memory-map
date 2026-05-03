@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { Bell, MessageCircle, Heart, Loader2, X, Users, CheckCircle2, XCircle, UserPlus } from "lucide-react"
+import { Bell, MessageCircle, Heart, Loader2, X, Users, CheckCircle2, XCircle, UserPlus, Crown } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import { ConfirmDialog, useConfirm } from "@/components/ui/ConfirmDialog"
@@ -13,15 +13,15 @@ const timeAgo = (date: string) => {
     const hours = Math.floor(minutes / 60)
     const days = Math.floor(hours / 24)
 
-    if (days > 0) return `${days}d ago`
-    if (hours > 0) return `${hours}h ago`
-    if (minutes > 0) return `${minutes}m ago`
-    return 'Just now'
+    if (days > 0) return `${days}d lalu`
+    if (hours > 0) return `${hours}j lalu`
+    if (minutes > 0) return `${minutes}m lalu`
+    return 'Baru saja'
 }
 
 interface Notification {
     id: string
-    type: "COMMENT" | "REACTION" | "REPLY" | "COLLABORATION_INVITE" | "FOLLOW"
+    type: "COMMENT" | "REACTION" | "REPLY" | "COLLABORATION_INVITE" | "FOLLOW" | "PREMIUM_ACTIVATED"
     isRead: boolean
     createdAt: string
     memoryId: string | null
@@ -51,12 +51,8 @@ export function NotificationDropdown() {
                 setIsOpen(false)
             }
         }
-        if (isOpen) {
-            document.addEventListener("mousedown", handleClickOutside)
-        }
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside)
-        }
+        if (isOpen) document.addEventListener("mousedown", handleClickOutside)
+        return () => document.removeEventListener("mousedown", handleClickOutside)
     }, [isOpen])
 
     const fetchNotifications = async () => {
@@ -147,13 +143,7 @@ export function NotificationDropdown() {
         })
     }
 
-    // Handle accept / decline collaboration invite
-    const handleCollaborationRespond = async (
-        e: React.MouseEvent,
-        notifId: string,
-        memoryId: string,
-        action: "ACCEPTED" | "DECLINED"
-    ) => {
+    const handleCollaborationRespond = async (e: React.MouseEvent, notifId: string, memoryId: string, action: "ACCEPTED" | "DECLINED") => {
         e.stopPropagation()
         e.preventDefault()
         setRespondingId(notifId)
@@ -164,11 +154,7 @@ export function NotificationDropdown() {
                 body: JSON.stringify({ action })
             })
 
-            // 200 OK → berhasil respond
-            // 409 → sudah pernah dijawab sebelumnya
-            // Keduanya: hapus notifikasi dari DB & UI
             if (res.ok || res.status === 409) {
-                // Hapus notifikasi dari database (bukan hanya mark as read)
                 await fetch("/api/notifications", {
                     method: "DELETE",
                     headers: { "Content-Type": "application/json" },
@@ -178,9 +164,6 @@ export function NotificationDropdown() {
                 setUnreadCount(prev => Math.max(0, prev - 1))
                 return
             }
-
-            const errData = await res.json().catch(() => ({}))
-            console.error("Respond API error:", res.status, errData)
         } catch (err) {
             console.error("Failed to respond to collaboration invite", err)
         } finally {
@@ -188,177 +171,190 @@ export function NotificationDropdown() {
         }
     }
 
-
-
     return (
         <>
             <div className="relative" ref={dropdownRef}>
                 <button
-                onClick={() => {
-                    setIsOpen(!isOpen)
-                    if (!isOpen) fetchNotifications()
-                }}
-                className={`flex items-center justify-center w-9 h-9 rounded-xl bg-white/[0.05] border transition-all relative ${isOpen ? "border-indigo-500/50 bg-white/[0.08]" : "border-white/[0.08] hover:border-indigo-500/30 hover:bg-white/[0.08]"
+                    onClick={() => {
+                        setIsOpen(!isOpen)
+                        if (!isOpen) fetchNotifications()
+                    }}
+                    className={`flex items-center justify-center w-10 h-10 border-[3px] transition-all relative ${
+                        isOpen 
+                        ? "bg-[#FFFF00] border-black shadow-[3px_3px_0_#000] text-black" 
+                        : "bg-white border-transparent hover:border-black text-black hover:bg-[#FFFF00]"
                     }`}
-                title="Notifications"
-            >
-                <Bell className={`w-4 h-4 ${unreadCount > 0 ? "text-indigo-400" : "text-neutral-400"}`} />
-                {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-indigo-600 text-[10px] font-bold text-white shadow-lg ring-2 ring-[#080810]">
-                        {unreadCount > 9 ? "9+" : unreadCount}
-                    </span>
-                )}
-            </button>
+                    title="Notifications"
+                >
+                    <Bell className="w-5 h-5" />
+                    {unreadCount > 0 && (
+                        <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-none bg-[#FF00FF] border-[2px] border-black text-[10px] font-black text-white shadow-[2px_2px_0_#000]">
+                            {unreadCount > 9 ? "9+" : unreadCount}
+                        </span>
+                    )}
+                </button>
 
-            <AnimatePresence>
-                {isOpen && (
-                    <>
-
+                <AnimatePresence>
+                    {isOpen && (
                         <motion.div
                             initial={{ opacity: 0, y: 10, scale: 0.95 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                            className="fixed left-1/2 -translate-x-1/2 top-[88px] w-[calc(100vw-32px)] max-w-[400px] sm:absolute sm:left-auto sm:translate-x-0 sm:right-0 sm:top-full sm:mt-3 sm:w-80 md:w-96 z-[200] bg-[#11111a] border border-white/[0.08] rounded-2xl shadow-2xl overflow-hidden"
+                            className="fixed left-1/2 -translate-x-1/2 top-[88px] w-[calc(100vw-32px)] max-w-[400px] sm:absolute sm:left-auto sm:translate-x-0 sm:right-0 sm:top-full sm:mt-4 sm:w-80 md:w-96 z-[200] bg-white border-[4px] border-black shadow-[8px_8px_0_#000] overflow-hidden"
                         >
-                            <div className="p-4 border-b border-white/[0.06] flex items-center justify-between bg-white/[0.02] relative z-20">
-                                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                                    <Bell className="w-4 h-4 text-indigo-400" />
-                                    Notifications
+                            {/* Header */}
+                            <div className="p-4 border-b-[4px] border-black flex items-center justify-between bg-[#FFFF00] relative z-20">
+                                <h3 className="text-sm font-black text-black flex items-center gap-2 uppercase tracking-wide">
+                                    <Bell className="w-4 h-4" />
+                                    Notifikasi
                                 </h3>
                                 <div className="flex gap-3">
                                     {notifications.length > 0 && (
-                                        <button
-                                            onClick={deleteAllNotifications}
-                                            className="text-[11px] font-semibold text-rose-400 hover:text-rose-300 transition-colors"
-                                        >
-                                            Delete all
+                                        <button onClick={deleteAllNotifications} className="text-[11px] font-black text-black hover:text-[#FF00FF] hover:underline uppercase transition-colors">
+                                            Hapus Semua
                                         </button>
                                     )}
                                     {unreadCount > 0 && (
-                                        <button
-                                            onClick={markAllAsRead}
-                                            className="text-[11px] font-semibold text-indigo-400 hover:text-indigo-300 transition-colors"
-                                        >
-                                            Mark read
+                                        <button onClick={markAllAsRead} className="text-[11px] font-black text-black hover:text-[#00FFFF] hover:underline uppercase transition-colors">
+                                            Tandai Dibaca
                                         </button>
                                     )}
                                 </div>
                             </div>
 
-                            <div className="max-h-[360px] overflow-y-auto custom-scrollbar relative z-10">
+                            {/* Content */}
+                            <div className="max-h-[360px] overflow-y-auto custom-scrollbar relative z-10 bg-[#FFFDF0]">
                                 {loading && notifications.length === 0 ? (
                                     <div className="flex flex-col items-center justify-center py-12 gap-3">
-                                        <Loader2 className="w-6 h-6 text-indigo-500 animate-spin" />
-                                        <span className="text-xs text-neutral-500">Checking for updates...</span>
+                                        <Loader2 className="w-8 h-8 text-black animate-spin" />
+                                        <span className="text-xs font-bold text-black/60 uppercase">Memeriksa notifikasi...</span>
                                     </div>
                                 ) : notifications.length === 0 ? (
                                     <div className="flex flex-col items-center justify-center py-12 px-6 text-center gap-3">
-                                        <div className="w-12 h-12 rounded-2xl bg-white/[0.03] flex items-center justify-center mb-1">
-                                            <Bell className="w-6 h-6 text-neutral-600" />
+                                        <div className="w-16 h-16 bg-white border-[3px] border-black shadow-[4px_4px_0_#000] flex items-center justify-center mb-2">
+                                            <Bell className="w-8 h-8 text-black" />
                                         </div>
-                                        <p className="text-sm font-medium text-neutral-400">No notifications yet</p>
-                                        <p className="text-xs text-neutral-600 leading-relaxed">
-                                            Interactions with your memories will appear here.
+                                        <p className="text-base font-black text-black uppercase">Belum ada notifikasi</p>
+                                        <p className="text-xs font-bold text-black/60 leading-relaxed">
+                                            Interaksi pada kenangan Anda akan muncul di sini.
                                         </p>
                                     </div>
                                 ) : (
-                                    <div className="divide-y divide-white/[0.04]">
+                                    <div className="flex flex-col">
                                         {notifications.map((n) => (
-                                            <div
-                                                key={n.id}
-                                                className={`p-4 transition-all hover:bg-white/5 relative group ${!n.isRead ? "bg-indigo-500/[0.02]" : ""}`}
-                                            >
+                                            <div key={n.id} className={`p-4 transition-all hover:bg-white relative group border-b-[3px] border-black last:border-b-0 ${!n.isRead ? "bg-[#00FFFF]/20" : ""}`}>
                                                 {!n.isRead && (
-                                                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-indigo-500 rounded-r-full z-20" />
+                                                    <div className="absolute left-0 top-0 bottom-0 w-[6px] bg-[#00FFFF] border-r-[2px] border-black z-20" />
                                                 )}
 
                                                 <div className="flex gap-3 relative z-0">
                                                     <div className="relative shrink-0">
                                                         <img
                                                             src={n.actor.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${n.actor.id}`}
-                                                            className="w-10 h-10 rounded-full border border-white/10"
+                                                            className="w-12 h-12 border-[3px] border-black bg-white"
                                                             alt=""
                                                         />
-                                                        <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center border-2 border-[#11111a] ${n.type === "REACTION" ? "bg-rose-500" :
-                                                            n.type === "COLLABORATION_INVITE" ? "bg-violet-500" :
-                                                                n.type === "FOLLOW" ? "bg-emerald-500" :
-                                                                "bg-indigo-500"
-                                                            }`}>
+                                                        <div className={`absolute -bottom-2 -right-2 w-6 h-6 flex items-center justify-center border-[2px] border-black shadow-[2px_2px_0_#000] ${
+                                                            n.type === "PREMIUM_ACTIVATED" ? "bg-[#FFD700]" :
+                                                            n.type === "REACTION" ? "bg-[#FF00FF]" :
+                                                            n.type === "COLLABORATION_INVITE" ? "bg-[#00FFFF]" :
+                                                            n.type === "FOLLOW" ? "bg-[#00FF00]" :
+                                                            "bg-[#FFFF00]"
+                                                        }`}>
                                                             {n.type === "REACTION" ? (
-                                                                <Heart className="w-2.5 h-2.5 text-white fill-white" />
+                                                                <Heart className="w-3 h-3 text-white fill-white" />
                                                             ) : n.type === "COLLABORATION_INVITE" ? (
-                                                                <Users className="w-2.5 h-2.5 text-white" />
+                                                                <Users className="w-3 h-3 text-black" />
                                                             ) : n.type === "FOLLOW" ? (
-                                                                <UserPlus className="w-2.5 h-2.5 text-white" />
+                                                                <UserPlus className="w-3 h-3 text-black" />
+                                                            ) : n.type === "PREMIUM_ACTIVATED" ? (
+                                                                <Crown className="w-3 h-3 text-black" />
                                                             ) : (
-                                                                <MessageCircle className="w-2.5 h-2.5 text-white" />
+                                                                <MessageCircle className="w-3 h-3 text-black fill-black" />
                                                             )}
                                                         </div>
                                                     </div>
 
-                                                    <div className="flex-1 min-w-0">
-                                                        <p className="text-sm text-neutral-300 leading-snug">
-                                                            <span className="font-bold text-white">{n.actor.name}</span>
+                                                    <div className="flex-1 min-w-0 pl-1">
+                                                        <p className="text-sm text-black/80 font-medium leading-snug">
+                                                            <span className="font-black text-black text-[15px]">{n.actor.name}</span>
                                                             {" "}
-                                                            {n.type === "REACTION" ? "reacted to" :
-                                                                n.type === "COMMENT" ? "commented on" :
-                                                                    n.type === "REPLY" ? "replied to your comment in" :
-                                                                        n.type === "FOLLOW" ? "started following you" :
-                                                                            "invited you to collaborate on"}
-                                                            {n.type !== "FOLLOW" && (
+                                                            {n.type === "REACTION" ? "menyukai" :
+                                                                n.type === "COMMENT" ? "mengomentari" :
+                                                                n.type === "REPLY" ? "membalas komentar Anda di" :
+                                                                n.type === "FOLLOW" ? "mulai mengikuti Anda" :
+                                                                n.type === "PREMIUM_ACTIVATED" ? "" :
+                                                                "mengundang Anda berkolaborasi di"}
+                                                            {n.type !== "FOLLOW" && n.type !== "PREMIUM_ACTIVATED" && (
                                                                 <>
                                                                     {" "}
-                                                                    <span className="font-semibold text-indigo-400">
-                                                                        &quot;{n.memory?.title || "a memory"}&quot;
+                                                                    <span className="font-black text-[#FF00FF]">
+                                                                        &quot;{n.memory?.title || "sebuah kenangan"}&quot;
                                                                     </span>
                                                                 </>
                                                             )}
+                                                            {n.type === "PREMIUM_ACTIVATED" && (
+                                                                <span className="font-black text-[#b8860b]">Premium kamu sudah aktif! 🎉 Klaim hadiah eksklusifmu sekarang.</span>
+                                                            )}
                                                         </p>
-                                                        <p className="text-[11px] text-neutral-500 mt-1 font-medium">
+                                                        <p className="text-[11px] font-black text-black/50 mt-1.5 uppercase">
                                                             {timeAgo(n.createdAt)}
                                                         </p>
 
-                                                        {/* Accept / Decline buttons for collaboration invites */}
+                                                        {/* Actions */}
                                                         {n.type === "COLLABORATION_INVITE" && n.memoryId && (
-                                                            <div className="flex items-center gap-2 mt-2.5" onClick={e => e.stopPropagation()}>
+                                                            <div className="flex items-center gap-2 mt-3" onClick={e => e.stopPropagation()}>
                                                                 <button
                                                                     disabled={respondingId === n.id}
                                                                     onClick={(e) => handleCollaborationRespond(e, n.id, n.memoryId!, "ACCEPTED")}
-                                                                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition-all disabled:opacity-50"
+                                                                    className="flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-black bg-[#00FF00] border-[2px] border-black text-black shadow-[2px_2px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] transition-all disabled:opacity-50 uppercase"
                                                                 >
-                                                                    {respondingId === n.id ? (
-                                                                        <Loader2 className="w-3 h-3 animate-spin" />
-                                                                    ) : (
-                                                                        <CheckCircle2 className="w-3 h-3" />
-                                                                    )}
-                                                                    Accept
+                                                                    {respondingId === n.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <CheckCircle2 className="w-3 h-3" />}
+                                                                    Terima
                                                                 </button>
                                                                 <button
                                                                     disabled={respondingId === n.id}
                                                                     onClick={(e) => handleCollaborationRespond(e, n.id, n.memoryId!, "DECLINED")}
-                                                                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-neutral-800 hover:bg-rose-500/20 text-neutral-400 hover:text-rose-400 border border-neutral-700 hover:border-rose-500/30 transition-all disabled:opacity-50"
+                                                                    className="flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-black bg-white border-[2px] border-black text-black shadow-[2px_2px_0_#000] hover:bg-[#FF00FF] hover:text-white hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] transition-all disabled:opacity-50 uppercase"
                                                                 >
                                                                     <XCircle className="w-3 h-3" />
-                                                                    Decline
+                                                                    Tolak
                                                                 </button>
+                                                            </div>
+                                                        )}
+
+                                                        {/* Premium claim action */}
+                                                        {n.type === "PREMIUM_ACTIVATED" && (
+                                                            <div className="mt-3" onClick={e => e.stopPropagation()}>
+                                                                <Link
+                                                                    href="/premium/payment"
+                                                                    onClick={() => {
+                                                                        if (!n.isRead) markAsRead(n.id)
+                                                                        setIsOpen(false)
+                                                                    }}
+                                                                    className="flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-black bg-[#FFD700] border-[2px] border-black text-black shadow-[2px_2px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] transition-all uppercase"
+                                                                >
+                                                                    <Crown className="w-3 h-3" />
+                                                                    Klaim Hadiah
+                                                                </Link>
                                                             </div>
                                                         )}
                                                     </div>
 
-                                                    {/* Delete button — hide for collaboration invites karena ada tombol sendiri */}
-                                                    {n.type !== "COLLABORATION_INVITE" && (
+                                                    {/* Delete */}
+                                                    {n.type !== "COLLABORATION_INVITE" && n.type !== "PREMIUM_ACTIVATED" && (
                                                         <button
                                                             onClick={(e) => deleteNotification(e, n.id)}
-                                                            className="shrink-0 self-center p-1.5 rounded-lg border border-transparent text-neutral-600 hover:text-rose-400 hover:bg-rose-500/10 transition-all opacity-0 group-hover:opacity-100 relative z-30"
+                                                            className="shrink-0 self-center p-2 border-[2px] border-transparent hover:border-black bg-white hover:bg-[#FF00FF] text-black hover:text-white hover:shadow-[2px_2px_0_#000] transition-all opacity-0 group-hover:opacity-100 relative z-30"
                                                             title="Delete"
                                                         >
-                                                            <X className="w-3.5 h-3.5" />
+                                                            <X className="w-4 h-4" />
                                                         </button>
                                                     )}
                                                 </div>
 
-                                                {/* Clickable link — only for non-collaboration notifications */}
-                                                {n.type !== "COLLABORATION_INVITE" && (
+                                                {/* Link Wrapper */}
+                                                {n.type !== "COLLABORATION_INVITE" && n.type !== "PREMIUM_ACTIVATED" && (
                                                     <Link
                                                         href={n.type === "FOLLOW" ? `/profile/${n.actor.id}` : (n.memory ? `/memories/${n.memory.id}` : "/map")}
                                                         onClick={() => {
@@ -373,23 +369,11 @@ export function NotificationDropdown() {
                                     </div>
                                 )}
                             </div>
-
-                            {notifications.length > 0 && (
-                                <div className="p-3 border-t border-white/[0.06] bg-white/[0.01] text-center relative z-20">
-                                    <button
-                                        onClick={() => setIsOpen(false)}
-                                        className="text-[11px] font-bold uppercase tracking-widest text-neutral-500 hover:text-white transition-colors"
-                                    >
-                                        Close
-                                    </button>
-                                </div>
-                            )}
                         </motion.div>
-                    </>
-                )}
-            </AnimatePresence>
-        </div>
-        <ConfirmDialog {...confirmProps} />
+                    )}
+                </AnimatePresence>
+            </div>
+            <ConfirmDialog {...confirmProps} />
         </>
     )
 }

@@ -71,25 +71,26 @@ export default function LandingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#080810] overflow-hidden relative selection:bg-indigo-500/30">
+    <div className="min-h-screen bg-[#FFFDF0] overflow-hidden relative selection:bg-[#FFFF00] selection:text-black">
 
-      {/* ── Ambient Background ─────────────────────────────────────────────── */}
+      {/* ── Neubrutalism Background ───────────────────────────────────────── */}
       <div className="fixed inset-0 z-0 pointer-events-none">
+        {/* Bold grid pattern */}
         <div
-          className="absolute inset-0 opacity-[0.03]"
+          className="absolute inset-0 opacity-[0.04]"
           style={{
-            backgroundImage: `linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px)`,
-            backgroundSize: "60px 60px",
+            backgroundImage: `linear-gradient(rgba(0,0,0,1) 2px, transparent 2px),
+                              linear-gradient(90deg, rgba(0,0,0,1) 2px, transparent 2px)`,
+            backgroundSize: "80px 80px",
           }}
         />
-        <div className="absolute top-[-20%] left-[10%] w-[60%] h-[60%] bg-indigo-600/[0.08] rounded-full blur-[120px]" />
-        <div className="absolute top-[20%] right-[-10%] w-[50%] h-[50%] bg-violet-600/[0.08] rounded-full blur-[120px]" />
-        <div className="absolute bottom-[-20%] left-[20%] w-[40%] h-[40%] bg-indigo-500/[0.05] rounded-full blur-[120px]" />
-        <div
-          className="absolute inset-0 opacity-[0.02] mix-blend-overlay"
-          style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")" }}
-        />
+        {/* Decorative geometric shapes */}
+        <div className="absolute top-[10%] right-[5%] w-24 h-24 border-[3px] border-black/[0.06] rotate-12" />
+        <div className="absolute top-[40%] left-[3%] w-16 h-16 rounded-full border-[3px] border-black/[0.05]" />
+        <div className="absolute bottom-[15%] right-[10%] w-20 h-20 border-[3px] border-black/[0.04] rotate-45" />
+        <div className="absolute top-[70%] left-[8%] w-12 h-12 bg-[#FFFF00]/[0.06] border-[3px] border-black/[0.04]" />
+        <div className="absolute top-[25%] left-[50%] w-8 h-8 rounded-full bg-[#FF00FF]/[0.05]" />
+        <div className="absolute bottom-[40%] right-[25%] w-14 h-14 rounded-full border-[3px] border-black/[0.03]" />
       </div>
 
       {/* ── Navigation ─────────────────────────────────────────────────────── */}

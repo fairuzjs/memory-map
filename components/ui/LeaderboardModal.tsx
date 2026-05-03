@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { createPortal } from "react-dom"
 import { motion, AnimatePresence, Variants } from "framer-motion"
 import Link from "next/link"
-import { BadgeCheck } from "lucide-react"
+import { BadgeCheck, X, Trophy } from "lucide-react"
 
 interface LeaderboardEntry {
   rank: number
@@ -15,22 +15,6 @@ interface LeaderboardEntry {
   currentStreak: number
   equippedDecoration?: any
   isVerified?: boolean
-}
-
-function getDecorationClass(name?: string) {
-  if (!name) return "";
-  const n = name.toLowerCase();
-  if (n.includes("kristal")) return "anim-kristal";
-  if (n.includes("api")) return "anim-api";
-  if (n.includes("neon")) return "anim-neon";
-  if (n.includes("emas")) return "anim-emas";
-  if (n.includes("pelangi")) return "anim-pelangi";
-  if (n.includes("glitch")) return "anim-glitch";
-  if (n.includes("quasar")) return "anim-quasar";
-  if (n.includes("celestial")) return "anim-celestial";
-  if (n.includes("supernova")) return "anim-supernova";
-  if (n.includes("rune")) return "anim-rune";
-  return "";
 }
 
 interface LeaderboardModalProps {
@@ -51,51 +35,25 @@ const modalVariants: Variants = {
   hidden: { opacity: 0, scale: 0.95, y: 30 },
   visible: {
     opacity: 1, scale: 1, y: 0,
-    transition: { type: "spring", stiffness: 300, damping: 25 },
+    transition: { type: "spring", stiffness: 400, damping: 25 },
   },
   exit: { opacity: 0, scale: 0.95, y: 20, transition: { duration: 0.2 } },
 }
 
 const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 14 },
-  visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } },
+  hidden: { opacity: 0, x: -10 },
+  visible: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 400, damping: 24 } },
 }
 
 // ─── SVG Icons ────────────────────────────────────────────────────────────────
-function TrophyIcon() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-      <path
-        d="M12 15c-3.314 0-6-2.686-6-6V4h12v5c0 3.314-2.686 6-6 6z"
-        stroke="#fbbf24" strokeWidth="1.5" strokeLinejoin="round"
-      />
-      <path
-        d="M6 6H3.5A1.5 1.5 0 0 0 2 7.5v.5a4 4 0 0 0 4 4M18 6h2.5A1.5 1.5 0 0 1 22 7.5v.5a4 4 0 0 1-4 4"
-        stroke="#fbbf24" strokeWidth="1.5" strokeLinecap="round"
-      />
-      <path d="M12 15v4M9 19h6" stroke="#fbbf24" strokeWidth="1.5" strokeLinecap="round" />
-      <circle cx="12" cy="10" r="2" fill="rgba(251,191,36,0.35)" />
-    </svg>
-  )
-}
-
-function CloseIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-      <path
-        d="M1 1l12 12M13 1L1 13"
-        stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round"
-      />
-    </svg>
-  )
-}
-
-function FlameIcon({ size = 13 }: { size?: number }) {
+function FlameIcon({ size = 16 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <path
         d="M12 2C9 7 6 9 6 14a6 6 0 0 0 12 0c0-3-1.5-5.5-3-7.5C14 9 13.5 11 12 12c-.5-2-1.5-4-0-10z"
-        fill="#fb923c"
+        fill="#FF0000"
+        stroke="#000"
+        strokeWidth="2"
       />
     </svg>
   )
@@ -103,53 +61,34 @@ function FlameIcon({ size = 13 }: { size?: number }) {
 
 function CrownIcon() {
   return (
-    <svg width="38" height="32" viewBox="0 0 38 32" fill="none">
-      <defs>
-        <linearGradient id="crownGrad" x1="0" y1="0" x2="38" y2="32" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#fde68a" />
-          <stop offset="50%" stopColor="#fbbf24" />
-          <stop offset="100%" stopColor="#d97706" />
-        </linearGradient>
-      </defs>
+    <svg width="42" height="36" viewBox="0 0 38 32" fill="none">
       <path
         d="M3 26 L6 10 L13 18 L19 4 L25 18 L32 10 L35 26 Z"
-        fill="url(#crownGrad)" stroke="#f59e0b" strokeWidth="0.8" strokeLinejoin="round"
+        fill="#FFFF00" stroke="#000" strokeWidth="2" strokeLinejoin="round"
       />
-      <rect x="3" y="25" width="32" height="5" rx="2" fill="#f59e0b" />
-      <circle cx="6.5" cy="27.5" r="2" fill="#fde68a" />
-      <circle cx="19" cy="27.5" r="2.5" fill="#fff" opacity="0.9" />
-      <circle cx="31.5" cy="27.5" r="2" fill="#fde68a" />
-      <circle cx="19" cy="5" r="2.5" fill="#fff" opacity="0.85" />
-      <circle cx="6.5" cy="11" r="1.8" fill="#fde68a" opacity="0.9" />
-      <circle cx="31.5" cy="11" r="1.8" fill="#fde68a" opacity="0.9" />
-      <path
-        d="M8 14 Q11 12 13 16"
-        stroke="rgba(255,255,255,0.5)" strokeWidth="1" strokeLinecap="round" fill="none"
-      />
+      <rect x="3" y="25" width="32" height="5" fill="#FFFF00" stroke="#000" strokeWidth="2" />
     </svg>
   )
 }
 
 function SilverMedalIcon() {
   return (
-    <svg width="30" height="34" viewBox="0 0 30 34" fill="none">
-      <circle cx="15" cy="20" r="12" fill="rgba(203,213,225,0.1)" stroke="#cbd5e1" strokeWidth="1.2" />
-      <circle cx="15" cy="20" r="8.5" fill="rgba(203,213,225,0.07)" stroke="rgba(203,213,225,0.3)" strokeWidth="0.8" />
-      <path d="M10 10 L6 2 L12 5 L15 8Z" fill="#94a3b8" opacity="0.8" />
-      <path d="M20 10 L24 2 L18 5 L15 8Z" fill="#64748b" opacity="0.8" />
-      <text x="15" y="25" textAnchor="middle" fontSize="10" fontWeight="700" fill="#cbd5e1" fontFamily="sans-serif">2</text>
+    <svg width="34" height="38" viewBox="0 0 30 34" fill="none">
+      <circle cx="15" cy="20" r="12" fill="#E5E5E5" stroke="#000" strokeWidth="2" />
+      <path d="M10 10 L6 2 L12 5 L15 8Z" fill="#E5E5E5" stroke="#000" strokeWidth="2" />
+      <path d="M20 10 L24 2 L18 5 L15 8Z" fill="#E5E5E5" stroke="#000" strokeWidth="2" />
+      <text x="15" y="25" textAnchor="middle" fontSize="12" fontWeight="900" fill="#000" fontFamily="sans-serif">2</text>
     </svg>
   )
 }
 
 function BronzeMedalIcon() {
   return (
-    <svg width="30" height="34" viewBox="0 0 30 34" fill="none">
-      <circle cx="15" cy="20" r="12" fill="rgba(251,146,60,0.1)" stroke="#fb923c" strokeWidth="1.2" />
-      <circle cx="15" cy="20" r="8.5" fill="rgba(251,146,60,0.07)" stroke="rgba(251,146,60,0.3)" strokeWidth="0.8" />
-      <path d="M10 10 L6 2 L12 5 L15 8Z" fill="#ea7c3a" opacity="0.8" />
-      <path d="M20 10 L24 2 L18 5 L15 8Z" fill="#c2601e" opacity="0.8" />
-      <text x="15" y="25" textAnchor="middle" fontSize="10" fontWeight="700" fill="#fb923c" fontFamily="sans-serif">3</text>
+    <svg width="34" height="38" viewBox="0 0 30 34" fill="none">
+      <circle cx="15" cy="20" r="12" fill="#FF9900" stroke="#000" strokeWidth="2" />
+      <path d="M10 10 L6 2 L12 5 L15 8Z" fill="#FF9900" stroke="#000" strokeWidth="2" />
+      <path d="M20 10 L24 2 L18 5 L15 8Z" fill="#FF9900" stroke="#000" strokeWidth="2" />
+      <text x="15" y="25" textAnchor="middle" fontSize="12" fontWeight="900" fill="#000" fontFamily="sans-serif">3</text>
     </svg>
   )
 }
@@ -157,64 +96,42 @@ function BronzeMedalIcon() {
 // ─── Rank Style ───────────────────────────────────────────────────────────────
 function getRankStyle(rank: number) {
   if (rank === 1) return {
-    color: "#fbbf24",
-    avatarBorder: "#fbbf24",
-    avatarShadow: "0 0 18px rgba(251,191,36,0.4), 0 0 4px rgba(251,191,36,0.5)",
-    pillarBg: "rgba(251,191,36,0.13)",
-    pillarBorder: "rgba(251,191,36,0.2)",
-    pillarShadow: "0 -8px 32px rgba(251,191,36,0.15)",
-    topBarBg: "linear-gradient(90deg, rgba(251,191,36,0.4), #fbbf24, rgba(251,191,36,0.4))",
-    pillarHeight: "130px",
+    pillarBg: "#FFFF00",
+    pillarHeight: "140px",
   }
   if (rank === 2) return {
-    color: "#cbd5e1",
-    avatarBorder: "#cbd5e1",
-    avatarShadow: "0 0 12px rgba(203,213,225,0.2)",
-    pillarBg: "rgba(203,213,225,0.08)",
-    pillarBorder: "rgba(203,213,225,0.15)",
-    pillarShadow: "none",
-    topBarBg: "linear-gradient(90deg, rgba(203,213,225,0.4), #cbd5e1, rgba(203,213,225,0.4))",
-    pillarHeight: "100px",
+    pillarBg: "#E5E5E5",
+    pillarHeight: "110px",
   }
   return {
-    color: "#fb923c",
-    avatarBorder: "#fb923c",
-    avatarShadow: "0 0 12px rgba(251,146,60,0.25)",
-    pillarBg: "rgba(251,146,60,0.1)",
-    pillarBorder: "rgba(251,146,60,0.18)",
-    pillarShadow: "none",
-    topBarBg: "linear-gradient(90deg, rgba(251,146,60,0.4), #fb923c, rgba(251,146,60,0.4))",
-    pillarHeight: "76px",
+    pillarBg: "#FF9900",
+    pillarHeight: "85px",
   }
 }
 
 // ─── Avatar ───────────────────────────────────────────────────────────────────
 function Avatar({
-  image, name, size, borderColor, boxShadow,
+  image, name, size,
 }: {
   image: string | null
   name: string
   size: number
-  borderColor: string
-  boxShadow?: string
 }) {
   return (
     <div
       style={{
         width: size, height: size,
-        borderRadius: "50%",
-        border: `2.5px solid ${borderColor}`,
-        boxShadow,
+        border: `3px solid #000`,
         overflow: "hidden",
         display: "flex", alignItems: "center", justifyContent: "center",
-        background: "#1e1e26",
+        background: "#FFF",
         flexShrink: 0,
       }}
     >
       {image ? (
         <img src={image} alt={name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
       ) : (
-        <span style={{ fontSize: size * 0.3, fontWeight: 800, color: "#fff" }}>
+        <span style={{ fontSize: size * 0.4, fontWeight: 900, color: "#000" }}>
           {name.charAt(0).toUpperCase()}
         </span>
       )}
@@ -232,7 +149,7 @@ function PodiumStep({
   onClose: () => void
 }) {
   const rs = getRankStyle(entry.rank)
-  const avatarSize = entry.rank === 1 ? 62 : entry.rank === 2 ? 52 : 48
+  const avatarSize = entry.rank === 1 ? 70 : entry.rank === 2 ? 60 : 54
 
   const rankIcon =
     entry.rank === 1 ? <CrownIcon /> :
@@ -243,101 +160,58 @@ function PodiumStep({
     <motion.div
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ type: "spring", stiffness: 200, damping: 20, delay }}
-      style={{
-        display: "flex", flexDirection: "column", alignItems: "center",
-        flex: 1, maxWidth: 150, position: "relative",
-        marginBottom: entry.rank === 1 ? -8 : 0,
-      }}
+      transition={{ type: "spring", stiffness: 300, damping: 20, delay }}
+      className="flex flex-col items-center flex-1 max-w-[150px] relative"
+      style={{ marginBottom: entry.rank === 1 ? -8 : 0 }}
     >
       <Link
         href={`/profile/${entry.userId}`}
         onClick={onClose}
-        style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", textDecoration: "none" }}
+        className="flex flex-col items-center w-full decoration-transparent group"
       >
         {/* Rank Icon */}
         <motion.div
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: "spring", delay: delay + 0.25 }}
-          style={{
-            height: entry.rank === 1 ? 42 : 36,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            marginBottom: 6,
-          }}
+          className="h-10 flex items-center justify-center mb-2"
         >
           {rankIcon}
         </motion.div>
 
         {/* Avatar */}
-        <div style={{ position: "relative", marginBottom: 8 }}>
+        <div className="relative mb-3 group-hover:translate-y-[-4px] transition-transform">
           <Avatar
             image={entry.image}
             name={entry.name}
             size={avatarSize}
-            borderColor={rs.avatarBorder}
-            boxShadow={rs.avatarShadow}
           />
           {isMe && (
-            <span style={{
-              position: "absolute", bottom: -7, left: "50%", transform: "translateX(-50%)",
-              background: "#6366f1", color: "#fff", fontSize: 9, fontWeight: 700,
-              padding: "2px 7px", borderRadius: 20, whiteSpace: "nowrap", letterSpacing: "0.3px",
-            }}>
+            <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[#FF00FF] text-white text-[10px] font-black px-2 py-0.5 border-[2px] border-black shadow-[2px_2px_0_#000] whitespace-nowrap uppercase">
               Kamu
             </span>
           )}
         </div>
 
         {/* Name */}
-        <div style={{
-          fontSize: entry.rank === 1 ? 13 : 12, fontWeight: 600, color: "#fff",
-          textAlign: "center", marginBottom: 4, marginTop: 8,
-          overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-          width: "100%", padding: "0 4px",
-          display: "flex", alignItems: "center", justifyContent: "center", gap: "2px"
-        }}>
+        <div className="text-[13px] font-black text-black text-center mb-1 overflow-hidden text-ellipsis whitespace-nowrap w-full px-1 flex items-center justify-center gap-1 uppercase">
           {entry.name}
-          {entry.isVerified && <BadgeCheck className="w-[14px] h-[14px] text-white shrink-0 fill-[#0095F6] relative -top-0.5" />}
+          {entry.isVerified && <BadgeCheck className="w-4 h-4 text-black shrink-0 fill-[#00FFFF]" />}
         </div>
 
         {/* Streak */}
-        <div style={{
-          display: "flex", alignItems: "center", gap: 4,
-          fontSize: entry.rank === 1 ? 15 : 13, fontWeight: 800,
-          color: rs.color, marginBottom: 10,
-        }}>
-          <FlameIcon size={entry.rank === 1 ? 15 : 13} />
+        <div className="flex items-center gap-1.5 text-base font-black text-black mb-3 bg-white border-[2px] border-black px-2 shadow-[2px_2px_0_#000]">
+          <FlameIcon size={14} />
           <span>{entry.longestStreak}</span>
         </div>
 
         {/* Pillar */}
-        <div style={{
-          width: "100%", borderRadius: "10px 10px 0 0",
-          position: "relative", overflow: "hidden",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          height: rs.pillarHeight,
-          background: rs.pillarBg,
-          border: `1px solid ${rs.pillarBorder}`,
-          boxShadow: rs.pillarShadow,
-        }}>
-          {/* Top bar */}
-          <div style={{
-            position: "absolute", top: 0, left: 0, right: 0,
-            height: 3, borderRadius: "3px 3px 0 0",
-            background: rs.topBarBg,
-          }} />
-          {/* Shine */}
-          <div style={{
-            position: "absolute", top: 0, left: 0,
-            width: "40%", height: "100%",
-            background: "linear-gradient(90deg, rgba(255,255,255,0.06), transparent)",
-          }} />
+        <div 
+          className="w-full flex items-center justify-center border-[4px] border-black relative overflow-hidden shadow-[4px_4px_0_rgba(0,0,0,0.2)]"
+          style={{ height: rs.pillarHeight, background: rs.pillarBg }}
+        >
           {/* Number */}
-          <span style={{
-            fontSize: entry.rank === 1 ? 36 : 28,
-            fontWeight: 900, opacity: 0.15, color: "#fff", userSelect: "none",
-          }}>
+          <span className="text-[48px] font-black text-black/20 select-none">
             {entry.rank}
           </span>
         </div>
@@ -360,92 +234,50 @@ export function LeaderboardModal({
 
   // Podium order: 2nd | 1st | 3rd
   const podiumOrder = [topThree[1], topThree[0], topThree[2]].filter(Boolean)
-  const podiumDelays = [0.2, 0.1, 0.3]
   const podiumDelayMap: Record<number, number> = { 2: 0.2, 1: 0.1, 3: 0.3 }
 
   return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
 
           {/* Backdrop */}
           <motion.div
             variants={backdropVariants}
             initial="hidden" animate="visible" exit="exit"
             onClick={onClose}
-            className="absolute inset-0 backdrop-blur-xl"
-            style={{ background: "rgba(8,8,12,0.88)" }}
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
           />
 
           {/* Modal */}
           <motion.div
             variants={modalVariants}
             initial="hidden" animate="visible" exit="exit"
-            className="relative w-full flex flex-col overflow-hidden"
-            style={{
-              maxWidth: 540,
-              maxHeight: "88vh",
-              background: "linear-gradient(160deg, #131318 0%, #0e0e13 100%)",
-              border: "1px solid rgba(255,255,255,0.08)",
-              borderRadius: 24,
-            }}
+            className="relative w-full flex flex-col bg-[#FFFDF0] border-[4px] border-black shadow-[12px_12px_0_#000] overflow-hidden"
+            style={{ maxWidth: 600, maxHeight: "88vh" }}
           >
 
             {/* ── Header ── */}
-            <div style={{
-              position: "relative",
-              padding: "18px 20px",
-              borderBottom: "1px solid rgba(255,255,255,0.07)",
-              display: "flex", alignItems: "center", justifyContent: "space-between",
-              overflow: "hidden", flexShrink: 0,
-            }}>
-              {/* Glow */}
-              <div style={{
-                position: "absolute", top: -30, left: "50%", transform: "translateX(-50%)",
-                width: 280, height: 80, pointerEvents: "none",
-                background: "radial-gradient(ellipse, rgba(251,191,36,0.18) 0%, transparent 70%)",
-              }} />
-              {/* Top line */}
-              <div style={{
-                position: "absolute", top: 0, left: "10%", right: "10%",
-                height: 1,
-                background: "linear-gradient(90deg, transparent, rgba(251,191,36,0.6), transparent)",
-              }} />
-
-              <div style={{ display: "flex", alignItems: "center", gap: 12, zIndex: 1 }}>
-                <div style={{
-                  width: 42, height: 42,
-                  background: "rgba(251,191,36,0.12)",
-                  border: "1px solid rgba(251,191,36,0.25)",
-                  borderRadius: 12,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                }}>
-                  <TrophyIcon />
+            <div className="relative px-5 py-4 border-b-[4px] border-black bg-[#00FFFF] flex items-center justify-between overflow-hidden shrink-0">
+              <div className="flex items-center gap-4 z-10">
+                <div className="w-12 h-12 bg-[#FFFF00] border-[3px] border-black shadow-[3px_3px_0_#000] flex items-center justify-center">
+                  <Trophy className="w-6 h-6 text-black fill-black" />
                 </div>
                 <div>
-                  <div style={{ fontSize: 17, fontWeight: 700, color: "#fff", letterSpacing: "-0.3px" }}>
-                    Streak Leaderboard
+                  <div className="text-[20px] font-black text-black uppercase tracking-widest">
+                    Leaderboard
                   </div>
-                  <div style={{
-                    fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 1,
-                    letterSpacing: "0.5px", textTransform: "uppercase",
-                  }}>
-                    Peringkat 50 Teratas
+                  <div className="text-[12px] font-bold text-black/60 uppercase tracking-widest bg-white border-[2px] border-black px-2 py-0.5 inline-block mt-1">
+                    Top 50 Streakers
                   </div>
                 </div>
               </div>
 
               <button
                 onClick={onClose}
-                style={{
-                  width: 36, height: 36, borderRadius: "50%",
-                  background: "rgba(255,255,255,0.05)",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  cursor: "pointer", zIndex: 1,
-                }}
+                className="w-10 h-10 bg-white border-[3px] border-black shadow-[3px_3px_0_#000] flex items-center justify-center cursor-pointer z-10 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0_#000] hover:bg-[#FF00FF] hover:text-white transition-all"
               >
-                <CloseIcon />
+                <X className="w-6 h-6" />
               </button>
             </div>
 
@@ -454,11 +286,7 @@ export function LeaderboardModal({
 
               {/* Podium */}
               {topThree.length > 0 && (
-                <div style={{
-                  padding: "28px 20px 20px",
-                  display: "flex", alignItems: "flex-end",
-                  justifyContent: "center", gap: 10,
-                }}>
+                <div className="px-5 pt-8 pb-6 flex items-end justify-center gap-4 border-b-[4px] border-black bg-[#FFFDF0]">
                   {podiumOrder.map((entry) =>
                     entry ? (
                       <PodiumStep
@@ -473,26 +301,9 @@ export function LeaderboardModal({
                 </div>
               )}
 
-              {/* Divider */}
-              {others.length > 0 && (
-                <div style={{
-                  display: "flex", alignItems: "center", gap: 10,
-                  margin: "0 20px 12px",
-                }}>
-                  <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.07)" }} />
-                  <div style={{
-                    fontSize: 10, color: "rgba(255,255,255,0.25)",
-                    letterSpacing: "0.8px", textTransform: "uppercase",
-                  }}>
-                    Selanjutnya
-                  </div>
-                  <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.07)" }} />
-                </div>
-              )}
-
               {/* List 4th+ */}
               {others.length > 0 && (
-                <div style={{ padding: "0 14px 18px", display: "flex", flexDirection: "column", gap: 6 }}>
+                <div className="p-5 flex flex-col gap-4 bg-white">
                   {others.map((entry) => {
                     const isMe = entry.userId === currentUserId
                     return (
@@ -500,34 +311,15 @@ export function LeaderboardModal({
                         <Link
                           href={`/profile/${entry.userId}`}
                           onClick={onClose}
-                          style={{
-                            display: "flex", alignItems: "center", gap: 10,
-                            padding: "10px 12px",
-                            background: isMe ? "rgba(99,102,241,0.1)" : "rgba(255,255,255,0.03)",
-                            border: `1px solid ${isMe ? "rgba(99,102,241,0.3)" : "rgba(255,255,255,0.05)"}`,
-                            borderRadius: 14,
-                            textDecoration: "none",
-                            transition: "background 0.15s",
-                          }}
+                          className={`flex items-center gap-4 p-3 border-[3px] border-black shadow-[4px_4px_0_#000] transition-colors group ${isMe ? "bg-[#FFFF00]" : "bg-white hover:bg-[#00FFFF]"}`}
                         >
                           {/* Rank */}
-                          <div style={{
-                            width: 28, fontSize: 12, fontWeight: 700,
-                            color: isMe ? "rgba(99,102,241,0.7)" : "rgba(255,255,255,0.3)",
-                            textAlign: "center", flexShrink: 0,
-                          }}>
+                          <div className="w-8 text-[16px] font-black text-black text-center shrink-0">
                             #{entry.rank}
                           </div>
 
                           {/* Avatar */}
-                          <div style={{
-                            width: 36, height: 36, borderRadius: "50%",
-                            background: "rgba(255,255,255,0.08)",
-                            border: "1px solid rgba(255,255,255,0.1)",
-                            display: "flex", alignItems: "center", justifyContent: "center",
-                            fontSize: 13, fontWeight: 700, color: "#fff",
-                            overflow: "hidden", flexShrink: 0,
-                          }}>
+                          <div className="w-12 h-12 border-[3px] border-black bg-white flex items-center justify-center text-[16px] font-black text-black overflow-hidden shrink-0">
                             {entry.image ? (
                               <img src={entry.image} alt={entry.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                             ) : (
@@ -536,45 +328,27 @@ export function LeaderboardModal({
                           </div>
 
                           {/* Info */}
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{
-                              fontSize: 13, fontWeight: 600, color: "#fff",
-                              display: "flex", alignItems: "center", gap: 6,
-                            }}>
-                              <div style={{ display: "flex", alignItems: "center", gap: "2px" }}>
-                                <span 
-                                  style={{ 
-                                    overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                                  }}
-                                >
-                                  {entry.name}
-                                </span>
-                                {entry.isVerified && <BadgeCheck className="w-[14px] h-[14px] text-white shrink-0 fill-[#0095F6]" />}
-                              </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-[14px] font-black text-black flex items-center gap-2">
+                              <span className="overflow-hidden text-ellipsis whitespace-nowrap uppercase group-hover:underline">
+                                {entry.name}
+                              </span>
+                              {entry.isVerified && <BadgeCheck className="w-4 h-4 text-black shrink-0 fill-[#00FFFF]" />}
                               {isMe && (
-                                <span style={{
-                                  fontSize: 9, padding: "2px 6px",
-                                  background: "#6366f1", color: "#fff",
-                                  borderRadius: 20, fontWeight: 700, flexShrink: 0,
-                                }}>
+                                <span className="text-[10px] px-2 py-0.5 bg-[#FF00FF] border-[2px] border-black text-white font-black uppercase shrink-0 shadow-[2px_2px_0_#000]">
                                   Kamu
                                 </span>
                               )}
                             </div>
-                            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.28)", marginTop: 1 }}>
-                              Streak terpanjang
+                            <div className="text-[11px] font-bold text-black/60 uppercase mt-1">
+                              Streak Terpanjang
                             </div>
                           </div>
 
                           {/* Streak pill */}
-                          <div style={{
-                            display: "flex", alignItems: "center", gap: 5,
-                            background: "rgba(255,255,255,0.05)",
-                            border: `1px solid ${isMe ? "rgba(99,102,241,0.25)" : "rgba(255,255,255,0.08)"}`,
-                            padding: "5px 10px", borderRadius: 10, flexShrink: 0,
-                          }}>
-                            <FlameIcon size={12} />
-                            <span style={{ fontSize: 13, fontWeight: 800, color: "#fff" }}>
+                          <div className="flex items-center gap-2 bg-[#FF0000] border-[2px] border-black px-3 py-1.5 shadow-[2px_2px_0_#000] shrink-0">
+                            <FlameIcon size={16} />
+                            <span className="text-[14px] font-black text-white">
                               {entry.longestStreak}
                             </span>
                           </div>

@@ -110,7 +110,7 @@ export function StickerPanel({
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+                    className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 p-4"
                     onClick={() => setPendingSticker(null)}
                 >
                     <motion.div
@@ -118,33 +118,25 @@ export function StickerPanel({
                         animate={{ y: 0, opacity: 1 }}
                         exit={{ y: 60, opacity: 0 }}
                         transition={{ type: "spring", bounce: 0.25, duration: 0.45 }}
-                        className="w-full max-w-sm rounded-3xl overflow-hidden"
-                        style={{
-                            background: "linear-gradient(160deg, #0e0e18, #0a0a12)",
-                            border: "1px solid rgba(255,255,255,0.1)",
-                            boxShadow: "0 24px 60px rgba(0,0,0,0.8)",
-                        }}
+                        className="w-full max-w-sm overflow-hidden bg-white border-[4px] border-black shadow-[8px_8px_0_#000]"
                         onClick={e => e.stopPropagation()}
                     >
                         {/* Header */}
-                        <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-white/8">
+                        <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b-[3px] border-black bg-[#E5E5E5]">
                             <div className="flex items-center gap-2.5">
-                                <div
-                                    className="w-8 h-8 rounded-xl flex items-center justify-center"
-                                    style={{ background: "rgba(251,191,36,0.1)", border: "1px solid rgba(251,191,36,0.2)" }}
-                                >
-                                    <Sticker className="w-4 h-4 text-amber-400" />
+                                <div className="w-8 h-8 bg-[#FFFF00] border-[2px] border-black shadow-[2px_2px_0_#000] flex items-center justify-center">
+                                    <Sticker className="w-4 h-4 text-black" />
                                 </div>
                                 <div>
-                                    <p className="text-sm font-bold text-white leading-none">{pendingSticker.item.name}</p>
-                                    <p className="text-[11px] text-neutral-500 mt-0.5">
+                                    <p className="text-sm font-black text-black leading-none uppercase">{pendingSticker.item.name}</p>
+                                    <p className="text-[11px] text-neutral-500 font-bold mt-0.5">
                                         {isStamp ? "Atur tanggal stiker" : "Atur teks stiker (maks 20 karakter)"}
                                     </p>
                                 </div>
                             </div>
                             <button
                                 onClick={() => setPendingSticker(null)}
-                                className="w-8 h-8 rounded-full flex items-center justify-center text-neutral-500 hover:text-white hover:bg-white/8 transition-all"
+                                className="w-8 h-8 flex items-center justify-center bg-white border-[2px] border-black hover:bg-[#FF00FF] hover:text-white transition-all"
                             >
                                 <X className="w-4 h-4" />
                             </button>
@@ -152,10 +144,7 @@ export function StickerPanel({
 
                         <div className="p-5 space-y-5">
                             {/* Live preview */}
-                            <div
-                                className="flex items-center justify-center py-6 rounded-2xl"
-                                style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
-                            >
+                            <div className="flex items-center justify-center py-6 bg-[#E5E5E5] border-[3px] border-black">
                                 {cfg && (
                                     <div style={{ transform: `rotate(${cfg.defaultRotation ?? 0}deg)` }}>
                                         <StickerRenderer
@@ -175,12 +164,7 @@ export function StickerPanel({
                                             type="date"
                                             value={customText}
                                             onChange={e => setCustomText(e.target.value)}
-                                            className="w-full px-4 py-3 rounded-xl text-sm text-white focus:outline-none transition-all"
-                                            style={{
-                                                background: "rgba(255,255,255,0.05)",
-                                                border: "1px solid rgba(255,255,255,0.1)",
-                                                colorScheme: "dark"
-                                            }}
+                                            className="w-full px-4 py-3 text-sm text-black font-bold bg-[#E5E5E5] border-[3px] border-black focus:bg-[#FFFF00] outline-none transition-all"
                                         />
                                     ) : (
                                         <>
@@ -191,24 +175,22 @@ export function StickerPanel({
                                                 onChange={e => setCustomText(e.target.value.slice(0, 20))}
                                                 placeholder={cfg?.defaultText ?? "Ketik teks..."}
                                                 autoFocus
-                                                className="w-full px-4 py-3 rounded-xl text-sm text-white placeholder:text-neutral-600 focus:outline-none transition-all"
-                                                style={{
-                                                    background: "rgba(255,255,255,0.05)",
-                                                    border: customText.length === 20
-                                                        ? "1px solid rgba(239,68,68,0.4)"
-                                                        : "1px solid rgba(255,255,255,0.1)",
-                                                }}
+                                                className={`w-full px-4 py-3 text-sm text-black font-bold placeholder:text-neutral-400 bg-[#E5E5E5] border-[3px] outline-none transition-all ${
+                                                    customText.length === 20
+                                                        ? "border-[#FF3300]"
+                                                        : "border-black focus:bg-[#FFFF00]"
+                                                }`}
                                             />
                                             <span
-                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-mono tabular-nums"
-                                                style={{ color: customText.length >= 18 ? "#f87171" : "#525252" }}
+                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-black tabular-nums"
+                                                style={{ color: customText.length >= 18 ? "#FF3300" : "#525252" }}
                                             >
                                                 {customText.length}/20
                                             </span>
                                         </>
                                     )}
                                 </div>
-                                <p className="text-[11px] text-neutral-600">
+                                <p className="text-[11px] text-neutral-500 font-bold">
                                     {isStamp ? "Pilih tanggal untuk ditampilkan." : "Kosongkan untuk menggunakan teks bawaan stiker."}
                                 </p>
                             </div>
@@ -217,12 +199,7 @@ export function StickerPanel({
                             <button
                                 onClick={handleConfirmCustom}
                                 disabled={adding === pendingSticker.item.id}
-                                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition-all disabled:opacity-60"
-                                style={{
-                                    background: "linear-gradient(135deg, rgba(99,102,241,0.3), rgba(139,92,246,0.3))",
-                                    border: "1px solid rgba(99,102,241,0.35)",
-                                    color: "#c7d2fe",
-                                }}
+                                className="w-full flex items-center justify-center gap-2 py-3 text-sm font-black uppercase bg-[#00FF00] text-black border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all disabled:opacity-60"
                             >
                                 {adding === pendingSticker.item.id ? (
                                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -245,7 +222,7 @@ export function StickerPanel({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+                className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 p-4"
                 onClick={onClose}
             >
                 <motion.div
@@ -253,26 +230,18 @@ export function StickerPanel({
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: 60, opacity: 0 }}
                     transition={{ type: "spring", bounce: 0.25, duration: 0.45 }}
-                    className="w-full max-w-sm rounded-3xl overflow-hidden"
-                    style={{
-                        background: "linear-gradient(160deg, #0e0e18, #0a0a12)",
-                        border: "1px solid rgba(255,255,255,0.1)",
-                        boxShadow: "0 24px 60px rgba(0,0,0,0.8)",
-                    }}
+                    className="w-full max-w-sm overflow-hidden bg-white border-[4px] border-black shadow-[8px_8px_0_#000]"
                     onClick={e => e.stopPropagation()}
                 >
                     {/* Header */}
-                    <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-white/8">
+                    <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b-[3px] border-black bg-[#E5E5E5]">
                         <div className="flex items-center gap-2.5">
-                            <div
-                                className="w-8 h-8 rounded-xl flex items-center justify-center"
-                                style={{ background: "rgba(99,102,241,0.15)", border: "1px solid rgba(99,102,241,0.25)" }}
-                            >
-                                <Sticker className="w-4 h-4 text-indigo-400" />
+                            <div className="w-8 h-8 bg-[#FF00FF] border-[2px] border-black shadow-[2px_2px_0_#000] flex items-center justify-center">
+                                <Sticker className="w-4 h-4 text-white" />
                             </div>
                             <div>
-                                <p className="text-sm font-bold text-white leading-none">Koleksi Stiker</p>
-                                <p className="text-[11px] text-neutral-500 mt-0.5">
+                                <p className="text-sm font-black text-black leading-none uppercase">Koleksi Stiker</p>
+                                <p className="text-[11px] text-neutral-500 font-bold mt-0.5">
                                     {remaining > 0
                                         ? `${remaining} slot tersisa untuk kenangan ini`
                                         : "Batas maksimal tercapai"}
@@ -281,7 +250,7 @@ export function StickerPanel({
                         </div>
                         <button
                             onClick={onClose}
-                            className="w-8 h-8 rounded-full flex items-center justify-center text-neutral-500 hover:text-white hover:bg-white/8 transition-all"
+                            className="w-8 h-8 flex items-center justify-center bg-white border-[2px] border-black hover:bg-[#FF00FF] hover:text-white transition-all"
                         >
                             <X className="w-4 h-4" />
                         </button>
@@ -289,12 +258,9 @@ export function StickerPanel({
 
                     {/* Limit warning */}
                     {remaining <= 0 && (
-                        <div
-                            className="flex items-center gap-2.5 mx-5 mt-4 px-3.5 py-2.5 rounded-xl"
-                            style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)" }}
-                        >
-                            <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
-                            <p className="text-xs text-red-400">
+                        <div className="flex items-center gap-2.5 mx-5 mt-4 px-3.5 py-2.5 bg-[#FF3300] border-[3px] border-black">
+                            <AlertCircle className="w-4 h-4 text-white shrink-0" />
+                            <p className="text-xs text-white font-black uppercase">
                                 Kenangan ini sudah memiliki {maxCount} stiker (batas maksimal).
                             </p>
                         </div>
@@ -304,13 +270,15 @@ export function StickerPanel({
                     <div className="p-5">
                         {loading ? (
                             <div className="flex items-center justify-center py-10">
-                                <Loader2 className="w-6 h-6 text-indigo-400 animate-spin" />
+                                <div className="w-10 h-10 bg-[#FFFF00] border-[3px] border-black shadow-[3px_3px_0_#000] flex items-center justify-center">
+                                    <Loader2 className="w-5 h-5 text-black animate-spin" />
+                                </div>
                             </div>
                         ) : stickers.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center py-10 text-center">
-                                <Sticker className="w-8 h-8 text-neutral-700 mb-3" />
-                                <p className="text-sm text-neutral-500 font-medium">Belum punya stiker</p>
-                                <p className="text-xs text-neutral-700 mt-1">Beli stiker di Memory Shop</p>
+                            <div className="flex flex-col items-center justify-center py-10 text-center bg-[#E5E5E5] border-[3px] border-black">
+                                <Sticker className="w-8 h-8 text-neutral-400 mb-3" />
+                                <p className="text-sm text-black font-black uppercase">Belum punya stiker</p>
+                                <p className="text-xs text-neutral-500 font-bold mt-1">Beli stiker di Memory Shop</p>
                             </div>
                         ) : (
                             <div className="grid grid-cols-2 gap-3 max-h-[50vh] overflow-y-auto pr-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -326,26 +294,15 @@ export function StickerPanel({
                                             key={s.id}
                                             disabled={disabled}
                                             onClick={() => handleStickerClick(s, config)}
-                                            className="relative flex flex-col items-center gap-2.5 p-3 rounded-2xl transition-all group"
-                                            style={{
-                                                background: disabled ? "rgba(255,255,255,0.02)" : "rgba(255,255,255,0.04)",
-                                                border: disabled
-                                                    ? "1px solid rgba(255,255,255,0.05)"
-                                                    : "1px solid rgba(255,255,255,0.08)",
-                                                opacity: disabled && !isAdding ? 0.4 : 1,
-                                                cursor: disabled ? "not-allowed" : "pointer",
-                                            }}
+                                            className={`relative flex flex-col items-center gap-2.5 p-3 border-[3px] border-black transition-all group ${
+                                                disabled
+                                                    ? "bg-[#E5E5E5] opacity-40 cursor-not-allowed"
+                                                    : "bg-white shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] cursor-pointer"
+                                            }`}
                                         >
                                             {/* Editable badge */}
                                             {isEditable && !disabled && (
-                                                <span
-                                                    className="absolute top-2 right-2 text-[9px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wide"
-                                                    style={{
-                                                        background: "rgba(251,191,36,0.12)",
-                                                        border: "1px solid rgba(251,191,36,0.25)",
-                                                        color: "#fbbf24",
-                                                    }}
-                                                >
+                                                <span className="absolute top-1.5 right-1.5 text-[9px] font-black px-1.5 py-0.5 uppercase tracking-wide bg-[#FFFF00] border-[2px] border-black text-black">
                                                     Kustom
                                                 </span>
                                             )}
@@ -353,7 +310,7 @@ export function StickerPanel({
                                             {/* Preview */}
                                             <div className="relative flex items-center justify-center h-[60px]">
                                                 {isAdding ? (
-                                                    <Loader2 className="w-5 h-5 text-indigo-400 animate-spin" />
+                                                    <Loader2 className="w-5 h-5 text-black animate-spin" />
                                                 ) : config ? (
                                                     <div style={{
                                                         transform: `rotate(${config.defaultRotation}deg)`,
@@ -362,25 +319,19 @@ export function StickerPanel({
                                                         <StickerRenderer config={config} memoryDate={memoryDate} />
                                                     </div>
                                                 ) : (
-                                                    <div className="w-10 h-10 rounded-xl"
+                                                    <div className="w-10 h-10 border-[2px] border-black"
                                                         style={{ background: s.item.previewColor ?? "#6366f1" }} />
                                                 )}
                                             </div>
 
-                                            <p className="text-[11px] font-bold text-neutral-300 leading-tight text-center">
+                                            <p className="text-[11px] font-black text-black uppercase leading-tight text-center">
                                                 {s.item.name}
                                             </p>
 
                                             {/* Hover overlay */}
                                             {!disabled && (
-                                                <div
-                                                    className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-                                                    style={{
-                                                        background: "rgba(99,102,241,0.12)",
-                                                        border: "1px solid rgba(99,102,241,0.3)",
-                                                    }}
-                                                >
-                                                    <span className="text-[10px] font-black text-indigo-300 uppercase tracking-wider">
+                                                <div className="absolute inset-0 border-[3px] border-[#00FF00] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center bg-[#00FF00]/10">
+                                                    <span className="text-[10px] font-black text-black uppercase tracking-wider bg-[#00FF00] px-2 py-0.5 border-[2px] border-black">
                                                         {isEditable ? "Atur Teks" : "Tempel"}
                                                     </span>
                                                 </div>

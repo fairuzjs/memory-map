@@ -65,24 +65,26 @@ export function Reactions({ memoryId, initialReactions }: { memoryId: string, in
     const total = reactions.length
 
     return (
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-3 flex-wrap">
             {counts.map((rt) => (
                 <button
                     key={rt.type}
                     onClick={() => handleReact(rt.type)}
                     disabled={loading}
                     className={cn(
-                        "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all border",
+                        "flex items-center gap-2 px-3 py-1.5 border-[3px] border-black font-black text-[14px] uppercase transition-all shadow-[2px_2px_0_#000]",
                         rt.hasReacted
-                            ? "bg-indigo-500/10 border-indigo-500/50 text-indigo-400"
-                            : "bg-neutral-800/50 border-neutral-700/50 text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200"
+                            ? "bg-[#FF00FF] text-white translate-x-[-1px] translate-y-[-1px] shadow-[3px_3px_0_#000]"
+                            : "bg-[#E5E5E5] text-black hover:bg-[#00FFFF] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[4px_4px_0_#000]"
                     )}
                 >
-                    <span>{rt.icon}</span>
+                    <span className="text-[16px] leading-none">{rt.icon}</span>
                     {rt.count > 0 && <span>{rt.count}</span>}
                 </button>
             ))}
-            <div className="ml-auto text-sm text-neutral-500">{total} {total === 1 ? 'reaction' : 'reactions'}</div>
+            <div className="ml-auto text-[12px] font-black uppercase text-black bg-[#FFFF00] border-[2px] border-black px-2 py-1 shadow-[2px_2px_0_#000]">
+                {total} {total === 1 ? 'reaction' : 'reactions'}
+            </div>
         </div>
     )
 }

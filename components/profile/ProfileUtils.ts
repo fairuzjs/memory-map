@@ -17,6 +17,7 @@ export function getDecorationClass(name?: string) {
 export function getFrameClass(name?: string) {
     if (!name) return "";
     const n = name.toLowerCase();
+    if (n.includes("mahkota")) return "anim-frame-mahkota";
     if (n.includes("orbit")) return "anim-frame-orbit";
     if (n.includes("fraktur")) return "anim-frame-fraktur";
     if (n.includes("singularitas")) return "anim-frame-singularitas";
@@ -28,6 +29,7 @@ export function getFrameClass(name?: string) {
 export function getBannerClass(name?: string) {
     if (!name) return ""
     const n = name.toLowerCase()
+    if (n.includes("kerajaan")) return "anim-banner-kerajaan"
     if (n.includes("galaxy")) return "anim-banner-galaxy"
     if (n.includes("hutan")) return "anim-banner-matrix"
     if (n.includes("samudra")) return "anim-banner-samudra"

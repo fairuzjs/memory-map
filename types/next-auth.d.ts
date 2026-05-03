@@ -7,6 +7,8 @@ declare module "next-auth" {
             role?: string;
             isVerified?: boolean;
             isEmailVerified?: boolean;
+            isPremium?: boolean;
+            premiumExpiresAt?: string | null;
         } & DefaultSession["user"]
     }
 
@@ -15,6 +17,8 @@ declare module "next-auth" {
         role?: string;
         isVerified?: boolean;
         isEmailVerified?: boolean;
+        isPremium?: boolean;
+        premiumExpiresAt?: string | null;
     }
 }
 
@@ -24,5 +28,7 @@ declare module "next-auth/jwt" {
         role?: string;
         isVerified?: boolean;
         isEmailVerified?: boolean;
+        isPremium?: boolean;
+        premiumExpiresAt?: string | null;
     }
 }

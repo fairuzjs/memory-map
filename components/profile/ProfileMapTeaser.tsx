@@ -20,25 +20,24 @@ export function ProfileMapTeaser({ mappedMemories, isOwner, userName }: ProfileM
         : 103.8198
 
     return (
-        <div className="rounded-[1.5rem] overflow-hidden flex flex-col relative group h-full"
-            style={{ background: "#0a0a10", border: "1px solid rgba(255,255,255,0.07)", minHeight: "280px" }}>
+        <div className="overflow-hidden flex flex-col relative group h-full bg-white border-[4px] border-black shadow-[8px_8px_0_#000]"
+            style={{ minHeight: "280px" }}>
             <div className="absolute top-0 inset-x-0 p-5 z-20 flex items-start justify-between pointer-events-none"
-                style={{ background: "linear-gradient(to bottom, rgba(10,10,16,0.95) 0%, rgba(10,10,16,0) 100%)" }}>
+                style={{ background: "linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0) 100%)" }}>
                 <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 backdrop-blur-md"
-                        style={{ background: "rgba(244,114,182,0.15)", border: "1px solid rgba(244,114,182,0.3)" }}>
-                        <Navigation2 className="w-4 h-4 text-pink-400" />
+                    <div className="w-10 h-10 flex items-center justify-center shrink-0 bg-[#FF00FF] border-[3px] border-black shadow-[2px_2px_0_#000]">
+                        <Navigation2 className="w-4 h-4 text-white" />
                     </div>
                     <div>
-                        <h2 className="text-base font-black text-white tracking-tight leading-none drop-shadow-md">Jejak Langkah</h2>
-                        <p className="text-[11px] font-semibold text-pink-300 mt-1 drop-shadow-md">
+                        <h2 className="text-base font-black text-black tracking-tight leading-none uppercase">Jejak Langkah</h2>
+                        <p className="text-[11px] font-black text-black mt-1 uppercase tracking-wider">
                             {mappedMemories.length > 0 ? `${mappedMemories.length} Titik Kenangan` : "Belum ada jejak"}
                         </p>
                     </div>
                 </div>
                 {mappedMemories.length > 0 && (
-                    <Link href="/map" className="flex items-center justify-center p-2.5 rounded-full bg-white/10 hover:bg-pink-500/20 transition-all backdrop-blur-md border border-white/10 group-hover:scale-110 pointer-events-auto">
-                        <Globe className="w-4 h-4 text-white" />
+                    <Link href="/map" className="flex items-center justify-center p-2.5 bg-white border-[3px] border-black shadow-[2px_2px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all pointer-events-auto">
+                        <Globe className="w-4 h-4 text-black" />
                     </Link>
                 )}
             </div>
@@ -72,27 +71,29 @@ export function ProfileMapTeaser({ mappedMemories, isOwner, userName }: ProfileM
                                         .map((m) => [m.longitude, m.latitude])
                                 }
                             }}>
-                                <Layer id="route-line" type="line" paint={{ "line-color": "#f472b6", "line-width": 1.5, "line-dasharray": [3, 3], "line-opacity": 0.6 }} />
+                                <Layer id="route-line" type="line" paint={{ "line-color": "#FF00FF", "line-width": 2, "line-dasharray": [3, 3], "line-opacity": 0.8 }} />
                             </Source>
                         )}
                         {mappedMemories.map((m, i) => (
                             <Marker key={m.id} longitude={m.longitude} latitude={m.latitude} anchor="center">
                                 <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.5 + (i * 0.1) }} className="relative flex items-center justify-center">
-                                    <div className="absolute w-6 h-6 bg-pink-500/30 rounded-full blur-md animate-pulse" />
-                                    <div className="w-2.5 h-2.5 bg-pink-400 rounded-full border border-white/80 shadow-[0_0_12px_#f472b6]" />
+                                    <div className="w-4 h-4 bg-[#FF00FF] border-[2px] border-black shadow-[2px_2px_0_#000]" />
                                 </motion.div>
                             </Marker>
                         ))}
                     </Map>
                 ) : (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 px-6 text-center">
-                        <Navigation2 className="w-8 h-8 text-neutral-800" />
-                        <p className="text-xs text-neutral-500">
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 px-6 text-center bg-[#E5E5E5]"
+                        style={{
+                            backgroundImage: "linear-gradient(#D5D5D5 2px, transparent 2px), linear-gradient(90deg, #D5D5D5 2px, transparent 2px)",
+                            backgroundSize: "24px 24px",
+                        }}>
+                        <Navigation2 className="w-8 h-8 text-neutral-400" />
+                        <p className="text-xs text-neutral-500 font-bold">
                             {isOwner ? "Jelajahi dunia dan simpan kenanganmu di sini." : `${userName} belum memiliki jejak langkah.`}
                         </p>
                     </div>
                 )}
-                <div className="absolute bottom-0 inset-x-0 h-20 pointer-events-none z-20 bg-gradient-to-t from-neutral-950 to-transparent" />
             </div>
         </div>
     )

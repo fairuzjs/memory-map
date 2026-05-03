@@ -19,6 +19,7 @@ export const getCachedPublicMemories = (userId: string) => {
                             id: true,
                             name: true,
                             image: true,
+                            premiumExpiresAt: true,
                             inventories: {
                                 where: { isEquipped: true, item: { type: "MEMORY_CARD_THEME" } },
                                 select: { item: { select: { value: true } } },

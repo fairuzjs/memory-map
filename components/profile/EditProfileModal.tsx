@@ -146,32 +146,34 @@ export function EditProfileModal({ isOpen, onClose, user, onSave }: EditProfileM
         }
     }
 
+    const inputClass = "w-full bg-[#E5E5E5] border-[3px] border-black px-4 py-3 text-sm text-black font-bold focus:outline-none focus:bg-[#FFFF00] transition-all placeholder:text-neutral-400"
+
     return (
         <>
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
                         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md"
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80"
                         onClick={(e) => e.target === e.currentTarget && onClose()}
                     >
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            className="w-full max-w-md bg-neutral-950 border border-white/10 rounded-[2rem] overflow-hidden relative shadow-2xl"
+                            className="w-full max-w-md bg-white border-[4px] border-black overflow-hidden relative shadow-[8px_8px_0_#000]"
                         >
                             <div className="flex items-center justify-between px-7 pt-6 pb-2">
-                                <h2 className="text-xl font-bold text-white">Edit Profil</h2>
-                                <button onClick={onClose} className="w-8 h-8 rounded-xl flex items-center justify-center text-neutral-500 hover:text-white transition-colors bg-white/5 border border-white/5">
+                                <h2 className="text-xl font-black text-black uppercase">Edit Profil</h2>
+                                <button onClick={onClose} className="w-8 h-8 flex items-center justify-center text-black bg-white border-[2px] border-black shadow-[2px_2px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all">
                                     <X className="w-4 h-4" />
                                 </button>
                             </div>
 
-                            <div className="flex border-b border-white/5">
+                            <div className="flex border-b-[3px] border-black">
                                 {["profil", "badge"].map((tab) => (
                                     <button
                                         key={tab}
                                         onClick={() => setEditModalTab(tab as any)}
-                                        className={`flex-1 py-3 text-sm font-bold transition-all capitalize ${editModalTab === tab ? "text-white border-b-2 border-indigo-500" : "text-neutral-500 hover:text-white"}`}
+                                        className={`flex-1 py-3 text-sm font-black uppercase transition-all ${editModalTab === tab ? "text-black bg-[#FFFF00]" : "text-neutral-400 hover:text-black hover:bg-[#E5E5E5]"}`}
                                     >
                                         {tab}
                                     </button>
@@ -183,8 +185,7 @@ export function EditProfileModal({ isOpen, onClose, user, onSave }: EditProfileM
                                     <>
                                         <div className="flex flex-col items-center gap-3">
                                             <div className="relative group">
-                                                <div className="absolute -inset-1 rounded-full p-[2px] bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500" />
-                                                <img src={previewImage || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`} alt="Avatar" className="relative w-24 h-24 rounded-full object-cover z-10 border-4 border-neutral-950" />
+                                                <img src={previewImage || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`} alt="Avatar" className="relative w-24 h-24 rounded-full object-cover z-10 border-[4px] border-black shadow-[4px_4px_0_#000]" />
                                                 <button onClick={() => avatarInputRef.current?.click()} className="absolute inset-0 z-20 rounded-full bg-black/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center">
                                                     <Camera className="w-6 h-6 text-white" />
                                                 </button>
@@ -194,39 +195,39 @@ export function EditProfileModal({ isOpen, onClose, user, onSave }: EditProfileM
 
                                         <div className="space-y-4">
                                             <div>
-                                                <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1.5 block">Nama Panggilan</label>
-                                                <input type="text" value={editName} onChange={(e) => setEditName(e.target.value)} className="w-full bg-white/5 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500/50" />
+                                                <label className="text-[10px] font-black text-black uppercase tracking-widest mb-1.5 block">Nama Panggilan</label>
+                                                <input type="text" value={editName} onChange={(e) => setEditName(e.target.value)} className={inputClass} />
                                             </div>
                                             <div>
-                                                <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1.5 block">Username (@)</label>
+                                                <label className="text-[10px] font-black text-black uppercase tracking-widest mb-1.5 block">Username (@)</label>
                                                 <div className="relative">
-                                                    <input type="text" value={editUsername} onChange={(e) => handleUsernameChange(e.target.value)} className={`w-full bg-white/5 border rounded-xl px-4 py-3 text-sm text-white focus:outline-none transition-all ${editUsernameError ? 'border-red-500/50' : 'border-white/5'}`} />
-                                                    {editUsernameStatus === "checking" && <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-500 animate-spin" />}
-                                                    {editUsernameStatus === "available" && <Check className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-green-500" />}
+                                                    <input type="text" value={editUsername} onChange={(e) => handleUsernameChange(e.target.value)} className={`${inputClass} ${editUsernameError ? 'border-[#FF0000]' : ''}`} />
+                                                    {editUsernameStatus === "checking" && <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black animate-spin" />}
+                                                    {editUsernameStatus === "available" && <Check className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#00FF00]" />}
                                                 </div>
-                                                {editUsernameError && <p className="text-[10px] text-red-400 mt-1">{editUsernameError}</p>}
+                                                {editUsernameError && <p className="text-[10px] text-[#FF0000] mt-1 font-bold">{editUsernameError}</p>}
                                             </div>
                                             <div>
-                                                <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1.5 block">Bio</label>
-                                                <textarea value={editBio} onChange={(e) => setEditBio(e.target.value)} rows={3} className="w-full bg-white/5 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500/50 resize-none" placeholder="Tulis sesuatu tentang dirimu..." />
+                                                <label className="text-[10px] font-black text-black uppercase tracking-widest mb-1.5 block">Bio</label>
+                                                <textarea value={editBio} onChange={(e) => setEditBio(e.target.value)} rows={3} className={`${inputClass} resize-none`} placeholder="Tulis sesuatu tentang dirimu..." />
                                             </div>
                                             <div className="space-y-3">
-                                                <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1.5 block">Media Sosial (Opsional)</label>
-                                                <div className="flex items-center gap-3 bg-white/5 border border-white/5 rounded-xl px-3 py-1">
-                                                    <Instagram className="w-4 h-4 text-pink-500" />
-                                                    <input type="text" value={insta} onChange={(e) => setInsta(e.target.value)} placeholder="https://instagram.com/..." className="flex-1 bg-transparent py-2 text-xs text-white focus:outline-none" />
+                                                <label className="text-[10px] font-black text-black uppercase tracking-widest mb-1.5 block">Media Sosial (Opsional)</label>
+                                                <div className="flex items-center gap-3 bg-[#E5E5E5] border-[3px] border-black px-3 py-1">
+                                                    <Instagram className="w-4 h-4 text-black" />
+                                                    <input type="text" value={insta} onChange={(e) => setInsta(e.target.value)} placeholder="https://instagram.com/..." className="flex-1 bg-transparent py-2 text-xs text-black font-bold focus:outline-none placeholder:text-neutral-400" />
                                                 </div>
-                                                <div className="flex items-center gap-3 bg-white/5 border border-white/5 rounded-xl px-3 py-1">
-                                                    <TikTokIcon className="w-4 h-4 text-white" />
-                                                    <input type="text" value={tiktok} onChange={(e) => setTiktok(e.target.value)} placeholder="https://tiktok.com/@..." className="flex-1 bg-transparent py-2 text-xs text-white focus:outline-none" />
+                                                <div className="flex items-center gap-3 bg-[#E5E5E5] border-[3px] border-black px-3 py-1">
+                                                    <TikTokIcon className="w-4 h-4 text-black" />
+                                                    <input type="text" value={tiktok} onChange={(e) => setTiktok(e.target.value)} placeholder="https://tiktok.com/@..." className="flex-1 bg-transparent py-2 text-xs text-black font-bold focus:outline-none placeholder:text-neutral-400" />
                                                 </div>
                                             </div>
                                         </div>
                                     </>
                                 ) : (
                                     <div className="grid grid-cols-2 gap-3">
-                                        <button onClick={() => setEditPinnedBadge(null)} className={`p-4 rounded-2xl border transition-all text-center ${editPinnedBadge === null ? 'bg-indigo-500/10 border-indigo-500' : 'bg-white/5 border-white/5'}`}>
-                                            <span className="text-xs font-bold text-white block">Sembunyikan</span>
+                                        <button onClick={() => setEditPinnedBadge(null)} className={`p-4 border-[3px] border-black transition-all text-center shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none ${editPinnedBadge === null ? 'bg-[#FFFF00]' : 'bg-[#E5E5E5]'}`}>
+                                            <span className="text-xs font-black text-black block uppercase">Sembunyikan</span>
                                         </button>
                                         {[7, 30, 60, 90].map((m) => {
                                             const cfg = getBadgeConfig(m)
@@ -240,10 +241,10 @@ export function EditProfileModal({ isOpen, onClose, user, onSave }: EditProfileM
                                                         if (isUnlocked) setEditPinnedBadge(m)
                                                         else toast.error(`Capai streak ${m} hari untuk membuka badge ini`)
                                                     }} 
-                                                    className={`p-4 rounded-2xl border transition-all flex flex-col items-center gap-2 relative ${active ? 'bg-indigo-500/10 border-indigo-500' : 'bg-white/5 border-white/5'} ${!isUnlocked ? 'opacity-40 grayscale cursor-not-allowed' : ''}`}
+                                                    className={`p-4 border-[3px] border-black transition-all flex flex-col items-center gap-2 relative shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none ${active ? 'bg-[#FFFF00]' : 'bg-[#E5E5E5]'} ${!isUnlocked ? 'opacity-40 grayscale cursor-not-allowed' : ''}`}
                                                 >
                                                     <Icon className={`w-6 h-6 ${cfg.iconClassProfile}`} />
-                                                    <span className="text-[10px] font-bold text-white uppercase tracking-wider">{cfg.name}</span>
+                                                    <span className="text-[10px] font-black text-black uppercase tracking-wider">{cfg.name}</span>
                                                     {!isUnlocked && (
                                                         <span className="absolute top-2 right-2 text-xs">🔒</span>
                                                     )}
@@ -258,7 +259,7 @@ export function EditProfileModal({ isOpen, onClose, user, onSave }: EditProfileM
                                 <button
                                     onClick={handleSaveInternal}
                                     disabled={isSaving || isUploadingPhoto}
-                                    className="w-full py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm transition-all disabled:opacity-50"
+                                    className="w-full py-4 bg-[#00FF00] border-[3px] border-black text-black font-black uppercase text-sm shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all disabled:opacity-50"
                                 >
                                     {isSaving ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Simpan Perubahan"}
                                 </button>
@@ -272,33 +273,27 @@ export function EditProfileModal({ isOpen, onClose, user, onSave }: EditProfileM
                 {isCropping && (
                     <motion.div
                         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-                        style={{ background: "rgba(4,4,12,0.90)", backdropFilter: "blur(12px)" }}
+                        className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90"
                     >
                         <motion.div
                             initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
-                            className="w-full max-w-lg shadow-2xl overflow-hidden"
-                            style={{
-                                background: "rgba(12,12,22,0.95)",
-                                border: "1px solid rgba(255,255,255,0.08)",
-                                borderRadius: "1.5rem",
-                            }}
+                            className="w-full max-w-lg bg-white border-[4px] border-black shadow-[8px_8px_0_#000] overflow-hidden"
                         >
                             {/* Modal header */}
-                            <div className="px-6 pt-6 pb-4 border-b border-white/[0.06]">
+                            <div className="px-6 pt-6 pb-4 border-b-[3px] border-black">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-9 h-9 rounded-xl bg-indigo-500/15 border border-indigo-500/20 flex items-center justify-center">
-                                        <Camera className="w-4 h-4 text-indigo-400" />
+                                    <div className="w-9 h-9 flex items-center justify-center bg-[#00FFFF] border-[3px] border-black shadow-[2px_2px_0_#000]">
+                                        <Camera className="w-4 h-4 text-black" />
                                     </div>
                                     <div>
-                                        <h2 className="text-base font-bold text-white">Sesuaikan Foto</h2>
-                                        <p className="text-xs text-neutral-500">Geser dan zoom untuk mendapatkan hasil terbaik</p>
+                                        <h2 className="text-base font-black text-black uppercase">Sesuaikan Foto</h2>
+                                        <p className="text-xs text-neutral-500 font-bold">Geser dan zoom untuk mendapatkan hasil terbaik</p>
                                     </div>
                                 </div>
                             </div>
 
                             <div className="p-6 space-y-5">
-                                <div className="relative w-full h-64 rounded-2xl overflow-hidden" style={{ background: "rgba(0,0,0,0.6)" }}>
+                                <div className="relative w-full h-64 overflow-hidden border-[3px] border-black" style={{ background: "rgba(0,0,0,0.6)" }}>
                                     <Cropper
                                         image={cropImageUrl}
                                         crop={crop}
@@ -316,26 +311,24 @@ export function EditProfileModal({ isOpen, onClose, user, onSave }: EditProfileM
                                 <div className="space-y-4">
                                     <div>
                                         <div className="flex items-center justify-between mb-2">
-                                            <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Zoom</label>
-                                            <span className="text-xs text-indigo-400 font-mono">{zoom.toFixed(1)}×</span>
+                                            <label className="text-xs font-black text-black uppercase tracking-wider">Zoom</label>
+                                            <span className="text-xs text-black font-black font-mono bg-[#FFFF00] border-[2px] border-black px-2 py-0.5">{zoom.toFixed(1)}×</span>
                                         </div>
                                         <input
                                             type="range" min={1} max={3} step={0.1} value={zoom}
                                             onChange={(e) => setZoom(Number(e.target.value))}
-                                            className="w-full h-1.5 rounded-full appearance-none accent-indigo-500 cursor-pointer"
-                                            style={{ background: `linear-gradient(to right, #6366f1 ${((zoom - 1) / 2) * 100}%, rgba(255,255,255,0.1) 0%)` }}
+                                            className="w-full h-2 appearance-none accent-black cursor-pointer bg-[#E5E5E5] border-[2px] border-black"
                                         />
                                     </div>
                                     <div>
                                         <div className="flex items-center justify-between mb-2">
-                                            <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Rotasi</label>
-                                            <span className="text-xs text-indigo-400 font-mono">{rotation}°</span>
+                                            <label className="text-xs font-black text-black uppercase tracking-wider">Rotasi</label>
+                                            <span className="text-xs text-black font-black font-mono bg-[#00FFFF] border-[2px] border-black px-2 py-0.5">{rotation}°</span>
                                         </div>
                                         <input
                                             type="range" min={0} max={360} step={1} value={rotation}
                                             onChange={(e) => setRotation(Number(e.target.value))}
-                                            className="w-full h-1.5 rounded-full appearance-none accent-indigo-500 cursor-pointer"
-                                            style={{ background: `linear-gradient(to right, #6366f1 ${(rotation / 360) * 100}%, rgba(255,255,255,0.1) 0%)` }}
+                                            className="w-full h-2 appearance-none accent-black cursor-pointer bg-[#E5E5E5] border-[2px] border-black"
                                         />
                                     </div>
                                 </div>
@@ -343,15 +336,13 @@ export function EditProfileModal({ isOpen, onClose, user, onSave }: EditProfileM
                                 <div className="flex gap-3 pt-1">
                                     <button
                                         onClick={() => setIsCropping(false)}
-                                        className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-neutral-400 transition-all"
-                                        style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+                                        className="flex-1 py-2.5 text-sm font-black text-black uppercase bg-white border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all"
                                     >
                                         Batal
                                     </button>
                                     <button
                                         onClick={saveCrop}
-                                        className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2 transition-all hover:brightness-110 active:scale-95"
-                                        style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
+                                        className="flex-1 py-2.5 text-sm font-black text-black uppercase flex items-center justify-center gap-2 bg-[#00FF00] border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all"
                                     >
                                         <Check className="w-4 h-4" /> Simpan
                                     </button>

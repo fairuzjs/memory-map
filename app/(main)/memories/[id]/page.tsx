@@ -109,11 +109,11 @@ export default function MemoryDetailPage() {
 
     if (loading) {
         return (
-            <div className="flex-1 flex items-center justify-center min-h-[60vh]">
-                <div className="flex flex-col items-center gap-3">
-                    <Loader2 className="w-7 h-7 text-indigo-500 animate-spin" />
-                    <p className="text-xs tracking-widest uppercase text-neutral-600 animate-pulse">
-                        Memuat kenangan...
+            <div className="flex-1 flex flex-col items-center justify-center min-h-[60vh] bg-[#E5E5E5]">
+                <div className="flex flex-col items-center gap-4 border-[4px] border-black bg-white p-8 shadow-[8px_8px_0_#000]">
+                    <Loader2 className="w-12 h-12 text-black animate-spin" />
+                    <p className="text-[14px] font-black uppercase text-black">
+                        Memuat Kenangan...
                     </p>
                 </div>
             </div>
@@ -127,27 +127,34 @@ export default function MemoryDetailPage() {
     const allPhotos = validPhotos
     const formattedDate = formatDate(memory.date)
 
-    const emotionGradient = (() => {
+    const emotionConfig = (() => {
         switch(memory.emotion) {
-            case "HAPPY": return "from-amber-500/20 via-orange-500/5 to-yellow-500/20"
-            case "SAD": return "from-blue-900/40 via-slate-900 to-indigo-950/60"
-            case "ROMANTIC": return "from-rose-500/20 via-pink-500/5 to-fuchsia-500/20"
-            case "PEACEFUL": return "from-emerald-500/20 via-teal-500/5 to-cyan-500/20"
-            case "EXCITED": return "from-violet-500/20 via-fuchsia-500/5 to-orange-500/20"
-            case "NOSTALGIC": return "from-amber-700/20 via-orange-900/10 to-yellow-900/20"
-            case "GRATEFUL": return "from-rose-400/20 via-amber-400/5 to-orange-400/20"
-            case "ADVENTUROUS": return "from-emerald-600/20 via-cyan-900/10 to-blue-900/20"
-            default: return "from-indigo-950 via-neutral-900 to-violet-950"
+            case "HAPPY": return { bg: "bg-[#FFFF00]", text: "text-black", border: "border-black" }
+            case "SAD": return { bg: "bg-[#00FFFF]", text: "text-black", border: "border-black" }
+            case "ROMANTIC": return { bg: "bg-[#FF00FF]", text: "text-white", border: "border-black" }
+            case "PEACEFUL": return { bg: "bg-[#00FF00]", text: "text-black", border: "border-black" }
+            case "EXCITED": return { bg: "bg-[#FF3300]", text: "text-white", border: "border-black" }
+            case "NOSTALGIC": return { bg: "bg-[#E5E5E5]", text: "text-black", border: "border-black" }
+            case "GRATEFUL": return { bg: "bg-[#00FF00]", text: "text-black", border: "border-black" }
+            case "ADVENTUROUS": return { bg: "bg-[#FFFF00]", text: "text-black", border: "border-black" }
+            default: return { bg: "bg-[#E5E5E5]", text: "text-black", border: "border-black" }
         }
     })();
 
     return (
-        <div className="w-full pb-24 bg-[#0a0a0f]">
+        <div className="w-full pb-24 bg-white relative">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 pointer-events-none z-0"
+                style={{
+                    backgroundImage: "linear-gradient(#00000010 1px, transparent 1px), linear-gradient(90deg, #00000010 1px, transparent 1px)",
+                    backgroundSize: "40px 40px"
+                }}
+            />
 
-            {/* ─── HERO — Dynamic Layout ──────────────────────────── */}
-            <div className={`relative w-full overflow-hidden bg-neutral-900 transition-all duration-500 ${heroPhoto ? "h-[70vh] min-h-[420px] max-h-[680px]" : "py-32 min-h-[45vh] flex flex-col justify-center"}`}>
-
-                {/* Background image */}
+            {/* ─── HERO ──────────────────────────── */}
+            <div className={`relative w-full overflow-hidden border-b-[4px] border-black transition-all duration-500 z-10 ${heroPhoto ? "h-[70vh] min-h-[420px] max-h-[680px]" : "py-24 sm:py-32 min-h-[45vh] flex flex-col justify-center"}`}>
+                
+                {/* Background rendering */}
                 {heroPhoto ? (
                     <>
                         <button
@@ -161,41 +168,14 @@ export default function MemoryDetailPage() {
                                 className="w-full h-full object-cover"
                             />
                         </button>
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] via-black/50 to-transparent pointer-events-none" />
-                        <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent pointer-events-none" />
+                        <div className="absolute inset-0 bg-black/40 pointer-events-none" />
                     </>
                 ) : (
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none bg-[#050508]">
-                        {/* Dynamic Background Base */}
-                        <div className={`absolute inset-0 bg-gradient-to-br opacity-50 ${emotionGradient}`} />
-
-                        {/* High-tech Map Grid Container */}
-                        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:48px_48px] [mask-image:radial-gradient(ellipse_90%_90%_at_50%_50%,#000_20%,transparent_100%)]" />
-
-                        {/* Topography Rings / Radar Layout */}
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center opacity-70">
-                            {/* Static Rings */}
-                            <div className="absolute w-[800px] h-[800px] border border-white/5 rounded-full" />
-                            <div className="absolute w-[600px] h-[600px] border border-white/[0.08] rounded-full" />
-                            <div className="absolute w-[400px] h-[400px] border border-white/[0.15] rounded-full border-dashed" />
-                            <div className="absolute w-[200px] h-[200px] border border-white/[0.2] rounded-full bg-white/[0.01]" />
-                            <div className="absolute w-2 h-2 bg-white/50 rounded-full" />
-                            
-                            {/* Crosshairs */}
-                            <div className="absolute w-[1000px] h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-                            <div className="absolute h-[1000px] w-[1px] bg-gradient-to-b from-transparent via-white/10 to-transparent" />
-                        </div>
-
-                        {/* Radar sweep animation */}
-                        <div className="absolute top-1/2 left-1/2 w-[800px] h-[800px] -translate-x-1/2 -translate-y-1/2 animate-[spin_8s_linear_infinite] rounded-full pointer-events-none [mask-image:radial-gradient(circle_at_center,white_0%,transparent_80%)]">
-                            <div 
-                                className="absolute top-0 right-1/2 w-[400px] h-[400px] origin-bottom-right" 
-                                style={{ background: 'conic-gradient(from 180deg at 100% 100%, transparent 0deg, rgba(255,255,255,0.03) 60deg, rgba(255,255,255,0.2) 90deg, transparent 90deg)' }} 
-                            />
-                        </div>
-
-                        {/* Bottom fade for content blending */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] via-[#0a0a0f]/50 to-transparent" />
+                    <div className={`absolute inset-0 overflow-hidden pointer-events-none ${emotionConfig.bg}`}>
+                        <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.1)_2px,transparent_2px),linear-gradient(90deg,rgba(0,0,0,0.1)_2px,transparent_2px)] bg-[size:32px_32px]" />
+                        {/* Decorative solid shapes */}
+                        <div className="absolute top-1/4 right-1/4 w-32 h-32 border-[4px] border-black rounded-full bg-white/20 transform rotate-12" />
+                        <div className="absolute bottom-1/4 left-1/4 w-24 h-24 border-[4px] border-black bg-black/10 transform -rotate-6" />
                     </div>
                 )}
 
@@ -210,146 +190,147 @@ export default function MemoryDetailPage() {
                 />
 
                 {/* ── Top action bar ── */}
-                <div className="absolute top-0 left-0 right-0 px-5 md:px-10 py-5 flex items-center justify-between z-10">
+                <div className="absolute top-0 left-0 right-0 px-4 md:px-8 py-6 flex items-center justify-between z-20">
                     <button
                         onClick={() => router.push("/map")}
-                        className="flex items-center gap-2 text-white/60 hover:text-white transition-colors group backdrop-blur-md bg-white/5 border border-white/10 rounded-full px-4 py-2 text-sm"
+                        className="flex items-center gap-2 text-black bg-white border-[3px] border-black px-4 py-2 font-black uppercase shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all"
                     >
-                        <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
+                        <ArrowLeft className="w-4 h-4" />
                         Kembali
                     </button>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3">
                         {isOwner && (
                             <>
                                 <button
                                     onClick={() => setShowStickerPanel(true)}
-                                    className="flex items-center gap-1.5 text-white/60 hover:text-amber-300 transition-colors backdrop-blur-md bg-white/5 border border-white/10 rounded-full px-4 py-2 text-sm"
+                                    className="flex items-center gap-2 bg-[#FFFF00] text-black border-[3px] border-black px-4 py-2 font-black uppercase shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all"
                                     title="Tambah Stiker"
                                 >
-                                    <Sticker className="w-3.5 h-3.5" />
+                                    <Sticker className="w-4 h-4" />
                                     <span className="hidden sm:inline">Stiker</span>
                                     {placements.length > 0 && (
-                                        <span className="w-4 h-4 rounded-full bg-amber-400/20 border border-amber-400/40 text-[10px] font-bold text-amber-300 flex items-center justify-center">
+                                        <span className="w-5 h-5 bg-white border-[2px] border-black text-[10px] flex items-center justify-center">
                                             {placements.length}
                                         </span>
                                     )}
                                 </button>
                                 <Link href={`/memories/${id}/edit`}>
-                                    <button className="flex items-center gap-1.5 text-white/60 hover:text-indigo-300 transition-colors backdrop-blur-md bg-white/5 border border-white/10 rounded-full px-4 py-2 text-sm">
-                                        <Edit className="w-3.5 h-3.5" />
-                                        Edit
+                                    <button className="flex items-center gap-2 bg-[#00FF00] text-black border-[3px] border-black px-4 py-2 font-black uppercase shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all">
+                                        <Edit className="w-4 h-4" />
+                                        <span className="hidden sm:inline">Edit</span>
                                     </button>
                                 </Link>
                                 <button
                                     onClick={handleDelete}
                                     disabled={isDeleting}
-                                    className="flex items-center gap-1.5 text-white/60 hover:text-red-400 transition-colors backdrop-blur-md bg-white/5 border border-white/10 rounded-full px-4 py-2 text-sm disabled:opacity-40"
+                                    className="flex items-center gap-2 bg-[#FF3300] text-white border-[3px] border-black px-4 py-2 font-black uppercase shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all disabled:opacity-50"
                                 >
-                                    <Trash2 className="w-3.5 h-3.5" />
-                                    {isDeleting ? "Menghapus..." : "Hapus"}
+                                    <Trash2 className="w-4 h-4" />
+                                    <span className="hidden sm:inline">{isDeleting ? "Hapus..." : "Hapus"}</span>
                                 </button>
                             </>
                         )}
                         {!isOwner && session?.user && (
-                            <div className="backdrop-blur-md bg-white/5 border border-white/10 rounded-full px-1 py-1">
-                                <ReportDialog memoryId={memory.id} />
-                            </div>
+                            <ReportDialog memoryId={memory.id} />
                         )}
                     </div>
                 </div>
 
                 {/* ── Hero content ── */}
-                <div className={`z-10 px-5 md:px-12 pb-10 w-full ${heroPhoto ? "absolute bottom-0 left-0 max-w-2xl" : "relative max-w-4xl mx-auto flex flex-col items-center text-center pt-24"}`}>
+                <div className={`z-10 px-5 md:px-12 pb-10 w-full ${heroPhoto ? "absolute bottom-0 left-0 max-w-2xl" : "relative max-w-4xl mx-auto flex flex-col items-center text-center pt-16"}`}>
                     {/* Badges */}
-                    <div className={`flex items-center gap-2 mb-4 ${heroPhoto ? "" : "justify-center"}`}>
-                        <span className={`inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.1em] px-3 py-1 rounded-full border ${memory.isPublic
-                            ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-400"
-                            : "bg-white/5 border-white/10 text-neutral-400"
+                    <div className={`flex items-center gap-3 mb-6 ${heroPhoto ? "" : "justify-center"}`}>
+                        <span className={`inline-flex items-center gap-2 text-[12px] font-black uppercase tracking-wider px-3 py-1 border-[3px] border-black shadow-[2px_2px_0_#000] ${memory.isPublic
+                            ? "bg-[#00FF00] text-black"
+                            : "bg-[#E5E5E5] text-black"
                             }`}>
-                            {memory.isPublic ? <Globe className="w-2.5 h-2.5" /> : <Lock className="w-2.5 h-2.5" />}
+                            {memory.isPublic ? <Globe className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
                             {memory.isPublic ? "Publik" : "Privat"}
                         </span>
                         {allPhotos.length > 0 && (
-                            <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.1em] px-3 py-1 rounded-full border bg-white/5 border-white/10 text-neutral-400">
-                                <Images className="w-2.5 h-2.5" />
+                            <span className="inline-flex items-center gap-2 text-[12px] font-black uppercase tracking-wider px-3 py-1 border-[3px] border-black bg-[#00FFFF] text-black shadow-[2px_2px_0_#000]">
+                                <Images className="w-4 h-4" />
                                 {allPhotos.length} Foto
                             </span>
                         )}
                     </div>
 
                     {/* Title */}
-                    <h1 className={`font-bold font-[Outfit] text-white leading-[1.08] tracking-tight mb-5 drop-shadow-lg ${heroPhoto ? "text-3xl sm:text-4xl md:text-5xl" : "text-4xl sm:text-5xl md:text-6xl text-transparent bg-clip-text bg-gradient-to-br from-white to-white/70"}`}>
+                    <h1 className={`font-black uppercase tracking-tight mb-6 p-2 ${heroPhoto ? "text-4xl sm:text-5xl md:text-6xl text-white drop-shadow-[0_4px_0_rgba(0,0,0,1)]" : `text-5xl sm:text-6xl md:text-7xl bg-white text-black border-[4px] border-black shadow-[8px_8px_0_#000] inline-block transform ${memory.title.length > 20 ? "" : "-rotate-1"}`}`}>
                         {memory.title}
                     </h1>
 
                     {/* Meta */}
-                    <div className={`flex flex-wrap items-center gap-x-5 gap-y-2 text-[13px] text-white/50 ${heroPhoto ? "" : "justify-center"}`}>
-                        <span className="flex items-center gap-1.5">
-                            <Calendar className="w-3.5 h-3.5 text-indigo-400" />
+                    <div className={`flex flex-wrap items-center gap-4 text-[14px] font-black uppercase ${heroPhoto ? "text-white" : "text-black bg-white p-2 border-[3px] border-black shadow-[4px_4px_0_#000] justify-center inline-flex"}`}>
+                        <span className="flex items-center gap-2">
+                            <Calendar className={`w-4 h-4 ${heroPhoto ? "text-[#00FFFF]" : "text-black"}`} />
                             {formattedDate}
                         </span>
                         {memory.locationName && (
-                            <span className="flex items-center gap-1.5">
-                                <MapPin className="w-3.5 h-3.5 text-violet-400" />
-                                {memory.locationName}
-                            </span>
+                            <>
+                                <span className="w-1.5 h-1.5 bg-black rounded-full hidden sm:block" />
+                                <span className="flex items-center gap-2">
+                                    <MapPin className={`w-4 h-4 ${heroPhoto ? "text-[#00FF00]" : "text-black"}`} />
+                                    {memory.locationName}
+                                </span>
+                            </>
                         )}
                     </div>
                 </div>
             </div>
 
             {/* ─── MAIN CONTENT ─────────────────────────────────── */}
-            <div className="max-w-[1120px] mx-auto px-4 md:px-8 mt-12">
-                <div className="flex flex-col lg:flex-row gap-10 lg:gap-14">
+            <div className="max-w-[1120px] mx-auto px-4 md:px-8 mt-16 relative z-10">
+                <div className="flex flex-col lg:flex-row gap-12 lg:gap-16">
 
                     {/* ── LEFT / STORY COLUMN ── */}
                     <main className="flex-1 min-w-0">
 
                         {/* Author & Collaborators Strip */}
-                        <div className="flex flex-wrap items-center gap-x-4 gap-y-3 mb-9">
+                        <div className="flex flex-wrap items-center gap-x-6 gap-y-4 mb-10 bg-[#E5E5E5] p-4 border-[4px] border-black shadow-[6px_6px_0_#000]">
                             <Link
                                 href={`/profile/${memory.user.id}`}
-                                className="flex items-center gap-3 group shrink-0"
+                                className="flex items-center gap-4 group shrink-0"
                             >
                                 <div className="relative shrink-0">
                                     <img
                                         src={memory.user.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${memory.user.id}`}
                                         alt={memory.user.name}
-                                        className="w-10 h-10 rounded-full border border-neutral-700/80 group-hover:border-indigo-500/60 transition-colors object-cover bg-neutral-800"
+                                        className="w-12 h-12 border-[3px] border-black object-cover bg-white shadow-[2px_2px_0_#000]"
                                     />
-                                    <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-[#0a0a0f]" />
+                                    <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#00FF00] border-[2px] border-black" />
                                 </div>
                                 <div className="flex flex-col">
-                                    <p className="text-[13px] font-semibold text-neutral-200 group-hover:text-indigo-400 transition-colors flex items-center gap-1">
+                                    <p className="text-[16px] font-black uppercase text-black flex items-center gap-2">
                                         {memory.user.name}
-                                        <ExternalLink className="w-2.5 h-2.5 opacity-0 group-hover:opacity-50 transition-opacity" />
+                                        <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity text-[#FF00FF]" />
                                     </p>
-                                    <p className="text-[11px] text-neutral-600 mt-0.5">
-                                        {memory.isPublic ? "Dibagikan publik" : "Kenangan privat"} · {formattedDate}
+                                    <p className="text-[12px] font-bold text-black/60 uppercase">
+                                        {memory.isPublic ? "Publik" : "Privat"} • {formattedDate}
                                     </p>
                                 </div>
                             </Link>
 
                             {memory.collaborators && memory.collaborators.length > 0 && (
                                 <>
-                                    <div className="w-[1px] h-8 bg-white/10 hidden sm:block mx-1" />
-                                    <div className="flex items-center gap-2.5">
-                                        <p className="text-[10px] font-semibold text-neutral-500 tracking-widest uppercase shrink-0">
+                                    <div className="w-[4px] h-10 bg-black hidden sm:block mx-2" />
+                                    <div className="flex items-center gap-3">
+                                        <p className="text-[12px] font-black text-black bg-white px-2 border-[2px] border-black tracking-widest uppercase shrink-0">
                                             Bersama
                                         </p>
-                                        <div className="flex -space-x-2">
+                                        <div className="flex -space-x-3">
                                             {memory.collaborators.map((collab: any) => (
                                                 <Link
                                                     key={collab.id}
                                                     href={`/profile/${collab.user.id}`}
-                                                    className="relative hover:z-10 transition-transform hover:scale-110"
+                                                    className="relative hover:z-10 transition-transform hover:scale-110 hover:-translate-y-1"
                                                     title={collab.user.name}
                                                 >
                                                     <img
                                                         src={collab.user.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${collab.user.id}`}
                                                         alt={collab.user.name}
-                                                        className="w-8 h-8 rounded-full border-2 border-[#0a0a0f] object-cover bg-neutral-800"
+                                                        className="w-10 h-10 border-[3px] border-black object-cover bg-white shadow-[2px_2px_0_#000]"
                                                     />
                                                 </Link>
                                             ))}
@@ -360,7 +341,7 @@ export default function MemoryDetailPage() {
                         </div>
 
                         {/* Story / Prose */}
-                        <div className="text-neutral-400 leading-[1.9] text-[1.0rem] font-sans mb-12 space-y-5">
+                        <div className="bg-white border-[4px] border-black p-6 sm:p-8 shadow-[8px_8px_0_#000] text-black font-bold text-[16px] leading-[1.8] mb-12 space-y-6">
                             {memory.story.split("\n").map((para: string, i: number) => (
                                 para.trim() ? <p key={i}>{para}</p> : <br key={i} />
                             ))}
@@ -368,10 +349,10 @@ export default function MemoryDetailPage() {
 
                         {/* Music Player — MOBILE ONLY (above gallery) */}
                         {(memory.audioUrl || memory.spotifyTrackId) && isMobile && (
-                            <div className="mb-10 lg:hidden">
+                            <div className="mb-12 lg:hidden border-[4px] border-black shadow-[6px_6px_0_#000] bg-[#FF00FF]">
                                 {memory.spotifyTrackId ? (
                                     <iframe
-                                        style={{ borderRadius: '12px' }}
+                                        style={{ borderRadius: '0' }}
                                         src={`https://open.spotify.com/embed/track/${memory.spotifyTrackId}?utm_source=generator&theme=0`}
                                         width="100%"
                                         height="152"
@@ -394,11 +375,11 @@ export default function MemoryDetailPage() {
 
                         {/* Photo Gallery — only secondary photos */}
                         {galleryPhotos.length > 0 && (
-                            <div className="mb-12">
-                                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-neutral-600 mb-4">
+                            <div className="mb-16">
+                                <h3 className="inline-block px-3 py-1 bg-[#00FFFF] border-[3px] border-black text-[16px] font-black uppercase shadow-[4px_4px_0_#000] mb-6">
                                     Galeri Foto
-                                </p>
-                                <div className={`grid gap-2 ${galleryPhotos.length === 1 ? "grid-cols-1" :
+                                </h3>
+                                <div className={`grid gap-4 ${galleryPhotos.length === 1 ? "grid-cols-1" :
                                     galleryPhotos.length === 2 ? "grid-cols-2" :
                                         galleryPhotos.length === 3 ? "grid-cols-3" :
                                             "grid-cols-2 md:grid-cols-3"
@@ -407,15 +388,14 @@ export default function MemoryDetailPage() {
                                         <button
                                             key={photo.id}
                                             onClick={() => setLightbox(photo.url)}
-                                            className={`group relative overflow-hidden rounded-xl border border-neutral-800/80 hover:border-indigo-500/40 transition-all ${idx === 0 && galleryPhotos.length >= 4 ? "col-span-2 row-span-2 aspect-square" : "aspect-square"
+                                            className={`group relative overflow-hidden border-[4px] border-black bg-white shadow-[6px_6px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0_#000] transition-all ${idx === 0 && galleryPhotos.length >= 4 ? "col-span-2 row-span-2 aspect-square" : "aspect-square"
                                                 }`}
                                         >
                                             <img
                                                 src={photo.url}
                                                 alt=""
-                                                className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-500"
+                                                className="w-full h-full object-cover"
                                             />
-                                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-colors" />
                                         </button>
                                     ))}
                                 </div>
@@ -423,27 +403,35 @@ export default function MemoryDetailPage() {
                         )}
 
                         {/* Reactions */}
-                        <div className="mb-10 bg-white/[0.03] border border-white/[0.06] rounded-2xl px-5 py-4">
-                            <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-neutral-600 mb-3">
+                        <div className="mb-12 bg-white border-[4px] border-black p-6 sm:p-8 shadow-[8px_8px_0_#000]">
+                            <h3 className="inline-block px-3 py-1 bg-[#FFFF00] border-[3px] border-black text-[16px] font-black uppercase shadow-[4px_4px_0_#000] mb-6">
                                 Reaksi
-                            </p>
+                            </h3>
                             <Reactions memoryId={memory.id} initialReactions={memory.reactions || []} />
                         </div>
 
                         {/* Comments */}
-                        <Comments memoryId={memory.id} initialComments={memory.comments || []} />
+                        <div className="bg-white border-[4px] border-black p-6 sm:p-8 shadow-[8px_8px_0_#000] mb-12">
+                            <h3 className="inline-block px-3 py-1 bg-[#00FF00] border-[3px] border-black text-[16px] font-black uppercase shadow-[4px_4px_0_#000] mb-6">
+                                Komentar
+                            </h3>
+                            <Comments memoryId={memory.id} initialComments={memory.comments || []} />
+                        </div>
                     </main>
 
                     {/* ── RIGHT / SIDEBAR ── */}
-                    <aside className="w-full lg:w-[280px] xl:w-[300px] shrink-0">
-                        <div className="lg:sticky lg:top-24 space-y-3">
+                    <aside className="w-full lg:w-[320px] shrink-0">
+                        <div className="lg:sticky lg:top-24 space-y-8">
 
                             {/* Music Player — DESKTOP ONLY (sidebar) */}
                             {(memory.audioUrl || memory.spotifyTrackId) && !isMobile && (
-                                <div className="hidden lg:block relative overflow-hidden rounded-2xl border border-white/[0.07] bg-[#0a0a0f]">
+                                <div className="hidden lg:block relative bg-[#FF00FF] border-[4px] border-black shadow-[8px_8px_0_#000]">
+                                    <div className="p-3 border-b-[4px] border-black bg-white">
+                                        <p className="text-[12px] font-black text-black uppercase tracking-wider">Soundtrack</p>
+                                    </div>
                                     {memory.spotifyTrackId ? (
                                         <iframe
-                                            style={{ borderRadius: '16px' }}
+                                            style={{ borderRadius: '0' }}
                                             src={`https://open.spotify.com/embed/track/${memory.spotifyTrackId}?utm_source=generator&theme=0`}
                                             width="100%"
                                             height="152"
@@ -453,7 +441,7 @@ export default function MemoryDetailPage() {
                                             loading="lazy"
                                         ></iframe>
                                     ) : (
-                                        <div className="bg-[#13111e]">
+                                        <div className="bg-white">
                                             <MemoryMusicPlayer
                                                 audioUrl={memory.audioUrl}
                                                 startTime={memory.audioStartTime || 0}
@@ -467,73 +455,69 @@ export default function MemoryDetailPage() {
                             )}
 
                             {/* Memory Info Card */}
-                            <div className="bg-[#13111e] border border-white/[0.07] rounded-2xl p-5">
-                                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-neutral-600 mb-5">
+                            <div className="bg-[#E5E5E5] border-[4px] border-black p-6 shadow-[8px_8px_0_#000]">
+                                <h3 className="inline-block px-3 py-1 bg-white border-[3px] border-black text-[14px] font-black uppercase shadow-[4px_4px_0_#000] mb-6">
                                     Detail Kenangan
-                                </p>
-                                <ul className="space-y-4">
-                                    <li className="flex items-start gap-3">
-                                        <div className="w-7 h-7 rounded-lg bg-indigo-500/10 flex items-center justify-center shrink-0 mt-0.5">
-                                            <Calendar className="w-3.5 h-3.5 text-indigo-400" />
+                               </h3>
+                                <ul className="space-y-5">
+                                    <li className="flex items-start gap-4">
+                                        <div className="w-10 h-10 border-[3px] border-black bg-[#00FFFF] flex items-center justify-center shrink-0 shadow-[2px_2px_0_#000]">
+                                            <Calendar className="w-5 h-5 text-black" />
                                         </div>
                                         <div>
-                                            <p className="text-[10px] text-neutral-600 uppercase tracking-wider font-medium mb-0.5">Tanggal</p>
-                                            <p className="text-[13px] text-neutral-300">{formattedDate}</p>
+                                            <p className="text-[12px] text-black/60 uppercase font-black mb-0.5">Tanggal</p>
+                                            <p className="text-[14px] text-black font-bold">{formattedDate}</p>
                                         </div>
                                     </li>
                                     {memory.locationName && (
-                                        <li className="flex items-start gap-3">
-                                            <div className="w-7 h-7 rounded-lg bg-violet-500/10 flex items-center justify-center shrink-0 mt-0.5">
-                                                <MapPin className="w-3.5 h-3.5 text-violet-400" />
+                                        <li className="flex items-start gap-4">
+                                            <div className="w-10 h-10 border-[3px] border-black bg-[#FFFF00] flex items-center justify-center shrink-0 shadow-[2px_2px_0_#000]">
+                                                <MapPin className="w-5 h-5 text-black" />
                                             </div>
                                             <div>
-                                                <p className="text-[10px] text-neutral-600 uppercase tracking-wider font-medium mb-0.5">Lokasi</p>
-                                                <p className="text-[13px] text-neutral-300">{memory.locationName}</p>
+                                                <p className="text-[12px] text-black/60 uppercase font-black mb-0.5">Lokasi</p>
+                                                <p className="text-[14px] text-black font-bold">{memory.locationName}</p>
                                             </div>
                                         </li>
                                     )}
-                                    <li className="flex items-start gap-3">
-                                        <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${memory.isPublic ? "bg-emerald-500/10" : "bg-neutral-700/30"}`}>
+                                    <li className="flex items-start gap-4">
+                                        <div className={`w-10 h-10 border-[3px] border-black flex items-center justify-center shrink-0 shadow-[2px_2px_0_#000] ${memory.isPublic ? "bg-[#00FF00]" : "bg-neutral-400"}`}>
                                             {memory.isPublic
-                                                ? <Globe className="w-3.5 h-3.5 text-emerald-400" />
-                                                : <Lock className="w-3.5 h-3.5 text-neutral-500" />
+                                                ? <Globe className="w-5 h-5 text-black" />
+                                                : <Lock className="w-5 h-5 text-black" />
                                             }
                                         </div>
                                         <div>
-                                            <p className="text-[10px] text-neutral-600 uppercase tracking-wider font-medium mb-0.5">Visibilitas</p>
-                                            <p className="text-[13px] text-neutral-300">{memory.isPublic ? "Publik" : "Privat"}</p>
+                                            <p className="text-[12px] text-black/60 uppercase font-black mb-0.5">Visibilitas</p>
+                                            <p className="text-[14px] text-black font-bold">{memory.isPublic ? "Publik" : "Privat"}</p>
                                         </div>
                                     </li>
                                     {memory.photos?.length > 0 && (
-                                        <li className="flex items-start gap-3">
-                                            <div className="w-7 h-7 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0 mt-0.5">
-                                                <Images className="w-3.5 h-3.5 text-amber-400" />
+                                        <li className="flex items-start gap-4">
+                                            <div className="w-10 h-10 border-[3px] border-black bg-[#FF00FF] flex items-center justify-center shrink-0 shadow-[2px_2px_0_#000]">
+                                                <Images className="w-5 h-5 text-white" />
                                             </div>
                                             <div>
-                                                <p className="text-[10px] text-neutral-600 uppercase tracking-wider font-medium mb-0.5">Foto</p>
-                                                <p className="text-[13px] text-neutral-300">{memory.photos.length} terlampir</p>
+                                                <p className="text-[12px] text-black/60 uppercase font-black mb-0.5">Foto</p>
+                                                <p className="text-[14px] text-black font-bold">{memory.photos.length} terlampir</p>
                                             </div>
                                         </li>
                                     )}
                                 </ul>
                             </div>
 
-                            {/* Collaborators moved to top author strip */}
-
                             {/* Map Preview */}
                             {memory.latitude && memory.longitude && (
-                                <div className="bg-[#13111e] border border-white/[0.07] rounded-2xl overflow-hidden">
-                                    <div className="px-5 pt-4 pb-3">
-                                        <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-neutral-600">
-                                            Lokasi pada Peta
-                                        </p>
+                                <div className="bg-white border-[4px] border-black shadow-[8px_8px_0_#000] overflow-hidden">
+                                    <div className="p-3 border-b-[4px] border-black bg-[#FFFF00]">
+                                        <p className="text-[14px] font-black uppercase text-black">Lokasi pada Peta</p>
                                     </div>
                                     <iframe
                                         title="Memory location"
                                         width="100%"
-                                        height="170"
+                                        height="200"
                                         loading="lazy"
-                                        className="grayscale opacity-60 hover:opacity-80 transition-opacity"
+                                        className="grayscale-[50%] hover:grayscale-0 transition-all border-none"
                                         src={`https://maps.google.com/maps?q=${memory.latitude},${memory.longitude}&z=13&output=embed&hl=en`}
                                     />
                                 </div>
@@ -546,18 +530,18 @@ export default function MemoryDetailPage() {
             {/* ─── LIGHTBOX ─────────────────────────────────────── */}
             {lightbox && (
                 <div
-                    className="fixed inset-0 z-50 bg-black/95 backdrop-blur-sm flex items-center justify-center p-4 cursor-zoom-out"
+                    className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 sm:p-8 cursor-zoom-out"
                     onClick={() => setLightbox(null)}
                 >
                     <div className="relative max-w-5xl max-h-full" onClick={e => e.stopPropagation()}>
                         <img
                             src={lightbox}
                             alt=""
-                            className="max-w-full max-h-[90vh] rounded-xl object-contain"
+                            className="max-w-full max-h-[90vh] object-contain border-[6px] border-black shadow-[12px_12px_0_#fff]"
                         />
                         <button
                             onClick={() => setLightbox(null)}
-                            className="absolute -top-3.5 -right-3.5 w-8 h-8 rounded-full bg-neutral-800 border border-neutral-700/80 flex items-center justify-center text-neutral-400 hover:text-white transition-colors text-base"
+                            className="absolute -top-4 -right-4 w-12 h-12 bg-[#FF3300] border-[4px] border-black shadow-[4px_4px_0_#fff] flex items-center justify-center text-white hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#fff] transition-all text-xl font-black"
                         >
                             ×
                         </button>

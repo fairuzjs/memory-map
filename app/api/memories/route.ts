@@ -6,6 +6,7 @@ import { Prisma } from "@prisma/client"
 import { getCachedPublicMemories } from "@/lib/services/memory-service"
 import { revalidateTag } from "next/cache"
 import { CACHE_TAGS } from "@/lib/cache"
+import { isPremiumActive, getUserLimits } from "@/lib/premium-config"
 
 export async function GET(req: Request) {
     try {
@@ -26,6 +27,7 @@ export async function GET(req: Request) {
                     id: true,
                     name: true,
                     image: true,
+                    premiumExpiresAt: true,
                     inventories: {
                         where: { isEquipped: true, item: { type: "MEMORY_CARD_THEME" } },
                         select: { item: { select: { value: true } } },
@@ -193,7 +195,7 @@ export async function POST(req: Request) {
         // Blokir user yang belum verifikasi email
         const currentUser = await prisma.user.findUnique({
             where: { id: session.user.id },
-            select: { isEmailVerified: true }
+            select: { isEmailVerified: true, premiumExpiresAt: true }
         })
         if (!currentUser || currentUser.isEmailVerified === false) {
             return NextResponse.json(
@@ -201,6 +203,10 @@ export async function POST(req: Request) {
                 { status: 403 }
             )
         }
+
+        // ── Determine premium limits ──
+        const userIsPremium = isPremiumActive(currentUser.premiumExpiresAt)
+        const limits = getUserLimits(userIsPremium)
 
         const body = await req.json()
         const result = memorySchema.safeParse(body)
@@ -211,8 +217,26 @@ export async function POST(req: Request) {
 
         const { photos, tags, date, collaborators, audio, ...data } = result.data
 
+        // ── Enforce dynamic photo limit ──
+        if (photos && photos.length > limits.maxPhotos) {
+            return NextResponse.json(
+                { error: `Maksimal ${limits.maxPhotos} foto diperbolehkan. ${!userIsPremium ? "Upgrade ke Premium untuk upload hingga 10 foto!" : ""}` },
+                { status: 400 }
+            )
+        }
+
+        // ── Enforce dynamic collaborator limit ──
+        const uniqueCollabs = [...new Set(collaborators || [])].filter(uid => uid !== session.user.id)
+        if (uniqueCollabs.length > limits.maxCollaborators) {
+            return NextResponse.json(
+                { error: `Maksimal ${limits.maxCollaborators} kolaborator diperbolehkan. ${!userIsPremium ? "Upgrade ke Premium untuk mengundang hingga 10 orang!" : ""}` },
+                { status: 400 }
+            )
+        }
+
         // ── Premium feature gate: Spotify integration ──
-        if (data.spotifyTrackId) {
+        // Premium users get auto-unlock, free users need shop item
+        if (data.spotifyTrackId && !userIsPremium) {
             const hasSpotifyPremium = await prisma.userInventory.findFirst({
                 where: {
                     userId: session.user.id,
@@ -221,7 +245,7 @@ export async function POST(req: Request) {
             })
             if (!hasSpotifyPremium) {
                 return NextResponse.json(
-                    { error: "Fitur Spotify adalah fitur premium. Silakan beli di Memory Shop terlebih dahulu." },
+                    { error: "Fitur Spotify adalah fitur premium. Silakan beli di Memory Shop atau upgrade ke Premium!" },
                     { status: 403 }
                 )
             }
@@ -254,6 +278,8 @@ export async function POST(req: Request) {
                     } : {}),
                     // Spotify integration
                     spotifyTrackId: data.spotifyTrackId || null,
+                    // Premium map marker
+                    markerStyle: data.markerStyle || null,
                 },
                 include: {
                     photos: true,
@@ -262,12 +288,7 @@ export async function POST(req: Request) {
             })
 
             // Buat undangan kolaborasi untuk setiap collaborator
-            if (collaborators && collaborators.length > 0) {
-                // Filter duplikat dan diri sendiri
-                const uniqueCollabs = [...new Set(collaborators)].filter(
-                    (uid) => uid !== session.user.id
-                )
-
+            if (uniqueCollabs.length > 0) {
                 for (const userId of uniqueCollabs) {
                     await tx.memoryCollaborator.create({
                         data: {

@@ -17,10 +17,14 @@ export function EditorHeader({ currentStep, setCurrentStep, setDirection }: Edit
     return (
         <div className="mb-8">
             <div className="mb-8 text-center">
-                <h1 className="text-3xl sm:text-4xl font-bold font-[Outfit] mb-3 bg-clip-text text-transparent bg-gradient-to-r from-emerald-100 via-indigo-100 to-indigo-300">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#00FFFF] border-[3px] border-black shadow-[3px_3px_0_#000] mb-4">
+                    <BookText className="w-4 h-4 text-black" />
+                    <span className="text-xs font-black text-black uppercase tracking-widest">Editor</span>
+                </div>
+                <h1 className="text-3xl sm:text-4xl font-black text-black uppercase tracking-tight">
                     Edit Kenangan
                 </h1>
-                <p className="text-neutral-400 text-sm max-w-md mx-auto">
+                <p className="text-neutral-500 text-sm font-bold mt-2 max-w-md mx-auto">
                     Sesuaikan detail momen berharga Anda.
                 </p>
             </div>
@@ -42,35 +46,35 @@ export function EditorHeader({ currentStep, setCurrentStep, setDirection }: Edit
                                     }
                                 }}
                                 className={`
-                                    flex items-center gap-2.5 px-4 py-2.5 rounded-xl transition-all duration-300
+                                    flex items-center gap-2.5 px-4 py-2.5 border-[3px] border-black transition-all duration-200
                                     ${isActive
-                                        ? "bg-indigo-500/15 border border-indigo-500/30 text-white shadow-lg shadow-indigo-500/10"
+                                        ? "bg-[#FFFF00] text-black shadow-[4px_4px_0_#000]"
                                         : isCompleted
-                                            ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 cursor-pointer hover:bg-emerald-500/15"
-                                            : "bg-neutral-900/40 border border-white/5 text-neutral-500"
+                                            ? "bg-[#00FF00] text-black shadow-[3px_3px_0_#000] cursor-pointer hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000]"
+                                            : "bg-[#E5E5E5] text-neutral-400"
                                     }
                                 `}
                             >
                                 <div className={`
-                                    w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold transition-all
+                                    w-7 h-7 flex items-center justify-center text-xs font-black transition-all border-[2px] border-black
                                     ${isActive
-                                        ? "bg-indigo-500 text-white"
+                                        ? "bg-black text-[#FFFF00]"
                                         : isCompleted
-                                            ? "bg-emerald-500/20 text-emerald-400"
-                                            : "bg-neutral-800 text-neutral-500"
+                                            ? "bg-black text-[#00FF00]"
+                                            : "bg-white text-neutral-400"
                                     }
                                 `}>
                                     {isCompleted ? "✓" : index + 1}
                                 </div>
                                 <div className="text-left hidden sm:block">
-                                    <p className="text-sm font-medium leading-tight">{step.label}</p>
-                                    <p className={`text-[10px] leading-tight mt-0.5 ${isActive ? "text-indigo-300/70" : "text-neutral-600"}`}>
+                                    <p className="text-sm font-black uppercase leading-tight">{step.label}</p>
+                                    <p className={`text-[10px] leading-tight mt-0.5 font-bold ${isActive ? "text-black/60" : "text-neutral-500"}`}>
                                         {step.description}
                                     </p>
                                 </div>
                             </button>
                             {index < STEPS.length - 1 && (
-                                <ChevronRight className={`w-4 h-4 ${currentStep > index ? "text-emerald-500/50" : "text-neutral-700"}`} />
+                                <div className={`w-6 h-[3px] ${currentStep > index ? "bg-black" : "bg-[#E5E5E5]"}`} />
                             )}
                         </div>
                     )

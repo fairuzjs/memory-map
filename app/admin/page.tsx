@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import {
     Loader2, MessageSquare, Flag, ChevronRight,
-    TrendingUp, Clock, CheckCircle2, AlertCircle, Shield, Coins, Zap
+    TrendingUp, Clock, CheckCircle2, AlertCircle, Shield, Coins, Zap, Crown
 } from "lucide-react"
 import Link from "next/link"
 
@@ -95,6 +95,17 @@ export default function AdminDashboardPage() {
                 { icon: CheckCircle2, label: "Riwayat topup" },
             ],
         },
+        {
+            title: "Pesanan Premium",
+            description: "Verifikasi dan kelola pesanan langganan premium dari pengguna",
+            href: "/admin/premium",
+            icon: Crown,
+            accentColor: "violet",
+            stats: [
+                { icon: Clock, label: "Menunggu verifikasi" },
+                { icon: CheckCircle2, label: "Sudah diaktifkan" },
+            ],
+        },
     ]
 
     const colorMap: Record<string, {
@@ -133,6 +144,17 @@ export default function AdminDashboardPage() {
             chevron: "text-amber-500/50 group-hover:text-amber-400",
             hover: "hover:border-amber-500/40",
             statText: "text-amber-300/70",
+        },
+        violet: {
+            bg: "bg-violet-500/[0.06]",
+            border: "border-violet-500/20",
+            iconBg: "bg-violet-500/10",
+            iconText: "text-violet-400",
+            badge: "bg-violet-500/10",
+            badgeText: "text-violet-400",
+            chevron: "text-violet-500/50 group-hover:text-violet-400",
+            hover: "hover:border-violet-500/40",
+            statText: "text-violet-300/70",
         },
     }
 

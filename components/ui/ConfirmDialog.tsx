@@ -25,36 +25,24 @@ interface ConfirmDialogProps {
 const variantConfig = {
     danger: {
         icon: Trash2,
-        iconBg: "bg-rose-500/10",
-        iconBorder: "border-rose-500/20",
-        iconColor: "text-rose-400",
-        glow: "rgba(244,63,94,0.12)",
-        accent: "border-rose-500/20",
-        confirmBg: "bg-rose-600 hover:bg-rose-500",
-        confirmShadow: "shadow-rose-500/20",
-        dot: "#f43f5e",
+        iconBg: "bg-[#FF3300]",
+        iconText: "text-white",
+        confirmBg: "bg-[#FF3300]",
+        confirmText: "text-white",
     },
     warning: {
         icon: AlertTriangle,
-        iconBg: "bg-amber-500/10",
-        iconBorder: "border-amber-500/20",
-        iconColor: "text-amber-400",
-        glow: "rgba(245,158,11,0.12)",
-        accent: "border-amber-500/20",
-        confirmBg: "bg-amber-600 hover:bg-amber-500",
-        confirmShadow: "shadow-amber-500/20",
-        dot: "#f59e0b",
+        iconBg: "bg-[#FFFF00]",
+        iconText: "text-black",
+        confirmBg: "bg-[#FFFF00]",
+        confirmText: "text-black",
     },
     info: {
         icon: Info,
-        iconBg: "bg-indigo-500/10",
-        iconBorder: "border-indigo-500/20",
-        iconColor: "text-indigo-400",
-        glow: "rgba(99,102,241,0.12)",
-        accent: "border-indigo-500/20",
-        confirmBg: "bg-indigo-600 hover:bg-indigo-500",
-        confirmShadow: "shadow-indigo-500/20",
-        dot: "#6366f1",
+        iconBg: "bg-[#00FFFF]",
+        iconText: "text-black",
+        confirmBg: "bg-[#00FFFF]",
+        confirmText: "text-black",
     },
 }
 
@@ -89,7 +77,7 @@ export function ConfirmDialog({
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.2 }}
                         onClick={onClose}
-                        className="absolute inset-0 bg-black/70 backdrop-blur-md"
+                        className="absolute inset-0 bg-black/70"
                     />
 
                     {/* Dialog */}
@@ -98,41 +86,28 @@ export function ConfirmDialog({
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.88, y: 20 }}
                         transition={{ type: "spring", stiffness: 380, damping: 28 }}
-                        className={`relative w-full max-w-sm overflow-hidden rounded-2xl border ${config.accent} shadow-2xl`}
-                        style={{ background: "linear-gradient(160deg, rgba(14,14,24,0.99), rgba(8,8,16,1))" }}
+                        className="relative w-full max-w-sm overflow-hidden bg-white border-[4px] border-black shadow-[8px_8px_0_#000]"
                     >
-                        {/* Glow background */}
-                        <div
-                            className="absolute inset-0 pointer-events-none"
-                            style={{ background: `radial-gradient(ellipse at top, ${config.glow}, transparent 70%)` }}
-                        />
-
-                        {/* Top accent line */}
-                        <div
-                            className="h-[1.5px] w-full"
-                            style={{ background: `linear-gradient(90deg, transparent, ${config.dot}, transparent)` }}
-                        />
-
                         {/* Content */}
                         <div className="relative p-6">
                             {/* Close button */}
                             <button
                                 onClick={onClose}
-                                className="absolute top-4 right-4 p-1.5 rounded-lg text-neutral-600 hover:text-neutral-300 hover:bg-white/5 transition-all"
+                                className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-[#E5E5E5] border-[2px] border-black hover:bg-[#FF00FF] hover:text-white transition-all"
                             >
                                 <X className="w-4 h-4" />
                             </button>
 
                             {/* Icon */}
-                            <div className={`w-12 h-12 rounded-2xl ${config.iconBg} border ${config.iconBorder} flex items-center justify-center mb-5 shadow-lg`}>
-                                <Icon className={`w-5 h-5 ${config.iconColor}`} />
+                            <div className={`w-12 h-12 ${config.iconBg} border-[3px] border-black shadow-[3px_3px_0_#000] flex items-center justify-center mb-5`}>
+                                <Icon className={`w-5 h-5 ${config.iconText}`} />
                             </div>
 
                             {/* Text */}
-                            <h3 className="text-[17px] font-bold text-white font-[Outfit] mb-2 leading-snug pr-6">
+                            <h3 className="text-[17px] font-black text-black uppercase mb-2 leading-snug pr-6">
                                 {title}
                             </h3>
-                            <p className="text-sm text-neutral-400 leading-relaxed mb-7">
+                            <p className="text-sm text-neutral-600 font-bold leading-relaxed mb-7">
                                 {description}
                             </p>
 
@@ -141,14 +116,14 @@ export function ConfirmDialog({
                                 <button
                                     onClick={onClose}
                                     disabled={isLoading}
-                                    className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-neutral-400 border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.05] hover:text-white transition-all disabled:opacity-50"
+                                    className="flex-1 py-2.5 text-sm font-black text-black uppercase bg-white border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all disabled:opacity-50"
                                 >
                                     {cancelLabel}
                                 </button>
                                 <button
                                     onClick={handleConfirm}
                                     disabled={isLoading}
-                                    className={`flex-1 py-2.5 rounded-xl text-sm font-bold text-white ${config.confirmBg} shadow-lg ${config.confirmShadow} transition-all disabled:opacity-50 flex items-center justify-center gap-2`}
+                                    className={`flex-1 py-2.5 text-sm font-black uppercase ${config.confirmBg} ${config.confirmText} border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all disabled:opacity-50 flex items-center justify-center gap-2`}
                                 >
                                     {isLoading ? (
                                         <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">

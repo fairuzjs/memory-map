@@ -26,6 +26,16 @@ model User {
   facebook      String?
   points        Int        @default(0)
   createdAt     DateTime   @default(now())
+
+  // ── Premium ──────────────────────────────
+  isPremium            Boolean    @default(false)
+  premiumExpiresAt     DateTime?                    // null = belum pernah premium
+  freeGachaPullsUsed   Int        @default(0)       // Reset setiap hari Senin
+  freeGachaPullsResetAt DateTime?                   // Kapan weekly reset berikutnya
+  streakFreezesUsed    Int        @default(0)       // Reset setiap tanggal 1
+  streakFreezesResetAt DateTime?                    // Kapan monthly reset berikutnya
+  premiumItemsClaimed  Boolean    @default(false)    // Apakah sudah klaim item premium (bingkai + banner)
+
   memories          Memory[]
   comments          Comment[]
   reactions         Reaction[]
@@ -44,6 +54,7 @@ model User {
   followers           Follow[] @relation("UserFollowers")
   following           Follow[] @relation("UserFollowing")
   verificationCodes   VerificationCode[]
+  premiumOrders       PremiumOrder[]
 }
 
 model Notification {
@@ -69,6 +80,7 @@ enum NotificationType {
   REPLY
   COLLABORATION_INVITE
   FOLLOW
+  PREMIUM_ACTIVATED
 }
 
 model Follow {
@@ -122,6 +134,9 @@ model Memory {
 
   // Spotify integration
   spotifyTrackId String?   // Spotify Track ID
+
+  // Premium map marker
+  markerStyle    String?   // Premium marker style ID (e.g. "royal-gold")
 
   isPinned       Boolean   @default(false)
 }
@@ -421,4 +436,23 @@ model GachaLog {
   item ShopItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+// ── Premium Subscription System ────────────────────────────────
+
+model PremiumOrder {
+  id            String      @id @default(cuid())
+  userId        String
+  durationDays  Int                                 // 30
+  price         Int                                 // harga dalam Rupiah (29900)
+  status        TopupStatus @default(PENDING)       // reuse: PENDING / COMPLETED / CANCELLED
+  proofImage    String?                             // bukti transfer
+  note          String?                             // catatan admin
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
 }

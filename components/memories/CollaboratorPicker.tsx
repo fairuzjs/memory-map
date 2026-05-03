@@ -13,11 +13,10 @@ interface User {
 interface CollaboratorPickerProps {
     value: string[]                        // array of selected user IDs
     onChange: (ids: string[]) => void
+    maxCollaborators?: number
 }
 
-const MAX_COLLABORATORS = 5
-
-export function CollaboratorPicker({ value, onChange }: CollaboratorPickerProps) {
+export function CollaboratorPicker({ value, onChange, maxCollaborators = 5 }: CollaboratorPickerProps) {
     const [query, setQuery] = useState("")
     const [results, setResults] = useState<User[]>([])
     const [selectedUsers, setSelectedUsers] = useState<User[]>([])
@@ -82,7 +81,7 @@ export function CollaboratorPicker({ value, onChange }: CollaboratorPickerProps)
 
     const handleSelect = (user: User) => {
         if (value.includes(user.id)) return
-        if (value.length >= MAX_COLLABORATORS) return
+        if (value.length >= maxCollaborators) return
 
         const newIds = [...value, user.id]
         const newUsers = [...selectedUsers, user]
@@ -103,7 +102,7 @@ export function CollaboratorPicker({ value, onChange }: CollaboratorPickerProps)
     const avatarUrl = (user: User) =>
         user.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`
 
-    const isAtMax = value.length >= MAX_COLLABORATORS
+    const isAtMax = value.length >= maxCollaborators
 
     return (
         <div className="space-y-3" ref={containerRef}>
@@ -149,7 +148,7 @@ export function CollaboratorPicker({ value, onChange }: CollaboratorPickerProps)
                         onFocus={() => results.length > 0 && setIsOpen(true)}
                         placeholder={
                             isAtMax
-                                ? `Maximum ${MAX_COLLABORATORS} collaborators reached`
+                                ? `Maximum ${maxCollaborators} collaborators reached`
                                 : "Search by name or email..."
                         }
                         disabled={isAtMax}
@@ -198,7 +197,7 @@ export function CollaboratorPicker({ value, onChange }: CollaboratorPickerProps)
             {/* Counter */}
             <p className="text-xs text-neutral-500 flex items-center gap-1.5">
                 <Users className="w-3.5 h-3.5" />
-                {value.length} / {MAX_COLLABORATORS} collaborators invited
+                {value.length} / {maxCollaborators} collaborators invited
                 {isAtMax && <span className="text-amber-400 font-medium">· Maximum reached</span>}
             </p>
         </div>

@@ -8,13 +8,13 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { memorySchema, type MemoryInput } from "@/lib/validations"
 import toast from "react-hot-toast"
 import { Input } from "@/components/ui/Input"
-import { Button } from "@/components/ui/Button"
 import { EmotionPicker } from "@/components/memories/EmotionPicker"
 import { PhotoUploader } from "@/components/memories/PhotoUploader"
 import { MusicUploader } from "@/components/memories/MusicUploader"
 import { SpotifySearch } from "@/components/memories/SpotifySearch"
 import { PremiumLockedState } from "@/components/memories/PremiumLockedState"
 import { CollaboratorPicker } from "@/components/memories/CollaboratorPicker"
+import { MarkerStylePicker } from "@/components/memories/MarkerStylePicker"
 import { motion, AnimatePresence } from "framer-motion"
 import {
     BookText, MapPin, Smile, ImagePlus, Users, Globe, Music,
@@ -27,7 +27,9 @@ import dynamic from "next/dynamic"
 
 const LocationPicker = dynamic(() => import("@/components/map/LocationPicker"), {
     ssr: false,
-    loading: () => <div className="h-[300px] w-full bg-neutral-900/50 animate-pulse rounded-2xl border border-white/5" />
+    loading: () => <div className="h-[300px] w-full bg-[#E5E5E5] animate-pulse border-[3px] border-black flex items-center justify-center">
+        <span className="text-neutral-500 text-sm font-black uppercase">Memuat peta...</span>
+    </div>
 })
 
 const STEPS = [
@@ -64,6 +66,9 @@ export default function CreateMemoryPage() {
     const [premiumPoints, setPremiumPoints] = useState(0)
     const [premiumLoading, setPremiumLoading] = useState(true)
     const [isEmailVerified, setIsEmailVerified] = useState<boolean | null>(null)
+    const [maxPhotos, setMaxPhotos] = useState(3)
+    const [maxCollaborators, setMaxCollaborators] = useState(5)
+    const [isPremium, setIsPremium] = useState(false)
 
     // Check email verification status
     useEffect(() => {
@@ -74,15 +79,31 @@ export default function CreateMemoryPage() {
             .catch(() => setIsEmailVerified(true)) // fail open
     }, [session?.user?.id])
 
-    // Check premium feature access
+    // Check premium feature access + premium subscription status
     useEffect(() => {
         const checkPremium = async () => {
             try {
-                const res = await fetch("/api/inventory/premium")
-                if (res.ok) {
-                    const data = await res.json()
-                    setHasSpotifyPremium(data.features?.includes("spotify_integration") ?? false)
+                // Check inventory for shop-purchased features
+                const invRes = await fetch("/api/inventory/premium")
+                if (invRes.ok) {
+                    const data = await invRes.json()
                     setPremiumPoints(data.points ?? 0)
+                    // Shop-purchased Spotify
+                    const hasShopSpotify = data.features?.includes("spotify_integration") ?? false
+                    setHasSpotifyPremium(hasShopSpotify)
+                }
+
+                // Check premium subscription for auto-unlock and limits
+                const statusRes = await fetch("/api/premium/status")
+                if (statusRes.ok) {
+                    const status = await statusRes.json()
+                    if (status.isPremium) {
+                        setMaxPhotos(status.limits.maxPhotos)
+                        setMaxCollaborators(status.limits.maxCollaborators)
+                        setIsPremium(true)
+                        // Premium users get Spotify auto-unlock
+                        setHasSpotifyPremium(true)
+                    }
                 }
             } catch {}
             setPremiumLoading(false)
@@ -95,6 +116,7 @@ export default function CreateMemoryPage() {
         handleSubmit,
         control,
         trigger,
+        watch,
         formState: { errors }
     } = useForm<MemoryInput>({
         resolver: zodResolver(memorySchema),
@@ -106,6 +128,7 @@ export default function CreateMemoryPage() {
             collaborators: [],
             audio: null,
             spotifyTrackId: null,
+            markerStyle: null,
             latitude: -2.5489,
             longitude: 118.0149,
             locationName: "Indonesia",
@@ -129,6 +152,7 @@ export default function CreateMemoryPage() {
                 ) || [],
                 audio: data.audio || null,
                 spotifyTrackId: data.spotifyTrackId || null,
+                markerStyle: data.markerStyle || null,
             }
 
             const res = await fetch("/api/memories", {
@@ -166,12 +190,10 @@ export default function CreateMemoryPage() {
 
     // We need to watch `isPublic` to tell PhotoUploader how to upload incoming files
     const isPublic = control._formValues.isPublic !== undefined ? control._formValues.isPublic : true
+    const selectedMarkerStyle = watch("markerStyle")
 
     return (
         <div className="max-w-6xl mx-auto px-4 py-8 sm:py-12 w-full relative">
-            {/* Background Effects */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-64 bg-indigo-500/10 blur-[120px] pointer-events-none rounded-full" />
-            <div className="absolute bottom-0 right-0 w-64 h-64 bg-fuchsia-500/5 blur-[100px] pointer-events-none rounded-full" />
 
             {/* ── Unverified Email Gate ──────────────────────────── */}
             <AnimatePresence>
@@ -183,22 +205,15 @@ export default function CreateMemoryPage() {
                         className="relative z-20 flex flex-col items-center justify-center min-h-[60vh] text-center px-4"
                     >
                         {/* Icon */}
-                        <div
-                            className="w-20 h-20 rounded-3xl flex items-center justify-center mb-6 mx-auto"
-                            style={{
-                                background: "linear-gradient(135deg, rgba(245,158,11,0.15), rgba(234,88,12,0.1))",
-                                border: "1px solid rgba(245,158,11,0.3)",
-                                boxShadow: "0 0 60px rgba(245,158,11,0.1)"
-                            }}
-                        >
-                            <ShieldAlert className="w-9 h-9 text-amber-400" />
+                        <div className="w-20 h-20 flex items-center justify-center mb-6 mx-auto bg-[#FFFF00] border-[4px] border-black shadow-[4px_4px_0_#000]">
+                            <ShieldAlert className="w-9 h-9 text-black" />
                         </div>
 
                         {/* Text */}
-                        <h1 className="text-2xl sm:text-3xl font-bold font-[Outfit] text-white mb-3">
+                        <h1 className="text-2xl sm:text-3xl font-black text-black uppercase mb-3">
                             Email Belum Diverifikasi
                         </h1>
-                        <p className="text-neutral-400 text-sm leading-relaxed max-w-sm mb-8">
+                        <p className="text-neutral-500 text-sm leading-relaxed max-w-sm mb-8 font-bold">
                             Kamu perlu memverifikasi email sebelum dapat membuat memory baru.
                             Ini hanya perlu dilakukan sekali untuk menjaga keamanan platform.
                         </p>
@@ -209,23 +224,17 @@ export default function CreateMemoryPage() {
                                 {["Judul memory", "Cerita & momen", "Lokasi di peta"].map(label => (
                                     <div
                                         key={label}
-                                        className="h-12 rounded-xl flex items-center px-4 bg-neutral-900/60 border border-white/[0.05]"
+                                        className="h-12 flex items-center px-4 bg-[#E5E5E5] border-[3px] border-black"
                                     >
-                                        <span className="text-sm text-neutral-500">{label}</span>
+                                        <span className="text-sm text-neutral-500 font-bold">{label}</span>
                                     </div>
                                 ))}
                             </div>
                             {/* Lock badge overlay */}
-                            <div
-                                className="absolute inset-0 flex items-center justify-center rounded-2xl"
-                                style={{ background: "rgba(8,8,16,0.7)", backdropFilter: "blur(2px)" }}
-                            >
-                                <div
-                                    className="flex items-center gap-2 px-4 py-2 rounded-full"
-                                    style={{ background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.3)" }}
-                                >
-                                    <ShieldAlert className="w-4 h-4 text-amber-400" />
-                                    <span className="text-sm font-semibold text-amber-300">Konten terkunci</span>
+                            <div className="absolute inset-0 flex items-center justify-center bg-white/70">
+                                <div className="flex items-center gap-2 px-4 py-2 bg-[#FFFF00] border-[3px] border-black shadow-[3px_3px_0_#000]">
+                                    <ShieldAlert className="w-4 h-4 text-black" />
+                                    <span className="text-sm font-black text-black uppercase">Konten terkunci</span>
                                 </div>
                             </div>
                         </div>
@@ -234,17 +243,13 @@ export default function CreateMemoryPage() {
                         <div className="flex flex-col sm:flex-row items-center gap-3">
                             <Link
                                 href="/settings?tab=security"
-                                className="flex items-center gap-2.5 px-6 py-3 rounded-xl text-sm font-bold text-white transition-all hover:brightness-110 active:scale-95 shadow-lg"
-                                style={{
-                                    background: "linear-gradient(135deg, #f59e0b, #d97706)",
-                                    boxShadow: "0 10px 30px -10px rgba(245,158,11,0.5)"
-                                }}
+                                className="flex items-center gap-2.5 px-6 py-3 text-sm font-black text-black uppercase bg-[#FF00FF] text-white border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all"
                             >
                                 Verifikasi Email Sekarang
                             </Link>
                             <button
                                 onClick={() => router.back()}
-                                className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-medium text-neutral-400 hover:text-white transition-colors"
+                                className="flex items-center gap-2 px-6 py-3 text-sm font-black text-black uppercase bg-white border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all"
                             >
                                 Kembali
                             </button>
@@ -259,10 +264,14 @@ export default function CreateMemoryPage() {
 
                 {/* Page Header */}
                 <div className="mb-8 text-center">
-                    <h1 className="text-3xl sm:text-4xl font-bold font-[Outfit] mb-3 bg-clip-text text-transparent bg-gradient-to-r from-white via-indigo-100 to-indigo-300">
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#FFFF00] border-[3px] border-black shadow-[3px_3px_0_#000] mb-4">
+                        <Sparkles className="w-4 h-4 text-black" />
+                        <span className="text-xs font-black text-black uppercase tracking-widest">Buat Baru</span>
+                    </div>
+                    <h1 className="text-3xl sm:text-4xl font-black text-black uppercase tracking-tight">
                         Simpan Kenangan Baru
                     </h1>
-                    <p className="text-neutral-400 text-sm max-w-md mx-auto">
+                    <p className="text-neutral-500 text-sm font-bold mt-2 max-w-md mx-auto">
                         Abadikan momen spesial Anda, tandai di peta, dan bagikan perasaan dengan sahabat terdekat.
                     </p>
                 </div>
@@ -284,35 +293,35 @@ export default function CreateMemoryPage() {
                                         }
                                     }}
                                     className={`
-                                        flex items-center gap-2.5 px-4 py-2.5 rounded-xl transition-all duration-300
+                                        flex items-center gap-2.5 px-4 py-2.5 border-[3px] border-black transition-all duration-200
                                         ${isActive
-                                            ? "bg-indigo-500/15 border border-indigo-500/30 text-white shadow-lg shadow-indigo-500/10"
+                                            ? "bg-[#FFFF00] text-black shadow-[4px_4px_0_#000]"
                                             : isCompleted
-                                                ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 cursor-pointer hover:bg-emerald-500/15"
-                                                : "bg-neutral-900/40 border border-white/5 text-neutral-500"
+                                                ? "bg-[#00FF00] text-black shadow-[3px_3px_0_#000] cursor-pointer hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000]"
+                                                : "bg-[#E5E5E5] text-neutral-400"
                                         }
                                     `}
                                 >
                                     <div className={`
-                                        w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold transition-all
+                                        w-7 h-7 flex items-center justify-center text-xs font-black transition-all border-[2px] border-black
                                         ${isActive
-                                            ? "bg-indigo-500 text-white"
+                                            ? "bg-black text-[#FFFF00]"
                                             : isCompleted
-                                                ? "bg-emerald-500/20 text-emerald-400"
-                                                : "bg-neutral-800 text-neutral-500"
+                                                ? "bg-black text-[#00FF00]"
+                                                : "bg-white text-neutral-400"
                                         }
                                     `}>
                                         {isCompleted ? "✓" : index + 1}
                                     </div>
                                     <div className="text-left hidden sm:block">
-                                        <p className="text-sm font-medium leading-tight">{step.label}</p>
-                                        <p className={`text-[10px] leading-tight mt-0.5 ${isActive ? "text-indigo-300/70" : "text-neutral-600"}`}>
+                                        <p className="text-sm font-black uppercase leading-tight">{step.label}</p>
+                                        <p className={`text-[10px] leading-tight mt-0.5 font-bold ${isActive ? "text-black/60" : "text-neutral-500"}`}>
                                             {step.description}
                                         </p>
                                     </div>
                                 </button>
                                 {index < STEPS.length - 1 && (
-                                    <ChevronRight className={`w-4 h-4 ${currentStep > index ? "text-emerald-500/50" : "text-neutral-700"}`} />
+                                    <div className={`w-6 h-[3px] ${currentStep > index ? "bg-black" : "bg-[#E5E5E5]"}`} />
                                 )}
                             </div>
                         )
@@ -333,62 +342,62 @@ export default function CreateMemoryPage() {
                                 className="space-y-6"
                             >
                                 {/* Momen Form */}
-                                <div className="bg-neutral-900/40 backdrop-blur-xl p-6 sm:p-8 rounded-3xl border border-white/[0.05] shadow-2xl transition-all hover:border-white/[0.08]">
+                                <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000]">
                                     <div className="flex items-center gap-3 mb-6">
-                                        <div className="p-2.5 bg-indigo-500/10 rounded-xl">
-                                            <BookText className="w-5 h-5 text-indigo-400" />
+                                        <div className="p-2.5 bg-[#00FFFF] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                                            <BookText className="w-5 h-5 text-black" />
                                         </div>
                                         <div>
-                                            <h2 className="text-lg font-semibold font-[Outfit] text-white">Momen</h2>
-                                            <p className="text-xs text-neutral-500">Detail kenangan Anda</p>
+                                            <h2 className="text-lg font-black text-black uppercase">Momen</h2>
+                                            <p className="text-xs text-neutral-500 font-bold">Detail kenangan Anda</p>
                                         </div>
                                     </div>
 
                                     <div className="space-y-5">
                                         <div>
-                                            <label className="block text-sm font-medium text-neutral-400 mb-2">Judul</label>
+                                            <label className="block text-sm font-black text-black uppercase tracking-wider mb-2">Judul</label>
                                             <Input
                                                 {...register("title")}
                                                 placeholder="Liburan tak terlupakan..."
-                                                className="bg-black/20 border-white/10 focus:border-indigo-500/50 transition-colors text-base"
+                                                className="!bg-[#E5E5E5] !border-[3px] !border-black !rounded-none focus:!bg-[#FFFF00] !transition-all !text-black !font-bold !placeholder:text-neutral-400"
                                                 disabled={isSubmitting}
                                             />
-                                            {errors.title && <p className="text-red-400 text-sm mt-1.5">{errors.title.message}</p>}
+                                            {errors.title && <p className="text-[#FF0000] text-sm mt-1.5 font-bold">{errors.title.message}</p>}
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-neutral-400 mb-2">Cerita</label>
+                                            <label className="block text-sm font-black text-black uppercase tracking-wider mb-2">Cerita</label>
                                             <textarea
                                                 {...register("story")}
-                                                className="w-full min-h-[140px] bg-black/20 border border-white/10 rounded-xl p-4 text-base focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none resize-none transition-all placeholder:text-neutral-600 text-neutral-200"
+                                                className="w-full min-h-[140px] bg-[#E5E5E5] border-[3px] border-black p-4 text-base focus:bg-[#FFFF00] outline-none resize-none transition-all placeholder:text-neutral-400 text-black font-bold"
                                                 placeholder="Ceritakan apa yang terjadi... setiap detail berharga."
                                                 disabled={isSubmitting}
                                             />
-                                            {errors.story && <p className="text-red-400 text-sm mt-1.5">{errors.story.message}</p>}
+                                            {errors.story && <p className="text-[#FF0000] text-sm mt-1.5 font-bold">{errors.story.message}</p>}
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-neutral-400 mb-2">Tanggal</label>
+                                            <label className="block text-sm font-black text-black uppercase tracking-wider mb-2">Tanggal</label>
                                             <Input
                                                 type="date"
                                                 {...register("date")}
-                                                className="bg-black/20 border-white/10 focus:border-indigo-500/50 transition-colors [&::-webkit-calendar-picker-indicator]:invert"
+                                                className="!bg-[#E5E5E5] !border-[3px] !border-black !rounded-none focus:!bg-[#FFFF00] !transition-all !text-black !font-bold"
                                                 disabled={isSubmitting}
                                             />
-                                            {errors.date && <p className="text-red-400 text-sm mt-1.5">{errors.date.message}</p>}
+                                            {errors.date && <p className="text-[#FF0000] text-sm mt-1.5 font-bold">{errors.date.message}</p>}
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Emotion */}
-                                <div className="bg-neutral-900/40 backdrop-blur-xl p-6 sm:p-8 rounded-3xl border border-white/[0.05] shadow-2xl transition-all hover:border-white/[0.08]">
+                                <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000]">
                                     <div className="flex items-center gap-3 mb-6">
-                                        <div className="p-2.5 bg-rose-500/10 rounded-xl">
-                                            <Smile className="w-5 h-5 text-rose-400" />
+                                        <div className="p-2.5 bg-[#FF00FF] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                                            <Smile className="w-5 h-5 text-white" />
                                         </div>
                                         <div>
-                                            <h2 className="text-lg font-semibold font-[Outfit] text-white">Perasaan</h2>
-                                            <p className="text-xs text-neutral-500">Pilih emosi Anda</p>
+                                            <h2 className="text-lg font-black text-black uppercase">Perasaan</h2>
+                                            <p className="text-xs text-neutral-500 font-bold">Pilih emosi Anda</p>
                                         </div>
                                     </div>
                                     <Controller
@@ -398,18 +407,31 @@ export default function CreateMemoryPage() {
                                     />
                                 </div>
 
+                                {/* Premium Map Marker — pick style before location so preview shows */}
+                                <Controller
+                                    control={control}
+                                    name="markerStyle"
+                                    render={({ field }) => (
+                                        <MarkerStylePicker
+                                            value={field.value}
+                                            onChange={field.onChange}
+                                            isPremium={isPremium}
+                                        />
+                                    )}
+                                />
+
                                 {/* Location */}
-                                <div className="bg-neutral-900/40 backdrop-blur-xl p-6 sm:p-8 rounded-3xl border border-white/[0.05] shadow-2xl transition-all hover:border-white/[0.08] relative z-30">
+                                <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000] relative z-30">
                                     <div className="flex items-center gap-3 mb-6">
-                                        <div className="p-2.5 bg-amber-500/10 rounded-xl">
-                                            <MapPin className="w-5 h-5 text-amber-400" />
+                                        <div className="p-2.5 bg-[#FFFF00] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                                            <MapPin className="w-5 h-5 text-black" />
                                         </div>
                                         <div>
-                                            <h2 className="text-lg font-semibold font-[Outfit] text-white">Lokasi</h2>
-                                            <p className="text-xs text-neutral-500">Tandai tempat kenangan</p>
+                                            <h2 className="text-lg font-black text-black uppercase">Lokasi</h2>
+                                            <p className="text-xs text-neutral-500 font-bold">Tandai tempat kenangan</p>
                                         </div>
                                     </div>
-                                    <div className="rounded-2xl overflow-hidden border border-white/10">
+                                    <div className="overflow-hidden border-[3px] border-black">
                                         <Controller
                                             control={control}
                                             name="latitude"
@@ -426,6 +448,7 @@ export default function CreateMemoryPage() {
                                                                     latitude={latField.value}
                                                                     longitude={lngField.value}
                                                                     locationName={nameField.value || ""}
+                                                                    markerStyle={selectedMarkerStyle}
                                                                     onChange={(lat, lng, name) => {
                                                                         latField.onChange(lat)
                                                                         lngField.onChange(lng)
@@ -442,24 +465,23 @@ export default function CreateMemoryPage() {
                                 </div>
 
                                 {/* Navigation */}
-                                <div className="flex justify-between items-center pt-2">
-                                    <Button
+                                <div className="flex justify-between items-center pt-4 mt-2 border-t-[3px] border-dashed border-black/20">
+                                    <button
                                         type="button"
-                                        variant="ghost"
                                         onClick={() => router.back()}
                                         disabled={isSubmitting}
-                                        className="hover:bg-white/5 rounded-xl px-6 text-neutral-400"
+                                        className="px-6 py-2.5 text-sm font-black text-black uppercase bg-white border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all disabled:opacity-50"
                                     >
                                         Batal
-                                    </Button>
-                                    <Button
+                                    </button>
+                                    <button
                                         type="button"
                                         onClick={handleNext}
-                                        className="bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl px-6 shadow-lg shadow-indigo-500/25 transition-all group"
+                                        className="flex items-center gap-2 px-6 py-2.5 text-sm font-black text-black uppercase bg-[#FFFF00] border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all"
                                     >
                                         Lanjutkan
-                                        <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-0.5 transition-transform" />
-                                    </Button>
+                                        <ArrowRight className="w-4 h-4" />
+                                    </button>
                                 </div>
                             </motion.div>
                         )}
@@ -478,14 +500,14 @@ export default function CreateMemoryPage() {
                                 {/* Photos & Music in 2-column grid */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     {/* Photos */}
-                                    <div className="bg-neutral-900/40 backdrop-blur-xl p-6 sm:p-8 rounded-3xl border border-white/[0.05] shadow-2xl transition-all hover:border-white/[0.08]">
+                                    <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000]">
                                         <div className="flex items-center gap-3 mb-6">
-                                            <div className="p-2.5 bg-emerald-500/10 rounded-xl">
-                                                <ImagePlus className="w-5 h-5 text-emerald-400" />
+                                            <div className="p-2.5 bg-[#00FF00] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                                                <ImagePlus className="w-5 h-5 text-black" />
                                             </div>
                                             <div>
-                                                <h2 className="text-lg font-semibold font-[Outfit] text-white">Galeri Foto</h2>
-                                                <p className="text-xs text-neutral-500">Upload visual kenangan (Maks 3 foto, ukuran max 5MB/foto)</p>
+                                                <h2 className="text-lg font-black text-black uppercase">Galeri Foto</h2>
+                                                <p className="text-xs text-neutral-500 font-bold">Upload visual kenangan (Maks {maxPhotos} foto, ukuran max 5MB/foto)</p>
                                             </div>
                                         </div>
                                         <Controller
@@ -496,35 +518,36 @@ export default function CreateMemoryPage() {
                                                     photos={field.value || []}
                                                     onChange={field.onChange}
                                                     isPublic={isPublic}
+                                                    maxPhotos={maxPhotos}
                                                 />
                                             )}
                                         />
                                     </div>
 
                                     {/* Music */}
-                                    <div className="bg-neutral-900/40 backdrop-blur-xl p-6 sm:p-8 rounded-3xl border border-white/[0.05] shadow-2xl transition-all hover:border-white/[0.08] flex flex-col h-full">
+                                    <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000] flex flex-col h-full">
                                         <div className="flex items-center justify-between mb-6">
                                             <div className="flex items-center gap-3">
-                                                <div className="p-2.5 bg-fuchsia-500/10 rounded-xl">
-                                                    <Music className="w-5 h-5 text-fuchsia-400" />
+                                                <div className="p-2.5 bg-[#FF00FF] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                                                    <Music className="w-5 h-5 text-white" />
                                                 </div>
                                                 <div>
-                                                    <h2 className="text-lg font-semibold font-[Outfit] text-white">Musik</h2>
-                                                    <p className="text-xs text-neutral-500">Tambahkan lagu</p>
+                                                    <h2 className="text-lg font-black text-black uppercase">Musik</h2>
+                                                    <p className="text-xs text-neutral-500 font-bold">Tambahkan lagu</p>
                                                 </div>
                                             </div>
                                         </div>
 
                                         {/* Music Source Tabs */}
-                                        <div className="flex-1 rounded-2xl flex flex-col gap-4">
-                                            <div className="flex bg-neutral-900/50 p-1 rounded-xl border border-white/5">
+                                        <div className="flex-1 flex flex-col gap-4">
+                                            <div className="flex border-[3px] border-black overflow-hidden">
                                                 <button
                                                     type="button"
                                                     onClick={() => setMusicTab("upload")}
-                                                    className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
+                                                    className={`flex-1 py-2.5 text-sm font-black uppercase transition-all border-r-[3px] border-black ${
                                                         musicTab === "upload" 
-                                                            ? "bg-fuchsia-500/20 text-fuchsia-300 shadow-sm" 
-                                                            : "text-neutral-500 hover:text-neutral-300"
+                                                            ? "bg-[#FF00FF] text-white" 
+                                                            : "bg-white text-neutral-400 hover:bg-[#E5E5E5] hover:text-black"
                                                     }`}
                                                 >
                                                     Upload MP3
@@ -532,20 +555,20 @@ export default function CreateMemoryPage() {
                                                 <button
                                                     type="button"
                                                     onClick={() => setMusicTab("spotify")}
-                                                    className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+                                                    className={`flex-1 py-2.5 text-sm font-black uppercase transition-all flex items-center justify-center gap-1.5 ${
                                                         musicTab === "spotify" 
-                                                            ? "bg-[#1DB954]/20 text-[#1DB954] shadow-sm" 
-                                                            : "text-neutral-500 hover:text-neutral-300"
+                                                            ? "bg-[#1DB954] text-white" 
+                                                            : "bg-white text-neutral-400 hover:bg-[#E5E5E5] hover:text-black"
                                                     }`}
                                                 >
                                                     Spotify
                                                     {!hasSpotifyPremium && (
-                                                        <Crown className="w-3 h-3 text-amber-400" />
+                                                        <Crown className="w-3 h-3 text-[#FFFF00]" />
                                                     )}
                                                 </button>
                                             </div>
 
-                                            <div className="flex-1 bg-black/20 rounded-2xl border border-white/5 p-4">
+                                            <div className="flex-1 bg-[#E5E5E5] border-[3px] border-black p-4">
                                                 {musicTab === "upload" ? (
                                                     <Controller
                                                         control={control}
@@ -597,14 +620,14 @@ export default function CreateMemoryPage() {
                                 </div>
 
                                 {/* Collaborators */}
-                                <div className="bg-neutral-900/40 backdrop-blur-xl p-6 sm:p-8 rounded-3xl border border-white/[0.05] shadow-2xl transition-all hover:border-white/[0.08] relative z-20">
+                                <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000] relative z-20">
                                     <div className="flex items-center gap-3 mb-2">
-                                        <div className="p-2.5 bg-blue-500/10 rounded-xl">
-                                            <Users className="w-5 h-5 text-blue-400" />
+                                        <div className="p-2.5 bg-[#00FFFF] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                                            <Users className="w-5 h-5 text-black" />
                                         </div>
                                         <div>
-                                            <h2 className="text-lg font-semibold font-[Outfit] text-white">Kolaborator</h2>
-                                            <p className="text-xs text-neutral-500">Tandai teman yang membagikan momen ini (Maks 5)</p>
+                                            <h2 className="text-lg font-black text-black uppercase">Kolaborator</h2>
+                                            <p className="text-xs text-neutral-500 font-bold">Tandai teman yang membagikan momen ini (Maks {maxCollaborators})</p>
                                         </div>
                                     </div>
                                     <div className="mt-4">
@@ -615,54 +638,54 @@ export default function CreateMemoryPage() {
                                                 <CollaboratorPicker
                                                     value={field.value || []}
                                                     onChange={field.onChange}
+                                                    maxCollaborators={maxCollaborators}
                                                 />
                                             )}
                                         />
                                     </div>
                                     {errors.collaborators && (
-                                        <p className="text-red-400 text-sm mt-3">{errors.collaborators.message}</p>
+                                        <p className="text-[#FF0000] text-sm mt-3 font-bold">{errors.collaborators.message}</p>
                                     )}
                                 </div>
 
                                 {/* Settings */}
-                                <div className="bg-neutral-900/40 backdrop-blur-xl p-6 sm:p-8 rounded-3xl border border-white/[0.05] shadow-2xl transition-all hover:border-white/[0.08] relative z-10">
+                                <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000] relative z-10">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">
-                                            <div className="p-2.5 bg-violet-500/10 rounded-xl">
-                                                <Globe className="w-5 h-5 text-violet-400" />
+                                            <div className="p-2.5 bg-[#FFFF00] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                                                <Globe className="w-5 h-5 text-black" />
                                             </div>
                                             <div>
-                                                <h2 className="text-lg font-semibold font-[Outfit] text-white">Pengaturan Privasi</h2>
-                                                <p className="text-xs text-neutral-500">Izinkan orang lain melihat kenangan ini di peta</p>
+                                                <h2 className="text-lg font-black text-black uppercase">Pengaturan Privasi</h2>
+                                                <p className="text-xs text-neutral-500 font-bold">Izinkan orang lain melihat kenangan ini di peta</p>
                                             </div>
                                         </div>
                                         <label className="relative inline-flex items-center cursor-pointer">
                                             <input type="checkbox" {...register("isPublic")} className="sr-only peer" />
-                                            <div className="w-12 h-7 bg-neutral-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-indigo-500 border border-white/10"></div>
+                                            <div className="w-14 h-8 bg-[#E5E5E5] border-[3px] border-black peer-focus:outline-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[1px] after:left-[2px] after:bg-white after:border-[2px] after:border-black after:h-6 after:w-6 after:transition-all peer-checked:bg-[#00FF00]"></div>
                                         </label>
                                     </div>
                                 </div>
 
                                 {/* Navigation */}
-                                <div className="flex justify-between items-center pt-2">
-                                    <Button
+                                <div className="flex justify-between items-center pt-4 mt-2 border-t-[3px] border-dashed border-black/20">
+                                    <button
                                         type="button"
-                                        variant="ghost"
                                         onClick={handleBack}
                                         disabled={isSubmitting}
-                                        className="hover:bg-white/5 rounded-xl px-6 text-neutral-400 group"
+                                        className="flex items-center gap-2 px-6 py-2.5 text-sm font-black text-black uppercase bg-white border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all disabled:opacity-50"
                                     >
-                                        <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-0.5 transition-transform" />
+                                        <ArrowLeft className="w-4 h-4" />
                                         Kembali
-                                    </Button>
-                                    <Button
+                                    </button>
+                                    <button
                                         type="submit"
                                         disabled={isSubmitting}
-                                        className="bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl px-8 shadow-lg shadow-indigo-500/25 transition-all group"
+                                        className="flex items-center gap-2 px-8 py-2.5 text-sm font-black text-black uppercase bg-[#00FF00] border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all disabled:opacity-50"
                                     >
-                                        <Save className="w-4 h-4 mr-2" />
+                                        <Save className="w-4 h-4" />
                                         {isSubmitting ? "Menyimpan..." : "Simpan Kenangan"}
-                                    </Button>
+                                    </button>
                                 </div>
                             </motion.div>
                         )}

@@ -62,7 +62,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
                 parentId: parentId || null
             },
             include: {
-                user: { select: { id: true, name: true, image: true } },
+                user: { select: { id: true, name: true, image: true, premiumExpiresAt: true, isVerified: true } },
                 memory: { select: { userId: true, title: true } },
                 parent: { select: { userId: true } }
             }

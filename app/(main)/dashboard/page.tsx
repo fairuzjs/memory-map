@@ -16,7 +16,7 @@ import { formatDate } from "@/lib/utils"
 // ─── Animation Variants ───────────────────────────────────────────────────────
 const fadeUp = {
     hidden: { opacity: 0, y: 18 },
-    show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 280, damping: 24 } },
+    show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 400, damping: 20 } },
 }
 const stagger = {
     hidden: { opacity: 0 },
@@ -45,7 +45,7 @@ function buildActiveDates(memories: any[], currentStreak: number, lastClaimedAt:
         try { active.add(toWIBKey(new Date(m.date ?? m.createdAt))) } catch { /* skip */ }
     }
     
-    // Fallback untuk history lama (kalau user punya streak panjang, tapi activeDates blm tersimpan di db)
+    // Fallback untuk history lama
     if (lastClaimedAt && currentStreak > 0) {
         const last = new Date(lastClaimedAt)
         last.setHours(12, 0, 0, 0)
@@ -55,7 +55,6 @@ function buildActiveDates(memories: any[], currentStreak: number, lastClaimedAt:
         }
     }
     
-    // Masukkan data permanen dari db
     for (const d of permanentDates) {
         active.add(d)
     }
@@ -92,12 +91,12 @@ function buildHeatmapCells(memories: any[]): HeatCell[] {
 }
 
 function heatCellStyle(count: number, isFuture: boolean): React.CSSProperties {
-    if (isFuture) return { background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }
-    if (count === 0) return { background: 'rgba(255,255,255,0.045)', border: '1px solid rgba(255,255,255,0.07)' }
-    if (count === 1) return { background: 'rgba(99,102,241,0.42)', border: '1px solid rgba(99,102,241,0.55)' }
-    if (count === 2) return { background: 'rgba(99,102,241,0.68)', border: '1px solid rgba(99,102,241,0.8)' }
-    if (count === 3) return { background: 'rgba(139,92,246,0.82)', border: '1px solid rgba(139,92,246,0.95)' }
-    return { background: 'rgba(167,139,250,1)', border: '1px solid rgba(167,139,250,1)', boxShadow: '0 0 8px rgba(167,139,250,0.4)' }
+    if (isFuture) return { background: '#FFFDF0', border: '2px solid black' }
+    if (count === 0) return { background: 'white', border: '2px solid black' }
+    if (count === 1) return { background: '#00FFFF', border: '2px solid black' }
+    if (count === 2) return { background: '#00FF00', border: '2px solid black' }
+    if (count === 3) return { background: '#FF00FF', border: '2px solid black' }
+    return { background: '#FFFF00', border: '2px solid black', boxShadow: '2px 2px 0 #000' }
 }
 
 function ActivityHeatmap({ memories }: { memories: any[] }) {
@@ -134,19 +133,18 @@ function ActivityHeatmap({ memories }: { memories: any[] }) {
         <div className="w-full">
             {/* Year summary */}
             <div className="flex items-center gap-5 mb-4 flex-wrap">
-                <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-black text-white" style={{ fontFamily: "'Syne',sans-serif" }}>{thisYearCount}</span>
-                    <span className="text-xs text-neutral-500">kenangan tahun ini</span>
+                <div className="flex items-baseline gap-2 bg-[#FFFF00] border-[3px] border-black px-3 py-1 shadow-[2px_2px_0_#000]">
+                    <span className="text-xl font-black text-black" style={{ fontFamily: "'Syne',sans-serif" }}>{thisYearCount}</span>
+                    <span className="text-xs font-bold text-black/70 uppercase tracking-widest">kenangan</span>
                 </div>
-                <div className="w-px h-4 bg-white/[0.08]" />
-                <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-black text-white" style={{ fontFamily: "'Syne',sans-serif" }}>{activeDays}</span>
-                    <span className="text-xs text-neutral-500">hari aktif</span>
+                <div className="flex items-baseline gap-2 bg-[#00FFFF] border-[3px] border-black px-3 py-1 shadow-[2px_2px_0_#000]">
+                    <span className="text-xl font-black text-black" style={{ fontFamily: "'Syne',sans-serif" }}>{activeDays}</span>
+                    <span className="text-xs font-bold text-black/70 uppercase tracking-widest">hari aktif</span>
                 </div>
             </div>
 
             {/* Scrollable grid */}
-            <div className="overflow-x-auto pb-1">
+            <div className="overflow-x-auto pb-2 custom-scrollbar">
                 <div style={{ display: 'inline-flex', flexDirection: 'column' }}>
                     {/* Month labels */}
                     <div style={{ display: 'flex', paddingLeft: '2.1rem', marginBottom: 6, height: 14, position: 'relative' }}>
@@ -154,7 +152,7 @@ function ActivityHeatmap({ memories }: { memories: any[] }) {
                             const ml = monthLabels.find(l => l.weekIdx === wi)
                             return (
                                 <div key={wi} style={{ width: CELL + GAP, flexShrink: 0, position: 'relative' }}>
-                                    {ml && <span style={{ position: 'absolute', left: 0, fontSize: 9, color: 'rgba(115,115,115,1)', whiteSpace: 'nowrap', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{ml.label}</span>}
+                                    {ml && <span style={{ position: 'absolute', left: 0, fontSize: 10, color: '#000', whiteSpace: 'nowrap', fontWeight: 800, textTransform: 'uppercase' }}>{ml.label}</span>}
                                 </div>
                             )
                         })}
@@ -165,7 +163,7 @@ function ActivityHeatmap({ memories }: { memories: any[] }) {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: GAP, paddingRight: 6, flexShrink: 0 }}>
                             {DAY_LABELS.map((lbl, di) => (
                                 <div key={di} style={{ height: CELL, display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
-                                    <span style={{ fontSize: 9, color: 'rgba(82,82,82,1)', fontWeight: 500, visibility: lbl ? 'visible' : 'hidden' }}>{lbl || 'X'}</span>
+                                    <span style={{ fontSize: 10, color: '#000', fontWeight: 800, visibility: lbl ? 'visible' : 'hidden' }}>{lbl || 'X'}</span>
                                 </div>
                             ))}
                         </div>
@@ -175,13 +173,18 @@ function ActivityHeatmap({ memories }: { memories: any[] }) {
                                     {week.map((cell, di) => (
                                         <div
                                             key={di}
-                                            style={{ width: CELL, height: CELL, borderRadius: 2, flexShrink: 0, cursor: cell.count > 0 ? 'pointer' : 'default', transition: 'transform 0.08s', ...heatCellStyle(cell.count, cell.isFuture) }}
+                                            style={{ width: CELL, height: CELL, flexShrink: 0, cursor: cell.count > 0 ? 'pointer' : 'default', transition: 'all 0.1s', ...heatCellStyle(cell.count, cell.isFuture) }}
                                             onMouseEnter={e => {
-                                                (e.currentTarget as HTMLDivElement).style.transform = 'scale(1.45)'
+                                                (e.currentTarget as HTMLDivElement).style.transform = 'translate(-2px, -2px)';
+                                                (e.currentTarget as HTMLDivElement).style.boxShadow = '3px 3px 0 #000';
                                                 const r = (e.currentTarget as HTMLDivElement).getBoundingClientRect()
                                                 setTooltip({ x: r.left + r.width / 2, y: r.top, cell })
                                             }}
-                                            onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = 'scale(1)'; setTooltip(null) }}
+                                            onMouseLeave={e => { 
+                                                (e.currentTarget as HTMLDivElement).style.transform = 'translate(0, 0)'; 
+                                                (e.currentTarget as HTMLDivElement).style.boxShadow = cell.count >= 4 ? '2px 2px 0 #000' : 'none'; 
+                                                setTooltip(null) 
+                                            }}
                                         />
                                     ))}
                                 </div>
@@ -190,24 +193,24 @@ function ActivityHeatmap({ memories }: { memories: any[] }) {
                     </div>
 
                     {/* Legend */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 10, paddingLeft: '2.1rem' }}>
-                        <span style={{ fontSize: 9, color: 'rgba(82,82,82,1)' }}>Kurang</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 12, paddingLeft: '2.1rem' }}>
+                        <span style={{ fontSize: 10, fontWeight: 800, color: '#000', marginRight: 4 }}>Kurang</span>
                         {[0, 1, 2, 3, 4].map(lvl => (
-                            <div key={lvl} style={{ width: CELL, height: CELL, borderRadius: 2, flexShrink: 0, ...heatCellStyle(lvl, false) }} />
+                            <div key={lvl} style={{ width: CELL, height: CELL, flexShrink: 0, ...heatCellStyle(lvl, false) }} />
                         ))}
-                        <span style={{ fontSize: 9, color: 'rgba(82,82,82,1)' }}>Lebih</span>
+                        <span style={{ fontSize: 10, fontWeight: 800, color: '#000', marginLeft: 4 }}>Lebih</span>
                     </div>
                 </div>
             </div>
 
             {/* Tooltip */}
             {tooltip && (
-                <div className="fixed z-[9999] pointer-events-none" style={{ left: tooltip.x, top: tooltip.y - 46, transform: 'translateX(-50%)' }}>
-                    <div style={{ padding: '5px 10px', borderRadius: 8, fontSize: 11, background: 'rgba(10,10,16,0.97)', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', whiteSpace: 'nowrap', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}>
-                        <span style={{ fontWeight: 700, color: '#fff' }}>
+                <div className="fixed z-[9999] pointer-events-none" style={{ left: tooltip.x, top: tooltip.y - 50, transform: 'translateX(-50%)' }}>
+                    <div className="px-3 py-2 bg-white border-[3px] border-black shadow-[4px_4px_0_#000] whitespace-nowrap">
+                        <span className="font-black text-black">
                             {tooltip.cell.isFuture ? 'Akan datang' : tooltip.cell.count === 0 ? 'Tidak ada kenangan' : `${tooltip.cell.count} kenangan`}
                         </span>
-                        <span style={{ color: 'rgba(115,115,115,1)', marginLeft: 6, fontSize: 10 }}>{formatDate(tooltip.cell.dayObj)}</span>
+                        <span className="text-black/60 font-bold ml-2 text-xs">{formatDate(tooltip.cell.dayObj)}</span>
                     </div>
                 </div>
             )}
@@ -247,10 +250,10 @@ function build30DayCalendar(activeDates: Set<string>): { weeks: CalDay[][]; acti
 }
 
 function ActivityCalendar({
-    memories, currentStreak, lastClaimedAt, longestStreak, totalActiveDays, nextMilestone, daysToNext, alreadyClaimed, permanentDates
+    memories, currentStreak, lastClaimedAt, permanentDates
 }: {
     memories: any[]; currentStreak: number; lastClaimedAt: string | null
-    longestStreak: number; totalActiveDays: number; nextMilestone: number | null; daysToNext: number | null; alreadyClaimed: boolean; permanentDates: string[]
+    permanentDates: string[]
 }) {
     const activeDates = useMemo(() => buildActiveDates(memories, currentStreak, lastClaimedAt, permanentDates), [memories, currentStreak, lastClaimedAt, permanentDates])
     const { weeks, activeDaysCount } = useMemo(() => build30DayCalendar(activeDates), [activeDates])
@@ -260,35 +263,37 @@ function ActivityCalendar({
             {/* Calendar header */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                    <CalendarDays className="w-3.5 h-3.5 text-orange-400" />
-                    <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-white">30 Hari Terakhir</span>
+                    <CalendarDays className="w-4 h-4 text-black" />
+                    <span className="text-[11px] font-black uppercase tracking-[0.1em] text-black">30 Hari Terakhir</span>
                 </div>
-                <span className="text-[11px] font-bold text-orange-400">{activeDaysCount} hari aktif</span>
+                <div className="bg-[#FFFF00] border-2 border-black px-2 py-0.5 shadow-[2px_2px_0_#000]">
+                    <span className="text-[11px] font-black text-black">{activeDaysCount} hari aktif</span>
+                </div>
             </div>
 
             {/* Day-of-week header */}
-            <div className="grid grid-cols-7 gap-1">
+            <div className="grid grid-cols-7 gap-1.5">
                 {DAY_LABELS_ID.map(d => (
-                    <div key={d} className="text-center text-[8px] font-semibold uppercase tracking-wider text-neutral-600">{d}</div>
+                    <div key={d} className="text-center text-[9px] font-black uppercase tracking-widest text-black/70">{d}</div>
                 ))}
             </div>
 
             {/* Calendar cells */}
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1.5">
                 {weeks.map((week, wi) => (
-                    <div key={wi} className="grid grid-cols-7 gap-1">
+                    <div key={wi} className="grid grid-cols-7 gap-1.5">
                         {week.map((day, di) => (
                             <div
                                 key={di}
-                                className="aspect-square rounded-lg flex items-center justify-center"
+                                className="aspect-square flex items-center justify-center transition-all"
                                 style={{
-                                    background: day.isActive ? 'linear-gradient(135deg,#ea580c,#f97316)' : day.inRange ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.02)',
-                                    border: day.isToday ? '1.5px solid rgba(249,115,22,0.85)' : day.isActive ? '1px solid rgba(249,115,22,0.25)' : '1px solid rgba(255,255,255,0.06)',
-                                    boxShadow: day.isActive ? '0 2px 8px rgba(234,88,12,0.3)' : 'none',
-                                    opacity: !day.inRange ? 0.25 : 1,
+                                    background: day.isActive ? '#00FF00' : day.inRange ? '#FFFDF0' : 'rgba(0,0,0,0.05)',
+                                    border: day.isToday ? '3px solid black' : '2px solid black',
+                                    boxShadow: (day.isActive || day.isToday) ? '2px 2px 0 #000' : 'none',
+                                    opacity: !day.inRange ? 0.4 : 1,
                                 }}
                             >
-                                <span className={`text-[10px] font-bold ${day.isActive ? 'text-white' : day.inRange ? 'text-neutral-400' : 'text-neutral-600'}`}>
+                                <span className={`text-xs font-black ${day.isActive || day.isToday ? 'text-black' : 'text-black/60'}`}>
                                     {day.dayNum}
                                 </span>
                             </div>
@@ -298,15 +303,15 @@ function ActivityCalendar({
             </div>
 
             {/* Legend */}
-            <div className="flex items-center justify-center gap-4">
+            <div className="flex items-center justify-center gap-4 mt-2">
                 {[
-                    { bg: 'linear-gradient(135deg,#ea580c,#f97316)', label: 'Aktif' },
-                    { bg: 'rgba(255,255,255,0.05)', label: 'Tidak Aktif', border: '1px solid rgba(255,255,255,0.08)' },
-                    { bg: 'transparent', label: 'Hari Ini', border: '1.5px solid rgba(249,115,22,0.85)' },
+                    { bg: '#00FF00', label: 'Aktif', border: '2px solid black' },
+                    { bg: '#FFFDF0', label: 'Tidak Aktif', border: '2px solid black' },
+                    { bg: 'transparent', label: 'Hari Ini', border: '3px solid black' },
                 ].map(item => (
                     <div key={item.label} className="flex items-center gap-1.5">
-                        <div className="w-3 h-3 rounded-[3px]" style={{ background: item.bg, border: item.border }} />
-                        <span className="text-[9px] text-neutral-500">{item.label}</span>
+                        <div className="w-4 h-4 shadow-[1px_1px_0_#000]" style={{ background: item.bg, border: item.border }} />
+                        <span className="text-[10px] font-bold text-black/70">{item.label}</span>
                     </div>
                 ))}
             </div>
@@ -315,16 +320,16 @@ function ActivityCalendar({
 }
 
 // ─── Compact Stat Bar ─────────────────────────────────────────────────────────
-function StatBar({ label, value, barColor, valueColor, sub }: { label: string; value: string | number; barColor: string; valueColor?: string; sub: string }) {
+function StatBar({ label, value, barColor, sub }: { label: string; value: string | number; barColor: string; sub: string }) {
     const isLong = typeof value === 'string' && value.length > 6
     return (
-        <div className="flex-1 min-w-0 px-4 py-3 border-r border-white/[0.06] last:border-r-0">
-            <p className="text-[9px] font-semibold uppercase tracking-[0.12em] text-neutral-500 mb-1.5">{label}</p>
-            <p className="font-black leading-none mb-2" style={{ fontSize: isLong ? '1.2rem' : '1.75rem', fontFamily: "'Syne',sans-serif", color: valueColor ?? '#fff' }}>
+        <div className="flex-1 min-w-0 px-4 py-4 border-r-[3px] border-black last:border-r-0 bg-white group hover:bg-[#FFFDF0] transition-colors">
+            <p className="text-[11px] font-black uppercase tracking-[0.1em] text-black/50 mb-1.5">{label}</p>
+            <p className="font-black leading-none mb-3 text-black" style={{ fontSize: isLong ? '1.4rem' : '2rem', fontFamily: "'Syne',sans-serif" }}>
                 {value}
             </p>
-            <div className="h-[2px] w-7 rounded-full mb-1.5" style={{ background: barColor }} />
-            <p className="text-[10px] text-neutral-600">{sub}</p>
+            <div className="h-[5px] w-10 border-[2px] border-black shadow-[2px_2px_0_#000] mb-2 group-hover:w-full transition-all duration-300" style={{ background: barColor }} />
+            <p className="text-[11px] font-bold text-black/70">{sub}</p>
         </div>
     )
 }
@@ -345,7 +350,7 @@ export default function DashboardPage() {
 
     const firstName = session?.user?.name?.split(" ")[0] || "Penjelajah"
     const hour = new Date().getHours()
-    const greeting = hour < 12 ? "Selamat pagi" : hour < 18 ? "Selamat siang" : "Selamat malam"
+    const greeting = hour < 12 ? "Selamat Pagi" : hour < 18 ? "Selamat Siang" : "Selamat Malam"
 
     useEffect(() => {
         if (!session?.user?.id) return
@@ -381,43 +386,38 @@ export default function DashboardPage() {
         : '-'
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-8 pb-32">
 
             {/* ── Hero ─────────────────────────────────────────────────────── */}
             <motion.div initial="hidden" animate="show" variants={stagger}>
                 <motion.div
                     variants={fadeUp}
-                    className="relative rounded-2xl overflow-hidden border border-indigo-500/[0.12] px-7 py-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6"
-                    style={{ background: "linear-gradient(135deg,rgba(99,102,241,0.09) 0%,rgba(139,92,246,0.06) 50%,rgba(8,8,16,0) 100%)" }}
+                    className="relative px-7 py-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 bg-[#00FFFF] border-[4px] border-black shadow-[8px_8px_0_#000]"
                 >
-                    <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: "radial-gradient(rgba(99,102,241,0.18) 1px,transparent 1px)", backgroundSize: "24px 24px", maskImage: "radial-gradient(ellipse 60% 100% at 90% 50%,black 10%,transparent 70%)", WebkitMaskImage: "radial-gradient(ellipse 60% 100% at 90% 50%,black 10%,transparent 70%)" }} />
-                    <div className="absolute top-0 left-0 right-0 h-px" style={{ background: "linear-gradient(90deg,transparent,rgba(139,92,246,0.55) 40%,rgba(99,102,241,0.55) 60%,transparent)" }} />
-                    <div className="absolute right-0 top-0 h-full w-72 pointer-events-none opacity-[0.07]" style={{ background: "radial-gradient(ellipse at right center,#6366f1,transparent 70%)" }} />
+                    <div className="absolute inset-0 pointer-events-none opacity-[0.1]" style={{ backgroundImage: "radial-gradient(black 2px, transparent 2px)", backgroundSize: "20px 20px" }} />
 
-                    <div className="relative">
-                        <div className="flex items-center gap-2 mb-2">
-                            <span className="relative flex h-[7px] w-[7px]">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-60" />
-                                <span className="relative inline-flex rounded-full h-[7px] w-[7px] bg-indigo-400" />
+                    <div className="relative z-10">
+                        <div className="flex items-center gap-2 mb-3">
+                            <span className="inline-block px-2 py-1 bg-[#FFFF00] border-2 border-black text-[10px] font-black uppercase tracking-widest text-black shadow-[2px_2px_0_#000]">
+                                {greeting}
                             </span>
-                            <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-indigo-400">{greeting}</span>
                         </div>
-                        <h1 className="text-[28px] sm:text-[34px] font-extrabold text-white leading-tight mb-2" style={{ fontFamily: "'Syne',sans-serif" }}>
-                            Selamat datang kembali,{" "}
-                            <span style={{ backgroundImage: "linear-gradient(135deg,#a5b4fc,#c084fc)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+                        <h1 className="text-[32px] sm:text-[40px] font-black text-black leading-tight mb-3" style={{ fontFamily: "'Syne',sans-serif" }}>
+                            Selamat Datang,{" "}
+                            <span className="inline-block bg-[#FF00FF] text-white px-2 mt-1 border-[3px] border-black shadow-[4px_4px_0_#000] -rotate-1">
                                 {firstName}
                             </span>.
                         </h1>
-                        <p className="text-sm text-neutral-500 max-w-sm leading-relaxed">Siap untuk menyimpan kenangan baru Anda di peta?</p>
+                        <p className="text-base font-bold text-black/70 max-w-7xl w-full leading-relaxed">Siap untuk menyimpan kenangan baru Anda di peta?</p>
                     </div>
 
-                    <div className="flex items-center gap-3 shrink-0 relative">
-                        <Link href="/memories/create" className="relative inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white overflow-hidden"
-                            style={{ background: "linear-gradient(135deg,#6366f1,#8b5cf6)", boxShadow: "0 4px 20px rgba(99,102,241,0.35),inset 0 1px 0 rgba(255,255,255,0.1)" }}>
-                            <span className="absolute inset-0 bg-white/0 hover:bg-white/[0.08] transition-colors rounded-xl" />
-                            <span className="relative">Tambah Kenangan</span>
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0 relative z-10">
+                        <Link href="/memories/create" className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-black text-black bg-[#FFFF00] border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all uppercase">
+                            <Plus className="w-5 h-5" />
+                            <span>Tambah Kenangan</span>
                         </Link>
-                        <Link href="/map" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-neutral-400 border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.07] hover:text-white hover:border-white/[0.14] transition-all">
+                        <Link href="/map" className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-black text-black bg-white border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all uppercase hover:bg-[#00FF00]">
+                            <Globe className="w-5 h-5" />
                             <span>Jelajahi Peta</span>
                         </Link>
                     </div>
@@ -427,34 +427,28 @@ export default function DashboardPage() {
             {/* ── Floating Streak Banner ────────────────────────────────────── */}
             {streakData !== null && showStreakBanner && (
                 <div className="fixed bottom-6 right-4 md:bottom-8 md:right-8 z-50 w-[calc(100%-2rem)] md:w-auto max-w-sm pointer-events-auto">
-                    <motion.div initial={{ opacity: 0, y: 50, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ type: "spring", stiffness: 300, damping: 25 }}>
-                        <div className="relative rounded-2xl border p-4 flex items-center justify-between gap-4 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.5)]"
-                            style={{ background: "linear-gradient(135deg,rgba(20,20,20,0.95),rgba(10,10,10,0.98))", borderColor: streakData.alreadyClaimed ? "rgba(34,197,94,0.25)" : "rgba(234,88,12,0.25)", backdropFilter: "blur(12px)" }}>
-                            <button onClick={() => setShowStreakBanner(false)} className="absolute -top-2.5 -right-2.5 p-1 bg-neutral-900 border border-white/10 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded-full transition-colors z-10 shadow-lg">
-                                <X className="w-3.5 h-3.5" />
+                    <motion.div initial={{ opacity: 0, y: 50, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
+                        <div className="relative border-[4px] border-black bg-white p-5 flex items-center justify-between gap-4 shadow-[8px_8px_0_#000]">
+                            <button onClick={() => setShowStreakBanner(false)} className="absolute -top-3 -right-3 p-1.5 bg-[#FF00FF] border-[3px] border-black text-white hover:bg-black hover:text-[#FF00FF] rounded-none transition-colors z-10 shadow-[4px_4px_0_#000]">
+                                <X className="w-4 h-4" />
                             </button>
-                            <div className="flex items-center gap-3 min-w-0 pr-4">
-                                <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                                    style={{ background: streakData.alreadyClaimed ? "rgba(34,197,94,0.15)" : "rgba(234,88,12,0.15)", border: streakData.alreadyClaimed ? "1px solid rgba(34,197,94,0.3)" : "1px solid rgba(234,88,12,0.3)" }}>
-                                    <Flame className={`w-5 h-5 ${streakData.alreadyClaimed ? "text-green-400" : "text-orange-400"}`} />
+                            <div className="flex items-center gap-4 min-w-0 pr-4">
+                                <div className={`w-12 h-12 flex items-center justify-center flex-shrink-0 border-[3px] border-black shadow-[3px_3px_0_#000] ${streakData.alreadyClaimed ? "bg-[#00FF00]" : "bg-[#FFFF00]"}`}>
+                                    <Flame className={`w-6 h-6 text-black`} />
                                 </div>
                                 <div className="min-w-0 flex-1">
-                                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                                        <span className="text-lg font-black text-white leading-none whitespace-nowrap" style={{ fontFamily: "'Syne',sans-serif" }}>{streakData.currentStreak}</span>
-                                        <span className="text-xs text-neutral-400 whitespace-nowrap">hari streak</span>
-                                        {streakData.alreadyClaimed
-                                            ? <span className="flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap" style={{ background: "rgba(34,197,94,0.1)", color: "#4ade80", border: "1px solid rgba(34,197,94,0.2)" }}><CheckCircle2 className="w-3 h-3" />Sudah klaim</span>
-                                            : <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap" style={{ background: "rgba(251,191,36,0.1)", color: "#fbbf24", border: "1px solid rgba(251,191,36,0.2)" }}>Belum klaim</span>
-                                        }
+                                    <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 mb-1">
+                                        <span className="text-2xl font-black text-black leading-none" style={{ fontFamily: "'Syne',sans-serif" }}>{streakData.currentStreak}</span>
+                                        <span className="text-xs font-bold text-black/60 uppercase">hari streak</span>
                                     </div>
-                                    <p className="text-[11px] text-neutral-500 mt-1 truncate">{streakData.alreadyClaimed ? "Streak Anda aman hari ini!" : "Jangan lewatkan streak Anda!"}</p>
+                                    {streakData.alreadyClaimed
+                                        ? <span className="inline-flex items-center gap-1 text-[10px] font-black px-2 py-0.5 bg-[#00FF00] text-black border-2 border-black uppercase tracking-wider"><CheckCircle2 className="w-3 h-3" />Sudah klaim</span>
+                                        : <span className="inline-block text-[10px] font-black px-2 py-0.5 bg-[#FFFF00] text-black border-2 border-black uppercase tracking-wider">Belum klaim</span>
+                                    }
                                 </div>
                             </div>
-                            <Link href="/streak" className="flex items-center justify-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg transition-all flex-shrink-0 whitespace-nowrap min-w-[max-content]"
-                                style={streakData.alreadyClaimed
-                                    ? { background: "rgba(255,255,255,0.05)", color: "#a3a3a3", border: "1px solid rgba(255,255,255,0.1)" }
-                                    : { background: "linear-gradient(135deg,#ea580c,#f97316)", color: "white", boxShadow: "0 4px 14px rgba(234,88,12,0.3)" }}>
-                                {streakData.alreadyClaimed ? "Detail" : "Klaim"}<ChevronRight className="w-3.5 h-3.5" />
+                            <Link href="/streak" className={`flex items-center justify-center gap-1 text-xs font-black px-4 py-2 border-[3px] border-black shadow-[3px_3px_0_#000] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0_#000] uppercase ${streakData.alreadyClaimed ? "bg-white" : "bg-[#00FFFF]"}`}>
+                                {streakData.alreadyClaimed ? "Detail" : "Klaim"}<ChevronRight className="w-4 h-4" />
                             </Link>
                         </div>
                     </motion.div>
@@ -465,40 +459,39 @@ export default function DashboardPage() {
             <AnimatedSection>
                 <motion.div variants={fadeUp} className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-xl bg-indigo-500/[0.08] border border-indigo-500/[0.15] flex items-center justify-center">
-                            <TrendingUp className="w-3.5 h-3.5 text-indigo-400" />
+                        <div className="w-10 h-10 bg-[#FF00FF] border-[3px] border-black shadow-[3px_3px_0_#000] flex items-center justify-center">
+                            <TrendingUp className="w-5 h-5 text-white" />
                         </div>
                         <div>
-                            <h2 className="text-[15px] font-bold text-white leading-none" style={{ fontFamily: "'Syne',sans-serif" }}>Statistik Kenangan</h2>
-                            <p className="text-[10px] text-neutral-600 mt-0.5">Perjalanan Anda dalam angka</p>
+                            <h2 className="text-[18px] font-black text-black leading-none" style={{ fontFamily: "'Syne',sans-serif" }}>Statistik Kenangan</h2>
+                            <p className="text-[12px] font-bold text-black/50 mt-1">Perjalanan Anda dalam angka</p>
                         </div>
                     </div>
-                    <Link href="/memories" className="group flex items-center gap-1.5 text-xs font-medium text-indigo-400 hover:text-indigo-300 transition-all">
-                        <span>Lihat Jurnal</span><ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                    <Link href="/memories" className="group flex items-center gap-1.5 text-xs font-black text-black bg-[#FFFF00] px-3 py-2 border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0_#000] transition-all uppercase tracking-wide">
+                        <span>Lihat Jurnal</span><ArrowRight className="w-3.5 h-3.5" />
                     </Link>
                 </motion.div>
 
-                <motion.div variants={fadeUp} className="rounded-2xl overflow-hidden"
-                    style={{ background: 'linear-gradient(160deg,rgba(255,255,255,0.028),rgba(255,255,255,0.008))', border: '1px solid rgba(255,255,255,0.07)' }}>
+                <motion.div variants={fadeUp} className="border-[4px] border-black bg-white shadow-[8px_8px_0_#000]">
                     {/* Mobile 2×2 */}
                     <div className="grid grid-cols-2 sm:hidden">
                         {[
-                            { label: 'Kenangan', value: stats.totalMemories, barColor: '#6366f1', sub: '+1 minggu ini' },
-                            { label: 'Tempat', value: stats.uniqueLocations, barColor: '#10b981', sub: 'Di berbagai kota' },
-                            { label: 'Perasaan Utama', value: emotionDisplay, barColor: '#f43f5e', valueColor: '#fb7185', sub: 'Paling sering' },
-                            { label: 'Foto', value: stats.totalPhotos, barColor: '#f59e0b', sub: 'Terlampir' },
+                            { label: 'Kenangan', value: stats.totalMemories, barColor: '#00FFFF', sub: '+1 minggu ini' },
+                            { label: 'Tempat', value: stats.uniqueLocations, barColor: '#00FF00', sub: 'Di berbagai kota' },
+                            { label: 'Perasaan Utama', value: emotionDisplay, barColor: '#FF00FF', sub: 'Paling sering' },
+                            { label: 'Foto', value: stats.totalPhotos, barColor: '#FFFF00', sub: 'Terlampir' },
                         ].map((item, i) => (
-                            <div key={item.label} className="px-4 py-4" style={{ borderRight: i % 2 === 0 ? '1px solid rgba(255,255,255,0.06)' : 'none', borderBottom: i < 2 ? '1px solid rgba(255,255,255,0.06)' : 'none' }}>
+                            <div key={item.label} style={{ borderRight: i % 2 === 0 ? '3px solid black' : 'none', borderBottom: i < 2 ? '3px solid black' : 'none' }}>
                                 <StatBar {...item} />
                             </div>
                         ))}
                     </div>
                     {/* Desktop row */}
-                    <div className="hidden sm:flex px-2 py-4">
-                        <StatBar label="Kenangan" value={stats.totalMemories} barColor="#6366f1" sub="+1 minggu ini" />
-                        <StatBar label="Tempat" value={stats.uniqueLocations} barColor="#10b981" sub="Di berbagai kota" />
-                        <StatBar label="Perasaan Utama" value={emotionDisplay} barColor="#f43f5e" valueColor="#fb7185" sub="Paling sering" />
-                        <StatBar label="Foto" value={stats.totalPhotos} barColor="#f59e0b" sub="Terlampir" />
+                    <div className="hidden sm:flex">
+                        <StatBar label="Kenangan" value={stats.totalMemories} barColor="#00FFFF" sub="+1 minggu ini" />
+                        <StatBar label="Tempat" value={stats.uniqueLocations} barColor="#00FF00" sub="Di berbagai kota" />
+                        <StatBar label="Perasaan Utama" value={emotionDisplay} barColor="#FF00FF" sub="Paling sering" />
+                        <StatBar label="Foto" value={stats.totalPhotos} barColor="#FFFF00" sub="Terlampir" />
                     </div>
                 </motion.div>
             </AnimatedSection>
@@ -506,82 +499,65 @@ export default function DashboardPage() {
             {/* ── Activity Section: Heatmap (left) + Calendar (right) ───────── */}
             <AnimatedSection>
                 {/* Mobile Tab Switcher */}
-                <div className="flex lg:hidden rounded-xl overflow-hidden mb-5 border border-white/[0.07]"
-                    style={{ background: 'rgba(255,255,255,0.03)' }}>
+                <div className="flex lg:hidden mb-5 border-[3px] border-black shadow-[4px_4px_0_#000] bg-white">
                     {(['graph', 'calendar'] as const).map(t => (
                         <button
                             key={t}
                             onClick={() => setMobileTab(t)}
-                            className="flex-1 py-2.5 text-[11px] font-semibold transition-all flex items-center justify-center gap-2"
+                            className="flex-1 py-3 text-[11px] font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2 border-r-[3px] border-black last:border-r-0"
                             style={{
-                                background: mobileTab === t ? 'rgba(139,92,246,0.15)' : 'transparent',
-                                color: mobileTab === t ? '#c4b5fd' : 'rgba(115,115,115,1)',
-                                borderBottom: mobileTab === t ? '2px solid rgba(139,92,246,0.6)' : '2px solid transparent',
+                                background: mobileTab === t ? '#FFFF00' : 'white',
+                                color: 'black',
                             }}
                         >
-                            {t === 'graph' ? <Activity className="w-3.5 h-3.5" /> : <CalendarDays className="w-3.5 h-3.5" />}
-                            {t === 'graph' ? 'Contribution Graph' : '30 Hari Terakhir'}
+                            {t === 'graph' ? <Activity className="w-4 h-4" /> : <CalendarDays className="w-4 h-4" />}
+                            {t === 'graph' ? 'Contribution' : '30 Hari'}
                         </button>
                     ))}
                 </div>
 
                 {/* Section header (Desktop only) */}
                 <motion.div variants={fadeUp} className="hidden lg:flex items-center gap-3 mb-5">
-                    <div className="w-8 h-8 rounded-xl bg-violet-500/[0.08] border border-violet-500/[0.15] flex items-center justify-center">
-                        <Activity className="w-3.5 h-3.5 text-violet-400" />
+                    <div className="w-10 h-10 bg-[#00FF00] border-[3px] border-black shadow-[3px_3px_0_#000] flex items-center justify-center">
+                        <Activity className="w-5 h-5 text-black" />
                     </div>
                     <div>
-                        <h2 className="text-[15px] font-bold text-white leading-none" style={{ fontFamily: "'Syne',sans-serif" }}>Grafik Aktivitas</h2>
-                        <p className="text-[10px] text-neutral-600 mt-0.5">Contribution graph & kalender 30 hari terakhir</p>
+                        <h2 className="text-[18px] font-black text-black leading-none" style={{ fontFamily: "'Syne',sans-serif" }}>Grafik Aktivitas</h2>
+                        <p className="text-[12px] font-bold text-black/50 mt-1">Contribution graph & kalender 30 hari terakhir</p>
                     </div>
                 </motion.div>
 
                 {/* 2-column layout on desktop, stacked/tabbed on mobile */}
-                <div className="flex flex-col lg:flex-row gap-4">
+                <div className="flex flex-col lg:flex-row gap-6">
 
                     {/* ── LEFT: GitHub Heatmap ─────────────────────────────── */}
                     <motion.div
                         variants={fadeUp}
-                        className={`relative rounded-2xl p-5 overflow-hidden flex-1 min-w-0 ${mobileTab !== 'graph' ? 'hidden lg:block' : 'block'}`}
-                        style={{ background: 'linear-gradient(160deg,rgba(255,255,255,0.025),rgba(255,255,255,0.008))', border: '1px solid rgba(255,255,255,0.06)' }}
+                        className={`relative p-6 bg-white border-[4px] border-black shadow-[8px_8px_0_#000] flex-1 min-w-0 ${mobileTab !== 'graph' ? 'hidden lg:block' : 'block'}`}
                     >
-                        {/* Top glow */}
-                        <div className="absolute top-0 left-0 right-0 h-px" style={{ background: 'linear-gradient(90deg,transparent,rgba(139,92,246,0.4) 50%,transparent)' }} />
-
-                        {/* Sub-header */}
-                        <div className="flex items-center gap-2 mb-4">
-                            <Activity className="w-3.5 h-3.5 text-violet-400" />
-                            <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-white">Contribution Graph</span>
-                            <span className="text-[9px] text-neutral-600 ml-1">— 52 minggu terakhir</span>
+                        <div className="flex items-center gap-2 mb-6 bg-black text-white w-fit px-3 py-1.5 border-[2px] border-black shadow-[2px_2px_0_#FF00FF]">
+                            <Activity className="w-4 h-4 text-[#00FFFF]" />
+                            <span className="text-[11px] font-black uppercase tracking-[0.1em]">Contribution Graph</span>
                         </div>
 
                         <ActivityHeatmap memories={memories} />
                     </motion.div>
 
-                    {/* ── RIGHT: 30-Day Calendar + Streak Info ─────────────── */}
+                    {/* ── RIGHT: 30-Day Calendar ─────────────── */}
                     <motion.div
                         variants={fadeUp}
-                        className={`relative rounded-2xl p-5 overflow-hidden w-full lg:w-[325px] flex-shrink-0 ${mobileTab !== 'calendar' ? 'hidden lg:block' : 'block'}`}
-                        style={{ background: 'linear-gradient(160deg,rgba(255,255,255,0.025),rgba(255,255,255,0.008))', border: '1px solid rgba(255,255,255,0.06)' }}
+                        className={`relative p-6 bg-white border-[4px] border-black shadow-[8px_8px_0_#000] w-full lg:w-[360px] flex-shrink-0 ${mobileTab !== 'calendar' ? 'hidden lg:block' : 'block'}`}
                     >
-                        {/* Top glow */}
-                        <div className="absolute top-0 left-0 right-0 h-px" style={{ background: 'linear-gradient(90deg,transparent,rgba(234,88,12,0.4) 50%,transparent)' }} />
-
                         {streakData ? (
                             <ActivityCalendar
                                 memories={memories}
                                 currentStreak={streakData.currentStreak}
                                 lastClaimedAt={streakData.lastClaimedAt}
-                                longestStreak={streakData.longestStreak}
-                                totalActiveDays={streakData.totalActiveDays}
-                                nextMilestone={streakData.nextMilestone}
-                                daysToNext={streakData.daysToNext}
-                                alreadyClaimed={streakData.alreadyClaimed}
                                 permanentDates={streakData.activeDates}
                             />
                         ) : (
                             <div className="flex items-center justify-center h-48">
-                                <Loader2 className="w-5 h-5 text-orange-400 animate-spin" />
+                                <Loader2 className="w-6 h-6 text-black animate-spin" />
                             </div>
                         )}
                     </motion.div>

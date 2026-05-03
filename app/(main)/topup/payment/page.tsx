@@ -29,27 +29,27 @@ function formatRupiah(n: number) {
 const STATUS_CONFIG = {
     PENDING: {
         icon: Clock,
-        label: "Menunggu Verifikasi",
+        label: "MENUNGGU VERIFIKASI",
         description: "Pembayaran sedang menunggu konfirmasi admin",
-        color: "text-amber-400",
-        bg: "rgba(251,191,36,0.08)",
-        border: "rgba(251,191,36,0.2)",
+        color: "text-black",
+        bg: "bg-[#FFFF00]",
+        border: "border-black",
     },
     COMPLETED: {
         icon: CheckCircle2,
-        label: "Poin Sudah Ditambahkan!",
+        label: "POIN SUDAH DITAMBAHKAN!",
         description: "Topup berhasil. Poin telah ditambahkan ke akun kamu.",
-        color: "text-emerald-400",
-        bg: "rgba(52,211,153,0.08)",
-        border: "rgba(52,211,153,0.2)",
+        color: "text-black",
+        bg: "bg-[#00FF00]",
+        border: "border-black",
     },
     CANCELLED: {
         icon: XCircle,
-        label: "Dibatalkan",
+        label: "DIBATALKAN",
         description: "Order ini telah dibatalkan.",
-        color: "text-rose-400",
-        bg: "rgba(251,113,133,0.08)",
-        border: "rgba(251,113,133,0.2)",
+        color: "text-white",
+        bg: "bg-[#FF00FF]",
+        border: "border-black",
     },
 }
 
@@ -94,7 +94,9 @@ export default function TopupPaymentPage() {
 
     const copyOrderId = () => {
         navigator.clipboard.writeText(orderId ?? "")
-        toast.success("ID Order disalin!")
+        toast.success("ID Order disalin!", {
+            style: { border: "3px solid black", borderRadius: 0, background: "#00FF00", color: "#000", fontWeight: 900 }
+        })
     }
 
     const handleCancel = async () => {
@@ -107,12 +109,21 @@ export default function TopupPaymentPage() {
                 body: JSON.stringify({ status: "CANCELLED" }),
             })
             const data = await res.json()
-            if (!res.ok) { toast.error(data.error || "Gagal membatalkan pesanan"); return }
+            if (!res.ok) { 
+                toast.error(data.error || "Gagal membatalkan pesanan", {
+                    style: { border: "3px solid black", borderRadius: 0, background: "#FF00FF", color: "#FFF", fontWeight: 900 }
+                })
+                return 
+            }
             setOrder(data)
             setShowCancelModal(false)
-            toast.success("Pesanan berhasil dibatalkan")
+            toast.success("Pesanan berhasil dibatalkan", {
+                style: { border: "3px solid black", borderRadius: 0, background: "#00FF00", color: "#000", fontWeight: 900 }
+            })
         } catch {
-            toast.error("Terjadi kesalahan")
+            toast.error("Terjadi kesalahan", {
+                style: { border: "3px solid black", borderRadius: 0, background: "#FF00FF", color: "#FFF", fontWeight: 900 }
+            })
         } finally {
             setCancelling(false)
         }
@@ -124,11 +135,15 @@ export default function TopupPaymentPage() {
 
         const allowed = ["image/jpeg", "image/jpg", "image/png", "image/webp"]
         if (!allowed.includes(file.type)) {
-            toast.error("Format tidak didukung. Gunakan JPG, PNG, atau WebP.")
+            toast.error("Format tidak didukung. Gunakan JPG, PNG, atau WebP.", {
+                style: { border: "3px solid black", borderRadius: 0, background: "#FF00FF", color: "#FFF", fontWeight: 900 }
+            })
             return
         }
         if (file.size > 5 * 1024 * 1024) {
-            toast.error("Ukuran file maksimal 5MB")
+            toast.error("Ukuran file maksimal 5MB", {
+                style: { border: "3px solid black", borderRadius: 0, background: "#FF00FF", color: "#FFF", fontWeight: 900 }
+            })
             return
         }
 
@@ -150,16 +165,22 @@ export default function TopupPaymentPage() {
             })
             const data = await res.json()
             if (!res.ok) {
-                toast.error(data.error || "Gagal mengunggah bukti")
+                toast.error(data.error || "Gagal mengunggah bukti", {
+                    style: { border: "3px solid black", borderRadius: 0, background: "#FF00FF", color: "#FFF", fontWeight: 900 }
+                })
                 return
             }
 
             setOrder(prev => prev ? { ...prev, proofImage: data.proofImage } : null)
             setProofFile(null)
             setProofPreview(null)
-            toast.success("Bukti transfer berhasil dikirim!")
+            toast.success("Bukti transfer berhasil dikirim!", {
+                style: { border: "3px solid black", borderRadius: 0, background: "#00FF00", color: "#000", fontWeight: 900 }
+            })
         } catch {
-            toast.error("Terjadi kesalahan saat upload")
+            toast.error("Terjadi kesalahan saat upload", {
+                style: { border: "3px solid black", borderRadius: 0, background: "#FF00FF", color: "#FFF", fontWeight: 900 }
+            })
         } finally {
             setUploading(false)
         }
@@ -174,7 +195,7 @@ export default function TopupPaymentPage() {
     if (loading) {
         return (
             <div className="flex-1 flex items-center justify-center min-h-[50vh]">
-                <Loader2 className="w-8 h-8 text-amber-400 animate-spin" />
+                <Loader2 className="w-12 h-12 text-black animate-spin" />
             </div>
         )
     }
@@ -186,44 +207,48 @@ export default function TopupPaymentPage() {
     const hasProof = !!order.proofImage
 
     return (
-        <div className="min-h-screen w-full" style={{ fontFamily: "Outfit, sans-serif" }}>
-            {/* Ambient BG */}
-            <div className="fixed inset-0 pointer-events-none -z-10">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[400px] bg-amber-500/5 rounded-full blur-3xl" />
-            </div>
+        <div className="min-h-screen w-full relative">
+            {/* Grid Pattern Background */}
+            <div className="absolute inset-0 pointer-events-none z-0"
+                style={{
+                    backgroundImage: "linear-gradient(#00000010 1px, transparent 1px), linear-gradient(90deg, #00000010 1px, transparent 1px)",
+                    backgroundSize: "40px 40px"
+                }}
+            />
 
-            <div className="max-w-lg mx-auto px-4 sm:px-6 py-8 sm:py-12">
+            <div className="max-w-lg mx-auto px-4 sm:px-6 py-8 sm:py-12 relative z-10">
                 {/* Back */}
                 <Link
                     href="/topup"
-                    className="inline-flex items-center gap-2 text-sm text-neutral-500 hover:text-neutral-300 transition-colors mb-8 group"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-white border-[3px] border-black text-[12px] font-black uppercase shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] hover:bg-[#FFFF00] transition-all mb-8"
                 >
-                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-                    Topup lagi / Riwayat
+                    <ArrowLeft className="w-5 h-5" />
+                    KEMBALI
                 </Link>
 
                 {/* Status Banner */}
                 <motion.div
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mb-6 rounded-2xl p-4 flex items-center gap-3"
-                    style={{ background: statusCfg.bg, border: `1px solid ${statusCfg.border}` }}
+                    className={`mb-6 p-5 border-[4px] border-black shadow-[6px_6px_0_#000] flex items-center gap-4 ${statusCfg.bg}`}
                 >
-                    <StatusIcon className={`w-5 h-5 shrink-0 ${statusCfg.color}`} />
+                    <StatusIcon className={`w-8 h-8 shrink-0 ${statusCfg.color}`} />
                     <div className="flex-1">
-                        <p className={`text-sm font-bold ${statusCfg.color}`}>{statusCfg.label}</p>
-                        <p className="text-xs text-neutral-400 mt-0.5">{statusCfg.description}</p>
+                        <p className={`text-[16px] font-black ${statusCfg.color}`}>{statusCfg.label}</p>
+                        <p className={`text-[12px] font-bold ${statusCfg.color} mt-0.5 opacity-80`}>{statusCfg.description}</p>
                         {order.note && (
-                            <p className="text-xs text-neutral-500 mt-1 italic">Catatan: {order.note}</p>
+                            <p className="text-[12px] font-bold text-black mt-2 bg-white border-[2px] border-black p-2 shadow-[2px_2px_0_#000] italic">
+                                "{order.note}"
+                            </p>
                         )}
                     </div>
                     {order.status === "PENDING" && (
                         <button
                             onClick={() => fetchOrder(true)}
-                            className="shrink-0 p-1.5 rounded-lg text-neutral-500 hover:text-neutral-200 hover:bg-white/[0.06] transition-colors"
+                            className="shrink-0 w-10 h-10 bg-white border-[3px] border-black flex items-center justify-center hover:bg-[#00FFFF] shadow-[2px_2px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[4px_4px_0_#000] transition-all"
                             title="Refresh status"
                         >
-                            <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
+                            <RefreshCw className={`w-5 h-5 text-black ${refreshing ? "animate-spin" : ""}`} />
                         </button>
                     )}
                 </motion.div>
@@ -233,42 +258,45 @@ export default function TopupPaymentPage() {
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.05 }}
-                    className="rounded-2xl overflow-hidden mb-6"
-                    style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)" }}
+                    className="mb-6 bg-white border-[4px] border-black shadow-[8px_8px_0_#000] flex flex-col"
                 >
-                    <div className="p-5 border-b" style={{ borderColor: "rgba(255,255,255,0.07)" }}>
-                        <p className="text-xs font-bold tracking-widest text-neutral-600 uppercase mb-3">Rincian Order</p>
-                        <div className="space-y-3">
+                    <div className="p-5 border-b-[4px] border-black bg-neutral-100">
+                        <p className="text-[14px] font-black tracking-widest text-black uppercase mb-4 bg-[#FFFF00] border-[2px] border-black inline-block px-2 py-0.5 shadow-[2px_2px_0_#000]">
+                            Rincian Order
+                        </p>
+                        <div className="space-y-4">
                             <div className="flex justify-between items-center">
-                                <span className="text-sm text-neutral-400">Nominal Poin</span>
-                                <div className="flex items-center gap-1.5">
-                                    <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-                                    <span className="text-sm font-bold text-white">{order.amount.toLocaleString("id-ID")} poin</span>
+                                <span className="text-[14px] font-bold text-black/60 uppercase">Nominal Poin</span>
+                                <div className="flex items-center gap-1.5 bg-white border-[2px] border-black px-2 py-1 shadow-[2px_2px_0_#000]">
+                                    <Star className="w-4 h-4 text-black fill-black" />
+                                    <span className="text-[14px] font-black text-black">{order.amount.toLocaleString("id-ID")} poin</span>
                                 </div>
                             </div>
                             <div className="flex justify-between items-center">
-                                <span className="text-sm text-neutral-400">Total Bayar</span>
-                                <span className="text-base font-black text-amber-400">{formatRupiah(order.price)}</span>
+                                <span className="text-[14px] font-bold text-black/60 uppercase">Total Bayar</span>
+                                <span className="text-[18px] font-black text-[#FF3300] bg-white border-[2px] border-black px-2 py-1 shadow-[2px_2px_0_#000]">
+                                    {formatRupiah(order.price)}
+                                </span>
                             </div>
                             <div className="flex justify-between items-center">
-                                <span className="text-sm text-neutral-400">Waktu Order</span>
-                                <span className="text-sm text-neutral-300">
+                                <span className="text-[14px] font-bold text-black/60 uppercase">Waktu Order</span>
+                                <span className="text-[12px] font-black text-black">
                                     {new Date(order.createdAt).toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" })}
                                 </span>
                             </div>
                         </div>
                     </div>
                     {/* Order ID */}
-                    <div className="px-5 py-3 flex items-center justify-between gap-2">
+                    <div className="px-5 py-4 flex items-center justify-between gap-2 bg-white">
                         <div>
-                            <p className="text-[10px] text-neutral-600 uppercase tracking-widest">ID Order</p>
-                            <p className="text-xs font-mono text-neutral-400 mt-0.5 break-all">{order.id}</p>
+                            <p className="text-[10px] font-black text-black/60 uppercase tracking-widest mb-1">ID Order</p>
+                            <p className="text-[12px] font-black text-black break-all">{order.id}</p>
                         </div>
                         <button
                             onClick={copyOrderId}
-                            className="shrink-0 p-2 rounded-xl hover:bg-white/[0.06] text-neutral-500 hover:text-neutral-200 transition-all"
+                            className="shrink-0 w-10 h-10 bg-white border-[3px] border-black flex items-center justify-center hover:bg-[#FFFF00] shadow-[2px_2px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[4px_4px_0_#000] transition-all"
                         >
-                            <Copy className="w-4 h-4" />
+                            <Copy className="w-5 h-5 text-black" />
                         </button>
                     </div>
                 </motion.div>
@@ -281,29 +309,30 @@ export default function TopupPaymentPage() {
                             initial={{ opacity: 0, y: 12 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 }}
-                            className="rounded-2xl overflow-hidden mb-6"
-                            style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)" }}
+                            className="mb-6 bg-white border-[4px] border-black shadow-[8px_8px_0_#000]"
                         >
                             <div className="p-5">
-                                <div className="flex items-center gap-2 mb-4">
-                                    <Smartphone className="w-4 h-4 text-neutral-400" />
-                                    <p className="text-sm font-bold text-white">Bayar via QRIS</p>
+                                <div className="flex items-center gap-3 mb-6">
+                                    <div className="w-10 h-10 bg-[#FF00FF] border-[3px] border-black flex items-center justify-center shadow-[2px_2px_0_#000]">
+                                        <Smartphone className="w-5 h-5 text-white" />
+                                    </div>
+                                    <p className="text-[16px] font-black text-black uppercase">Bayar via QRIS</p>
                                 </div>
 
                                 {/* QRIS Image */}
-                                <div className="flex justify-center mb-4">
-                                    <div className="rounded-2xl p-3 inline-block w-full max-w-xs" style={{ background: "white" }}>
+                                <div className="flex justify-center mb-6">
+                                    <div className="bg-white border-[4px] border-black p-3 shadow-[6px_6px_0_#000] inline-block w-full max-w-xs">
                                         <img
                                             src="/qris.jpeg"
                                             alt="QRIS Payment Code"
-                                            className="w-full h-auto object-contain rounded-xl"
+                                            className="w-full h-auto object-contain border-[2px] border-black"
                                             onError={(e) => {
                                                 const target = e.currentTarget
                                                 target.style.display = "none"
                                                 target.parentElement!.innerHTML = `
-                                                    <div style="width:100%;padding:40px 0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#9ca3af;background:#1a1a2e;border-radius:12px">
-                                                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-                                                        <p style="font-size:12px">QRIS akan ditampilkan disini</p>
+                                                    <div style="width:100%;padding:40px 0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:black;background:#E5E5E5;border:2px solid black;">
+                                                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                                                        <p style="font-size:12px;font-weight:900;text-transform:uppercase;">QRIS Belum Tersedia</p>
                                                     </div>
                                                 `
                                             }}
@@ -312,19 +341,16 @@ export default function TopupPaymentPage() {
                                 </div>
 
                                 {/* Transfer amount */}
-                                <div
-                                    className="rounded-xl p-3 text-center mb-4"
-                                    style={{ background: "rgba(251,191,36,0.05)", border: "1px solid rgba(251,191,36,0.15)" }}
-                                >
-                                    <p className="text-xs text-neutral-500 mb-1">Transfer tepat sebesar</p>
-                                    <p className="text-2xl font-black text-amber-400">{formatRupiah(order.price)}</p>
-                                    <p className="text-[10px] text-neutral-600 mt-1">
-                                        Scan QRIS di atas menggunakan aplikasi mobile banking / e-wallet kamu
+                                <div className="p-4 text-center mb-6 bg-[#FFFF00] border-[4px] border-black shadow-[4px_4px_0_#000]">
+                                    <p className="text-[12px] font-black text-black uppercase mb-1">Transfer tepat sebesar</p>
+                                    <p className="text-[28px] font-black text-[#FF3300] bg-white border-[3px] border-black inline-block px-4 py-1 shadow-[2px_2px_0_#000]">{formatRupiah(order.price)}</p>
+                                    <p className="text-[10px] font-bold text-black/80 mt-3 uppercase">
+                                        Scan QRIS di atas menggunakan aplikasi banking kamu
                                     </p>
                                 </div>
 
                                 {/* Steps */}
-                                <div className="space-y-2">
+                                <div className="space-y-3">
                                     {[
                                         "Scan QRIS di atas menggunakan aplikasi banking kamu",
                                         `Transfer tepat sebesar ${formatRupiah(order.price)}`,
@@ -332,13 +358,10 @@ export default function TopupPaymentPage() {
                                         "Admin akan memverifikasi pembayaran kamu",
                                     ].map((step, i) => (
                                         <div key={i} className="flex items-start gap-3">
-                                            <span
-                                                className="w-5 h-5 rounded-full text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5"
-                                                style={{ background: "rgba(251,191,36,0.15)", color: "#fbbf24" }}
-                                            >
+                                            <span className="w-6 h-6 border-[2px] border-black bg-white text-[12px] font-black flex items-center justify-center shrink-0 mt-0.5 shadow-[2px_2px_0_#000]">
                                                 {i + 1}
                                             </span>
-                                            <p className="text-xs text-neutral-500 leading-relaxed">{step}</p>
+                                            <p className="text-[12px] font-bold text-black uppercase leading-relaxed mt-1">{step}</p>
                                         </div>
                                     ))}
                                 </div>
@@ -350,27 +373,21 @@ export default function TopupPaymentPage() {
                             initial={{ opacity: 0, y: 12 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.15 }}
-                            className="rounded-2xl overflow-hidden mb-6"
-                            style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)" }}
+                            className="mb-6 bg-white border-[4px] border-black shadow-[8px_8px_0_#000]"
                         >
                             <div className="p-5">
-                                <div className="flex items-center justify-between mb-4">
-                                    <div className="flex items-center gap-2">
-                                        <div
-                                            className="w-7 h-7 rounded-lg flex items-center justify-center"
-                                            style={{
-                                                background: hasProof ? "rgba(52,211,153,0.1)" : "rgba(251,191,36,0.1)",
-                                            }}
-                                        >
+                                <div className="flex items-center justify-between mb-5">
+                                    <div className="flex items-center gap-3">
+                                        <div className={`w-10 h-10 border-[3px] border-black flex items-center justify-center shadow-[2px_2px_0_#000] ${hasProof ? "bg-[#00FF00]" : "bg-[#00FFFF]"}`}>
                                             {hasProof
-                                                ? <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                                                : <Upload className="w-4 h-4 text-amber-400" />
+                                                ? <CheckCircle2 className="w-5 h-5 text-black" />
+                                                : <Upload className="w-5 h-5 text-black" />
                                             }
                                         </div>
                                         <div>
-                                            <p className="text-sm font-bold text-white">Bukti Transfer</p>
-                                            <p className="text-[11px] text-neutral-500 mt-0.5">
-                                                {hasProof ? "Bukti sudah dikirim" : "Upload setelah melakukan transfer"}
+                                            <p className="text-[16px] font-black text-black uppercase">Bukti Transfer</p>
+                                            <p className="text-[10px] font-bold text-black/60 uppercase mt-0.5">
+                                                {hasProof ? "Sudah dikirim" : "Wajib di-upload"}
                                             </p>
                                         </div>
                                     </div>
@@ -379,10 +396,9 @@ export default function TopupPaymentPage() {
                                     {hasProof && (
                                         <button
                                             onClick={() => setShowProofModal(true)}
-                                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all"
-                                            style={{ background: "rgba(52,211,153,0.08)", border: "1px solid rgba(52,211,153,0.2)", color: "#34d399" }}
+                                            className="flex items-center gap-2 px-3 py-2 bg-white border-[3px] border-black text-[12px] font-black uppercase shadow-[2px_2px_0_#000] hover:bg-[#FFFF00] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[4px_4px_0_#000] transition-all"
                                         >
-                                            <Eye className="w-3.5 h-3.5" />
+                                            <Eye className="w-4 h-4 text-black" />
                                             Lihat
                                         </button>
                                     )}
@@ -395,71 +411,52 @@ export default function TopupPaymentPage() {
                                         {!proofPreview ? (
                                             <button
                                                 onClick={() => fileInputRef.current?.click()}
-                                                className="w-full rounded-2xl flex flex-col items-center justify-center gap-3 py-8 transition-all group"
-                                                style={{
-                                                    background: "rgba(251,191,36,0.02)",
-                                                    border: "2px dashed rgba(251,191,36,0.2)",
-                                                }}
-                                                onMouseEnter={e => {
-                                                    (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(251,191,36,0.4)"
-                                                    ;(e.currentTarget as HTMLButtonElement).style.background = "rgba(251,191,36,0.04)"
-                                                }}
-                                                onMouseLeave={e => {
-                                                    (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(251,191,36,0.2)"
-                                                    ;(e.currentTarget as HTMLButtonElement).style.background = "rgba(251,191,36,0.02)"
-                                                }}
+                                                className="w-full bg-[#E5E5E5] border-[4px] border-black border-dashed flex flex-col items-center justify-center gap-3 py-8 transition-all hover:bg-[#00FFFF]/20 hover:border-solid"
                                             >
-                                                <div
-                                                    className="w-12 h-12 rounded-2xl flex items-center justify-center"
-                                                    style={{ background: "rgba(251,191,36,0.08)", border: "1px solid rgba(251,191,36,0.15)" }}
-                                                >
-                                                    <ImageIcon className="w-6 h-6 text-amber-400/60" />
+                                                <div className="w-14 h-14 bg-white border-[3px] border-black flex items-center justify-center shadow-[4px_4px_0_#000]">
+                                                    <ImageIcon className="w-7 h-7 text-black" />
                                                 </div>
-                                                <div className="text-center">
-                                                    <p className="text-sm font-semibold text-neutral-400">
-                                                        Klik untuk pilih gambar
+                                                <div className="text-center mt-2">
+                                                    <p className="text-[14px] font-black text-black uppercase">
+                                                        Pilih Gambar Bukti
                                                     </p>
-                                                    <p className="text-xs text-neutral-600 mt-1">
+                                                    <p className="text-[10px] font-bold text-black/60 mt-1 uppercase">
                                                         JPG, PNG, WebP · Maks 5MB
                                                     </p>
                                                 </div>
                                             </button>
                                         ) : (
                                             /* Preview sebelum submit */
-                                            <div className="space-y-3">
-                                                <div className="relative rounded-2xl overflow-hidden" style={{ border: "1px solid rgba(251,191,36,0.2)" }}>
+                                            <div className="space-y-4">
+                                                <div className="relative border-[4px] border-black p-2 bg-white shadow-[4px_4px_0_#000]">
                                                     <img
                                                         src={proofPreview}
                                                         alt="Preview bukti transfer"
-                                                        className="w-full max-h-64 object-contain"
-                                                        style={{ background: "#0d0d14" }}
+                                                        className="w-full max-h-64 object-contain border-[2px] border-black bg-neutral-100"
                                                     />
                                                     <button
                                                         onClick={removeSelectedFile}
-                                                        className="absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center transition-all"
-                                                        style={{ background: "rgba(0,0,0,0.6)", border: "1px solid rgba(255,255,255,0.1)" }}
+                                                        className="absolute -top-3 -right-3 w-8 h-8 bg-[#FF3300] border-[3px] border-black flex items-center justify-center transition-all hover:scale-110"
                                                     >
-                                                        <X className="w-3.5 h-3.5 text-white" />
+                                                        <X className="w-4 h-4 text-white" />
                                                     </button>
                                                 </div>
 
-                                                <div className="flex gap-2">
+                                                <div className="flex gap-3">
                                                     <button
                                                         onClick={() => fileInputRef.current?.click()}
-                                                        className="flex-1 py-2.5 rounded-xl text-xs font-bold transition-all"
-                                                        style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "#9ca3af" }}
+                                                        className="flex-1 py-3 bg-white border-[4px] border-black text-[12px] font-black uppercase shadow-[4px_4px_0_#000] hover:bg-[#E5E5E5] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all"
                                                     >
                                                         Ganti Gambar
                                                     </button>
                                                     <button
                                                         onClick={handleUploadProof}
                                                         disabled={uploading}
-                                                        className="flex-1 py-2.5 rounded-xl text-xs font-black flex items-center justify-center gap-2 transition-all disabled:opacity-40"
-                                                        style={{ background: "linear-gradient(135deg,#f59e0b,#fbbf24)", color: "#1a1000" }}
+                                                        className="flex-1 py-3 bg-[#FFFF00] border-[4px] border-black text-[12px] font-black flex items-center justify-center gap-2 uppercase shadow-[4px_4px_0_#000] hover:bg-[#00FF00] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                                     >
                                                         {uploading
-                                                            ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Mengunggah...</>
-                                                            : <><Upload className="w-3.5 h-3.5" /> Kirim Bukti</>
+                                                            ? <><Loader2 className="w-4 h-4 animate-spin" /> Mengunggah...</>
+                                                            : <><Upload className="w-4 h-4" /> Kirim Bukti</>
                                                         }
                                                     </button>
                                                 </div>
@@ -476,19 +473,15 @@ export default function TopupPaymentPage() {
                                     </div>
                                 ) : (
                                     /* Sudah ada proof — tampilkan thumbnail kecil */
-                                    <div
-                                        className="flex items-center gap-3 p-3 rounded-xl"
-                                        style={{ background: "rgba(52,211,153,0.04)", border: "1px solid rgba(52,211,153,0.12)" }}
-                                    >
+                                    <div className="flex items-center gap-4 p-4 bg-white border-[4px] border-black shadow-[4px_4px_0_#000]">
                                         <img
                                             src={order.proofImage!}
                                             alt="Bukti transfer"
-                                            className="w-14 h-14 object-cover rounded-xl shrink-0"
-                                            style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+                                            className="w-16 h-16 object-cover border-[3px] border-black shrink-0 shadow-[2px_2px_0_#000]"
                                         />
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-bold text-emerald-400">Bukti sudah diterima</p>
-                                            <p className="text-xs text-neutral-500 mt-0.5">Admin akan segera memverifikasi pembayaran kamu</p>
+                                            <p className="text-[14px] font-black text-black uppercase bg-[#00FF00] inline-block px-2 border-[2px] border-black shadow-[2px_2px_0_#000] mb-1">Diterima</p>
+                                            <p className="text-[10px] font-bold text-black/60 uppercase">Tunggu verifikasi admin</p>
                                         </div>
                                     </div>
                                 )}
@@ -500,19 +493,20 @@ export default function TopupPaymentPage() {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.2 }}
-                            className="space-y-4"
+                            className="space-y-5"
                         >
-                            <div className="flex items-start gap-2 text-xs text-neutral-600">
-                                <ShieldAlert className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-                                <p>Simpan ID Order kamu sebagai bukti pembayaran. Poin akan ditambahkan dalam 1×24 jam setelah pembayaran terverifikasi.</p>
+                            <div className="flex items-start gap-3 p-4 bg-[#FF00FF] border-[4px] border-black shadow-[4px_4px_0_#000]">
+                                <ShieldAlert className="w-5 h-5 shrink-0 text-white mt-0.5" />
+                                <p className="text-[11px] font-black text-white uppercase leading-relaxed tracking-wider">
+                                    Simpan ID Order kamu sebagai bukti. Poin akan ditambahkan dalam 1×24 jam setelah diverifikasi.
+                                </p>
                             </div>
 
                             <button
                                 onClick={() => setShowCancelModal(true)}
-                                className="w-full py-3 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all group"
-                                style={{ background: "rgba(251,113,133,0.05)", border: "1px solid rgba(251,113,133,0.15)", color: "#fb7185" }}
+                                className="w-full py-4 bg-white border-[4px] border-black text-[14px] font-black text-[#FF3300] flex items-center justify-center gap-2 uppercase shadow-[4px_4px_0_#000] hover:bg-[#FF3300] hover:text-white hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all"
                             >
-                                <Trash2 className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                                <Trash2 className="w-5 h-5" />
                                 Batalkan Pesanan
                             </button>
                         </motion.div>
@@ -524,11 +518,10 @@ export default function TopupPaymentPage() {
                     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
                         <Link
                             href="/shop"
-                            className="w-full py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-2 transition-all"
-                            style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)", color: "white" }}
+                            className="w-full py-4 bg-[#FFFF00] border-[4px] border-black font-black text-[16px] flex items-center justify-center gap-3 uppercase shadow-[6px_6px_0_#000] hover:bg-[#00FF00] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0_#000] transition-all"
                         >
-                            <Star className="w-4 h-4" />
-                            Belanja di Memory Shop
+                            <Star className="w-5 h-5 text-black" />
+                            Belanja Sekarang
                         </Link>
                     </motion.div>
                 )}
@@ -538,10 +531,9 @@ export default function TopupPaymentPage() {
                     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
                         <Link
                             href="/topup"
-                            className="w-full py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-2 transition-all"
-                            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "#9ca3af" }}
+                            className="w-full py-4 bg-white border-[4px] border-black font-black text-[16px] text-black flex items-center justify-center gap-3 uppercase shadow-[6px_6px_0_#000] hover:bg-[#FFFF00] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0_#000] transition-all"
                         >
-                            <ArrowLeft className="w-4 h-4" />
+                            <ArrowLeft className="w-5 h-5 text-black" />
                             Buat Pesanan Baru
                         </Link>
                     </motion.div>
@@ -555,7 +547,7 @@ export default function TopupPaymentPage() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md"
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
                         onClick={() => !cancelling && setShowCancelModal(false)}
                     >
                         <motion.div
@@ -564,44 +556,36 @@ export default function TopupPaymentPage() {
                             exit={{ scale: 0.9, y: 20 }}
                             transition={{ type: "spring", bounce: 0.3, duration: 0.4 }}
                             onClick={e => e.stopPropagation()}
-                            className="w-full max-w-sm rounded-3xl overflow-hidden"
-                            style={{ background: "#0d0d14", border: "1px solid rgba(251,113,133,0.2)" }}
+                            className="w-full max-w-sm bg-white border-[4px] border-black shadow-[12px_12px_0_#000] p-6 text-center"
                         >
-                            <div className="p-6 text-center">
-                                <div
-                                    className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
-                                    style={{ background: "rgba(251,113,133,0.1)", border: "1px solid rgba(251,113,133,0.2)" }}
+                            <div className="w-16 h-16 bg-[#FF3300] border-[4px] border-black flex items-center justify-center mx-auto mb-5 shadow-[4px_4px_0_#000]">
+                                <AlertTriangle className="w-8 h-8 text-white" />
+                            </div>
+                            <h3 className="text-[20px] font-black text-black uppercase mb-3 bg-[#FFFF00] inline-block px-3 py-1 border-[3px] border-black shadow-[2px_2px_0_#000]">Batalkan Pesanan?</h3>
+                            <p className="text-[12px] font-bold text-black/80 uppercase mb-2">
+                                Pesanan untuk <span className="text-[#FF3300] font-black">{order?.amount.toLocaleString("id-ID")} poin</span> akan dibatalkan.
+                            </p>
+                            <p className="text-[10px] font-bold text-black/60 uppercase mb-6 bg-neutral-100 p-2 border-[2px] border-black border-dashed">
+                                Jika kamu sudah transfer, hubungi admin untuk pengembalian dana.
+                            </p>
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => setShowCancelModal(false)}
+                                    disabled={cancelling}
+                                    className="flex-1 py-3 bg-white border-[3px] border-black text-[12px] font-black uppercase shadow-[4px_4px_0_#000] hover:bg-neutral-100 transition-all disabled:opacity-50"
                                 >
-                                    <AlertTriangle className="w-7 h-7 text-rose-400" />
-                                </div>
-                                <h3 className="text-lg font-black text-white mb-2">Batalkan Pesanan?</h3>
-                                <p className="text-sm text-neutral-400 leading-relaxed mb-1">
-                                    Pesanan untuk <span className="text-white font-bold">{order?.amount.toLocaleString("id-ID")} poin</span> akan dibatalkan.
-                                </p>
-                                <p className="text-xs text-neutral-600 mb-6">
-                                    Jika kamu sudah melakukan transfer, hubungi admin untuk pengembalian dana.
-                                </p>
-                                <div className="flex gap-3">
-                                    <button
-                                        onClick={() => setShowCancelModal(false)}
-                                        disabled={cancelling}
-                                        className="flex-1 py-3 rounded-2xl text-sm font-bold transition-all disabled:opacity-40"
-                                        style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "#9ca3af" }}
-                                    >
-                                        Kembali
-                                    </button>
-                                    <button
-                                        onClick={handleCancel}
-                                        disabled={cancelling}
-                                        className="flex-1 py-3 rounded-2xl text-sm font-black flex items-center justify-center gap-2 transition-all disabled:opacity-40"
-                                        style={{ background: "rgba(251,113,133,0.15)", border: "1px solid rgba(251,113,133,0.3)", color: "#fb7185" }}
-                                    >
-                                        {cancelling
-                                            ? <Loader2 className="w-4 h-4 animate-spin" />
-                                            : <><Trash2 className="w-4 h-4" /> Ya, Batalkan</>
-                                        }
-                                    </button>
-                                </div>
+                                    Kembali
+                                </button>
+                                <button
+                                    onClick={handleCancel}
+                                    disabled={cancelling}
+                                    className="flex-1 py-3 bg-[#FF3300] border-[3px] border-black text-[12px] font-black text-white flex items-center justify-center gap-2 uppercase shadow-[4px_4px_0_#000] hover:bg-rose-600 transition-all disabled:opacity-50"
+                                >
+                                    {cancelling
+                                        ? <Loader2 className="w-4 h-4 animate-spin" />
+                                        : <><Trash2 className="w-4 h-4" /> Batalkan</>
+                                    }
+                                </button>
                             </div>
                         </motion.div>
                     </motion.div>
@@ -615,7 +599,7 @@ export default function TopupPaymentPage() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md"
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm"
                         onClick={() => setShowProofModal(false)}
                     >
                         <motion.div
@@ -623,21 +607,21 @@ export default function TopupPaymentPage() {
                             animate={{ scale: 1 }}
                             exit={{ scale: 0.9 }}
                             onClick={e => e.stopPropagation()}
-                            className="relative max-w-lg w-full"
+                            className="relative max-w-lg w-full bg-white border-[4px] border-black p-4 shadow-[12px_12px_0_#000]"
                         >
-                            <button
-                                onClick={() => setShowProofModal(false)}
-                                className="absolute -top-3 -right-3 z-10 w-8 h-8 rounded-full flex items-center justify-center"
-                                style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.15)" }}
-                            >
-                                <X className="w-4 h-4 text-white" />
-                            </button>
-                            <p className="text-xs text-neutral-500 text-center mb-3">Bukti Transfer</p>
+                            <div className="flex items-center justify-between border-b-[4px] border-black pb-3 mb-4">
+                                <p className="text-[16px] font-black text-black uppercase bg-[#FFFF00] px-2 py-1 border-[2px] border-black shadow-[2px_2px_0_#000]">Bukti Transfer</p>
+                                <button
+                                    onClick={() => setShowProofModal(false)}
+                                    className="w-10 h-10 bg-[#FF3300] border-[3px] border-black flex items-center justify-center hover:bg-rose-600 shadow-[2px_2px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[4px_4px_0_#000] transition-all"
+                                >
+                                    <X className="w-5 h-5 text-white" />
+                                </button>
+                            </div>
                             <img
                                 src={order.proofImage}
                                 alt="Bukti transfer"
-                                className="w-full h-auto rounded-2xl"
-                                style={{ border: "1px solid rgba(255,255,255,0.07)" }}
+                                className="w-full h-auto border-[4px] border-black"
                             />
                         </motion.div>
                     </motion.div>

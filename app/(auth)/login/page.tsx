@@ -13,13 +13,15 @@ import { MapPin, ArrowRight, Eye, EyeOff, ArrowLeft } from "lucide-react"
 import { motion, Variants } from "framer-motion"
 
 const fadeUp: Variants = {
-    hidden: { opacity: 0, y: 24 },
+    hidden: { opacity: 0, y: 30 },
     show: (i: number) => ({
         opacity: 1,
         y: 0,
-        transition: { delay: i * 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] }
+        transition: { delay: i * 0.07, type: "spring" as const, stiffness: 400, damping: 18 }
     })
 }
+
+const inputCls = "h-12 w-full border-[3px] border-black bg-white text-black text-sm placeholder:text-black/30 focus:bg-[#FFFF00]/10 focus:border-black focus:ring-0 transition-all px-4 outline-none font-medium"
 
 export default function LoginPage() {
     const router = useRouter()
@@ -58,34 +60,25 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#080810] flex selection:bg-indigo-500/30 overflow-hidden">
+        <div className="min-h-screen bg-[#FFFDF0] flex selection:bg-[#FFFF00] selection:text-black overflow-hidden">
 
-            {/* ── Ambient Background ─────────────────────────────────────────── */}
+            {/* ── Neubrutalism Background ───────────────────────────────── */}
             <div className="fixed inset-0 z-0 pointer-events-none">
                 <div
-                    className="absolute inset-0 opacity-[0.035]"
+                    className="absolute inset-0 opacity-[0.04]"
                     style={{
-                        backgroundImage: `linear-gradient(rgba(99,102,241,0.6) 1px, transparent 1px),
-                                          linear-gradient(90deg, rgba(99,102,241,0.6) 1px, transparent 1px)`,
-                        backgroundSize: "60px 60px"
+                        backgroundImage: `linear-gradient(rgba(0,0,0,1) 2px, transparent 2px),
+                                          linear-gradient(90deg, rgba(0,0,0,1) 2px, transparent 2px)`,
+                        backgroundSize: "80px 80px"
                     }}
                 />
-                <div className="absolute top-[-20%] right-[-10%] w-[60%] h-[60%] bg-indigo-600/[0.11] rounded-full blur-[160px]" />
-                <div className="absolute bottom-[-15%] left-[-5%] w-[50%] h-[50%] bg-violet-600/[0.1] rounded-full blur-[140px]" />
-                <div className="absolute top-[40%] left-[30%] w-[25%] h-[25%] bg-indigo-500/[0.05] rounded-full blur-[100px]" />
-                <div
-                    className="absolute inset-0 opacity-[0.02] mix-blend-overlay"
-                    style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")" }}
-                />
+                <div className="absolute top-[15%] right-[8%] w-20 h-20 border-[3px] border-black/[0.05] rotate-12" />
+                <div className="absolute bottom-[20%] left-[5%] w-16 h-16 rounded-full border-[3px] border-black/[0.04]" />
+                <div className="absolute top-[60%] right-[15%] w-12 h-12 bg-[#00FFFF]/[0.06] border-[3px] border-black/[0.04]" />
             </div>
 
-            {/* ── Left Panel — Branding ──────────────────────────────────────── */}
-            <div className="hidden lg:flex lg:w-[46%] relative flex-col justify-between p-16 border-r border-white/[0.05]">
-                {/* Vertical accent line */}
-                <div
-                    className="absolute right-0 top-1/2 -translate-y-1/2 w-px h-2/3"
-                    style={{ background: "linear-gradient(to bottom, transparent, rgba(139,92,246,0.3), transparent)" }}
-                />
+            {/* ── Left Panel — Branding ──────────────────────────────────── */}
+            <div className="hidden lg:flex lg:w-[46%] relative flex-col justify-between p-16 border-r-[4px] border-black bg-white">
 
                 {/* Top: Logo */}
                 <motion.div
@@ -93,68 +86,56 @@ export default function LoginPage() {
                     className="flex items-center gap-3"
                 >
                     <div className="relative w-10 h-10">
-                        <div className="absolute inset-0 bg-indigo-600 rounded-xl rotate-[-12deg] shadow-lg shadow-indigo-500/30" />
+                        <div className="absolute inset-0 bg-[#FFFF00] border-[3px] border-black shadow-[3px_3px_0_#000]" />
                         <div className="relative w-10 h-10 flex items-center justify-center">
-                            <MapPin className="w-5 h-5 text-white" />
+                            <MapPin className="w-5 h-5 text-black" />
                         </div>
                     </div>
-                    <span className="font-extrabold text-[22px] font-[Outfit] text-white tracking-tight">
-                        Memory<span className="text-indigo-400">Map</span>
+                    <span className="font-black text-[22px] font-[Outfit] text-black tracking-tight">
+                        Memory<span className="text-[#FF00FF]">Map</span>
                     </span>
                 </motion.div>
 
                 {/* Center: Headline */}
                 <div className="space-y-8">
                     <motion.div custom={1} variants={fadeUp} initial="hidden" animate="show">
-                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium text-indigo-300 border border-indigo-500/20 bg-indigo-500/[0.07] mb-6">
-                            <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
+                        <div className="inline-flex items-center gap-2 px-4 py-2 text-xs font-bold text-black bg-[#00FFFF] border-[3px] border-black shadow-[3px_3px_0_#000] mb-6">
+                            <span className="w-2 h-2 bg-[#00FF00] border-2 border-black" />
                             12.000+ kenangan terpetakan
                         </div>
-                        <h1 className="font-[Outfit] font-extrabold text-white leading-[1.08]" style={{ fontSize: "clamp(2.2rem, 3.5vw, 3.2rem)" }}>
+                        <h1 className="font-[Outfit] font-black text-black leading-[1.08]" style={{ fontSize: "clamp(2.2rem, 3.5vw, 3.2rem)" }}>
                             Setiap tempat<br />
-                            <span
-                                style={{
-                                    WebkitBackgroundClip: "text",
-                                    WebkitTextFillColor: "transparent",
-                                    backgroundImage: "linear-gradient(135deg, #818cf8 0%, #a78bfa 50%, #c084fc 100%)",
-                                    backgroundClip: "text"
-                                }}
-                            >
+                            <span className="inline-block bg-[#FFFF00] px-3 -rotate-1 border-[3px] border-black shadow-[3px_3px_0_#000] mt-2">
                                 punya cerita.
                             </span>
                         </h1>
                     </motion.div>
 
                     <motion.p custom={2} variants={fadeUp} initial="hidden" animate="show"
-                        className="text-neutral-500 text-base leading-relaxed max-w-xs">
+                        className="text-black/50 text-base leading-relaxed max-w-xs font-medium">
                         Sematkan momen paling bermakna dalam hidup Anda di lokasi persisnya di Bumi. Pribadi, indah, dan milik Anda selamanya.
                     </motion.p>
 
                     {/* Testimonial card */}
                     <motion.div custom={3} variants={fadeUp} initial="hidden" animate="show"
-                        className="relative rounded-2xl p-5 border border-white/[0.06] max-w-xs overflow-hidden"
-                        style={{ background: "rgba(255,255,255,0.02)" }}
+                        className="relative p-5 border-[3px] border-black bg-[#FF00FF] shadow-[4px_4px_0_#000] max-w-xs"
                     >
-                        <div
-                            className="absolute top-0 left-0 w-full h-px"
-                            style={{ background: "linear-gradient(90deg, transparent, rgba(139,92,246,0.4), transparent)" }}
-                        />
-                        <p className="text-neutral-400 text-sm leading-relaxed mb-4">
-                            "MemoryMap mengubah cara saya mengingat perjalanan wisata. Setiap cerita sekarang punya tempatnya sendiri secara visual."
+                        <p className="text-white/90 text-sm leading-relaxed mb-4 font-medium">
+                            &quot;MemoryMap mengubah cara saya mengingat perjalanan wisata. Setiap cerita sekarang punya tempatnya sendiri secara visual.&quot;
                         </p>
                         <div className="flex items-center gap-3">
                             <img
                                 src="https://api.dicebear.com/7.x/avataaars/svg?seed=maya"
-                                className="w-8 h-8 rounded-full border border-white/10 bg-neutral-800"
+                                className="w-8 h-8 border-[3px] border-black bg-[#FFFF00]"
                                 alt=""
                             />
                             <div>
-                                <p className="text-white text-xs font-semibold">Fairuz.</p>
-                                <p className="text-neutral-600 text-xs">Developer · 48 kenangan</p>
+                                <p className="text-white text-xs font-black">Fairuz.</p>
+                                <p className="text-white/70 text-xs font-bold">Developer · 48 kenangan</p>
                             </div>
                             <div className="ml-auto flex gap-0.5">
                                 {[...Array(5)].map((_, i) => (
-                                    <svg key={i} className="w-3 h-3 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <svg key={i} className="w-3 h-3 text-[#FFFF00]" fill="currentColor" viewBox="0 0 20 20">
                                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                     </svg>
                                 ))}
@@ -165,18 +146,18 @@ export default function LoginPage() {
 
                 {/* Bottom: Copyright */}
                 <motion.p custom={4} variants={fadeUp} initial="hidden" animate="show"
-                    className="text-neutral-700 text-xs">
+                    className="text-black/30 text-xs font-bold">
                     © {new Date().getFullYear()} MemoryMap Inc.
                 </motion.p>
             </div>
 
-            {/* ── Right Panel — Form ─────────────────────────────────────────── */}
+            {/* ── Right Panel — Form ─────────────────────────────────────── */}
             <div className="w-full lg:w-[54%] flex items-center justify-center p-6 sm:p-12 relative z-10">
                 <div className="w-full max-w-[400px] py-8 lg:py-0">
 
                     {/* Back to Home Button */}
                     <motion.div custom={0} variants={fadeUp} initial="hidden" animate="show" className="mb-8">
-                        <Link href="/" className="inline-flex items-center gap-2 text-sm font-medium text-neutral-500 hover:text-white transition-colors group">
+                        <Link href="/" className="inline-flex items-center gap-2 text-sm font-bold text-black/50 hover:text-black transition-colors group">
                             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                             Kembali ke Beranda
                         </Link>
@@ -186,22 +167,22 @@ export default function LoginPage() {
                     <motion.div custom={0} variants={fadeUp} initial="hidden" animate="show"
                         className="flex lg:hidden items-center gap-3 mb-10">
                         <div className="relative w-9 h-9">
-                            <div className="absolute inset-0 bg-indigo-600 rounded-xl rotate-[-12deg] shadow-lg shadow-indigo-500/30" />
+                            <div className="absolute inset-0 bg-[#FFFF00] border-[3px] border-black shadow-[2px_2px_0_#000]" />
                             <div className="relative w-9 h-9 flex items-center justify-center">
-                                <MapPin className="w-4 h-4 text-white" />
+                                <MapPin className="w-4 h-4 text-black" />
                             </div>
                         </div>
-                        <span className="font-extrabold text-xl font-[Outfit] text-white tracking-tight">
-                            Memory<span className="text-indigo-400">Map</span>
+                        <span className="font-black text-xl font-[Outfit] text-black tracking-tight">
+                            Memory<span className="text-[#FF00FF]">Map</span>
                         </span>
                     </motion.div>
 
                     {/* Heading */}
                     <motion.div custom={1} variants={fadeUp} initial="hidden" animate="show" className="mb-8">
-                        <h2 className="font-[Outfit] font-extrabold text-3xl text-white tracking-tight mb-1.5">
+                        <h2 className="font-[Outfit] font-black text-3xl text-black tracking-tight mb-1.5">
                             Selamat Datang
                         </h2>
-                        <p className="text-neutral-500 text-sm">
+                        <p className="text-black/50 text-sm font-medium">
                             Masuk ke akun Anda untuk melanjutkan penjelajahan Memory Map.
                         </p>
                     </motion.div>
@@ -211,7 +192,7 @@ export default function LoginPage() {
 
                         {/* Email */}
                         <motion.div custom={2} variants={fadeUp} initial="hidden" animate="show" className="space-y-1.5">
-                            <label className="block text-xs font-semibold text-neutral-400 tracking-widest uppercase">
+                            <label className="block text-xs font-black text-black tracking-widest uppercase">
                                 Email
                             </label>
                             <Input
@@ -219,20 +200,20 @@ export default function LoginPage() {
                                 type="email"
                                 placeholder="you@example.com"
                                 disabled={isLoading}
-                                className="h-11 w-full rounded-xl border border-white/[0.08] bg-white/[0.03] text-white text-sm placeholder:text-neutral-700 focus:border-indigo-500/60 focus:ring-2 focus:ring-indigo-500/20 focus:bg-white/[0.05] transition-all px-4 outline-none"
+                                className={inputCls}
                             />
                             {errors.email && (
-                                <p className="text-xs text-red-400">{errors.email.message}</p>
+                                <p className="text-xs text-red-600 font-bold">{errors.email.message}</p>
                             )}
                         </motion.div>
 
                         {/* Password */}
                         <motion.div custom={3} variants={fadeUp} initial="hidden" animate="show" className="space-y-1.5">
                             <div className="flex items-center justify-between">
-                                <label className="block text-xs font-semibold text-neutral-400 tracking-widest uppercase">
+                                <label className="block text-xs font-black text-black tracking-widest uppercase">
                                     Sandi
                                 </label>
-                                <Link href="/forgot-password" className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors">
+                                <Link href="/forgot-password" className="text-xs text-[#FF00FF] hover:text-black transition-colors font-bold">
                                     Lupa sandi?
                                 </Link>
                             </div>
@@ -242,19 +223,19 @@ export default function LoginPage() {
                                     type={showPassword ? "text" : "password"}
                                     placeholder="············"
                                     disabled={isLoading}
-                                    className="h-11 w-full rounded-xl border border-white/[0.08] bg-white/[0.03] text-white text-sm placeholder:text-neutral-700 focus:border-indigo-500/60 focus:ring-2 focus:ring-indigo-500/20 focus:bg-white/[0.05] transition-all px-4 pr-11 outline-none"
+                                    className={`${inputCls} pr-11`}
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
                                     tabIndex={-1}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-neutral-700 hover:text-neutral-300 transition-colors"
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-black/30 hover:text-black transition-colors"
                                 >
                                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                                 </button>
                             </div>
                             {errors.password && (
-                                <p className="text-xs text-red-400">{errors.password.message}</p>
+                                <p className="text-xs text-red-600 font-bold">{errors.password.message}</p>
                             )}
                         </motion.div>
 
@@ -263,9 +244,9 @@ export default function LoginPage() {
                             <label className="flex items-center gap-2.5 cursor-pointer group w-fit">
                                 <input
                                     type="checkbox"
-                                    className="w-4 h-4 rounded border border-white/10 bg-white/[0.04] accent-indigo-500"
+                                    className="w-4 h-4 border-[3px] border-black bg-white accent-[#FFFF00]"
                                 />
-                                <span className="text-sm text-neutral-500 group-hover:text-neutral-300 transition-colors select-none">
+                                <span className="text-sm text-black/50 group-hover:text-black transition-colors select-none font-medium">
                                     Ingat saya selama 30 hari
                                 </span>
                             </label>
@@ -273,23 +254,16 @@ export default function LoginPage() {
 
                         {/* Divider */}
                         <motion.div custom={5} variants={fadeUp} initial="hidden" animate="show"
-                            className="h-px w-full bg-white/[0.05] my-1" />
+                            className="h-[3px] w-full bg-black/10 my-1" />
 
                         {/* Submit */}
                         <motion.div custom={6} variants={fadeUp} initial="hidden" animate="show">
-                            <motion.button
+                            <button
                                 type="submit"
                                 disabled={isLoading}
-                                whileHover={{ scale: isLoading ? 1 : 1.015 }}
-                                whileTap={{ scale: isLoading ? 1 : 0.985 }}
-                                className="group relative w-full h-11 rounded-full text-sm font-semibold text-white overflow-hidden shadow-xl shadow-indigo-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
-                                style={{ background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)" }}
+                                className="group w-full h-12 text-sm font-black text-black bg-[#FFFF00] border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide"
                             >
-                                <span
-                                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                                    style={{ background: "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)" }}
-                                />
-                                <span className="relative flex items-center justify-center gap-2">
+                                <span className="flex items-center justify-center gap-2">
                                     {isLoading ? (
                                         <>
                                             <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
@@ -305,15 +279,15 @@ export default function LoginPage() {
                                         </>
                                     )}
                                 </span>
-                            </motion.button>
+                            </button>
                         </motion.div>
                     </form>
 
                     {/* Register */}
                     <motion.p custom={7} variants={fadeUp} initial="hidden" animate="show"
-                        className="mt-6 text-center text-sm text-neutral-600">
+                        className="mt-6 text-center text-sm text-black/40 font-medium">
                         Belum punya akun?{" "}
-                        <Link href="/register" className="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors">
+                        <Link href="/register" className="text-[#FF00FF] hover:text-black font-black transition-colors">
                             Buat akun gratis →
                         </Link>
                     </motion.p>

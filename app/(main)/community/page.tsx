@@ -28,8 +28,8 @@ const EMOTIONS = [
 ]
 
 const SORT_OPTIONS: { value: Sort; label: string; icon: React.ReactNode }[] = [
-    { value: "latest",  label: "Terbaru",    icon: <Clock       className="w-3.5 h-3.5" /> },
-    { value: "popular", label: "Terpopuler", icon: <TrendingUp  className="w-3.5 h-3.5" /> },
+    { value: "latest",  label: "Terbaru",    icon: <Clock       className="w-4 h-4" /> },
+    { value: "popular", label: "Terpopuler", icon: <TrendingUp  className="w-4 h-4" /> },
 ]
 
 const PAGE_LIMIT = 12
@@ -57,32 +57,21 @@ function UserCard({ user, index }: { user: any; index: number }) {
         >
             <Link
                 href={`/profile/${user.id}`}
-                className="group flex items-center gap-3.5 p-3.5 rounded-xl transition-all duration-150"
-                style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}
-                onMouseEnter={e => {
-                    const el = e.currentTarget as HTMLElement
-                    el.style.background = "rgba(99,102,241,0.07)"
-                    el.style.border = "1px solid rgba(99,102,241,0.2)"
-                }}
-                onMouseLeave={e => {
-                    const el = e.currentTarget as HTMLElement
-                    el.style.background = "rgba(255,255,255,0.02)"
-                    el.style.border = "1px solid rgba(255,255,255,0.06)"
-                }}
+                className="group flex items-center gap-4 p-4 bg-white border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] hover:bg-[#00FFFF] transition-all duration-150"
             >
                 <div className="relative shrink-0">
                     <img src={avatar} alt={user.name}
-                        className="w-10 h-10 rounded-full object-cover"
-                        style={{ border: "1.5px solid rgba(255,255,255,0.1)" }}
+                        className="w-12 h-12 border-[2px] border-black object-cover bg-neutral-200 shadow-[2px_2px_0_#000]"
                     />
-                    <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity ring-2 ring-indigo-500/40" />
                 </div>
                 <div className="flex-1 min-w-0">
-                    <p className="text-[13px] font-semibold text-white/90 group-hover:text-indigo-300 transition-colors truncate leading-tight">
+                    <p className="text-[14px] font-black text-black uppercase tracking-wide truncate">
                         {user.name}
                     </p>
                 </div>
-                <ChevronRight className="w-3.5 h-3.5 text-neutral-700 group-hover:text-indigo-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+                <div className="w-8 h-8 border-[2px] border-black bg-white flex items-center justify-center shadow-[2px_2px_0_#000] group-hover:bg-[#FFFF00] transition-colors">
+                    <ChevronRight className="w-5 h-5 text-black font-black" />
+                </div>
             </Link>
         </motion.div>
     )
@@ -123,13 +112,12 @@ function ExplorersTab() {
     }
 
     return (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
             {/* Search field */}
             <div className="relative">
-                <Search
-                    className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none transition-colors"
-                    style={{ color: query ? "#818cf8" : "#525252" }}
-                />
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center">
+                    <Search className="w-5 h-5 text-black" />
+                </div>
                 <input
                     ref={inputRef}
                     type="text"
@@ -137,12 +125,7 @@ function ExplorersTab() {
                     onChange={handleChange}
                     placeholder="Cari nama explorer…"
                     autoFocus
-                    className="w-full py-3 pl-10 pr-10 text-sm text-white placeholder:text-neutral-600 focus:outline-none rounded-xl transition-all duration-200"
-                    style={{
-                        background: "rgba(255,255,255,0.04)",
-                        border: query ? "1px solid rgba(99,102,241,0.35)" : "1px solid rgba(255,255,255,0.08)",
-                        boxShadow: query ? "0 0 0 3px rgba(99,102,241,0.07)" : "none",
-                    }}
+                    className="w-full py-4 pl-12 pr-12 text-[14px] font-black text-black uppercase placeholder:text-black/50 focus:outline-none bg-white border-[4px] border-black shadow-[6px_6px_0_#000] focus:translate-x-[-2px] focus:translate-y-[-2px] focus:shadow-[8px_8px_0_#000] transition-all"
                 />
                 <AnimatePresence>
                     {query && (
@@ -150,9 +133,9 @@ function ExplorersTab() {
                             initial={{ opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.7 }} transition={{ duration: 0.12 }}
                             onClick={clearSearch}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-full text-neutral-500 hover:text-white hover:bg-white/10 transition-all"
+                            className="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 bg-[#FF3300] border-[2px] border-black flex items-center justify-center hover:bg-rose-600 shadow-[2px_2px_0_#000]"
                         >
-                            <X className="w-3 h-3" />
+                            <X className="w-4 h-4 text-white" />
                         </motion.button>
                     )}
                 </AnimatePresence>
@@ -162,44 +145,42 @@ function ExplorersTab() {
             <AnimatePresence mode="wait">
                 {loading && (
                     <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="flex items-center justify-center gap-2.5 py-14"
+                        className="flex items-center justify-center gap-3 py-16 bg-white border-[4px] border-black shadow-[6px_6px_0_#000]"
                     >
-                        <Loader2 className="w-4 h-4 text-indigo-400 animate-spin" />
-                        <span className="text-sm text-neutral-500">Mencari…</span>
+                        <Loader2 className="w-6 h-6 text-black animate-spin" />
+                        <span className="text-[14px] font-black uppercase text-black">Mencari…</span>
                     </motion.div>
                 )}
                 {!loading && !searched && (
                     <motion.div key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="flex flex-col items-center justify-center py-16 text-center"
+                        className="flex flex-col items-center justify-center py-20 text-center bg-white border-[4px] border-black shadow-[6px_6px_0_#000]"
                     >
-                        <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4"
-                            style={{ background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.1)" }}>
-                            <Users className="w-6 h-6 text-indigo-400/60" />
+                        <div className="w-16 h-16 bg-[#00FFFF] border-[3px] border-black flex items-center justify-center mb-4 shadow-[4px_4px_0_#000]">
+                            <Users className="w-8 h-8 text-black" />
                         </div>
-                        <p className="text-[13px] font-medium text-neutral-500">Temukan sesama explorer</p>
-                        <p className="text-[12px] text-neutral-700 mt-1">Ketik minimal 2 karakter untuk mulai mencari</p>
+                        <p className="text-[16px] font-black uppercase text-black mb-1">Temukan sesama explorer</p>
+                        <p className="text-[12px] font-bold text-black/60 uppercase">Ketik minimal 2 karakter untuk mencari</p>
                     </motion.div>
                 )}
                 {!loading && searched && results.length === 0 && (
                     <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="flex flex-col items-center justify-center py-16 text-center"
+                        className="flex flex-col items-center justify-center py-20 text-center bg-white border-[4px] border-black shadow-[6px_6px_0_#000]"
                     >
-                        <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4"
-                            style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
-                            <UserRound className="w-6 h-6 text-neutral-600" />
+                        <div className="w-16 h-16 bg-[#FF3300] border-[3px] border-black flex items-center justify-center mb-4 shadow-[4px_4px_0_#000]">
+                            <UserRound className="w-8 h-8 text-white" />
                         </div>
-                        <p className="text-[13px] font-medium text-neutral-400">Tidak ada hasil</p>
-                        <p className="text-[12px] text-neutral-600 mt-1">
-                            Tidak ada explorer dengan kata kunci <span className="text-neutral-400">&ldquo;{query}&rdquo;</span>
+                        <p className="text-[16px] font-black uppercase text-black mb-1">Tidak ada hasil</p>
+                        <p className="text-[12px] font-bold text-black/60 uppercase">
+                            Kata kunci <span className="text-black bg-[#FFFF00] px-1 border border-black">{query}</span> tidak ditemukan
                         </p>
                     </motion.div>
                 )}
                 {!loading && searched && results.length > 0 && (
                     <motion.div key="results" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                        <p className="text-[11px] text-neutral-600 mb-3 uppercase tracking-widest font-semibold">
+                        <p className="text-[12px] font-black text-black mb-4 uppercase tracking-widest bg-[#00FF00] inline-block px-3 py-1 border-[2px] border-black shadow-[2px_2px_0_#000]">
                             {results.length} ditemukan
                         </p>
-                        <div className="space-y-1.5">
+                        <div className="space-y-3">
                             {results.map((user, i) => <UserCard key={user.id} user={user} index={i} />)}
                         </div>
                     </motion.div>
@@ -211,18 +192,18 @@ function ExplorersTab() {
 
 // ─── Section Header ───────────────────────────────────────────────────────────
 
-function SectionHeader({ icon, iconBg, iconBorder, title, count }: {
-    icon: React.ReactNode; iconBg: string; iconBorder: string; title: string; count: number
+function SectionHeader({ icon, iconBg, title, count }: {
+    icon: React.ReactNode; iconBg: string; title: string; count: number
 }) {
     return (
-        <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center"
-                style={{ background: iconBg, border: `1px solid ${iconBorder}` }}>
+        <div className="flex items-center gap-3 mb-4">
+            <div className={`w-10 h-10 border-[3px] border-black flex items-center justify-center shadow-[2px_2px_0_#000] ${iconBg}`}>
                 {icon}
             </div>
-            <span className="text-[13px] font-semibold text-white/80">{title}</span>
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                style={{ background: "rgba(255,255,255,0.05)", color: "#525252" }}>
+            <span className="text-[16px] font-black text-black uppercase tracking-wider bg-white border-[2px] border-black px-3 py-1 shadow-[2px_2px_0_#000]">
+                {title}
+            </span>
+            <span className="text-[12px] font-black bg-[#FFFF00] border-[2px] border-black px-2 py-0.5 shadow-[2px_2px_0_#000]">
                 {count}
             </span>
         </div>
@@ -289,59 +270,44 @@ function MemoriesFeedTab() {
     const textOnly   = memories.filter(m => !m.photos?.length)
 
     return (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
 
             {/* ── Unified filter toolbar ─────────────────────────────────── */}
-            <div
-                className="flex items-center gap-0 rounded-xl overflow-hidden"
-                style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}
-            >
-                {/* Left: Sort toggle — fixed width, no shrink */}
-                <div className="flex items-center shrink-0 px-1 py-1 gap-0.5">
+            <div className="flex items-stretch gap-0 border-[4px] border-black bg-white shadow-[6px_6px_0_#000] overflow-hidden flex-col md:flex-row">
+                {/* Left: Sort toggle */}
+                <div className="flex items-center shrink-0 p-2 gap-2 bg-[#E5E5E5] md:border-r-[4px] border-b-[4px] md:border-b-0 border-black overflow-x-auto">
                     {SORT_OPTIONS.map(opt => {
                         const active = sort === opt.value
                         return (
                             <button
                                 key={opt.value}
                                 onClick={() => handleSortChange(opt.value)}
-                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all duration-150 whitespace-nowrap"
-                                style={{
-                                    background: active ? "rgba(99,102,241,0.18)" : "transparent",
-                                    border:     active ? "1px solid rgba(99,102,241,0.22)" : "1px solid transparent",
-                                    color:      active ? "#c7d2fe" : "#525252",
-                                }}
+                                className={`flex items-center gap-2 px-3 py-2 border-[2px] border-black text-[12px] font-black uppercase transition-all whitespace-nowrap ${
+                                    active ? "bg-[#00FF00] shadow-[inset_0_-3px_0_rgba(0,0,0,0.2)] text-black" : "bg-white hover:bg-neutral-100 shadow-[2px_2px_0_#000]"
+                                }`}
                             >
-                                <span style={{ color: active ? "#818cf8" : "#404040" }}>{opt.icon}</span>
+                                {opt.icon}
                                 {opt.label}
                             </button>
                         )
                     })}
                 </div>
 
-                {/* Vertical divider */}
-                <div className="w-px self-stretch shrink-0" style={{ background: "rgba(255,255,255,0.07)" }} />
-
-                {/* Right: Emotion chips — scrollable */}
-                <div className="relative flex-1 min-w-0">
-                    {/* Fade masks */}
-                    <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-[#0d0d14] to-transparent z-10 pointer-events-none" />
-
-                    <div className="flex items-center gap-1 overflow-x-auto px-2 py-1 scrollbar-hide">
+                {/* Right: Emotion chips */}
+                <div className="relative flex-1 min-w-0 flex items-center">
+                    <div className="flex items-center gap-2 overflow-x-auto p-2 scrollbar-hide w-full">
                         {EMOTIONS.map(em => {
                             const active = selectedEmotion === em.value
                             return (
                                 <button
                                     key={em.value}
                                     onClick={() => handleEmotionChange(em.value)}
-                                    className="shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[12px] font-medium transition-all duration-150 whitespace-nowrap"
-                                    style={{
-                                        background: active ? "rgba(99,102,241,0.18)" : "transparent",
-                                        border:     active ? "1px solid rgba(99,102,241,0.22)" : "1px solid transparent",
-                                        color:      active ? "#c7d2fe" : "#525252",
-                                    }}
+                                    className={`shrink-0 flex items-center gap-1.5 px-3 py-2 border-[2px] border-black text-[12px] font-black uppercase transition-all whitespace-nowrap ${
+                                        active ? "bg-[#FFFF00] shadow-[inset_0_-3px_0_rgba(0,0,0,0.2)] text-black" : "bg-white hover:bg-neutral-100 shadow-[2px_2px_0_#000]"
+                                    }`}
                                 >
-                                    <span className="text-[12px] leading-none">{em.emoji}</span>
-                                    <span style={{ color: active ? "#c7d2fe" : "#4a4a5a" }}>{em.label}</span>
+                                    <span className="text-[14px] leading-none">{em.emoji}</span>
+                                    <span>{em.label}</span>
                                 </button>
                             )
                         })}
@@ -350,131 +316,118 @@ function MemoriesFeedTab() {
 
                 {/* Right edge: count badge */}
                 {!loading && total > 0 && (
-                    <>
-                        <div className="w-px self-stretch shrink-0" style={{ background: "rgba(255,255,255,0.07)" }} />
-                        <span className="shrink-0 px-3 text-[11px] text-neutral-700 tabular-nums whitespace-nowrap">
-                            {memories.length}<span className="text-neutral-800">/{total}</span>
-                        </span>
-                    </>
+                    <div className="flex items-center shrink-0 px-4 py-2 bg-[#FF00FF] border-l-[4px] border-t-[4px] md:border-t-0 border-black text-[12px] font-black text-white uppercase tabular-nums">
+                        {memories.length}/{total} Total
+                    </div>
                 )}
             </div>
-
-            {/* Divider */}
-            <div className="h-px mt-1" style={{ background: "rgba(255,255,255,0.04)" }} />
 
             {/* Feed */}
             <AnimatePresence mode="wait">
                 {loading ? (
                     <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="flex flex-col items-center justify-center py-24 gap-3"
+                        className="flex flex-col items-center justify-center py-20 gap-4 bg-white border-[4px] border-black shadow-[8px_8px_0_#000]"
                     >
-                        <Loader2 className="w-6 h-6 text-indigo-400 animate-spin" />
-                        <p className="text-sm text-neutral-600">Memuat kenangan…</p>
+                        <Loader2 className="w-10 h-10 text-black animate-spin" />
+                        <p className="text-[14px] font-black uppercase text-black">Memuat Kenangan…</p>
                     </motion.div>
 
                 ) : memories.length === 0 ? (
                     <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="flex flex-col items-center justify-center py-24 text-center"
+                        className="flex flex-col items-center justify-center py-20 text-center bg-white border-[4px] border-black shadow-[8px_8px_0_#000]"
                     >
-                        <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4"
-                            style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
-                            <MapPin className="w-5 h-5 text-neutral-700" />
+                        <div className="w-16 h-16 bg-[#FFFF00] border-[3px] border-black flex items-center justify-center mb-4 shadow-[4px_4px_0_#000]">
+                            <MapPin className="w-8 h-8 text-black" />
                         </div>
-                        <p className="text-[13px] font-medium text-neutral-400 mb-1">Belum ada kenangan</p>
-                        <p className="text-[12px] text-neutral-600 max-w-xs leading-relaxed">
+                        <p className="text-[16px] font-black uppercase text-black mb-2">Belum ada kenangan</p>
+                        <p className="text-[12px] font-bold text-black/60 uppercase max-w-sm leading-relaxed mb-6">
                             {selectedEmotion === "ALL"
                                 ? "Jadilah yang pertama berbagi kenangan ke komunitas!"
                                 : `Belum ada kenangan dengan emosi "${selectedEmotion.toLowerCase()}".`}
                         </p>
                         {selectedEmotion !== "ALL" && (
                             <button onClick={() => handleEmotionChange("ALL")}
-                                className="mt-4 text-[12px] font-semibold text-indigo-400 hover:text-indigo-300 transition-colors px-4 py-1.5 rounded-full"
-                                style={{ border: "1px solid rgba(99,102,241,0.2)" }}>
-                                Lihat semua
+                                className="px-6 py-2 bg-[#00FF00] border-[3px] border-black text-[14px] font-black uppercase shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all">
+                                Lihat Semua
                             </button>
                         )}
                     </motion.div>
 
                 ) : (
                     <motion.div key="feed" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="space-y-10"
+                        className="space-y-12"
                     >
                         {/* Visual Memories */}
                         {withPhotos.length > 0 && (
                             <section className="space-y-4">
                                 <SectionHeader
-                                    icon={<ImageIcon className="w-3.5 h-3.5 text-indigo-400" />}
-                                    iconBg="rgba(99,102,241,0.1)" iconBorder="rgba(99,102,241,0.18)"
+                                    icon={<ImageIcon className="w-5 h-5 text-black" />}
+                                    iconBg="bg-[#00FFFF]"
                                     title="Visual Memories" count={withPhotos.length}
                                 />
-                                <motion.div initial="hidden" animate="show" variants={stagger}
-                                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+                                <div
+                                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
                                 >
-                                    {withPhotos.map(m => (
-                                        <motion.div key={m.id} variants={fadeUp}>
+                                    {withPhotos.map((m, i) => (
+                                        <motion.div 
+                                            key={m.id} 
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ delay: (i % PAGE_LIMIT) * 0.05, type: "spring", stiffness: 300, damping: 26 }}
+                                        >
                                             <MemoryCard
                                                 memory={m}
                                                 placements={m.stickerPlacements ?? []}
                                             />
                                         </motion.div>
                                     ))}
-                                </motion.div>
+                                </div>
                             </section>
                         )}
 
                         {withPhotos.length > 0 && textOnly.length > 0 && (
-                            <div className="h-px" style={{ background: "rgba(255,255,255,0.04)" }} />
+                            <div className="h-0 border-t-[4px] border-black border-dashed opacity-50" />
                         )}
 
                         {/* Journal Entries */}
                         {textOnly.length > 0 && (
                             <section className="space-y-4">
                                 <SectionHeader
-                                    icon={<BookOpen className="w-3.5 h-3.5 text-emerald-400" />}
-                                    iconBg="rgba(52,211,153,0.08)" iconBorder="rgba(52,211,153,0.15)"
+                                    icon={<BookOpen className="w-5 h-5 text-black" />}
+                                    iconBg="bg-[#00FF00]"
                                     title="Journal Entries" count={textOnly.length}
                                 />
-                                <motion.div initial="hidden" animate="show" variants={stagger}
-                                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+                                <div
+                                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
                                 >
-                                    {textOnly.map(m => (
-                                        <motion.div key={m.id} variants={fadeUp}>
+                                    {textOnly.map((m, i) => (
+                                        <motion.div 
+                                            key={m.id} 
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ delay: (i % PAGE_LIMIT) * 0.05, type: "spring", stiffness: 300, damping: 26 }}
+                                        >
                                             <MemoryCard
                                                 memory={m}
                                                 placements={m.stickerPlacements ?? []}
                                             />
                                         </motion.div>
                                     ))}
-                                </motion.div>
+                                </div>
                             </section>
                         )}
 
                         {/* Load More button */}
                         {hasMore && (
-                            <div className="flex justify-center pt-2">
+                            <div className="flex justify-center pt-6">
                                 <button
                                     onClick={loadMore}
                                     disabled={loadingMore}
-                                    className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200 disabled:opacity-60"
-                                    style={{
-                                        background: "rgba(99,102,241,0.1)",
-                                        border: "1px solid rgba(99,102,241,0.2)",
-                                        color: "#a5b4fc",
-                                    }}
-                                    onMouseEnter={e => {
-                                        if (!loadingMore) {
-                                            (e.currentTarget as HTMLElement).style.background = "rgba(99,102,241,0.18)"
-                                            ;(e.currentTarget as HTMLElement).style.borderColor = "rgba(99,102,241,0.35)"
-                                        }
-                                    }}
-                                    onMouseLeave={e => {
-                                        (e.currentTarget as HTMLElement).style.background = "rgba(99,102,241,0.1)"
-                                        ;(e.currentTarget as HTMLElement).style.borderColor = "rgba(99,102,241,0.2)"
-                                    }}
+                                    className="flex items-center gap-3 px-8 py-4 bg-white border-[4px] border-black text-[14px] font-black uppercase shadow-[6px_6px_0_#000] hover:bg-[#FFFF00] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0_#000] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {loadingMore
-                                        ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Memuat…</>
-                                        : <>Muat lebih banyak <span className="text-neutral-600">({total - memories.length} tersisa)</span></>
+                                        ? <><Loader2 className="w-5 h-5 animate-spin" /> Memuat…</>
+                                        : <>Muat Lebih Banyak <span className="text-black bg-white px-2 border-[2px] border-black shadow-[2px_2px_0_#000]">({total - memories.length} tersisa)</span></>
                                     }
                                 </button>
                             </div>
@@ -482,9 +435,11 @@ function MemoriesFeedTab() {
 
                         {/* End of feed indicator */}
                         {!hasMore && memories.length > 0 && memories.length >= PAGE_LIMIT && (
-                            <p className="text-center text-[11px] text-neutral-700 py-2">
-                                Semua {total} kenangan telah ditampilkan
-                            </p>
+                            <div className="flex justify-center pt-6">
+                                <p className="text-[12px] font-black text-black uppercase bg-[#00FF00] inline-block px-4 py-2 border-[3px] border-black shadow-[4px_4px_0_#000]">
+                                    Semua {total} kenangan telah ditampilkan
+                                </p>
+                            </div>
                         )}
                     </motion.div>
                 )}
@@ -512,87 +467,88 @@ export default function CommunityPage() {
     const [activeTab, setActiveTab] = useState<Tab>("memories")
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full relative">
 
-            {/* ── Page Header ───────────────────────────────────────────────── */}
-            <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                className="mb-7"
-            >
-                <div className="flex items-center gap-3 mb-1">
-                    <div
-                        className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-                        style={{ background: "rgba(99,102,241,0.12)", border: "1px solid rgba(99,102,241,0.18)" }}
-                    >
-                        <Globe className="w-4 h-4 text-indigo-400" />
-                    </div>
-                    <h1 className="text-xl font-bold text-white tracking-tight">Community</h1>
-                    <div
-                        className="ml-auto flex items-center gap-1.5 px-2.5 py-1 rounded-full"
-                        style={{ background: "rgba(52,211,153,0.08)", border: "1px solid rgba(52,211,153,0.15)" }}
-                    >
-                        <span className="relative flex h-1.5 w-1.5">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400" />
-                        </span>
-                        <span className="text-[10px] font-semibold text-emerald-400/80 tracking-wide">LIVE</span>
-                    </div>
-                </div>
-                <p className="text-[13px] text-neutral-600 leading-relaxed pl-11">
-                    Jelajahi kenangan publik dan temukan explorer dari seluruh dunia.
-                </p>
-            </motion.div>
+            {/* Background Grid Pattern */}
+            <div className="absolute inset-0 pointer-events-none z-0"
+                style={{
+                    backgroundImage: "linear-gradient(#00000010 1px, transparent 1px), linear-gradient(90deg, #00000010 1px, transparent 1px)",
+                    backgroundSize: "40px 40px"
+                }}
+            />
 
-            {/* ── Tab Switcher ──────────────────────────────────────────────── */}
-            <motion.div
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.1 }}
-                className="mb-6"
-            >
-                <div
-                    className="inline-flex items-center p-1 rounded-xl gap-1"
-                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}
-                >
-                    {([
-                        { id: "memories"  as Tab, label: "Memories",  icon: <Globe className="w-3.5 h-3.5" /> },
-                        { id: "explorers" as Tab, label: "Explorers", icon: <Users className="w-3.5 h-3.5" /> },
-                    ] as const).map(tab => {
-                        const active = activeTab === tab.id
-                        return (
-                            <button
-                                key={tab.id}
-                                onClick={() => setActiveTab(tab.id)}
-                                className="relative flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-semibold transition-all duration-200"
-                                style={{
-                                    color:      active ? "#e0e7ff" : "#737373",
-                                    background: active ? "rgba(99,102,241,0.18)" : "transparent",
-                                    border:     active ? "1px solid rgba(99,102,241,0.25)" : "1px solid transparent",
-                                }}
-                            >
-                                <span style={{ color: active ? "#818cf8" : "#525252" }}>{tab.icon}</span>
-                                {tab.label}
-                            </button>
-                        )
-                    })}
-                </div>
-            </motion.div>
-
-            {/* ── Tab Content ───────────────────────────────────────────────── */}
-            <AnimatePresence mode="wait">
+            <div className="relative z-10">
+                {/* ── Page Header ───────────────────────────────────────────────── */}
                 <motion.div
-                    key={activeTab}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.35, ease: "easeOut" }}
+                    className="mb-8"
+                >
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-3">
+                        <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 bg-[#00FFFF] border-[4px] border-black flex items-center justify-center shadow-[4px_4px_0_#000]">
+                                <Globe className="w-6 h-6 text-black" />
+                            </div>
+                            <h1 className="text-[32px] sm:text-[40px] font-black text-black uppercase tracking-tight bg-white px-3 py-1 border-[4px] border-black shadow-[6px_6px_0_#000] inline-block">
+                                Community
+                            </h1>
+                        </div>
+                        <div className="sm:ml-auto inline-flex items-center gap-2 px-4 py-2 bg-[#00FF00] border-[3px] border-black shadow-[4px_4px_0_#000] transform rotate-1">
+                            <span className="relative flex h-2.5 w-2.5">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white border border-black" />
+                            </span>
+                            <span className="text-[12px] font-black text-black uppercase tracking-widest">Live Updates</span>
+                        </div>
+                    </div>
+                    <p className="text-[14px] font-bold text-black/80 uppercase bg-[#FFFF00] p-3 border-[3px] border-black shadow-[4px_4px_0_#000] inline-block max-w-xl">
+                        Jelajahi kenangan publik dan temukan explorer dari seluruh dunia.
+                    </p>
+                </motion.div>
+
+                {/* ── Tab Switcher ──────────────────────────────────────────────── */}
+                <motion.div
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.18 }}
+                    transition={{ duration: 0.3, delay: 0.1 }}
+                    className="mb-8"
                 >
-                    {activeTab === "memories" ? <MemoriesFeedTab /> : <ExplorersTab />}
+                    <div className="inline-flex flex-wrap items-center gap-3 p-2 bg-white border-[4px] border-black shadow-[6px_6px_0_#000]">
+                        {([
+                            { id: "memories"  as Tab, label: "Memories",  icon: <Globe className="w-4 h-4" /> },
+                            { id: "explorers" as Tab, label: "Explorers", icon: <Users className="w-4 h-4" /> },
+                        ] as const).map(tab => {
+                            const active = activeTab === tab.id
+                            return (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className={`relative flex items-center gap-2 px-6 py-3 border-[3px] border-black text-[14px] font-black uppercase transition-all shadow-[4px_4px_0_#000] ${
+                                        active ? "bg-[#FF00FF] text-white translate-x-[2px] translate-y-[2px] shadow-[2px_2px_0_#000]" : "bg-[#E5E5E5] text-black hover:bg-[#FFFF00]"
+                                    }`}
+                                >
+                                    <span>{tab.icon}</span>
+                                    {tab.label}
+                                </button>
+                            )
+                        })}
+                    </div>
                 </motion.div>
-            </AnimatePresence>
 
+                {/* ── Tab Content ───────────────────────────────────────────────── */}
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={activeTab}
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.18 }}
+                    >
+                        {activeTab === "memories" ? <MemoriesFeedTab /> : <ExplorersTab />}
+                    </motion.div>
+                </AnimatePresence>
+            </div>
         </div>
     )
 }

@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma"
 import { unstable_cache } from "next/cache"
 import { CACHE_TAGS } from "@/lib/cache"
+import { isPremiumActive } from "@/lib/premium-config"
 
 export const getCachedUser = (id: string) => {
     return unstable_cache(
@@ -21,6 +22,8 @@ export const getCachedUser = (id: string) => {
                         facebook: true,
                         createdAt: true,
                         pinnedBadge: true,
+                        isPremium: true,
+                        premiumExpiresAt: true,
                         streakBadges: {
                             select: { milestone: true }
                         },
@@ -63,6 +66,7 @@ export const getCachedUser = (id: string) => {
                 equippedFrame, 
                 equippedBanner, 
                 equippedDecoration,
+                isPremium: isPremiumActive(user.premiumExpiresAt),
                 _count: {
                     ...user._count,
                     memories: (user._count?.memories || 0) + collabCount

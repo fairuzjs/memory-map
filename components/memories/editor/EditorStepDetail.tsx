@@ -1,17 +1,18 @@
 "use client"
 
-import { Control, Controller, UseFormRegister, FieldErrors } from "react-hook-form"
+import { Control, Controller, UseFormRegister, FieldErrors, useWatch } from "react-hook-form"
 import { BookText, Smile, MapPin } from "lucide-react"
 import { Input } from "@/components/ui/Input"
 import { EmotionPicker } from "@/components/memories/EmotionPicker"
+import { MarkerStylePicker } from "@/components/memories/MarkerStylePicker"
 import dynamic from "next/dynamic"
 import { MemoryInput } from "@/lib/validations"
 
 const LocationPicker = dynamic(() => import("@/components/map/LocationPicker"), {
     ssr: false,
     loading: () => (
-        <div className="h-[300px] w-full bg-neutral-900/50 animate-pulse rounded-2xl border border-white/5 flex items-center justify-center">
-            <span className="text-neutral-500 text-sm italic">Memuat peta...</span>
+        <div className="h-[300px] w-full bg-[#E5E5E5] animate-pulse border-[3px] border-black flex items-center justify-center">
+            <span className="text-neutral-500 text-sm font-black uppercase">Memuat peta...</span>
         </div>
     )
 })
@@ -21,68 +22,71 @@ interface EditorStepDetailProps {
     control: Control<MemoryInput>
     errors: FieldErrors<MemoryInput>
     isSubmitting: boolean
+    isPremium?: boolean
 }
 
-export function EditorStepDetail({ register, control, errors, isSubmitting }: EditorStepDetailProps) {
+export function EditorStepDetail({ register, control, errors, isSubmitting, isPremium = false }: EditorStepDetailProps) {
+    const markerStyle = useWatch({ control, name: "markerStyle" })
+
     return (
         <div className="space-y-6">
             {/* Momen Form */}
-            <div className="bg-neutral-900/40 backdrop-blur-xl p-6 sm:p-8 rounded-3xl border border-white/[0.05] shadow-2xl transition-all hover:border-white/[0.08]">
+            <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000]">
                 <div className="flex items-center gap-3 mb-6">
-                    <div className="p-2.5 bg-indigo-500/10 rounded-xl">
-                        <BookText className="w-5 h-5 text-indigo-400" />
+                    <div className="p-2.5 bg-[#00FFFF] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                        <BookText className="w-5 h-5 text-black" />
                     </div>
                     <div>
-                        <h2 className="text-lg font-semibold font-[Outfit] text-white">Momen</h2>
-                        <p className="text-xs text-neutral-500">Detail kenangan Anda</p>
+                        <h2 className="text-lg font-black text-black uppercase">Momen</h2>
+                        <p className="text-xs text-neutral-500 font-bold">Detail kenangan Anda</p>
                     </div>
                 </div>
 
                 <div className="space-y-5">
                     <div>
-                        <label className="block text-sm font-medium text-neutral-400 mb-2">Judul</label>
+                        <label className="block text-sm font-black text-black uppercase tracking-wider mb-2">Judul</label>
                         <Input
                             {...register("title")}
-                            placeholder="A Walk to Remember..."
-                            className="bg-black/20 border-white/10 focus:border-indigo-500/50 transition-colors text-base"
+                            placeholder="Liburan tak terlupakan..."
+                            className="!bg-[#E5E5E5] !border-[3px] !border-black !rounded-none focus:!bg-[#FFFF00] !transition-all !text-black !font-bold !placeholder:text-neutral-400"
                             disabled={isSubmitting}
                         />
-                        {errors.title && <p className="text-red-400 text-sm mt-1.5">{errors.title.message}</p>}
+                        {errors.title && <p className="text-[#FF0000] text-sm mt-1.5 font-bold">{errors.title.message}</p>}
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-neutral-400 mb-2">Cerita</label>
+                        <label className="block text-sm font-black text-black uppercase tracking-wider mb-2">Cerita</label>
                         <textarea
                             {...register("story")}
-                            className="w-full min-h-[140px] bg-black/20 border border-white/10 rounded-xl p-4 text-base focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none resize-none transition-all placeholder:text-neutral-600 text-neutral-200"
-                            placeholder="Ceritakan momen Anda..."
+                            className="w-full min-h-[140px] bg-[#E5E5E5] border-[3px] border-black p-4 text-base focus:bg-[#FFFF00] outline-none resize-none transition-all placeholder:text-neutral-400 text-black font-bold"
+                            placeholder="Ceritakan apa yang terjadi... setiap detail berharga."
                             disabled={isSubmitting}
                         />
-                        {errors.story && <p className="text-red-400 text-sm mt-1.5">{errors.story.message}</p>}
+                        {errors.story && <p className="text-[#FF0000] text-sm mt-1.5 font-bold">{errors.story.message}</p>}
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-neutral-400 mb-2">Tanggal</label>
+                        <label className="block text-sm font-black text-black uppercase tracking-wider mb-2">Tanggal</label>
                         <Input
                             type="date"
                             {...register("date")}
-                            className="bg-black/20 border-white/10 focus:border-indigo-500/50 transition-colors [&::-webkit-calendar-picker-indicator]:invert"
+                            className="!bg-[#E5E5E5] !border-[3px] !border-black !rounded-none focus:!bg-[#FFFF00] !transition-all !text-black !font-bold"
                             disabled={isSubmitting}
                         />
-                        {errors.date && <p className="text-red-400 text-sm mt-1.5">{errors.date.message}</p>}
+                        {errors.date && <p className="text-[#FF0000] text-sm mt-1.5 font-bold">{errors.date.message}</p>}
                     </div>
                 </div>
             </div>
 
             {/* Emotion */}
-            <div className="bg-neutral-900/40 backdrop-blur-xl p-6 sm:p-8 rounded-3xl border border-white/[0.05] shadow-2xl transition-all hover:border-white/[0.08]">
+            <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000]">
                 <div className="flex items-center gap-3 mb-6">
-                    <div className="p-2.5 bg-rose-500/10 rounded-xl">
-                        <Smile className="w-5 h-5 text-rose-400" />
+                    <div className="p-2.5 bg-[#FF00FF] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                        <Smile className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                        <h2 className="text-lg font-semibold font-[Outfit] text-white">Perasaan</h2>
-                        <p className="text-xs text-neutral-500">Pilih emosi Anda</p>
+                        <h2 className="text-lg font-black text-black uppercase">Perasaan</h2>
+                        <p className="text-xs text-neutral-500 font-bold">Pilih emosi Anda</p>
                     </div>
                 </div>
                 <Controller
@@ -92,18 +96,31 @@ export function EditorStepDetail({ register, control, errors, isSubmitting }: Ed
                 />
             </div>
 
+            {/* Premium Map Marker — placed before location so user picks style first */}
+            <Controller
+                control={control}
+                name="markerStyle"
+                render={({ field }) => (
+                    <MarkerStylePicker
+                        value={field.value}
+                        onChange={field.onChange}
+                        isPremium={isPremium}
+                    />
+                )}
+            />
+
             {/* Location */}
-            <div className="bg-neutral-900/40 backdrop-blur-xl p-6 sm:p-8 rounded-3xl border border-white/[0.05] shadow-2xl transition-all hover:border-white/[0.08] relative z-30">
+            <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000] relative z-30">
                 <div className="flex items-center gap-3 mb-6">
-                    <div className="p-2.5 bg-amber-500/10 rounded-xl">
-                        <MapPin className="w-5 h-5 text-amber-400" />
+                    <div className="p-2.5 bg-[#FFFF00] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                        <MapPin className="w-5 h-5 text-black" />
                     </div>
                     <div>
-                        <h2 className="text-lg font-semibold font-[Outfit] text-white">Lokasi</h2>
-                        <p className="text-xs text-neutral-500">Tandai tempat kenangan</p>
+                        <h2 className="text-lg font-black text-black uppercase">Lokasi</h2>
+                        <p className="text-xs text-neutral-500 font-bold">Tandai tempat kenangan</p>
                     </div>
                 </div>
-                <div className="rounded-2xl overflow-hidden border border-white/10">
+                <div className="overflow-hidden border-[3px] border-black">
                     <Controller
                         control={control}
                         name="latitude"
@@ -120,6 +137,7 @@ export function EditorStepDetail({ register, control, errors, isSubmitting }: Ed
                                                 latitude={latField.value}
                                                 longitude={lngField.value}
                                                 locationName={nameField.value || ""}
+                                                markerStyle={markerStyle}
                                                 onChange={(lat, lng, name) => {
                                                     latField.onChange(lat)
                                                     lngField.onChange(lng)

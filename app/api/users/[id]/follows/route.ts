@@ -34,7 +34,9 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
                             id: true,
                             name: true,
                             image: true,
-                            bio: true
+                            bio: true,
+                            isVerified: true,
+                            premiumExpiresAt: true
                         }
                     }
                 },
@@ -58,7 +60,9 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
                             id: true,
                             name: true,
                             image: true,
-                            bio: true
+                            bio: true,
+                            isVerified: true,
+                            premiumExpiresAt: true
                         }
                     }
                 },

@@ -13,17 +13,18 @@ interface PhotoUploaderProps {
     photos: PhotoData[]
     onChange: (photos: PhotoData[]) => void
     isPublic: boolean
+    maxPhotos?: number // dynamic limit based on premium status
 }
 
-export function PhotoUploader({ photos, onChange, isPublic }: PhotoUploaderProps) {
+export function PhotoUploader({ photos, onChange, isPublic, maxPhotos = 3 }: PhotoUploaderProps) {
     const [isUploading, setIsUploading] = useState(false)
     const fileInputRef = useRef<HTMLInputElement>(null)
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files || e.target.files.length === 0) return
 
-        if (photos.length + e.target.files.length > 3) {
-            toast.error("Maksimal 3 foto diperbolehkan")
+        if (photos.length + e.target.files.length > maxPhotos) {
+            toast.error(`Maksimal ${maxPhotos} foto diperbolehkan`)
             if (fileInputRef.current) fileInputRef.current.value = ""
             return
         }
@@ -120,7 +121,7 @@ export function PhotoUploader({ photos, onChange, isPublic }: PhotoUploaderProps
                 </div>
             )}
 
-            {photos.length < 3 && (
+            {photos.length < maxPhotos && (
                 <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
@@ -136,7 +137,7 @@ export function PhotoUploader({ photos, onChange, isPublic }: PhotoUploaderProps
                         {isUploading ? "Uploading..." : "Click to select photos"}
                     </span>
                     <span className="text-xs text-neutral-500 mt-1">
-                        Maksimal 3 foto, ukuran max 5MB per foto
+                        {photos.length}/{maxPhotos} foto, ukuran max 5MB per foto
                     </span>
                 </button>
             )}

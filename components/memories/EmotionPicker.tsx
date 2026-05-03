@@ -1,14 +1,14 @@
 import { cn } from "@/lib/utils"
 
 const emotions = [
-    { id: "HAPPY", label: "Happy", icon: "🌟", color: "bg-yellow-500/10 text-yellow-500 border-yellow-500/50 hover:bg-yellow-500/20" },
-    { id: "SAD", label: "Sad", icon: "💧", color: "bg-blue-500/10 text-blue-500 border-blue-500/50 hover:bg-blue-500/20" },
-    { id: "NOSTALGIC", label: "Nostalgic", icon: "🕰️", color: "bg-amber-600/10 text-amber-500 border-amber-600/50 hover:bg-amber-600/20" },
-    { id: "EXCITED", label: "Excited", icon: "🔥", color: "bg-orange-500/10 text-orange-500 border-orange-500/50 hover:bg-orange-500/20" },
-    { id: "PEACEFUL", label: "Peaceful", icon: "🍃", color: "bg-emerald-500/10 text-emerald-500 border-emerald-500/50 hover:bg-emerald-500/20" },
-    { id: "GRATEFUL", label: "Grateful", icon: "🙏", color: "bg-teal-500/10 text-teal-500 border-teal-500/50 hover:bg-teal-500/20" },
-    { id: "ROMANTIC", label: "Romantic", icon: "❤️", color: "bg-rose-500/10 text-rose-500 border-rose-500/50 hover:bg-rose-500/20" },
-    { id: "ADVENTUROUS", label: "Adventurous", icon: "🏕️", color: "bg-indigo-500/10 text-indigo-500 border-indigo-500/50 hover:bg-indigo-500/20" },
+    { id: "HAPPY", label: "Happy", icon: "🌟", bg: "bg-[#FFFF00]" },
+    { id: "SAD", label: "Sad", icon: "💧", bg: "bg-[#00FFFF]" },
+    { id: "NOSTALGIC", label: "Nostalgic", icon: "🕰️", bg: "bg-[#FFA500]" },
+    { id: "EXCITED", label: "Excited", icon: "🔥", bg: "bg-[#FF3300]" },
+    { id: "PEACEFUL", label: "Peaceful", icon: "🍃", bg: "bg-[#00FF00]" },
+    { id: "GRATEFUL", label: "Grateful", icon: "🙏", bg: "bg-[#00FFCC]" },
+    { id: "ROMANTIC", label: "Romantic", icon: "❤️", bg: "bg-[#FF00FF]" },
+    { id: "ADVENTUROUS", label: "Adventurous", icon: "🏕️", bg: "bg-[#7B61FF]" },
 ]
 
 interface EmotionPickerProps {
@@ -27,13 +27,20 @@ export function EmotionPicker({ value, onChange }: EmotionPickerProps) {
                         type="button"
                         onClick={() => onChange(emotion.id)}
                         className={cn(
-                            "flex flex-col items-center justify-center p-3 rounded-xl border transition-all duration-200",
-                            emotion.color,
-                            isSelected ? "border-opacity-100 ring-2 ring-offset-2 ring-offset-neutral-900 ring-indigo-500 scale-105" : "border-opacity-20 hover:border-opacity-100 opacity-60 hover:opacity-100"
+                            "flex flex-col items-center justify-center p-3 border-[3px] border-black transition-all duration-200",
+                            emotion.bg,
+                            isSelected
+                                ? "shadow-[4px_4px_0_#000] translate-x-[-2px] translate-y-[-2px] ring-0"
+                                : "shadow-[2px_2px_0_#000] opacity-60 hover:opacity-100 hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000]"
                         )}
                     >
                         <span className="text-2xl mb-1">{emotion.icon}</span>
-                        <span className="text-xs font-semibold">{emotion.label}</span>
+                        <span className={cn(
+                            "text-xs font-black uppercase tracking-wider",
+                            emotion.id === "EXCITED" || emotion.id === "ROMANTIC" || emotion.id === "ADVENTUROUS"
+                                ? "text-white"
+                                : "text-black"
+                        )}>{emotion.label}</span>
                     </button>
                 )
             })}

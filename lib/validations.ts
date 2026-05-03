@@ -43,9 +43,9 @@ export const memorySchema = z.object({
         "PEACEFUL", "GRATEFUL", "ROMANTIC", "ADVENTUROUS"
     ]),
     isPublic: z.boolean().default(true),
-    photos: z.array(z.any()).max(3, { message: "Maksimal 3 foto diperbolehkan" }).optional(), // array of anything (we will store rich objects and stringify before sending)
+    photos: z.array(z.any()).max(10, { message: "Maksimal foto telah tercapai" }).optional(), // actual limit enforced by API (3 free / 10 premium)
     tags: z.array(z.string()).optional(),
-    collaborators: z.array(z.string()).max(5, { message: "Maximum 5 collaborators allowed" }).optional().default([]),
+    collaborators: z.array(z.string()).max(10, { message: "Maksimal kolaborator telah tercapai" }).optional().default([]),
     // Audio clip fields (optional)
     audio: z.object({
         url: z.string(),
@@ -56,6 +56,7 @@ export const memorySchema = z.object({
         fileName: z.string(),
     }).optional().nullable(),
     spotifyTrackId: z.string().optional().nullable(),
+    markerStyle: z.string().optional().nullable(),
 })
 
 export const reactionSchema = z.object({
