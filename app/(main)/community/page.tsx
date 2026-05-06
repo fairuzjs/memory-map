@@ -7,7 +7,6 @@ import {
     BookOpen, Search, X, Users, UserRound, ChevronRight,
     Clock, TrendingUp
 } from "lucide-react"
-import { MemoryCard } from "@/components/memories/MemoryCard"
 import Link from "next/link"
 
 // ─── Types & Constants ────────────────────────────────────────────────────────
@@ -210,6 +209,112 @@ function SectionHeader({ icon, iconBg, title, count }: {
     )
 }
 
+// ─── Insta Memory Card ────────────────────────────────────────────────────────
+
+type CardTheme = {
+    border: string
+    background: string
+    shadow: string
+    imageFilter: string
+    radius: string
+    contentPadding: string
+    titleColor: string
+    storyColor: string
+    footerBorder: string
+    footerTextColor: string
+}
+
+function parseTheme(rawValue: string | null | undefined): CardTheme | null {
+    if (!rawValue) return null
+    try { return JSON.parse(rawValue) } catch { return null }
+}
+
+function InstaMemoryCard({ memory }: { memory: any }) {
+    // Parse equipped card theme from user inventories
+    const rawThemeValue = memory.user?.inventories?.[0]?.item?.value ?? null
+    const theme = parseTheme(rawThemeValue)
+
+    const photos = (memory.photos ?? []).map((p: any) => {
+        try {
+            const parsed = JSON.parse(p.url)
+            return { ...p, url: parsed.url || parsed.path, bucket: parsed.bucket }
+        } catch {
+            return p
+        }
+    })
+
+    const hasPhoto = photos.length > 0
+
+    return (
+        <Link 
+            href={`/memories/${memory.id}`} 
+            className="group relative flex flex-col overflow-hidden transition-all duration-300 hover:translate-x-[-2px] hover:translate-y-[-2px]"
+            style={{
+                background: theme?.background ?? "white",
+                border: theme?.border ?? "4px solid #000",
+                borderRadius: theme?.radius ?? "0px",
+                boxShadow: theme?.shadow ?? "4px 4px 0 #000",
+            }}
+        >
+            {/* Photo / Content Area (Aspect Square) */}
+            <div 
+                className="relative aspect-square overflow-hidden flex items-center justify-center"
+                style={{
+                    borderBottom: theme?.border ?? "4px solid #000",
+                    background: theme ? "transparent" : "#E5E5E5",
+                    borderRadius: theme ? `${theme.radius} ${theme.radius} 0 0` : "0px",
+                }}
+            >
+                {hasPhoto ? (
+                    <img
+                        src={photos[0].url}
+                        alt={memory.title}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                ) : (
+                    <div className="p-4 w-full h-full flex flex-col justify-center text-center">
+                         <p 
+                            className="text-[12px] sm:text-[14px] font-black uppercase line-clamp-4"
+                            style={{ color: theme?.storyColor ?? "#000" }}
+                         >
+                             {memory.story || memory.title}
+                         </p>
+                    </div>
+                )}
+                
+                {/* Visual Indicators */}
+                {(memory.audioUrl || memory.spotifyTrackId) && (
+                    <div className="absolute top-2 left-2 z-10 w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center bg-[#00FFFF] border-[2px] sm:border-[3px] border-black shadow-[2px_2px_0_#000]">
+                        <span className="text-[10px] sm:text-[12px]">🎵</span>
+                    </div>
+                )}
+                {memory.isCollaboration && (
+                    <div className="absolute top-2 right-2 z-10 w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center bg-[#FF00FF] border-[2px] sm:border-[3px] border-black shadow-[2px_2px_0_#000]">
+                        <span className="text-[10px] sm:text-[12px]">👥</span>
+                    </div>
+                )}
+            </div>
+
+            {/* Username Footer */}
+            <div 
+                className={`p-2 sm:p-3 flex items-center gap-2 transition-colors ${!theme ? "bg-[#FFFF00] group-hover:bg-[#00FF00]" : ""}`}
+            >
+                <img
+                    src={memory.user.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${memory.user.id}`}
+                    alt={memory.user.name}
+                    className="w-5 h-5 sm:w-6 sm:h-6 border-[2px] border-black object-cover shrink-0 bg-white"
+                />
+                <span 
+                    className="text-[10px] sm:text-[13px] font-black uppercase truncate"
+                    style={{ color: theme?.footerTextColor ?? "#000" }}
+                >
+                    {memory.user.name}
+                </span>
+            </div>
+        </Link>
+    )
+}
+
 // ─── Memories Feed Tab ────────────────────────────────────────────────────────
 
 function MemoriesFeedTab() {
@@ -272,18 +377,20 @@ function MemoriesFeedTab() {
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
 
-            {/* ── Unified filter toolbar ─────────────────────────────────── */}
-            <div className="flex items-stretch gap-0 border-[4px] border-black bg-white shadow-[6px_6px_0_#000] overflow-hidden flex-col md:flex-row">
-                {/* Left: Sort toggle */}
-                <div className="flex items-center shrink-0 p-2 gap-2 bg-[#E5E5E5] md:border-r-[4px] border-b-[4px] md:border-b-0 border-black overflow-x-auto">
+            {/* ── Compact Filter Bar ────────────────────────────────── */}
+            <div className="space-y-2 mb-4">
+                {/* Row 1: Sort + Count badge */}
+                <div className="flex items-center gap-2">
                     {SORT_OPTIONS.map(opt => {
                         const active = sort === opt.value
                         return (
                             <button
                                 key={opt.value}
                                 onClick={() => handleSortChange(opt.value)}
-                                className={`flex items-center gap-2 px-3 py-2 border-[2px] border-black text-[12px] font-black uppercase transition-all whitespace-nowrap ${
-                                    active ? "bg-[#00FF00] shadow-[inset_0_-3px_0_rgba(0,0,0,0.2)] text-black" : "bg-white hover:bg-neutral-100 shadow-[2px_2px_0_#000]"
+                                className={`flex items-center gap-1.5 px-3 py-1.5 border-[2px] border-black text-[11px] font-black uppercase transition-all whitespace-nowrap ${
+                                    active
+                                        ? "bg-[#00FF00] shadow-[2px_2px_0_#000]"
+                                        : "bg-white shadow-[2px_2px_0_#000] hover:bg-neutral-100"
                                 }`}
                             >
                                 {opt.icon}
@@ -291,35 +398,32 @@ function MemoriesFeedTab() {
                             </button>
                         )
                     })}
+                    {!loading && total > 0 && (
+                        <div className="ml-auto px-3 py-1.5 bg-[#FF00FF] border-[2px] border-black text-[11px] font-black text-white uppercase shadow-[2px_2px_0_#000] tabular-nums whitespace-nowrap">
+                            {memories.length}/{total}
+                        </div>
+                    )}
                 </div>
-
-                {/* Right: Emotion chips */}
-                <div className="relative flex-1 min-w-0 flex items-center">
-                    <div className="flex items-center gap-2 overflow-x-auto p-2 scrollbar-hide w-full">
-                        {EMOTIONS.map(em => {
-                            const active = selectedEmotion === em.value
-                            return (
-                                <button
-                                    key={em.value}
-                                    onClick={() => handleEmotionChange(em.value)}
-                                    className={`shrink-0 flex items-center gap-1.5 px-3 py-2 border-[2px] border-black text-[12px] font-black uppercase transition-all whitespace-nowrap ${
-                                        active ? "bg-[#FFFF00] shadow-[inset_0_-3px_0_rgba(0,0,0,0.2)] text-black" : "bg-white hover:bg-neutral-100 shadow-[2px_2px_0_#000]"
-                                    }`}
-                                >
-                                    <span className="text-[14px] leading-none">{em.emoji}</span>
-                                    <span>{em.label}</span>
-                                </button>
-                            )
-                        })}
-                    </div>
+                {/* Row 2: Emotion chips — single scrollable row, emoji-only on mobile */}
+                <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide pb-1">
+                    {EMOTIONS.map(em => {
+                        const active = selectedEmotion === em.value
+                        return (
+                            <button
+                                key={em.value}
+                                onClick={() => handleEmotionChange(em.value)}
+                                className={`shrink-0 flex items-center gap-1 px-2 py-1.5 border-[2px] border-black text-[11px] font-black uppercase transition-all whitespace-nowrap ${
+                                    active
+                                        ? "bg-[#FFFF00] shadow-[2px_2px_0_#000]"
+                                        : "bg-white shadow-[2px_2px_0_#000] hover:bg-neutral-100"
+                                }`}
+                            >
+                                <span className="text-[13px] leading-none">{em.emoji}</span>
+                                <span className="hidden sm:inline text-[11px]">{em.label}</span>
+                            </button>
+                        )
+                    })}
                 </div>
-
-                {/* Right edge: count badge */}
-                {!loading && total > 0 && (
-                    <div className="flex items-center shrink-0 px-4 py-2 bg-[#FF00FF] border-l-[4px] border-t-[4px] md:border-t-0 border-black text-[12px] font-black text-white uppercase tabular-nums">
-                        {memories.length}/{total} Total
-                    </div>
-                )}
             </div>
 
             {/* Feed */}
@@ -357,65 +461,28 @@ function MemoriesFeedTab() {
                     <motion.div key="feed" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                         className="space-y-12"
                     >
-                        {/* Visual Memories */}
-                        {withPhotos.length > 0 && (
-                            <section className="space-y-4">
-                                <SectionHeader
-                                    icon={<ImageIcon className="w-5 h-5 text-black" />}
-                                    iconBg="bg-[#00FFFF]"
-                                    title="Visual Memories" count={withPhotos.length}
-                                />
-                                <div
-                                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-                                >
-                                    {withPhotos.map((m, i) => (
-                                        <motion.div 
-                                            key={m.id} 
-                                            initial={{ opacity: 0, y: 20 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            transition={{ delay: (i % PAGE_LIMIT) * 0.05, type: "spring", stiffness: 300, damping: 26 }}
-                                        >
-                                            <MemoryCard
-                                                memory={m}
-                                                placements={m.stickerPlacements ?? []}
-                                            />
-                                        </motion.div>
-                                    ))}
-                                </div>
-                            </section>
-                        )}
-
-                        {withPhotos.length > 0 && textOnly.length > 0 && (
-                            <div className="h-0 border-t-[4px] border-black border-dashed opacity-50" />
-                        )}
-
-                        {/* Journal Entries */}
-                        {textOnly.length > 0 && (
-                            <section className="space-y-4">
-                                <SectionHeader
-                                    icon={<BookOpen className="w-5 h-5 text-black" />}
-                                    iconBg="bg-[#00FF00]"
-                                    title="Journal Entries" count={textOnly.length}
-                                />
-                                <div
-                                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-                                >
-                                    {textOnly.map((m, i) => (
-                                        <motion.div 
-                                            key={m.id} 
-                                            initial={{ opacity: 0, y: 20 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            transition={{ delay: (i % PAGE_LIMIT) * 0.05, type: "spring", stiffness: 300, damping: 26 }}
-                                        >
-                                            <MemoryCard
-                                                memory={m}
-                                                placements={m.stickerPlacements ?? []}
-                                            />
-                                        </motion.div>
-                                    ))}
-                                </div>
-                            </section>
-                        )}
+                        {/* Unified Feed (Images & Text merged like Instagram profile) */}
+                        <section className="space-y-4">
+                            <SectionHeader
+                                icon={<ImageIcon className="w-5 h-5 text-black" />}
+                                iconBg="bg-[#00FFFF]"
+                                title="Semua Kenangan" count={total}
+                            />
+                            <div
+                                className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6"
+                            >
+                                {memories.map((m, i) => (
+                                    <motion.div 
+                                        key={m.id} 
+                                        initial={{ opacity: 0, scale: 0.95 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        transition={{ delay: (i % PAGE_LIMIT) * 0.03, type: "spring", stiffness: 300, damping: 26 }}
+                                    >
+                                        <InstaMemoryCard memory={m} />
+                                    </motion.div>
+                                ))}
+                            </div>
+                        </section>
 
                         {/* Load More button */}
                         {hasMore && (
@@ -483,49 +550,50 @@ export default function CommunityPage() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.35, ease: "easeOut" }}
-                    className="mb-8"
+                    className="mb-4"
                 >
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-3">
-                        <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 bg-[#00FFFF] border-[4px] border-black flex items-center justify-center shadow-[4px_4px_0_#000]">
-                                <Globe className="w-6 h-6 text-black" />
-                            </div>
-                            <h1 className="text-[32px] sm:text-[40px] font-black text-black uppercase tracking-tight bg-white px-3 py-1 border-[4px] border-black shadow-[6px_6px_0_#000] inline-block">
-                                Community
-                            </h1>
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#00FFFF] border-[3px] sm:border-[4px] border-black flex items-center justify-center shadow-[3px_3px_0_#000] sm:shadow-[4px_4px_0_#000] shrink-0">
+                            <Globe className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
                         </div>
-                        <div className="sm:ml-auto inline-flex items-center gap-2 px-4 py-2 bg-[#00FF00] border-[3px] border-black shadow-[4px_4px_0_#000] transform rotate-1">
-                            <span className="relative flex h-2.5 w-2.5">
+                        <h1 className="text-[22px] sm:text-[40px] font-black text-black uppercase tracking-tight bg-white px-2 sm:px-3 py-1 border-[3px] sm:border-[4px] border-black shadow-[3px_3px_0_#000] sm:shadow-[6px_6px_0_#000] inline-block">
+                            Community
+                        </h1>
+                        <div className="ml-auto inline-flex items-center gap-1.5 px-2 sm:px-4 py-1.5 sm:py-2 bg-[#00FF00] border-[2px] sm:border-[3px] border-black shadow-[2px_2px_0_#000] sm:shadow-[4px_4px_0_#000] shrink-0">
+                            <span className="relative flex h-2 w-2">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
-                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white border border-black" />
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-white border border-black" />
                             </span>
-                            <span className="text-[12px] font-black text-black uppercase tracking-widest">Live Updates</span>
+                            <span className="text-[10px] sm:text-[12px] font-black text-black uppercase tracking-widest">Live</span>
                         </div>
                     </div>
-                    <p className="text-[14px] font-bold text-black/80 uppercase bg-[#FFFF00] p-3 border-[3px] border-black shadow-[4px_4px_0_#000] inline-block max-w-xl">
+                    {/* Description — hidden on mobile */}
+                    <p className="hidden sm:inline-block text-[14px] font-bold text-black/80 uppercase bg-[#FFFF00] p-3 border-[3px] border-black shadow-[4px_4px_0_#000] max-w-xl mt-4">
                         Jelajahi kenangan publik dan temukan explorer dari seluruh dunia.
                     </p>
                 </motion.div>
 
-                {/* ── Tab Switcher ──────────────────────────────────────────────── */}
+                {/* ── Tab Switcher (compact, full-width on mobile) ──────── */}
                 <motion.div
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: 0.1 }}
-                    className="mb-8"
+                    className="mb-4"
                 >
-                    <div className="inline-flex flex-wrap items-center gap-3 p-2 bg-white border-[4px] border-black shadow-[6px_6px_0_#000]">
+                    <div className="flex items-center gap-0 border-[3px] sm:border-[4px] border-black shadow-[4px_4px_0_#000] bg-white overflow-hidden w-full sm:w-auto sm:inline-flex">
                         {([
                             { id: "memories"  as Tab, label: "Memories",  icon: <Globe className="w-4 h-4" /> },
                             { id: "explorers" as Tab, label: "Explorers", icon: <Users className="w-4 h-4" /> },
-                        ] as const).map(tab => {
+                        ] as const).map((tab, idx) => {
                             const active = activeTab === tab.id
                             return (
                                 <button
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id)}
-                                    className={`relative flex items-center gap-2 px-6 py-3 border-[3px] border-black text-[14px] font-black uppercase transition-all shadow-[4px_4px_0_#000] ${
-                                        active ? "bg-[#FF00FF] text-white translate-x-[2px] translate-y-[2px] shadow-[2px_2px_0_#000]" : "bg-[#E5E5E5] text-black hover:bg-[#FFFF00]"
+                                    className={`flex-1 sm:flex-none flex items-center justify-center sm:justify-start gap-2 px-4 sm:px-6 py-2.5 sm:py-3 text-[13px] sm:text-[14px] font-black uppercase transition-all ${
+                                        idx > 0 ? "border-l-[3px] sm:border-l-[4px] border-black" : ""
+                                    } ${
+                                        active ? "bg-[#FF00FF] text-white" : "bg-[#E5E5E5] text-black hover:bg-[#FFFF00]"
                                     }`}
                                 >
                                     <span>{tab.icon}</span>
