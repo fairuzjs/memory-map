@@ -1,4 +1,5 @@
 import { Navbar } from "@/components/layout/Navbar"
+import { OnboardingProvider } from "@/components/onboarding/OnboardingProvider"
 
 export default function MainLayout({
     children,
@@ -15,12 +16,14 @@ export default function MainLayout({
                 }} />
             </div>
 
-            <div className="relative z-10 w-full flex-1 flex flex-col">
-                <Navbar />
-                <main className="flex-1 flex flex-col">
-                    {children}
-                </main>
-            </div>
+            <OnboardingProvider>
+                <div className="relative z-10 w-full flex-1 flex flex-col">
+                    <Navbar />
+                    <main className="flex-1 flex flex-col">
+                        {children}
+                    </main>
+                </div>
+            </OnboardingProvider>
         </div>
     )
 }

@@ -93,7 +93,7 @@ function SearchControl({ mapRef }: { mapRef: React.RefObject<MapRef | null> }) {
     }
 
     return (
-        <div ref={wrapperRef} className="absolute top-4 left-4 z-[1000] w-72 sm:w-96">
+        <div ref={wrapperRef} className="absolute top-4 left-4 z-[1000] w-[calc(100%-140px)] sm:w-72 md:w-96">
             <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Search className="h-5 w-5 text-neutral-500" />

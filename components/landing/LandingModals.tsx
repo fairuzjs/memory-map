@@ -158,8 +158,8 @@ function ChangelogModal({ onClose }: { onClose: () => void }) {
               <h5 className="text-black font-black text-[18px] uppercase mb-4 underline decoration-[#FFD700] decoration-4 underline-offset-4">Akun Premium</h5>
               <div className="space-y-3">
                 {[
-                  { text: "Peluncuran fitur Akun Premium dengan harga Rp 20.000/bulan untuk pengalaman eksklusif.", tag: "Fitur Baru", bg: "bg-[#FFD700]" },
-                  { text: "Benefit premium: 5x gacha gratis/minggu, streak freeze 2x/bulan, multiplier streak 2x.", tag: "Benefit", bg: "bg-[#00FF00]" },
+                  { text: "Peluncuran fitur Akun Premium dengan harga Rp 10.000/bulan untuk pengalaman eksklusif.", tag: "Fitur Baru", bg: "bg-[#FFD700]" },
+                  { text: "Benefit premium: 2x gacha gratis/minggu, streak freeze 2x/bulan, multiplier streak 1.5x.", tag: "Benefit", bg: "bg-[#00FF00]" },
                   { text: "Badge Crown eksklusif, bingkai avatar Mahkota Royale, dan banner Langit Kerajaan.", tag: "Eksklusif", bg: "bg-[#FF00FF]" },
                   { text: "Custom Map Markers premium dengan 5 desain unik untuk menandai kenangan.", tag: "Fitur Baru", bg: "bg-[#FFFF00]" },
                   { text: "Diskon 10% untuk semua pembelian di shop dan bonus 250 Memory Point saat upgrade.", tag: "Benefit", bg: "bg-[#00FFFF]" },

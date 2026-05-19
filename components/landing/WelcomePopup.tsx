@@ -162,7 +162,7 @@ export function WelcomePopup({ isOpen, onClose, onDontShowAgain }: WelcomePopupP
                         </div>
                         <div className="flex-1">
                           <p className="text-[10px] font-black text-neutral-500 uppercase tracking-wider">Akun Premium</p>
-                          <p className="text-[16px] font-black text-black font-[Outfit] leading-tight">Rp 20.000 / bulan</p>
+                          <p className="text-[16px] font-black text-black font-[Outfit] leading-tight">Rp 10.000 / bulan</p>
                         </div>
                         <div className="px-2 py-1 bg-[#FFD700] border-[2px] border-black shadow-[2px_2px_0_#000]">
                           <span className="text-[9px] font-black text-black uppercase tracking-wider">Aktifkan</span>
@@ -171,9 +171,9 @@ export function WelcomePopup({ isOpen, onClose, onDontShowAgain }: WelcomePopupP
                       {/* Benefits grid */}
                       <div className="grid grid-cols-2 gap-2">
                         {[
-                          { icon: Sparkles, label: "5x Gacha Gratis/Minggu", bg: "bg-[#FF00FF]" },
+                          { icon: Sparkles, label: "2x Gacha Gratis/Minggu", bg: "bg-[#FF00FF]" },
                           { icon: Shield, label: "Streak Freeze 2x/Bulan", bg: "bg-[#00FFFF]" },
-                          { icon: Zap, label: "Multiplier Streak 2x", bg: "bg-[#00FF00]" },
+                          { icon: Zap, label: "Multiplier Streak 1.5x", bg: "bg-[#00FF00]" },
                           { icon: MapPin, label: "Custom Map Markers", bg: "bg-[#FFFF00]" },
                         ].map((item, i) => {
                           const Icon = item.icon

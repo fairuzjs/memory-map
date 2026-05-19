@@ -15,6 +15,7 @@ import { SpotifySearch } from "@/components/memories/SpotifySearch"
 import { PremiumLockedState } from "@/components/memories/PremiumLockedState"
 import { CollaboratorPicker } from "@/components/memories/CollaboratorPicker"
 import { MarkerStylePicker } from "@/components/memories/MarkerStylePicker"
+import { useOnboarding } from "@/components/onboarding/OnboardingProvider"
 import { motion, AnimatePresence } from "framer-motion"
 import {
     BookText, MapPin, Smile, ImagePlus, Users, Globe, Music,
@@ -69,6 +70,7 @@ export default function CreateMemoryPage() {
     const [maxPhotos, setMaxPhotos] = useState(3)
     const [maxCollaborators, setMaxCollaborators] = useState(5)
     const [isPremium, setIsPremium] = useState(false)
+    const { isActive: isOnboarding, notifyMemoryCreated, advanceStep } = useOnboarding()
 
     // Check email verification status
     useEffect(() => {
@@ -163,6 +165,12 @@ export default function CreateMemoryPage() {
 
             if (!res.ok) throw new Error("Failed to create memory")
 
+            // If onboarding is active, notify and let the provider handle redirect
+            if (isOnboarding) {
+                notifyMemoryCreated()
+                return
+            }
+
             toast.success("Kenangan berhasil dibuat!")
             router.push("/memories")
         } catch (error) {
@@ -181,6 +189,11 @@ export default function CreateMemoryPage() {
         }
         setDirection(1)
         setCurrentStep(1)
+
+        // Programmatically advance the tutorial step if it's currently active
+        if (isOnboarding) {
+            advanceStep()
+        }
     }
 
     const handleBack = () => {
@@ -354,7 +367,7 @@ export default function CreateMemoryPage() {
                                     </div>
 
                                     <div className="space-y-5">
-                                        <div>
+                                        <div data-tutorial="input-title">
                                             <label className="block text-sm font-black text-black uppercase tracking-wider mb-2">Judul</label>
                                             <Input
                                                 {...register("title")}
@@ -365,7 +378,7 @@ export default function CreateMemoryPage() {
                                             {errors.title && <p className="text-[#FF0000] text-sm mt-1.5 font-bold">{errors.title.message}</p>}
                                         </div>
 
-                                        <div>
+                                        <div data-tutorial="input-story">
                                             <label className="block text-sm font-black text-black uppercase tracking-wider mb-2">Cerita</label>
                                             <textarea
                                                 {...register("story")}
@@ -376,7 +389,7 @@ export default function CreateMemoryPage() {
                                             {errors.story && <p className="text-[#FF0000] text-sm mt-1.5 font-bold">{errors.story.message}</p>}
                                         </div>
 
-                                        <div>
+                                        <div data-tutorial="input-date">
                                             <label className="block text-sm font-black text-black uppercase tracking-wider mb-2">Tanggal</label>
                                             <Input
                                                 type="date"
@@ -390,7 +403,7 @@ export default function CreateMemoryPage() {
                                 </div>
 
                                 {/* Emotion */}
-                                <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000]">
+                                <div data-tutorial="input-emotion" className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000]">
                                     <div className="flex items-center gap-3 mb-6">
                                         <div className="p-2.5 bg-[#FF00FF] border-[2px] border-black shadow-[2px_2px_0_#000]">
                                             <Smile className="w-5 h-5 text-white" />
@@ -421,7 +434,7 @@ export default function CreateMemoryPage() {
                                 />
 
                                 {/* Location */}
-                                <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000] relative z-30">
+                                <div data-tutorial="input-location" className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000] relative z-30">
                                     <div className="flex items-center gap-3 mb-6">
                                         <div className="p-2.5 bg-[#FFFF00] border-[2px] border-black shadow-[2px_2px_0_#000]">
                                             <MapPin className="w-5 h-5 text-black" />
@@ -477,6 +490,7 @@ export default function CreateMemoryPage() {
                                     <button
                                         type="button"
                                         onClick={handleNext}
+                                        data-tutorial="btn-next-step"
                                         className="flex items-center gap-2 px-6 py-2.5 text-sm font-black text-black uppercase bg-[#FFFF00] border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all"
                                     >
                                         Lanjutkan
@@ -500,7 +514,7 @@ export default function CreateMemoryPage() {
                                 {/* Photos & Music in 2-column grid */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     {/* Photos */}
-                                    <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000]">
+                                    <div data-tutorial="photo-uploader" className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000]">
                                         <div className="flex items-center gap-3 mb-6">
                                             <div className="p-2.5 bg-[#00FF00] border-[2px] border-black shadow-[2px_2px_0_#000]">
                                                 <ImagePlus className="w-5 h-5 text-black" />
@@ -525,7 +539,7 @@ export default function CreateMemoryPage() {
                                     </div>
 
                                     {/* Music */}
-                                    <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000] flex flex-col h-full">
+                                    <div data-tutorial="music-uploader" className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000] flex flex-col h-full">
                                         <div className="flex items-center justify-between mb-6">
                                             <div className="flex items-center gap-3">
                                                 <div className="p-2.5 bg-[#FF00FF] border-[2px] border-black shadow-[2px_2px_0_#000]">
@@ -620,7 +634,7 @@ export default function CreateMemoryPage() {
                                 </div>
 
                                 {/* Collaborators */}
-                                <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000] relative z-20">
+                                <div data-tutorial="collaborator-picker" className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000] relative z-20">
                                     <div className="flex items-center gap-3 mb-2">
                                         <div className="p-2.5 bg-[#00FFFF] border-[2px] border-black shadow-[2px_2px_0_#000]">
                                             <Users className="w-5 h-5 text-black" />
@@ -649,7 +663,7 @@ export default function CreateMemoryPage() {
                                 </div>
 
                                 {/* Settings */}
-                                <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000] relative z-10">
+                                <div data-tutorial="privacy-toggle" className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000] relative z-10">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">
                                             <div className="p-2.5 bg-[#FFFF00] border-[2px] border-black shadow-[2px_2px_0_#000]">
@@ -681,6 +695,7 @@ export default function CreateMemoryPage() {
                                     <button
                                         type="submit"
                                         disabled={isSubmitting}
+                                        data-tutorial="btn-submit"
                                         className="flex items-center gap-2 px-8 py-2.5 text-sm font-black text-black uppercase bg-[#00FF00] border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all disabled:opacity-50"
                                     >
                                         <Save className="w-4 h-4" />

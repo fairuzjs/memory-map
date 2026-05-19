@@ -7,25 +7,25 @@
  * ── Benefit Premium (10 items) ──────────────────────────────────
  * 1. Max foto per memory       : 3 → 10
  * 2. Max kolaborator            : 5 → 10
- * 3. Free gacha 5 pull/minggu
- * 4. Diskon shop 10%
+ * 3. Free gacha 2 pull/minggu
+ * 4. Diskon shop 5%
  * 5. Pity system 30 pull → Legend (tanpa booster)
- * 6. Streak poin multiplier ×2
- * 7. Bonus 250 poin saat upgrade
+ * 6. Streak poin multiplier ×1.5
+ * 7. Bonus 100 poin saat upgrade
  * 8. Custom map marker (5 style)
  * 9. Premium badge (crown) di profil & komentar
  * 10. Streak freeze 2×/bulan
  *
  * ── Savings Calculation (kurs Rp 10/poin) ───────────────────────
- * Free gacha 5×/minggu  : 5 × 4 × 20 = 400 pts = Rp 4.000
- * Streak ×2 (30 hari)   : 1.320 extra  = Rp 13.200
- * Upgrade bonus         : 250 pts      = Rp 2.500
- * Shop discount ~10%    : ~30 pts      = Rp 300
+ * Free gacha 2×/minggu  : 2 × 4 × 20 = 160 pts = Rp 1.600
+ * Streak ×1.5 (30 hari) : 660 extra  = Rp 6.600
+ * Upgrade bonus         : 100 pts      = Rp 1.000
+ * Shop discount ~5%     : ~80 pts      = Rp 800
  * ─────────────────────────────────────────────────
- * Total terukur/bulan   : ~2.000 pts   = Rp 20.000
+ * Total terukur/bulan   : ~1.000 pts   = Rp 10.000
  * + fitur tak terhitung : pity, freeze, badge, markers, 10 foto
  *
- * Harga premium: Rp 20.000 → user aktif mendapat value ≥ Rp 20.000
+ * Harga premium: Rp 10.000 → user aktif mendapat value ≥ Rp 10.000
  * dari poin saja + semua fitur eksklusif = WORTH IT
  */
 
@@ -73,12 +73,12 @@ export const PREMIUM_CONFIG: Record<"free" | "premium", PremiumLimits> = {
     premium: {
         maxPhotos: 10,
         maxCollaborators: 10,
-        freeGachaPullsPerWeek: 5,
+        freeGachaPullsPerWeek: 2,
         duplicateRefund: 10,
         pityGuarantee: 30,
-        shopDiscountPercent: 10,
-        streakMultiplier: 2,
-        upgradeBonus: 250,
+        shopDiscountPercent: 5,
+        streakMultiplier: 1.5,
+        upgradeBonus: 100,
         customMapMarkers: 5,
         premiumBadge: true,
         streakFreezesPerMonth: 2,
@@ -89,7 +89,7 @@ export const PREMIUM_CONFIG: Record<"free" | "premium", PremiumLimits> = {
 // ─── Pricing ─────────────────────────────────────────────────────
 export const PREMIUM_PRICING = {
     durationDays: 30,
-    price: 20_000,       // Rp 20.000
+    price: 10_000,       // Rp 10.000
     label: "1 Bulan",
 } as const
 

@@ -412,11 +412,11 @@ export default function DashboardPage() {
                     </div>
 
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0 relative z-10">
-                        <Link href="/memories/create" className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-black text-black bg-[#FFFF00] border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all uppercase">
+                        <Link href="/memories/create" data-tutorial="create-memory" className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-black text-black bg-[#FFFF00] border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all uppercase">
                             <Plus className="w-5 h-5" />
                             <span>Tambah Kenangan</span>
                         </Link>
-                        <Link href="/map" className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-black text-black bg-white border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all uppercase hover:bg-[#00FF00]">
+                        <Link href="/map" data-tutorial="explore-map" className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-black text-black bg-white border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all uppercase hover:bg-[#00FF00]">
                             <Globe className="w-5 h-5" />
                             <span>Jelajahi Peta</span>
                         </Link>

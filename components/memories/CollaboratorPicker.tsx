@@ -105,27 +105,27 @@ export function CollaboratorPicker({ value, onChange, maxCollaborators = 5 }: Co
     const isAtMax = value.length >= maxCollaborators
 
     return (
-        <div className="space-y-3" ref={containerRef}>
+        <div className="space-y-4" ref={containerRef}>
             {/* Selected collaborators chips */}
             {selectedUsers.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                     {selectedUsers.map((user) => (
                         <div
                             key={user.id}
-                            className="flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 rounded-full pl-1 pr-3 py-1 text-sm font-medium transition-all"
+                            className="flex items-center gap-2 bg-[#FFFF00] border-[3px] border-black text-black shadow-[3px_3px_0_#000] pl-1.5 pr-3 py-1.5 text-xs font-black uppercase tracking-wider transition-all"
                         >
                             <img
                                 src={avatarUrl(user)}
                                 alt={user.name}
-                                className="w-6 h-6 rounded-full border border-indigo-500/40 object-cover bg-neutral-800"
+                                className="w-6 h-6 border-[2px] border-black object-cover bg-white"
                             />
                             <span className="max-w-[120px] truncate">{user.name}</span>
                             <button
                                 type="button"
                                 onClick={() => handleRemove(user.id)}
-                                className="text-indigo-400 hover:text-rose-400 transition-colors ml-0.5"
+                                className="text-black/60 hover:text-black hover:scale-110 transition-all ml-1"
                             >
-                                <X className="w-3.5 h-3.5" />
+                                <X className="w-4 h-4" />
                             </button>
                         </div>
                     ))}
@@ -135,10 +135,10 @@ export function CollaboratorPicker({ value, onChange, maxCollaborators = 5 }: Co
             {/* Search input */}
             <div className="relative">
                 <div className="relative flex items-center">
-                    <span className="absolute left-3 text-neutral-500 pointer-events-none">
+                    <span className="absolute left-3 text-black pointer-events-none">
                         {loading
-                            ? <Loader2 className="w-4 h-4 animate-spin" />
-                            : <Search className="w-4 h-4" />
+                            ? <Loader2 className="w-5 h-5 animate-spin" />
+                            : <Search className="w-5 h-5" />
                         }
                     </span>
                     <input
@@ -149,36 +149,36 @@ export function CollaboratorPicker({ value, onChange, maxCollaborators = 5 }: Co
                         placeholder={
                             isAtMax
                                 ? `Maximum ${maxCollaborators} collaborators reached`
-                                : "Search by name or email..."
+                                : "Cari nama atau email..."
                         }
                         disabled={isAtMax}
-                        className="w-full bg-neutral-900 border border-neutral-700 rounded-xl pl-10 pr-4 py-3 text-sm placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                        className="w-full bg-white border-[3px] border-black shadow-[4px_4px_0_#000] pl-11 pr-4 py-3.5 text-sm font-bold text-black placeholder-neutral-400 focus:outline-none focus:bg-[#00FFFF] focus:translate-x-[-1px] focus:translate-y-[-1px] focus:shadow-[6px_6px_0_#000] disabled:opacity-50 disabled:bg-neutral-200 disabled:cursor-not-allowed transition-all"
                     />
                 </div>
 
                 {/* Dropdown results */}
                 {isOpen && results.length > 0 && (
-                    <div className="absolute z-50 mt-2 w-full bg-[#13131e] border border-neutral-800 rounded-2xl shadow-2xl overflow-hidden">
-                        <div className="p-1.5 space-y-0.5 max-h-56 overflow-y-auto custom-scrollbar">
+                    <div className="absolute z-50 mt-2 w-full bg-[#FFFDF0] border-[4px] border-black shadow-[6px_6px_0_#000] overflow-hidden">
+                        <div className="max-h-64 overflow-y-auto custom-scrollbar">
                             {results.map((user) => (
                                 <button
                                     key={user.id}
                                     type="button"
                                     onClick={() => handleSelect(user)}
-                                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-indigo-500/10 transition-all text-left group"
+                                    className="w-full flex items-center gap-3 px-4 py-3 bg-white hover:bg-[#00FFFF] border-b-[3px] border-black last:border-b-0 transition-all text-left group"
                                 >
                                     <img
                                         src={avatarUrl(user)}
                                         alt={user.name}
-                                        className="w-9 h-9 rounded-full border border-neutral-700 group-hover:border-indigo-500/50 object-cover bg-neutral-800 shrink-0 transition-colors"
+                                        className="w-9 h-9 border-[2px] border-black object-cover bg-white shrink-0 group-hover:shadow-[2px_2px_0_#000] transition-all"
                                     />
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-semibold text-neutral-200 truncate group-hover:text-indigo-300 transition-colors">
+                                        <p className="text-sm font-black text-black uppercase tracking-wide truncate group-hover:translate-x-1 transition-transform">
                                             {user.name}
                                         </p>
-                                        <p className="text-xs text-neutral-500 truncate">{user.email}</p>
+                                        <p className="text-xs text-black/70 font-bold truncate group-hover:translate-x-1 transition-transform">{user.email}</p>
                                     </div>
-                                    <UserCheck className="w-4 h-4 text-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+                                    <UserCheck className="w-5 h-5 text-black opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all shrink-0" />
                                 </button>
                             ))}
                         </div>
@@ -187,18 +187,18 @@ export function CollaboratorPicker({ value, onChange, maxCollaborators = 5 }: Co
 
                 {/* No results state */}
                 {isOpen && !loading && results.length === 0 && query.length >= 2 && (
-                    <div className="absolute z-50 mt-2 w-full bg-[#13131e] border border-neutral-800 rounded-2xl shadow-2xl p-5 text-center">
-                        <Users className="w-8 h-8 text-neutral-600 mx-auto mb-2" />
-                        <p className="text-sm text-neutral-500">No users found for "{query}"</p>
+                    <div className="absolute z-50 mt-2 w-full bg-white border-[4px] border-black shadow-[6px_6px_0_#000] p-6 text-center">
+                        <Users className="w-10 h-10 text-black mx-auto mb-3" />
+                        <p className="text-sm font-black text-black uppercase tracking-wider">Pencarian "{query}" tidak ditemukan</p>
                     </div>
                 )}
             </div>
 
             {/* Counter */}
-            <p className="text-xs text-neutral-500 flex items-center gap-1.5">
-                <Users className="w-3.5 h-3.5" />
-                {value.length} / {maxCollaborators} collaborators invited
-                {isAtMax && <span className="text-amber-400 font-medium">· Maximum reached</span>}
+            <p className="text-[11px] font-black text-black/70 uppercase tracking-wider flex items-center gap-1.5 pt-1">
+                <Users className="w-4 h-4 text-black" />
+                {value.length} / {maxCollaborators} Collaborator Diundang
+                {isAtMax && <span className="text-[#FF00FF] font-black bg-black px-1.5 py-0.5 ml-1">· MAKSIMUM</span>}
             </p>
         </div>
     )

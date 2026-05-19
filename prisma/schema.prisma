@@ -35,6 +35,8 @@ model User {
   streakFreezesUsed    Int        @default(0)       // Reset setiap tanggal 1
   streakFreezesResetAt DateTime?                    // Kapan monthly reset berikutnya
   premiumItemsClaimed  Boolean    @default(false)    // Apakah sudah klaim item premium (bingkai + banner)
+  hasCompletedOnboarding Boolean  @default(false)    // Apakah sudah menyelesaikan/skip tutorial onboarding
+  hasSeenWelcomeGuide    Boolean  @default(false)    // Apakah sudah melihat intro welcome (arahkan ke Buku Panduan)
 
   memories          Memory[]
   comments          Comment[]

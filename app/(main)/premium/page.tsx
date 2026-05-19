@@ -32,18 +32,18 @@ const BENEFITS = [
     },
     {
         icon: Sparkles,
-        title: "5 Free Gacha / Minggu",
+        title: "2 Free Gacha / Minggu",
         desc: "Buka Mystery Box tanpa keluar poin",
         free: "—",
-        premium: "5 pull",
+        premium: "2 pull",
         bg: "bg-[#00FF00]",
     },
     {
         icon: ShoppingBag,
-        title: "Diskon Shop 10%",
+        title: "Diskon Shop 5%",
         desc: "Hemat poin untuk setiap pembelian di shop",
         free: "0%",
-        premium: "-10%",
+        premium: "-5%",
         bg: "bg-[#FFFF00]",
     },
     {
@@ -56,18 +56,18 @@ const BENEFITS = [
     },
     {
         icon: Zap,
-        title: "Streak x2 Poin",
+        title: "Streak x1.5 Poin",
         desc: "Dapatkan double poin dari klaim streak harian",
         free: "x1",
-        premium: "x2",
+        premium: "x1.5",
         bg: "bg-[#00FFFF]",
     },
     {
         icon: Star,
-        title: "Bonus 250 Poin",
+        title: "Bonus 100 Poin",
         desc: "Langsung dapat bonus poin saat upgrade",
         free: "—",
-        premium: "+250",
+        premium: "+100",
         bg: "bg-[#FFFF00]",
     },
     {
@@ -195,7 +195,7 @@ export default function PremiumPage() {
     const isActive = premiumStatus?.isPremium ?? false
     const inGrace = premiumStatus?.isInGracePeriod ?? false
     const hasPending = !!premiumStatus?.pendingOrder
-    const price = premiumStatus?.pricing?.price ?? 20000
+    const price = premiumStatus?.pricing?.price ?? 10000
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full relative">
@@ -276,7 +276,7 @@ export default function PremiumPage() {
                                 <span className="text-[14px] font-bold text-black/60 uppercase">/bulan</span>
                             </div>
                             <p className="text-[12px] font-bold text-black mt-3">
-                                10 Benefit Eksklusif • Estimasi Value ≥ Rp 20.000/bulan dari poin saja
+                                10 Benefit Eksklusif • Estimasi Value ≥ Rp 10.000/bulan dari poin saja
                             </p>
                         </div>
 
@@ -388,10 +388,10 @@ export default function PremiumPage() {
                         </p>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                             {[
-                                { label: "Free Gacha", value: "400 pts", sub: "5 pull × 4 minggu", bg: "bg-[#00FFFF]" },
-                                { label: "Streak x2", value: "1.320 pts", sub: "30 hari bonus", bg: "bg-[#FF00FF]", text: "text-white" },
-                                { label: "Bonus Upgrade", value: "250 pts", sub: "Langsung dapat", bg: "bg-[#00FF00]" },
-                                { label: "Shop Diskon", value: "~30 pts", sub: "10% hemat", bg: "bg-[#FF3300]", text: "text-white" },
+                                { label: "Free Gacha", value: "160 pts", sub: "2 pull × 4 minggu", bg: "bg-[#00FFFF]" },
+                                { label: "Streak x1.5", value: "660 pts", sub: "30 hari bonus", bg: "bg-[#FF00FF]", text: "text-white" },
+                                { label: "Bonus Upgrade", value: "100 pts", sub: "Langsung dapat", bg: "bg-[#00FF00]" },
+                                { label: "Shop Diskon", value: "~80 pts", sub: "5% hemat", bg: "bg-[#FF3300]", text: "text-white" },
                             ].map(s => (
                                 <div key={s.label} className={`p-4 border-[3px] border-black shadow-[4px_4px_0_#000] flex flex-col justify-center items-center ${s.bg} ${s.text || "text-black"}`}>
                                     <p className="text-[20px] font-black leading-none">{s.value}</p>
@@ -401,7 +401,7 @@ export default function PremiumPage() {
                             ))}
                         </div>
                         <p className="text-[14px] font-bold text-black mt-6 bg-white border-[3px] border-black inline-block px-4 py-2 shadow-[4px_4px_0_#000]">
-                            Total terukur: <span className="font-black text-[#FF3300]">~2.000 poin</span> (≈ Rp 20.000) + fitur eksklusif lainnya!
+                            Total terukur: <span className="font-black text-[#FF3300]">~1.000 poin</span> (≈ Rp 10.000) + fitur eksklusif lainnya!
                         </p>
                     </div>
                 </motion.div>
