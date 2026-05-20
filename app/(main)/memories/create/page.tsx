@@ -16,6 +16,7 @@ import { PremiumLockedState } from "@/components/memories/PremiumLockedState"
 import { CollaboratorPicker } from "@/components/memories/CollaboratorPicker"
 import { MarkerStylePicker } from "@/components/memories/MarkerStylePicker"
 import { useOnboarding } from "@/components/onboarding/OnboardingProvider"
+import { AlbumSelectionModal } from "@/components/memories/AlbumSelectionModal"
 import { motion, AnimatePresence } from "framer-motion"
 import {
     BookText, MapPin, Smile, ImagePlus, Users, Globe, Music,
@@ -71,6 +72,8 @@ export default function CreateMemoryPage() {
     const [maxCollaborators, setMaxCollaborators] = useState(5)
     const [isPremium, setIsPremium] = useState(false)
     const { isActive: isOnboarding, notifyMemoryCreated, advanceStep } = useOnboarding()
+    const [createdMemoryId, setCreatedMemoryId] = useState<string | null>(null)
+    const [memoryPhotos, setMemoryPhotos] = useState<string[]>([])
 
     // Check email verification status
     useEffect(() => {
@@ -165,6 +168,8 @@ export default function CreateMemoryPage() {
 
             if (!res.ok) throw new Error("Failed to create memory")
 
+            const createdMemory = await res.json()
+
             // If onboarding is active, notify and let the provider handle redirect
             if (isOnboarding) {
                 notifyMemoryCreated()
@@ -172,7 +177,9 @@ export default function CreateMemoryPage() {
             }
 
             toast.success("Kenangan berhasil dibuat!")
-            router.push("/memories")
+            const photoUrls = data.photos?.map((p: any) => p.url).filter(Boolean) || []
+            setMemoryPhotos(photoUrls)
+            setCreatedMemoryId(createdMemory.id)
         } catch (error) {
             toast.error("Terjadi kesalahan saat menyimpan kenangan")
         } finally {
@@ -708,6 +715,16 @@ export default function CreateMemoryPage() {
                 </form>
                 </motion.div>
             )}
+
+            <AnimatePresence>
+                {createdMemoryId && (
+                    <AlbumSelectionModal
+                        memoryId={createdMemoryId}
+                        memoryPhotos={memoryPhotos}
+                        onClose={() => setCreatedMemoryId(null)}
+                    />
+                )}
+            </AnimatePresence>
         </div>
     )
 }

@@ -19,6 +19,7 @@ import { GuideSelectionPopup } from "./GuideSelectionPopup"
 import { WelcomeIntroModal } from "./WelcomeIntroModal"
 import {
     FIRST_MEMORY_STEPS,
+    ALBUM_GUIDE_STEPS,
     GUIDE_DEFINITIONS,
     ONBOARDING_STORAGE_KEYS,
     createNavigationStep,
@@ -545,8 +546,12 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
         setMode("idle") // Close popup first
 
         if (guide.useSteps) {
-            // Full step-by-step tutorial (firstMemory)
-            setSteps(FIRST_MEMORY_STEPS)
+            // Full step-by-step tutorial (firstMemory or album)
+            if (guide.key === "album") {
+                setSteps(ALBUM_GUIDE_STEPS)
+            } else {
+                setSteps(FIRST_MEMORY_STEPS)
+            }
             setStepIndex(0)
             setActiveGuideKey(guide.key)
             // Small delay for popup close animation

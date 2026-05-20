@@ -3,10 +3,12 @@
 import { useSession } from "next-auth/react"
 import { useEffect, useState, useRef, useMemo } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import {
     Plus, Globe, Loader2, ArrowRight, X,
-    BookOpen, TrendingUp, Map, Heart, Image as ImageIcon,
-    Flame, ChevronRight, CheckCircle2, CalendarDays, Activity, Zap
+    BookOpen, TrendingUp, Heart,
+    Flame, ChevronRight, CheckCircle2, CalendarDays, Activity,
+    Camera, Coffee, GraduationCap, Mountain, Music2, Palmtree, Plane, Star, Waves, Inbox
 } from "lucide-react"
 import { motion, useInView } from "framer-motion"
 import { DashboardSkeleton } from "@/components/dashboard/DashboardSkeleton"
@@ -39,10 +41,12 @@ function toWIBKey(date: Date): string {
 }
 
 /** Reconstruct active dates from memory dates + streak claim history + permanent activeDates records */
-function buildActiveDates(memories: any[], currentStreak: number, lastClaimedAt: string | null, permanentDates: string[] = []): Set<string> {
+function buildActiveDates(memories: DashboardMemory[], currentStreak: number, lastClaimedAt: string | null, permanentDates: string[] = []): Set<string> {
     const active = new Set<string>()
     for (const m of memories) {
-        try { active.add(toWIBKey(new Date(m.date ?? m.createdAt))) } catch { /* skip */ }
+        const dateValue = m.date ?? m.createdAt
+        if (!dateValue) continue
+        try { active.add(toWIBKey(new Date(dateValue))) } catch { /* skip */ }
     }
     
     // Fallback untuk history lama
@@ -65,13 +69,45 @@ function buildActiveDates(memories: any[], currentStreak: number, lastClaimedAt:
 // ─── ── GitHub-style Heatmap ─────────────────────────────────────────────────
 const MONTHS_ID = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des']
 
+interface DashboardMemory {
+    id?: string
+    date?: string | null
+    createdAt?: string | null
+    locationName?: string | null
+    emotion?: string | null
+    photos?: unknown[] | null
+}
+
+interface DashboardAlbum {
+    id: string
+    name: string
+    description?: string | null
+    coverImage?: string | null
+    icon?: string | null
+    createdAt: string
+    _count: { memories: number }
+}
+
+interface StreakApiResponse {
+    currentStreak: number
+    longestStreak: number
+    totalActiveDays: number
+    lastClaimedAt: string | null
+    alreadyClaimed: boolean
+    nextMilestone: number | null
+    daysToNext: number | null
+    activeDates?: string[]
+}
+
 interface HeatCell { dateKey: string; count: number; dayObj: Date; isFuture: boolean }
 
-function buildHeatmapCells(memories: any[]): HeatCell[] {
+function buildHeatmapCells(memories: DashboardMemory[]): HeatCell[] {
     const countMap: Record<string, number> = {}
     for (const m of memories) {
         try {
-            const key = toWIBKey(new Date(m.date ?? m.createdAt))
+            const dateValue = m.date ?? m.createdAt
+            if (!dateValue) continue
+            const key = toWIBKey(new Date(dateValue))
             countMap[key] = (countMap[key] || 0) + 1
         } catch { /* skip */ }
     }
@@ -99,7 +135,7 @@ function heatCellStyle(count: number, isFuture: boolean): React.CSSProperties {
     return { background: '#FFFF00', border: '2px solid black', boxShadow: '2px 2px 0 #000' }
 }
 
-function ActivityHeatmap({ memories }: { memories: any[] }) {
+function ActivityHeatmap({ memories }: { memories: DashboardMemory[] }) {
     const allCells = useMemo(() => buildHeatmapCells(memories), [memories])
     const [tooltip, setTooltip] = useState<{ x: number; y: number; cell: HeatCell } | null>(null)
 
@@ -121,10 +157,10 @@ function ActivityHeatmap({ memories }: { memories: any[] }) {
     const thisYear = new Date().getFullYear()
     const thisYearCount = useMemo(() =>
         allCells.filter(c => !c.isFuture && c.count > 0 && c.dayObj.getFullYear() === thisYear).reduce((s, c) => s + c.count, 0),
-        [allCells])
+        [allCells, thisYear])
     const activeDays = useMemo(() =>
         allCells.filter(c => !c.isFuture && c.count > 0 && c.dayObj.getFullYear() === thisYear).length,
-        [allCells])
+        [allCells, thisYear])
 
     const CELL = 14; const GAP = 4
     const DAY_LABELS = ['', 'Sen', '', 'Rab', '', 'Jum', '']
@@ -252,7 +288,7 @@ function build30DayCalendar(activeDates: Set<string>): { weeks: CalDay[][]; acti
 function ActivityCalendar({
     memories, currentStreak, lastClaimedAt, permanentDates
 }: {
-    memories: any[]; currentStreak: number; lastClaimedAt: string | null
+    memories: DashboardMemory[]; currentStreak: number; lastClaimedAt: string | null
     permanentDates: string[]
 }) {
     const activeDates = useMemo(() => buildActiveDates(memories, currentStreak, lastClaimedAt, permanentDates), [memories, currentStreak, lastClaimedAt, permanentDates])
@@ -334,10 +370,46 @@ function StatBar({ label, value, barColor, sub }: { label: string; value: string
     )
 }
 
+function DashboardAlbumIcon({ icon, className = "w-5 h-5" }: { icon?: string | null; className?: string }) {
+    const legacyMap: Record<string, string> = {
+        "\u{1F30A}": "waves",
+        "\u2764\uFE0F": "heart",
+        "\u2708\uFE0F": "plane",
+        "\u2615": "coffee",
+        "\u{1F393}": "graduation",
+        "\u26F0\uFE0F": "mountain",
+        "\u{1F4F7}": "camera",
+        "\u2B50": "star",
+        "\u{1F334}": "palm",
+        "\u{1F3B5}": "music",
+        "\u{1F4E5}": "inbox",
+    }
+    const normalized = icon ? (legacyMap[icon] || icon) : "book"
+    const Icon = ({
+        waves: Waves,
+        heart: Heart,
+        plane: Plane,
+        coffee: Coffee,
+        graduation: GraduationCap,
+        mountain: Mountain,
+        camera: Camera,
+        star: Star,
+        palm: Palmtree,
+        music: Music2,
+        inbox: Inbox,
+        book: BookOpen,
+    } as const)[normalized as keyof {
+        waves: typeof Waves; heart: typeof Heart; plane: typeof Plane; coffee: typeof Coffee; graduation: typeof GraduationCap;
+        mountain: typeof Mountain; camera: typeof Camera; star: typeof Star; palm: typeof Palmtree; music: typeof Music2; inbox: typeof Inbox; book: typeof BookOpen;
+    }] || BookOpen
+    return <Icon className={className} strokeWidth={2.8} />
+}
+
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function DashboardPage() {
     const { data: session } = useSession()
-    const [memories, setMemories] = useState<any[]>([])
+    const [memories, setMemories] = useState<DashboardMemory[]>([])
+    const [albums, setAlbums] = useState<DashboardAlbum[]>([])
     const [stats, setStats] = useState({ totalMemories: 0, uniqueLocations: 0, topEmotion: "-", totalPhotos: 0 })
     const [loading, setLoading] = useState(true)
     const [mobileTab, setMobileTab] = useState<'graph' | 'calendar'>('graph')
@@ -356,11 +428,14 @@ export default function DashboardPage() {
         if (!session?.user?.id) return
         fetch(`/api/memories?userId=${session.user.id}`)
             .then(r => r.json())
-            .then((data: any[]) => {
+            .then((data: DashboardMemory[]) => {
                 setMemories(data)
                 const totalMemories = data.length
                 const locations = new Set(data.filter(m => m.locationName).map(m => m.locationName)).size
-                const emotions = data.reduce((acc: any, cur: any) => { acc[cur.emotion] = (acc[cur.emotion] || 0) + 1; return acc }, {})
+                const emotions = data.reduce<Record<string, number>>((acc, cur) => {
+                    if (cur.emotion) acc[cur.emotion] = (acc[cur.emotion] || 0) + 1
+                    return acc
+                }, {})
                 const topEmotion = Object.keys(emotions).sort((a, b) => emotions[b] - emotions[a])[0] || "-"
                 const totalPhotos = data.reduce((acc, cur) => acc + (cur.photos?.length || 0), 0)
                 setStats({ totalMemories, uniqueLocations: locations, topEmotion, totalPhotos })
@@ -370,13 +445,18 @@ export default function DashboardPage() {
 
         fetch("/api/streak")
             .then(r => r.json())
-            .then(d => setStreakData({
+            .then((d: StreakApiResponse) => setStreakData({
                 currentStreak: d.currentStreak, longestStreak: d.longestStreak,
                 totalActiveDays: d.totalActiveDays, lastClaimedAt: d.lastClaimedAt,
                 alreadyClaimed: d.alreadyClaimed, nextMilestone: d.nextMilestone, daysToNext: d.daysToNext,
                 activeDates: d.activeDates || [],
             }))
             .catch(() => { })
+
+        fetch("/api/albums?sort=terbaru")
+            .then(r => r.json())
+            .then((d: DashboardAlbum[]) => setAlbums(d))
+            .catch(() => {})
     }, [session?.user?.id])
 
     if (loading) return <DashboardSkeleton />
@@ -467,8 +547,8 @@ export default function DashboardPage() {
                             <p className="text-[12px] font-bold text-black/50 mt-1">Perjalanan Anda dalam angka</p>
                         </div>
                     </div>
-                    <Link href="/memories" className="group flex items-center gap-1.5 text-xs font-black text-black bg-[#FFFF00] px-3 py-2 border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0_#000] transition-all uppercase tracking-wide">
-                        <span>Lihat Jurnal</span><ArrowRight className="w-3.5 h-3.5" />
+                    <Link href="/albums" className="group flex items-center gap-1.5 text-xs font-black text-black bg-[#FFFF00] px-3 py-2 border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0_#000] transition-all uppercase tracking-wide">
+                        <span>Buka Album</span><ArrowRight className="w-3.5 h-3.5" />
                     </Link>
                 </motion.div>
 
@@ -493,6 +573,97 @@ export default function DashboardPage() {
                         <StatBar label="Perasaan Utama" value={emotionDisplay} barColor="#FF00FF" sub="Paling sering" />
                         <StatBar label="Foto" value={stats.totalPhotos} barColor="#FFFF00" sub="Terlampir" />
                     </div>
+                </motion.div>
+            </AnimatedSection>
+
+            {/* ── Album Terbaru Preview ────────────────────────────────────── */}
+            <AnimatedSection>
+                <motion.div variants={fadeUp} className="mb-4 flex items-center justify-between gap-4">
+                    <div className="flex min-w-0 items-center gap-3">
+                        <div className="flex h-11 w-11 shrink-0 items-center justify-center border-[3px] border-black bg-[#00FFFF] shadow-[3px_3px_0_#000]">
+                            <BookOpen className="h-5 w-5 text-black" />
+                        </div>
+                        <div className="min-w-0">
+                            <h2 className="text-[18px] font-black leading-none text-black" style={{ fontFamily: "'Syne',sans-serif" }}>Album Terbaru</h2>
+                            <p className="mt-1 line-clamp-1 text-[12px] font-bold text-black/50">Koleksi cerita yang baru kamu susun</p>
+                        </div>
+                    </div>
+                    <Link href="/albums" className="group flex shrink-0 items-center gap-1.5 border-[3px] border-black bg-[#FF00FF] px-3 py-2 text-xs font-black uppercase tracking-wide text-white shadow-[3px_3px_0_#000] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0_#000]">
+                        <span className="hidden sm:inline">Lihat Semua</span><ArrowRight className="h-3.5 w-3.5 text-white" />
+                    </Link>
+                </motion.div>
+
+                <motion.div variants={fadeUp} className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+                    {albums.slice(0, 3).map((album, index) => {
+                        const accent = ["#00FFFF", "#FFFF00", "#FF00FF"][index % 3]
+                        return (
+                        <Link
+                            key={album.id}
+                            href={`/albums/${album.id}`}
+                            className="group relative grid min-h-[122px] grid-cols-[88px_1fr] overflow-hidden border-[4px] border-black bg-white shadow-[5px_5px_0_#000] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[7px_7px_0_#000] sm:grid-cols-[104px_1fr]"
+                        >
+                            <div className="relative border-r-[4px] border-black bg-neutral-200">
+                                {album.coverImage ? (
+                                    <Image
+                                        src={album.coverImage}
+                                        alt={album.name}
+                                        fill
+                                        unoptimized
+                                        sizes="104px"
+                                        className="object-cover grayscale-[10%] transition-transform duration-300 group-hover:scale-105"
+                                    />
+                                ) : (
+                                    <div className="flex h-full min-h-[122px] items-center justify-center" style={{ backgroundColor: accent }}>
+                                        <DashboardAlbumIcon icon={album.icon} className="h-8 w-8 text-black" />
+                                    </div>
+                                )}
+                                <div className="absolute left-2 top-2 flex h-8 w-8 items-center justify-center border-[3px] border-black bg-white shadow-[2px_2px_0_#000]">
+                                    <DashboardAlbumIcon icon={album.icon} className="h-4 w-4 text-black" />
+                                </div>
+                                <div className="absolute bottom-0 left-0 h-2 w-full border-t-[3px] border-black" style={{ backgroundColor: accent }} />
+                            </div>
+
+                            <div className="flex min-w-0 flex-col p-3 sm:p-4">
+                                <div className="mb-2 flex items-start justify-between gap-3">
+                                    <div className="min-w-0">
+                                        <h3 className="truncate text-base font-black uppercase leading-tight text-black transition-colors group-hover:text-[#FF00FF]" style={{ fontFamily: "'Syne',sans-serif" }}>
+                                            {album.name}
+                                        </h3>
+                                        <p className="mt-1 text-[11px] font-black uppercase text-black/55">
+                                            {album._count.memories} Kenangan
+                                        </p>
+                                    </div>
+                                    <span className="shrink-0 border-[2px] border-black bg-[#FFFF00] px-2 py-1 text-[10px] font-black uppercase leading-none shadow-[2px_2px_0_#000]">
+                                        Baru
+                                    </span>
+                                </div>
+
+                                <p className="line-clamp-2 min-h-[32px] text-xs font-bold leading-relaxed text-black/55">
+                                    {album.description || "Belum ada deskripsi album."}
+                                </p>
+
+                                <div className="mt-auto flex items-end justify-between gap-3 border-t-[2.5px] border-dashed border-black pt-2">
+                                    <span className="text-[10px] font-black uppercase leading-none text-black/45">
+                                        {formatDate(new Date(album.createdAt))}
+                                    </span>
+                                    <span className="flex items-center gap-1 text-[10px] font-black uppercase text-black group-hover:underline">
+                                        Buka <ChevronRight className="h-3.5 w-3.5" />
+                                    </span>
+                                </div>
+                            </div>
+                        </Link>
+                        )
+                    })}
+                    {albums.length === 0 && (
+                        <div className="col-span-full border-[4px] border-black p-8 bg-white text-center shadow-[5px_5px_0_#000]">
+                            <BookOpen className="mx-auto mb-2 h-10 w-10 text-black" />
+                            <p className="text-sm font-black uppercase text-black">Belum ada album dibuat</p>
+                            <p className="text-xs font-bold text-neutral-500 mt-1 mb-4">Mulai kelompokkan cerita hidupmu dalam album tema sendiri</p>
+                            <Link href="/albums" className="inline-flex items-center gap-1 px-4 py-2 text-xs font-black bg-[#00FF00] border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] transition-all uppercase">
+                                Buat Album Pertamamu
+                            </Link>
+                        </div>
+                    )}
                 </motion.div>
             </AnimatedSection>
 

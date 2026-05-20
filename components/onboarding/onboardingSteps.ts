@@ -1,7 +1,8 @@
 import {
     MapPin, Map, BookText, Smile, ImagePlus, Music, Users,
     Globe, Save, ChevronRight, CheckCircle2, Sparkles, Flame, Package, User,
-    ShoppingBag, Dices, Crown, Settings, MessageSquareText, HelpCircle
+    ShoppingBag, Dices, Crown, Settings, MessageSquareText, HelpCircle,
+    BookOpen, Plus, Image as ImageIcon, FolderPlus, BookHeart
 } from "lucide-react"
 
 // ─── Step Types ─────────────────────────────────────────────────────────────
@@ -54,6 +55,15 @@ export interface GuideDefinition {
 }
 
 export const GUIDE_DEFINITIONS: GuideDefinition[] = [
+    {
+        key: "album",
+        title: "PANDUAN ALBUM",
+        description: "Panduan lengkap cara mengelompokkan kenangan berdasarkan tema cerita kustom, cover manual, ganti cover, tambah & pindah kenangan.",
+        icon: BookOpen,
+        accentColor: "#00FFFF",
+        useSteps: true,
+        navigateTo: "/albums",
+    },
     {
         key: "firstMemory",
         title: "CARA MEMBUAT MEMORY",
@@ -354,6 +364,67 @@ export const FIRST_MEMORY_STEPS: OnboardingStep[] = [
         actionDelay: 1500,
         guideKey: "firstMemory",
     },
+]
+
+// ─── Album Kenangan Onboarding Steps ─────────────────────────────────────────
+export const ALBUM_GUIDE_STEPS: OnboardingStep[] = [
+    {
+        id: "album-welcome",
+        title: "Selamat Datang di Album Kenangan! 📚",
+        description: "Fitur baru ini mempermudahmu mengelompokkan berbagai kenangan hidup berdasarkan cerita, perjalanan, atau tema pilihanmu sendiri.",
+        icon: BookHeart,
+        accentColor: "#FF00FF",
+        position: "center",
+        nextLabel: "Mulai Panduan",
+        showSkip: true,
+        guideKey: "album",
+    },
+    {
+        id: "album-create",
+        title: "1. Membuat Album Baru ＋",
+        description: "Klik tombol 'Buat Album' di pojok kanan atas untuk membuka panel pembuatan. Di sini kamu bisa mengisi nama album (misalnya: 🌊 Laut), deskripsi, dan ikon emoji kustom.",
+        icon: Plus,
+        accentColor: "#FFFF00",
+        targetSelector: "[data-tutorial='create-album-btn']",
+        requiredPath: "/albums",
+        position: "auto",
+        allowInteraction: true,
+        scrollToTarget: true,
+        guideKey: "album",
+    },
+    {
+        id: "album-cover-manual",
+        title: "2. Memilih Cover Secara Manual 🖼️",
+        description: "Di dalam panel pembuatan album, kamu dapat mengunggah file gambar kustom pilihanmu sendiri melalui tombol 'Upload File Cover' untuk dijadikan banner utama album.",
+        icon: ImageIcon,
+        accentColor: "#00FF00",
+        targetSelector: "[data-tutorial='create-album-btn']",
+        requiredPath: "/albums",
+        position: "auto",
+        guideKey: "album",
+    },
+    {
+        id: "album-change-cover",
+        title: "3. Mengganti Cover Album ⚙️",
+        description: "Ingin mengubah cover di kemudian hari? Cukup klik ikon Tiga Titik (⋮) pada kartu album yang diinginkan, lalu pilih opsi 'Ganti Cover' untuk memperbaruinya kapan saja.",
+        icon: ImagePlus,
+        accentColor: "#00FFFF",
+        targetSelector: "[data-tutorial='album-menu-btn']",
+        requiredPath: "/albums",
+        position: "auto",
+        guideKey: "album",
+    },
+    {
+        id: "album-manage-memories",
+        title: "4. Menambah & Memindahkan Kenangan 🔄",
+        description: "Klik menu Tiga Titik (⋮) pada kartu album, lalu pilih 'Kelola Kenangan'. Centang semua kenangan yang ingin dikelompokkan ke dalam album ini. Satu kenangan boleh masuk ke banyak album sekaligus!",
+        icon: FolderPlus,
+        accentColor: "#FF00FF",
+        targetSelector: "[data-tutorial='album-menu-btn']",
+        requiredPath: "/albums",
+        position: "auto",
+        guideKey: "album",
+    }
 ]
 
 // ─── Navigation Guide Steps (simple highlight-on-page guides) ───────────────
