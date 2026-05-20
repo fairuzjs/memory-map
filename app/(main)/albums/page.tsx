@@ -542,7 +542,7 @@ export default function AlbumsPage() {
 
     return (
         <div className="mx-auto w-full max-w-7xl space-y-7 px-4 py-7 pb-32 sm:px-6 lg:px-8">
-            <section className="relative z-50 border-[4px] border-black bg-[#00DDEB] p-6 shadow-[9px_9px_0_#000] sm:p-8">
+            <section className="relative z-10 border-[4px] border-black bg-[#00DDEB] p-6 shadow-[9px_9px_0_#000] sm:p-8">
                 <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-[0.14]" style={{ backgroundImage: "radial-gradient(#000 1.5px, transparent 1.5px)", backgroundSize: "18px 18px" }} />
                 <div className="relative grid items-center gap-8 lg:grid-cols-[1fr_420px]">
                     <div>
