@@ -547,9 +547,6 @@ export default function DashboardPage() {
                             <p className="text-[12px] font-bold text-black/50 mt-1">Perjalanan Anda dalam angka</p>
                         </div>
                     </div>
-                    <Link href="/albums" className="group flex items-center gap-1.5 text-xs font-black text-black bg-[#FFFF00] px-3 py-2 border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0_#000] transition-all uppercase tracking-wide">
-                        <span>Buka Album</span><ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
                 </motion.div>
 
                 <motion.div variants={fadeUp} className="border-[4px] border-black bg-white shadow-[8px_8px_0_#000]">
