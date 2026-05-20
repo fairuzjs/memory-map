@@ -4,17 +4,10 @@ import { MapPin, Heart, MessageCircle, Plus, Users, Music, Image as ImageIcon, P
 import Link from "next/link"
 import { EMOTION_COLOR, EMOTION_BG, EMOTION_LABEL } from "./ProfileUtils"
 import { MemoryModal } from "./MemoryModal"
+import { getMemoryCover } from "@/lib/utils"
 
 export function MemoryGridCell({ memory, onClick, profileId }: { memory: any; onClick: () => void; profileId: string }) {
-    let photo = null
-    if (memory.photos?.[0]) {
-        try {
-            const parsed = JSON.parse(memory.photos[0].url)
-            photo = parsed.url || memory.photos[0].url
-        } catch {
-            photo = memory.photos[0].url
-        }
-    }
+    const photo = getMemoryCover(memory)
     const emotionColor = EMOTION_COLOR[memory.emotion] ?? "#818cf8"
     const emotionBg = EMOTION_BG[memory.emotion] ?? "rgba(99,102,241,0.15)"
     

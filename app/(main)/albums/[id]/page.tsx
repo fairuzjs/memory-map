@@ -34,6 +34,7 @@ import {
 } from "lucide-react"
 import toast from "react-hot-toast"
 import { MemoryCard } from "@/components/memories/MemoryCard"
+import { MemoryCover } from "@/components/memories/MemoryCover"
 import { formatDate } from "@/lib/utils"
 
 const MapView = dynamic(() => import("@/components/map/MapView"), {
@@ -110,6 +111,10 @@ const ICON_OPTIONS: Array<{ id: string; Icon: LucideIcon }> = [
     { id: "music", Icon: Music2 },
 ]
 
+// ── Accent colors ──────────────────────────────────────────
+const STAT_COLORS = ["#00DDEB", "#FF6B9D", "#06D6A0", "#FFD166"]
+const ROTATIONS = ["scrap-rotate-1", "scrap-rotate-2", "scrap-rotate-3", "scrap-rotate-4"]
+
 function normalizeIconId(icon?: string | null) {
     const legacyMap: Record<string, string> = {
         "\u{1F30A}": "waves",
@@ -144,16 +149,7 @@ function getErrorMessage(error: unknown, fallback: string) {
     return error instanceof Error ? error.message : fallback
 }
 
-function getPreviewPhoto(memory: Memory) {
-    const first = memory.photos?.[0]
-    if (!first) return ""
-    try {
-        const parsed = JSON.parse(first.url)
-        return parsed.url || parsed.path || ""
-    } catch {
-        return first.url || ""
-    }
-}
+
 
 export default function AlbumDetailPage() {
     const { id } = useParams() as { id: string }
@@ -214,9 +210,8 @@ export default function AlbumDetailPage() {
 
     const recentPhotos = useMemo(() => {
         if (!album) return []
-        return album.memories
-            .map(memory => ({ memory, photo: getPreviewPhoto(memory) }))
-            .filter(item => item.photo)
+        return [...album.memories]
+            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
             .slice(0, 6)
     }, [album])
 
@@ -231,8 +226,16 @@ export default function AlbumDetailPage() {
 
     if (!album) return null
 
+    const statItems = [
+        { label: "Memory", value: stats.memories, emoji: "", color: STAT_COLORS[0] },
+        { label: "Foto", value: stats.photos, emoji: "", color: STAT_COLORS[1] },
+        { label: "Kota", value: stats.places, emoji: "", color: STAT_COLORS[2] },
+        { label: "Update", value: stats.latest, emoji: "", color: STAT_COLORS[3] },
+    ]
+
     return (
         <div className="mx-auto w-full max-w-7xl space-y-7 px-4 py-7 pb-32 sm:px-6 lg:px-8">
+            {/* ── Back nav ────────────────────────────────────── */}
             <div className="flex items-center justify-between">
                 <Link
                     href="/albums"
@@ -243,58 +246,87 @@ export default function AlbumDetailPage() {
                 </Link>
             </div>
 
+            {/* ══════════════════════════════════════════════════
+                HERO — Album Detail (Polaroid Frame)
+                ══════════════════════════════════════════════════ */}
             <section className="grid gap-6 lg:grid-cols-[1fr_340px]">
                 <div className="relative overflow-hidden border-[4px] border-black bg-white shadow-[9px_9px_0_#000]">
-                    <div className="relative h-[360px] overflow-hidden border-b-[4px] border-black bg-[#E5E5E5]">
-                        {album.coverImage ? (
-                            <img src={album.coverImage} alt={album.name} className="h-full w-full object-cover" />
-                        ) : (
-                            <div className="h-full w-full bg-[linear-gradient(135deg,#00FFFF,#FFFF00_50%,#FF00FF)] opacity-80" />
-                        )}
-                        <div className="absolute inset-0 bg-black/30" />
-                        <div className="absolute left-6 top-6 rotate-[-8deg] border-[3px] border-black bg-[#FFFF00] px-4 py-2 text-xs font-black uppercase text-black shadow-[4px_4px_0_#000]">
-                            Album
+                    {/* Cover area with double border (polaroid feel) */}
+                    <div className="relative overflow-hidden border-b-[4px] border-black">
+                        <div className="m-2 border-[3px] border-black bg-white p-1.5">
+                            <div className="relative h-[320px] overflow-hidden bg-[#E5E5E5] sm:h-[360px]">
+                                {album.coverImage ? (
+                                    <img src={album.coverImage} alt={album.name} className="h-full w-full object-cover" />
+                                ) : (
+                                    <div className="h-full w-full bg-[linear-gradient(135deg,#00FFFF55,#FFFF0066_50%,#FF00FF55)]" />
+                                )}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+
+                                {/* Album badge */}
+                                <div className="absolute left-4 top-4 rotate-[-5deg] border-[3px] border-black bg-[#FFFF00] px-4 py-1.5 text-[10px] font-black uppercase text-black shadow-[3px_3px_0_#000]">
+                                    Album
+                                </div>
+
+                                {/* Album info overlay */}
+                                <div className="absolute bottom-4 left-4 right-4 flex items-end gap-4">
+                                    <div
+                                        className="flex h-16 w-16 shrink-0 items-center justify-center border-[4px] border-black bg-[#FFFF00] text-black shadow-[4px_4px_0_#FF00FF] sm:h-20 sm:w-20"
+                                    >
+                                        <AlbumGlyph icon={album.icon} className="h-8 w-8 sm:h-10 sm:w-10" />
+                                    </div>
+                                    <div className="min-w-0">
+                                        <h1 className="text-2xl font-black uppercase leading-none text-white drop-shadow-[3px_3px_0_rgba(0,0,0,.85)] sm:text-4xl lg:text-5xl">
+                                            {album.name}
+                                        </h1>
+                                        <p className="mt-2 max-w-2xl text-xs font-bold leading-6 text-white/85 drop-shadow-[2px_2px_0_rgba(0,0,0,.7)] sm:text-sm">
+                                            {album.description || "Album ini belum memiliki deskripsi. Isi dengan cerita yang ingin kamu simpan rapi."}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div className="absolute bottom-6 left-6 right-6 flex items-end gap-4">
-                            <div className="flex h-20 w-20 shrink-0 items-center justify-center border-[4px] border-black bg-[#FFFF00] text-black shadow-[5px_5px_0_#FF00FF]">
-                                <AlbumGlyph icon={album.icon} className="h-10 w-10" />
-                            </div>
-                            <div className="min-w-0">
-                                <h1 className="text-4xl font-black uppercase leading-none text-white drop-shadow-[3px_3px_0_rgba(0,0,0,.85)] sm:text-5xl">
-                                    {album.name}
-                                </h1>
-                                <p className="mt-3 max-w-2xl text-sm font-black leading-6 text-white/90 drop-shadow-[2px_2px_0_rgba(0,0,0,.7)]">
-                                    {album.description || "Album ini belum memiliki deskripsi. Isi dengan cerita yang ingin kamu simpan rapi."}
-                                </p>
-                            </div>
+                        {/* Handwritten caption under polaroid frame */}
+                        <div className="px-4 py-2 text-center">
+                            <span className="font-caveat text-sm text-black/40">
+                                {album.memories.length > 0
+                                    ? `${album.memories.length} kenangan tersimpan`
+                                    : "Mulai isi chapter ini..."
+                                }
+                            </span>
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 border-b-[4px] border-black bg-[#FFFDF0] sm:grid-cols-4">
-                        {[
-                            ["Memory", stats.memories, "#00FFFF"],
-                            ["Foto", stats.photos, "#FF00FF"],
-                            ["Kota", stats.places, "#00FF00"],
-                            ["Update", stats.latest, "#FFFF00"],
-                        ].map(([label, value, color], index) => (
-                            <div key={label as string} className="border-r-[3px] border-black p-4 last:border-r-0" style={{ backgroundColor: color as string }}>
-                                <span className="block text-[10px] font-black uppercase text-black/60">{label as string}</span>
-                                <strong className={`mt-2 block font-black uppercase leading-tight text-black ${index === 3 ? "text-sm" : "text-3xl"}`}>
-                                    {value as string | number}
+                    {/* Stats row — scrapbook mini cards */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4">
+                        {statItems.map((stat, i) => (
+                            <div
+                                key={stat.label}
+                                className="border-r-[3px] border-black p-3.5 last:border-r-0 sm:p-4"
+                                style={{ borderTopColor: stat.color, borderTopWidth: "4px" }}
+                            >
+                                <span className="block text-[10px] font-black uppercase text-black/50">
+                                    {stat.label}
+                                </span>
+                                <strong className={`mt-1 block font-black uppercase leading-tight text-black ${typeof stat.value === "string" ? "text-[11px]" : "text-2xl sm:text-3xl"}`}>
+                                    {stat.value}
                                 </strong>
                             </div>
                         ))}
                     </div>
                 </div>
 
+                {/* ── Aside: Album Summary ────────────────────── */}
                 <aside className="space-y-5 border-[4px] border-black bg-[#FFFDF0] p-5 shadow-[8px_8px_0_#000]">
-                    <div className="flex items-center gap-2 border-b-[3px] border-black pb-3">
+                    <div className="dot-paper-light pointer-events-none absolute inset-0 opacity-20" />
+
+                    <div className="relative flex items-center gap-2 border-b-[3px] border-black pb-3">
                         <Route className="h-5 w-5 text-black" />
                         <h2 className="text-sm font-black uppercase text-black">Ringkasan Album</h2>
                     </div>
 
+                    {/* Mini map preview */}
                     <div className="relative h-36 overflow-hidden border-[3px] border-black bg-[#DFF7E8]">
-                        <div className="absolute inset-0 opacity-40" style={{ backgroundImage: "linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)", backgroundSize: "34px 34px" }} />
+                        <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)", backgroundSize: "34px 34px" }} />
                         {album.memories.slice(0, 5).map((memory, index) => (
                             <div
                                 key={memory.id}
@@ -307,15 +339,25 @@ export default function AlbumDetailPage() {
                                 <MapPin className="h-4 w-4 text-black" />
                             </div>
                         ))}
+                        {album.memories.length === 0 && (
+                            <div className="flex h-full items-center justify-center">
+                                <span className="text-xs font-bold text-black/30">Belum ada lokasi</span>
+                            </div>
+                        )}
                     </div>
 
-                    <div>
+                    {/* Recent photos */}
+                    <div className="relative">
                         <h3 className="mb-3 text-xs font-black uppercase text-black">Memory Terbaru</h3>
                         {recentPhotos.length > 0 ? (
                             <div className="grid grid-cols-3 gap-2">
-                                {recentPhotos.map(({ memory, photo }) => (
-                                    <Link key={memory.id} href={`/memories/${memory.id}`} className="aspect-square overflow-hidden border-[3px] border-black bg-white shadow-[2px_2px_0_#000]">
-                                        <img src={photo} alt={memory.title} className="h-full w-full object-cover" />
+                                {recentPhotos.map((memory, i) => (
+                                    <Link
+                                        key={memory.id}
+                                        href={`/memories/${memory.id}`}
+                                        className={`aspect-square overflow-hidden border-[3px] border-black bg-white shadow-[2px_2px_0_#000] transition-transform hover:scale-105 ${ROTATIONS[i % ROTATIONS.length]}`}
+                                    >
+                                        <MemoryCover memory={memory} />
                                     </Link>
                                 ))}
                             </div>
@@ -326,12 +368,15 @@ export default function AlbumDetailPage() {
                         )}
                     </div>
 
-                    <Link href="#album-content" className="flex items-center justify-center gap-2 border-[3px] border-black bg-[#FFFF00] px-4 py-3 text-xs font-black uppercase text-black shadow-[4px_4px_0_#000]">
+                    <Link href="#album-content" className="relative flex items-center justify-center gap-2 border-[3px] border-black bg-[#FFFF00] px-4 py-3 text-xs font-black uppercase text-black shadow-[4px_4px_0_#000] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#000]">
                         Lihat Semua Memory <ArrowRight className="h-4 w-4" />
                     </Link>
                 </aside>
             </section>
 
+            {/* ══════════════════════════════════════════════════
+                CONTENT — Memories in this album
+                ══════════════════════════════════════════════════ */}
             <section id="album-content" className="space-y-5">
                 <div className="flex flex-col gap-4 border-b-[4px] border-black pb-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
@@ -340,19 +385,19 @@ export default function AlbumDetailPage() {
                     </div>
                     <div className="flex w-fit border-[3px] border-black bg-white shadow-[3px_3px_0_#000]">
                         {[
-                            ["grid", Grid3X3],
-                            ["timeline", Calendar],
-                            ["map", Map],
-                        ].map(([mode, Icon]) => {
+                            ["grid", Grid3X3, "Grid"],
+                            ["timeline", Calendar, "Timeline"],
+                            ["map", Map, "Map"],
+                        ].map(([mode, Icon, label]) => {
                             const LucideIcon = Icon as typeof Grid3X3
                             return (
                                 <button
                                     key={mode as string}
                                     onClick={() => setViewMode(mode as ViewMode)}
-                                    className={`flex items-center gap-2 border-r-[2px] border-black px-4 py-2 text-xs font-black uppercase last:border-r-0 ${viewMode === mode ? "bg-[#00FFFF]" : "bg-white hover:bg-[#FFFF00]"}`}
+                                    className={`flex items-center gap-1.5 border-r-[2px] border-black px-3.5 py-2 text-xs font-black uppercase last:border-r-0 ${viewMode === mode ? "bg-[#00DDEB]" : "bg-white hover:bg-[#FFFF00]"}`}
                                 >
                                     <LucideIcon className="h-4 w-4" />
-                                    <span className="hidden sm:inline">{mode as string}</span>
+                                    <span className="hidden sm:inline">{label as string}</span>
                                 </button>
                             )
                         })}
@@ -363,7 +408,8 @@ export default function AlbumDetailPage() {
                     <div className="border-[4px] border-black bg-white p-12 text-center shadow-[7px_7px_0_#000]">
                         <ImageIcon className="mx-auto mb-4 h-12 w-12 text-black" />
                         <h3 className="mb-2 text-lg font-black uppercase text-black">Album ini masih kosong</h3>
-                        <p className="mb-6 text-xs font-bold text-black/55">Tambahkan memory dari halaman album untuk mulai mengisi koleksi ini.</p>
+                        <p className="mb-4 text-xs font-bold text-black/55">Tambahkan memory dari halaman album untuk mulai mengisi koleksi ini.</p>
+                        <p className="mx-auto mb-6 font-caveat text-base text-black/40">Mulai isi chapter ini dengan kenanganmu</p>
                         <Link href="/albums" className="inline-flex border-[3px] border-black bg-[#00FF00] px-5 py-3 text-xs font-black uppercase text-black shadow-[3px_3px_0_#000]">
                             Kelola Memory
                         </Link>
@@ -392,23 +438,28 @@ export default function AlbumDetailPage() {
                                 exit={{ opacity: 0, y: 8 }}
                                 className="mx-auto max-w-4xl space-y-8"
                             >
-                                {chronologicalGroups.map(([month, memories]) => (
+                                {chronologicalGroups.map(([month, memories], groupIndex) => (
                                     <div key={month} className="relative border-l-[4px] border-black pl-7">
-                                        <div className="absolute -left-[12px] top-2 h-5 w-5 border-[3px] border-black bg-[#FF00FF]" />
-                                        <h3 className="mb-4 w-fit border-[3px] border-black bg-[#FFFF00] px-4 py-2 text-xs font-black uppercase text-black shadow-[3px_3px_0_#000]">
+                                        <div
+                                            className="absolute -left-[12px] top-2 h-5 w-5 border-[3px] border-black"
+                                            style={{ backgroundColor: STAT_COLORS[groupIndex % STAT_COLORS.length] }}
+                                        />
+                                        <h3
+                                            className="mb-4 w-fit border-[3px] border-black px-4 py-2 text-xs font-black uppercase text-black shadow-[3px_3px_0_#000]"
+                                            style={{ backgroundColor: STAT_COLORS[groupIndex % STAT_COLORS.length] }}
+                                        >
                                             {month}
                                         </h3>
                                         <div className="space-y-4">
                                             {memories.map(memory => {
-                                                const photo = getPreviewPhoto(memory)
                                                 return (
                                                     <Link
                                                         key={memory.id}
                                                         href={`/memories/${memory.id}`}
-                                                        className="group flex flex-col gap-4 border-[3px] border-black bg-white p-4 shadow-[5px_5px_0_#000] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 sm:flex-row"
+                                                        className="group flex flex-col gap-4 border-[3px] border-black bg-white p-4 shadow-[5px_5px_0_#000] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[7px_7px_0_#000] sm:flex-row"
                                                     >
-                                                        <div className="h-28 w-full shrink-0 overflow-hidden border-[3px] border-black bg-[#E5E5E5] sm:w-32">
-                                                            {photo ? <img src={photo} alt="" className="h-full w-full object-cover transition-transform group-hover:scale-105" /> : <div className="flex h-full w-full items-center justify-center"><Sparkles className="h-7 w-7" /></div>}
+                                                        <div className="aspect-video w-full shrink-0 overflow-hidden border-[3px] border-black bg-[#E5E5E5] sm:w-44">
+                                                            <MemoryCover memory={memory} className="transition-transform duration-500 group-hover:scale-105" />
                                                         </div>
                                                         <div className="min-w-0 flex-1">
                                                             <div className="mb-2 flex flex-wrap items-center gap-2">

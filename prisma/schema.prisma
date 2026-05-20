@@ -141,6 +141,13 @@ model Memory {
   // Premium map marker
   markerStyle    String?   // Premium marker style ID (e.g. "royal-gold")
 
+  // Cover image fields
+  coverImage     String?   // URL cover yang sudah di-crop (Supabase)
+  coverPositionX Float?    @default(0)   // Posisi X untuk re-edit
+  coverPositionY Float?    @default(0)   // Posisi Y untuk re-edit
+  coverScale     Float?    @default(1)   // Zoom level untuk re-edit
+  coverRotation  Float?    @default(0)   // Rotasi dalam derajat
+
   isPinned       Boolean   @default(false)
   albums         AlbumMemory[]
 }

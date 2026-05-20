@@ -8,6 +8,7 @@ import {
     Clock, TrendingUp
 } from "lucide-react"
 import Link from "next/link"
+import { getMemoryCover } from "@/lib/utils"
 
 // ─── Types & Constants ────────────────────────────────────────────────────────
 
@@ -234,16 +235,7 @@ function InstaMemoryCard({ memory }: { memory: any }) {
     const rawThemeValue = memory.user?.inventories?.[0]?.item?.value ?? null
     const theme = parseTheme(rawThemeValue)
 
-    const photos = (memory.photos ?? []).map((p: any) => {
-        try {
-            const parsed = JSON.parse(p.url)
-            return { ...p, url: parsed.url || parsed.path, bucket: parsed.bucket }
-        } catch {
-            return p
-        }
-    })
-
-    const hasPhoto = photos.length > 0
+    const coverUrl = getMemoryCover(memory)
 
     return (
         <Link 
@@ -265,9 +257,9 @@ function InstaMemoryCard({ memory }: { memory: any }) {
                     borderRadius: theme ? `${theme.radius} ${theme.radius} 0 0` : "0px",
                 }}
             >
-                {hasPhoto ? (
+                {coverUrl ? (
                     <img
-                        src={photos[0].url}
+                        src={coverUrl}
                         alt={memory.title}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />

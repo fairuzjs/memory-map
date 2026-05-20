@@ -10,7 +10,7 @@ import { Calendar, MapPin, Search, Loader2, Layers, X } from "lucide-react"
 import { StickerRenderer, StickerConfig } from "@/components/memories/StickerRenderer"
 import { PopupMiniPlayer } from "@/components/memories/PopupMiniPlayer"
 import useSupercluster from "use-supercluster"
-import { formatDate } from "@/lib/utils"
+import { formatDate, getMemoryCover } from "@/lib/utils"
 
 interface MapViewProps {
     memories: any[]
@@ -503,21 +503,13 @@ export default function MapView({ memories }: MapViewProps) {
                                     }}
                                 >
                                     {(() => {
-                                        const photos = (selectedMemory.photos ?? []).map((p: any) => {
-                                            try {
-                                                const parsed = JSON.parse(p.url)
-                                                return { ...p, url: parsed.url || parsed.path, bucket: parsed.bucket }
-                                            } catch {
-                                                return p
-                                            }
-                                        }).filter((p: any) => p && p.url)
-
-                                        if (photos.length === 0) return null
+                                        const coverUrl = getMemoryCover(selectedMemory)
+                                        if (!coverUrl) return null
 
                                         return (
                                             <div className="w-full h-32 sm:h-40 overflow-hidden relative">
                                                 <img
-                                                    src={photos[0].url}
+                                                    src={coverUrl}
                                                     alt=""
                                                     className="w-full h-full object-cover transition-transform duration-700 group-hover/popup:scale-110"
                                                 />

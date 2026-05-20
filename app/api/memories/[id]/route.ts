@@ -106,7 +106,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         const result = memorySchema.safeParse(body)
         if (!result.success) return NextResponse.json({ error: "Invalid data", details: result.error.flatten() }, { status: 400 })
 
-        const { photos, tags, date, collaborators, audio, markerStyle, ...data } = result.data
+        const { photos, tags, date, collaborators, audio, markerStyle, coverImage, coverPositionX, coverPositionY, coverScale, coverRotation, ...data } = result.data
 
         // ── Enforce dynamic photo limit ──
         if (photos && photos.length > limits.maxPhotos) {
@@ -171,6 +171,12 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
                     spotifyTrackId: data.spotifyTrackId ?? null,
                     // Premium map marker
                     markerStyle: markerStyle ?? null,
+                    // Cover image
+                    coverImage: coverImage ?? null,
+                    coverPositionX: coverPositionX ?? 0,
+                    coverPositionY: coverPositionY ?? 0,
+                    coverScale: coverScale ?? 1,
+                    coverRotation: coverRotation ?? 0,
                 },
                 include: { photos: true, tags: true }
             })

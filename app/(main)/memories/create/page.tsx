@@ -21,9 +21,10 @@ import { motion, AnimatePresence } from "framer-motion"
 import {
     BookText, MapPin, Smile, ImagePlus, Users, Globe, Music,
     ArrowRight, ArrowLeft, Sparkles, Save, ChevronRight, Crown,
-    ShieldAlert, Settings
+    ShieldAlert, Settings, Crop, Image as ImageIcon
 } from "lucide-react"
 import Link from "next/link"
+import { CoverEditor } from "@/components/memories/CoverEditor"
 
 import dynamic from "next/dynamic"
 
@@ -74,6 +75,7 @@ export default function CreateMemoryPage() {
     const { isActive: isOnboarding, notifyMemoryCreated, advanceStep } = useOnboarding()
     const [createdMemoryId, setCreatedMemoryId] = useState<string | null>(null)
     const [memoryPhotos, setMemoryPhotos] = useState<string[]>([])
+    const [showCoverEditor, setShowCoverEditor] = useState(false)
 
     // Check email verification status
     useEffect(() => {
@@ -110,7 +112,7 @@ export default function CreateMemoryPage() {
                         setHasSpotifyPremium(true)
                     }
                 }
-            } catch {}
+            } catch { }
             setPremiumLoading(false)
         }
         checkPremium()
@@ -122,6 +124,7 @@ export default function CreateMemoryPage() {
         control,
         trigger,
         watch,
+        setValue,
         formState: { errors }
     } = useForm<MemoryInput>({
         resolver: zodResolver(memorySchema),
@@ -134,6 +137,11 @@ export default function CreateMemoryPage() {
             audio: null,
             spotifyTrackId: null,
             markerStyle: null,
+            coverImage: null,
+            coverPositionX: null,
+            coverPositionY: null,
+            coverScale: null,
+            coverRotation: null,
             latitude: -2.5489,
             longitude: 118.0149,
             locationName: "Indonesia",
@@ -158,6 +166,11 @@ export default function CreateMemoryPage() {
                 audio: data.audio || null,
                 spotifyTrackId: data.spotifyTrackId || null,
                 markerStyle: data.markerStyle || null,
+                coverImage: data.coverImage || null,
+                coverPositionX: data.coverPositionX ?? null,
+                coverPositionY: data.coverPositionY ?? null,
+                coverScale: data.coverScale ?? null,
+                coverRotation: data.coverRotation ?? null,
             }
 
             const res = await fetch("/api/memories", {
@@ -282,437 +295,503 @@ export default function CreateMemoryPage() {
             {isEmailVerified !== false && (
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="relative z-10">
 
-                {/* Page Header */}
-                <div className="mb-8 text-center">
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#FFFF00] border-[3px] border-black shadow-[3px_3px_0_#000] mb-4">
-                        <Sparkles className="w-4 h-4 text-black" />
-                        <span className="text-xs font-black text-black uppercase tracking-widest">Buat Baru</span>
+                    {/* Page Header */}
+                    <div className="mb-8 text-center">
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#FFFF00] border-[3px] border-black shadow-[3px_3px_0_#000] mb-4">
+                            <Sparkles className="w-4 h-4 text-black" />
+                            <span className="text-xs font-black text-black uppercase tracking-widest">Buat Baru</span>
+                        </div>
+                        <h1 className="text-3xl sm:text-4xl font-black text-black uppercase tracking-tight">
+                            Simpan Kenangan Baru
+                        </h1>
+                        <p className="text-neutral-500 text-sm font-bold mt-2 max-w-md mx-auto">
+                            Abadikan momen spesial Anda, tandai di peta, dan bagikan perasaan dengan sahabat terdekat.
+                        </p>
                     </div>
-                    <h1 className="text-3xl sm:text-4xl font-black text-black uppercase tracking-tight">
-                        Simpan Kenangan Baru
-                    </h1>
-                    <p className="text-neutral-500 text-sm font-bold mt-2 max-w-md mx-auto">
-                        Abadikan momen spesial Anda, tandai di peta, dan bagikan perasaan dengan sahabat terdekat.
-                    </p>
-                </div>
 
-                {/* Step Indicator */}
-                <div className="flex items-center justify-center gap-3 mb-10">
-                    {STEPS.map((step, index) => {
-                        const Icon = step.icon
-                        const isActive = currentStep === index
-                        const isCompleted = currentStep > index
-                        return (
-                            <div key={index} className="flex items-center gap-3">
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        if (index < currentStep) {
-                                            setDirection(-1)
-                                            setCurrentStep(index)
-                                        }
-                                    }}
-                                    className={`
+                    {/* Step Indicator */}
+                    <div className="flex items-center justify-center gap-3 mb-10">
+                        {STEPS.map((step, index) => {
+                            const Icon = step.icon
+                            const isActive = currentStep === index
+                            const isCompleted = currentStep > index
+                            return (
+                                <div key={index} className="flex items-center gap-3">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            if (index < currentStep) {
+                                                setDirection(-1)
+                                                setCurrentStep(index)
+                                            }
+                                        }}
+                                        className={`
                                         flex items-center gap-2.5 px-4 py-2.5 border-[3px] border-black transition-all duration-200
                                         ${isActive
-                                            ? "bg-[#FFFF00] text-black shadow-[4px_4px_0_#000]"
-                                            : isCompleted
-                                                ? "bg-[#00FF00] text-black shadow-[3px_3px_0_#000] cursor-pointer hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000]"
-                                                : "bg-[#E5E5E5] text-neutral-400"
-                                        }
+                                                ? "bg-[#FFFF00] text-black shadow-[4px_4px_0_#000]"
+                                                : isCompleted
+                                                    ? "bg-[#00FF00] text-black shadow-[3px_3px_0_#000] cursor-pointer hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000]"
+                                                    : "bg-[#E5E5E5] text-neutral-400"
+                                            }
                                     `}
-                                >
-                                    <div className={`
+                                    >
+                                        <div className={`
                                         w-7 h-7 flex items-center justify-center text-xs font-black transition-all border-[2px] border-black
                                         ${isActive
-                                            ? "bg-black text-[#FFFF00]"
-                                            : isCompleted
-                                                ? "bg-black text-[#00FF00]"
-                                                : "bg-white text-neutral-400"
-                                        }
+                                                ? "bg-black text-[#FFFF00]"
+                                                : isCompleted
+                                                    ? "bg-black text-[#00FF00]"
+                                                    : "bg-white text-neutral-400"
+                                            }
                                     `}>
-                                        {isCompleted ? "✓" : index + 1}
-                                    </div>
-                                    <div className="text-left hidden sm:block">
-                                        <p className="text-sm font-black uppercase leading-tight">{step.label}</p>
-                                        <p className={`text-[10px] leading-tight mt-0.5 font-bold ${isActive ? "text-black/60" : "text-neutral-500"}`}>
-                                            {step.description}
-                                        </p>
-                                    </div>
-                                </button>
-                                {index < STEPS.length - 1 && (
-                                    <div className={`w-6 h-[3px] ${currentStep > index ? "bg-black" : "bg-[#E5E5E5]"}`} />
-                                )}
-                            </div>
-                        )
-                    })}
-                </div>
-
-                <form onSubmit={handleSubmit(onSubmit)}>
-                    <AnimatePresence mode="wait" custom={direction}>
-                        {currentStep === 0 && (
-                            <motion.div
-                                key="step-0"
-                                custom={direction}
-                                variants={slideVariants}
-                                initial="enter"
-                                animate="center"
-                                exit="exit"
-                                transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
-                                className="space-y-6"
-                            >
-                                {/* Momen Form */}
-                                <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000]">
-                                    <div className="flex items-center gap-3 mb-6">
-                                        <div className="p-2.5 bg-[#00FFFF] border-[2px] border-black shadow-[2px_2px_0_#000]">
-                                            <BookText className="w-5 h-5 text-black" />
+                                            {isCompleted ? "✓" : index + 1}
                                         </div>
-                                        <div>
-                                            <h2 className="text-lg font-black text-black uppercase">Momen</h2>
-                                            <p className="text-xs text-neutral-500 font-bold">Detail kenangan Anda</p>
+                                        <div className="text-left hidden sm:block">
+                                            <p className="text-sm font-black uppercase leading-tight">{step.label}</p>
+                                            <p className={`text-[10px] leading-tight mt-0.5 font-bold ${isActive ? "text-black/60" : "text-neutral-500"}`}>
+                                                {step.description}
+                                            </p>
                                         </div>
-                                    </div>
-
-                                    <div className="space-y-5">
-                                        <div data-tutorial="input-title">
-                                            <label className="block text-sm font-black text-black uppercase tracking-wider mb-2">Judul</label>
-                                            <Input
-                                                {...register("title")}
-                                                placeholder="Liburan tak terlupakan..."
-                                                className="!bg-[#E5E5E5] !border-[3px] !border-black !rounded-none focus:!bg-[#FFFF00] !transition-all !text-black !font-bold !placeholder:text-neutral-400"
-                                                disabled={isSubmitting}
-                                            />
-                                            {errors.title && <p className="text-[#FF0000] text-sm mt-1.5 font-bold">{errors.title.message}</p>}
-                                        </div>
-
-                                        <div data-tutorial="input-story">
-                                            <label className="block text-sm font-black text-black uppercase tracking-wider mb-2">Cerita</label>
-                                            <textarea
-                                                {...register("story")}
-                                                className="w-full min-h-[140px] bg-[#E5E5E5] border-[3px] border-black p-4 text-base focus:bg-[#FFFF00] outline-none resize-none transition-all placeholder:text-neutral-400 text-black font-bold"
-                                                placeholder="Ceritakan apa yang terjadi... setiap detail berharga."
-                                                disabled={isSubmitting}
-                                            />
-                                            {errors.story && <p className="text-[#FF0000] text-sm mt-1.5 font-bold">{errors.story.message}</p>}
-                                        </div>
-
-                                        <div data-tutorial="input-date">
-                                            <label className="block text-sm font-black text-black uppercase tracking-wider mb-2">Tanggal</label>
-                                            <Input
-                                                type="date"
-                                                {...register("date")}
-                                                className="!bg-[#E5E5E5] !border-[3px] !border-black !rounded-none focus:!bg-[#FFFF00] !transition-all !text-black !font-bold"
-                                                disabled={isSubmitting}
-                                            />
-                                            {errors.date && <p className="text-[#FF0000] text-sm mt-1.5 font-bold">{errors.date.message}</p>}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Emotion */}
-                                <div data-tutorial="input-emotion" className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000]">
-                                    <div className="flex items-center gap-3 mb-6">
-                                        <div className="p-2.5 bg-[#FF00FF] border-[2px] border-black shadow-[2px_2px_0_#000]">
-                                            <Smile className="w-5 h-5 text-white" />
-                                        </div>
-                                        <div>
-                                            <h2 className="text-lg font-black text-black uppercase">Perasaan</h2>
-                                            <p className="text-xs text-neutral-500 font-bold">Pilih emosi Anda</p>
-                                        </div>
-                                    </div>
-                                    <Controller
-                                        control={control}
-                                        name="emotion"
-                                        render={({ field }) => <EmotionPicker value={field.value} onChange={field.onChange} />}
-                                    />
-                                </div>
-
-                                {/* Premium Map Marker — pick style before location so preview shows */}
-                                <Controller
-                                    control={control}
-                                    name="markerStyle"
-                                    render={({ field }) => (
-                                        <MarkerStylePicker
-                                            value={field.value}
-                                            onChange={field.onChange}
-                                            isPremium={isPremium}
-                                        />
+                                    </button>
+                                    {index < STEPS.length - 1 && (
+                                        <div className={`w-6 h-[3px] ${currentStep > index ? "bg-black" : "bg-[#E5E5E5]"}`} />
                                     )}
-                                />
+                                </div>
+                            )
+                        })}
+                    </div>
 
-                                {/* Location */}
-                                <div data-tutorial="input-location" className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000] relative z-30">
-                                    <div className="flex items-center gap-3 mb-6">
-                                        <div className="p-2.5 bg-[#FFFF00] border-[2px] border-black shadow-[2px_2px_0_#000]">
-                                            <MapPin className="w-5 h-5 text-black" />
+                    <form onSubmit={handleSubmit(onSubmit)}>
+                        <AnimatePresence mode="wait" custom={direction}>
+                            {currentStep === 0 && (
+                                <motion.div
+                                    key="step-0"
+                                    custom={direction}
+                                    variants={slideVariants}
+                                    initial="enter"
+                                    animate="center"
+                                    exit="exit"
+                                    transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+                                    className="space-y-6"
+                                >
+                                    {/* Momen Form */}
+                                    <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000]">
+                                        <div className="flex items-center gap-3 mb-6">
+                                            <div className="p-2.5 bg-[#00FFFF] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                                                <BookText className="w-5 h-5 text-black" />
+                                            </div>
+                                            <div>
+                                                <h2 className="text-lg font-black text-black uppercase">Momen</h2>
+                                                <p className="text-xs text-neutral-500 font-bold">Detail kenangan Anda</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <h2 className="text-lg font-black text-black uppercase">Lokasi</h2>
-                                            <p className="text-xs text-neutral-500 font-bold">Tandai tempat kenangan</p>
+
+                                        <div className="space-y-5">
+                                            <div data-tutorial="input-title">
+                                                <label className="block text-sm font-black text-black uppercase tracking-wider mb-2">Judul</label>
+                                                <Input
+                                                    {...register("title")}
+                                                    placeholder="Liburan tak terlupakan..."
+                                                    className="!bg-[#E5E5E5] !border-[3px] !border-black !rounded-none focus:!bg-[#FFFF00] !transition-all !text-black !font-bold !placeholder:text-neutral-400"
+                                                    disabled={isSubmitting}
+                                                />
+                                                {errors.title && <p className="text-[#FF0000] text-sm mt-1.5 font-bold">{errors.title.message}</p>}
+                                            </div>
+
+                                            <div data-tutorial="input-story">
+                                                <label className="block text-sm font-black text-black uppercase tracking-wider mb-2">Cerita</label>
+                                                <textarea
+                                                    {...register("story")}
+                                                    className="w-full min-h-[140px] bg-[#E5E5E5] border-[3px] border-black p-4 text-base focus:bg-[#FFFF00] outline-none resize-none transition-all placeholder:text-neutral-400 text-black font-bold"
+                                                    placeholder="Ceritakan apa yang terjadi... setiap detail berharga."
+                                                    disabled={isSubmitting}
+                                                />
+                                                {errors.story && <p className="text-[#FF0000] text-sm mt-1.5 font-bold">{errors.story.message}</p>}
+                                            </div>
+
+                                            <div data-tutorial="input-date">
+                                                <label className="block text-sm font-black text-black uppercase tracking-wider mb-2">Tanggal</label>
+                                                <Input
+                                                    type="date"
+                                                    {...register("date")}
+                                                    className="!bg-[#E5E5E5] !border-[3px] !border-black !rounded-none focus:!bg-[#FFFF00] !transition-all !text-black !font-bold"
+                                                    disabled={isSubmitting}
+                                                />
+                                                {errors.date && <p className="text-[#FF0000] text-sm mt-1.5 font-bold">{errors.date.message}</p>}
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="overflow-hidden border-[3px] border-black">
+
+                                    {/* Emotion */}
+                                    <div data-tutorial="input-emotion" className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000]">
+                                        <div className="flex items-center gap-3 mb-6">
+                                            <div className="p-2.5 bg-[#FF00FF] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                                                <Smile className="w-5 h-5 text-white" />
+                                            </div>
+                                            <div>
+                                                <h2 className="text-lg font-black text-black uppercase">Perasaan</h2>
+                                                <p className="text-xs text-neutral-500 font-bold">Pilih emosi Anda</p>
+                                            </div>
+                                        </div>
                                         <Controller
                                             control={control}
-                                            name="latitude"
-                                            render={({ field: latField }) => (
-                                                <Controller
-                                                    control={control}
-                                                    name="longitude"
-                                                    render={({ field: lngField }) => (
+                                            name="emotion"
+                                            render={({ field }) => <EmotionPicker value={field.value} onChange={field.onChange} />}
+                                        />
+                                    </div>
+
+                                    {/* Premium Map Marker — pick style before location so preview shows */}
+                                    <Controller
+                                        control={control}
+                                        name="markerStyle"
+                                        render={({ field }) => (
+                                            <MarkerStylePicker
+                                                value={field.value}
+                                                onChange={field.onChange}
+                                                isPremium={isPremium}
+                                            />
+                                        )}
+                                    />
+
+                                    {/* Location */}
+                                    <div data-tutorial="input-location" className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000] relative z-30">
+                                        <div className="flex items-center gap-3 mb-6">
+                                            <div className="p-2.5 bg-[#FFFF00] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                                                <MapPin className="w-5 h-5 text-black" />
+                                            </div>
+                                            <div>
+                                                <h2 className="text-lg font-black text-black uppercase">Lokasi</h2>
+                                                <p className="text-xs text-neutral-500 font-bold">Tandai tempat kenangan</p>
+                                            </div>
+                                        </div>
+                                        <div className="overflow-hidden border-[3px] border-black">
+                                            <Controller
+                                                control={control}
+                                                name="latitude"
+                                                render={({ field: latField }) => (
+                                                    <Controller
+                                                        control={control}
+                                                        name="longitude"
+                                                        render={({ field: lngField }) => (
+                                                            <Controller
+                                                                control={control}
+                                                                name="locationName"
+                                                                render={({ field: nameField }) => (
+                                                                    <LocationPicker
+                                                                        latitude={latField.value}
+                                                                        longitude={lngField.value}
+                                                                        locationName={nameField.value || ""}
+                                                                        markerStyle={selectedMarkerStyle}
+                                                                        onChange={(lat, lng, name) => {
+                                                                            latField.onChange(lat)
+                                                                            lngField.onChange(lng)
+                                                                            nameField.onChange(name)
+                                                                        }}
+                                                                    />
+                                                                )}
+                                                            />
+                                                        )}
+                                                    />
+                                                )}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Navigation */}
+                                    <div className="flex justify-between items-center pt-4 mt-2 border-t-[3px] border-dashed border-black/20">
+                                        <button
+                                            type="button"
+                                            onClick={() => router.back()}
+                                            disabled={isSubmitting}
+                                            className="px-6 py-2.5 text-sm font-black text-black uppercase bg-white border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all disabled:opacity-50"
+                                        >
+                                            Batal
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={handleNext}
+                                            data-tutorial="btn-next-step"
+                                            className="flex items-center gap-2 px-6 py-2.5 text-sm font-black text-black uppercase bg-[#FFFF00] border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all"
+                                        >
+                                            Lanjutkan
+                                            <ArrowRight className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {currentStep === 1 && (
+                                <motion.div
+                                    key="step-1"
+                                    custom={direction}
+                                    variants={slideVariants}
+                                    initial="enter"
+                                    animate="center"
+                                    exit="exit"
+                                    transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+                                    className="space-y-6"
+                                >
+                                    {/* Cover Image Section */}
+                                    <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000]">
+                                        <div className="flex items-center justify-between mb-5">
+                                            <div className="flex items-center gap-3">
+                                                <div className="p-2.5 bg-[#FFFF00] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                                                    <Crop className="w-5 h-5 text-black" />
+                                                </div>
+                                                <div>
+                                                    <h2 className="text-lg font-black text-black uppercase">Cover Memory</h2>
+                                                    <p className="text-xs text-neutral-500 font-bold">Thumbnail utama memory kamu (16:9)</p>
+                                                </div>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowCoverEditor(true)}
+                                                className="flex items-center gap-2 px-4 py-2 text-xs font-black uppercase text-black border-[3px] border-black bg-[#00FFFF] shadow-[3px_3px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0_#000] transition-all"
+                                            >
+
+                                                {watch("coverImage") ? "Edit Cover" : "Atur Cover"}
+                                            </button>
+                                        </div>
+                                        <div className="relative w-full border-[3px] border-black overflow-hidden bg-[#E5E5E5] shadow-[3px_3px_0_#000]" style={{ aspectRatio: "16/9" }}>
+                                            {watch("coverImage") ? (
+                                                <img src={watch("coverImage")!} alt="Cover preview" className="w-full h-full object-cover" />
+                                            ) : (
+                                                <div
+                                                    className="w-full h-full flex flex-col items-center justify-center gap-3 bg-[#E5E5E5]"
+                                                    style={{ backgroundImage: "linear-gradient(#D5D5D5 2px, transparent 2px), linear-gradient(90deg, #D5D5D5 2px, transparent 2px)", backgroundSize: "24px 24px" }}
+                                                >
+                                                    <div className="w-14 h-14 bg-white border-[3px] border-black shadow-[3px_3px_0_#000] flex items-center justify-center">
+                                                        <ImageIcon className="w-7 h-7 text-black/40" />
+                                                    </div>
+                                                    <p className="text-[11px] font-black text-black/40 uppercase tracking-wider text-center px-4">
+                                                        {(watch("photos") || []).length > 0 ? "Foto pertama akan digunakan sebagai cover" : "Belum ada cover — upload foto atau atur cover"}
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Cover Editor Modal */}
+                                    {showCoverEditor && (
+                                        <CoverEditor
+                                            coverImage={watch("coverImage") || null}
+                                            coverPositionX={watch("coverPositionX") ?? 0}
+                                            coverPositionY={watch("coverPositionY") ?? 0}
+                                            coverScale={watch("coverScale") ?? 1}
+                                            coverRotation={watch("coverRotation") ?? 0}
+                                            galleryPhotos={(watch("photos") || []) as any[]}
+                                            isPublic={isPublic}
+                                            onSave={(coverData) => {
+                                                setValue("coverImage", coverData.coverImage)
+                                                setValue("coverPositionX", coverData.coverPositionX)
+                                                setValue("coverPositionY", coverData.coverPositionY)
+                                                setValue("coverScale", coverData.coverScale)
+                                                setValue("coverRotation", coverData.coverRotation)
+                                            }}
+                                            onRemove={() => {
+                                                setValue("coverImage", null)
+                                                setValue("coverPositionX", null)
+                                                setValue("coverPositionY", null)
+                                                setValue("coverScale", null)
+                                                setValue("coverRotation", null)
+                                            }}
+                                            onClose={() => setShowCoverEditor(false)}
+                                        />
+                                    )}
+
+                                    {/* Photos & Music in 2-column grid */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        {/* Photos */}
+                                        <div data-tutorial="photo-uploader" className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000]">
+                                            <div className="flex items-center gap-3 mb-6">
+                                                <div className="p-2.5 bg-[#00FF00] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                                                    <ImagePlus className="w-5 h-5 text-black" />
+                                                </div>
+                                                <div>
+                                                    <h2 className="text-lg font-black text-black uppercase">Galeri Foto</h2>
+                                                    <p className="text-xs text-neutral-500 font-bold">Upload visual kenangan (Maks {maxPhotos} foto, ukuran max 5MB/foto)</p>
+                                                </div>
+                                            </div>
+                                            <Controller
+                                                control={control}
+                                                name="photos"
+                                                render={({ field }) => (
+                                                    <PhotoUploader
+                                                        photos={field.value || []}
+                                                        onChange={field.onChange}
+                                                        isPublic={isPublic}
+                                                        maxPhotos={maxPhotos}
+                                                    />
+                                                )}
+                                            />
+                                        </div>
+
+                                        {/* Music */}
+                                        <div data-tutorial="music-uploader" className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000] flex flex-col h-full">
+                                            <div className="flex items-center justify-between mb-6">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="p-2.5 bg-[#FF00FF] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                                                        <Music className="w-5 h-5 text-white" />
+                                                    </div>
+                                                    <div>
+                                                        <h2 className="text-lg font-black text-black uppercase">Musik</h2>
+                                                        <p className="text-xs text-neutral-500 font-bold">Tambahkan lagu</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Music Source Tabs */}
+                                            <div className="flex-1 flex flex-col gap-4">
+                                                <div className="flex border-[3px] border-black overflow-hidden">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setMusicTab("upload")}
+                                                        className={`flex-1 py-2.5 text-sm font-black uppercase transition-all border-r-[3px] border-black ${musicTab === "upload"
+                                                                ? "bg-[#FF00FF] text-white"
+                                                                : "bg-white text-neutral-400 hover:bg-[#E5E5E5] hover:text-black"
+                                                            }`}
+                                                    >
+                                                        Upload MP3
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setMusicTab("spotify")}
+                                                        className={`flex-1 py-2.5 text-sm font-black uppercase transition-all flex items-center justify-center gap-1.5 ${musicTab === "spotify"
+                                                                ? "bg-[#1DB954] text-white"
+                                                                : "bg-white text-neutral-400 hover:bg-[#E5E5E5] hover:text-black"
+                                                            }`}
+                                                    >
+                                                        Spotify
+                                                        {!hasSpotifyPremium && (
+                                                            <Crown className="w-3 h-3 text-[#FFFF00]" />
+                                                        )}
+                                                    </button>
+                                                </div>
+
+                                                <div className="flex-1 bg-[#E5E5E5] border-[3px] border-black p-4">
+                                                    {musicTab === "upload" ? (
                                                         <Controller
                                                             control={control}
-                                                            name="locationName"
-                                                            render={({ field: nameField }) => (
-                                                                <LocationPicker
-                                                                    latitude={latField.value}
-                                                                    longitude={lngField.value}
-                                                                    locationName={nameField.value || ""}
-                                                                    markerStyle={selectedMarkerStyle}
-                                                                    onChange={(lat, lng, name) => {
-                                                                        latField.onChange(lat)
-                                                                        lngField.onChange(lng)
-                                                                        nameField.onChange(name)
+                                                            name="audio"
+                                                            render={({ field }) => (
+                                                                <MusicUploader
+                                                                    value={field.value}
+                                                                    onChange={(val) => {
+                                                                        field.onChange(val)
+                                                                        if (val) {
+                                                                            // Clear spotify if upload is chosen
+                                                                            control._formValues.spotifyTrackId = null
+                                                                        }
+                                                                    }}
+                                                                    isPublic={isPublic}
+                                                                />
+                                                            )}
+                                                        />
+                                                    ) : hasSpotifyPremium ? (
+                                                        <Controller
+                                                            control={control}
+                                                            name="spotifyTrackId"
+                                                            render={({ field }) => (
+                                                                <SpotifySearch
+                                                                    value={field.value || null}
+                                                                    onChange={(val) => {
+                                                                        field.onChange(val)
+                                                                        if (val) {
+                                                                            // Clear upload if spotify is chosen
+                                                                            control._formValues.audio = null
+                                                                        }
                                                                     }}
                                                                 />
                                                             )}
                                                         />
+                                                    ) : (
+                                                        <PremiumLockedState
+                                                            featureName="Integrasi Spotify"
+                                                            price={500}
+                                                            userPoints={premiumPoints}
+                                                            onUnlocked={() => {
+                                                                setHasSpotifyPremium(true)
+                                                            }}
+                                                        />
                                                     )}
-                                                />
-                                            )}
-                                        />
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
 
-                                {/* Navigation */}
-                                <div className="flex justify-between items-center pt-4 mt-2 border-t-[3px] border-dashed border-black/20">
-                                    <button
-                                        type="button"
-                                        onClick={() => router.back()}
-                                        disabled={isSubmitting}
-                                        className="px-6 py-2.5 text-sm font-black text-black uppercase bg-white border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all disabled:opacity-50"
-                                    >
-                                        Batal
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={handleNext}
-                                        data-tutorial="btn-next-step"
-                                        className="flex items-center gap-2 px-6 py-2.5 text-sm font-black text-black uppercase bg-[#FFFF00] border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all"
-                                    >
-                                        Lanjutkan
-                                        <ArrowRight className="w-4 h-4" />
-                                    </button>
-                                </div>
-                            </motion.div>
-                        )}
-
-                        {currentStep === 1 && (
-                            <motion.div
-                                key="step-1"
-                                custom={direction}
-                                variants={slideVariants}
-                                initial="enter"
-                                animate="center"
-                                exit="exit"
-                                transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
-                                className="space-y-6"
-                            >
-                                {/* Photos & Music in 2-column grid */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    {/* Photos */}
-                                    <div data-tutorial="photo-uploader" className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000]">
-                                        <div className="flex items-center gap-3 mb-6">
-                                            <div className="p-2.5 bg-[#00FF00] border-[2px] border-black shadow-[2px_2px_0_#000]">
-                                                <ImagePlus className="w-5 h-5 text-black" />
+                                    {/* Collaborators */}
+                                    <div data-tutorial="collaborator-picker" className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000] relative z-20">
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <div className="p-2.5 bg-[#00FFFF] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                                                <Users className="w-5 h-5 text-black" />
                                             </div>
                                             <div>
-                                                <h2 className="text-lg font-black text-black uppercase">Galeri Foto</h2>
-                                                <p className="text-xs text-neutral-500 font-bold">Upload visual kenangan (Maks {maxPhotos} foto, ukuran max 5MB/foto)</p>
+                                                <h2 className="text-lg font-black text-black uppercase">Kolaborator</h2>
+                                                <p className="text-xs text-neutral-500 font-bold">Tandai teman yang membagikan momen ini (Maks {maxCollaborators})</p>
                                             </div>
                                         </div>
-                                        <Controller
-                                            control={control}
-                                            name="photos"
-                                            render={({ field }) => (
-                                                <PhotoUploader
-                                                    photos={field.value || []}
-                                                    onChange={field.onChange}
-                                                    isPublic={isPublic}
-                                                    maxPhotos={maxPhotos}
-                                                />
-                                            )}
-                                        />
-                                    </div>
-
-                                    {/* Music */}
-                                    <div data-tutorial="music-uploader" className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000] flex flex-col h-full">
-                                        <div className="flex items-center justify-between mb-6">
-                                            <div className="flex items-center gap-3">
-                                                <div className="p-2.5 bg-[#FF00FF] border-[2px] border-black shadow-[2px_2px_0_#000]">
-                                                    <Music className="w-5 h-5 text-white" />
-                                                </div>
-                                                <div>
-                                                    <h2 className="text-lg font-black text-black uppercase">Musik</h2>
-                                                    <p className="text-xs text-neutral-500 font-bold">Tambahkan lagu</p>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* Music Source Tabs */}
-                                        <div className="flex-1 flex flex-col gap-4">
-                                            <div className="flex border-[3px] border-black overflow-hidden">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setMusicTab("upload")}
-                                                    className={`flex-1 py-2.5 text-sm font-black uppercase transition-all border-r-[3px] border-black ${
-                                                        musicTab === "upload" 
-                                                            ? "bg-[#FF00FF] text-white" 
-                                                            : "bg-white text-neutral-400 hover:bg-[#E5E5E5] hover:text-black"
-                                                    }`}
-                                                >
-                                                    Upload MP3
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setMusicTab("spotify")}
-                                                    className={`flex-1 py-2.5 text-sm font-black uppercase transition-all flex items-center justify-center gap-1.5 ${
-                                                        musicTab === "spotify" 
-                                                            ? "bg-[#1DB954] text-white" 
-                                                            : "bg-white text-neutral-400 hover:bg-[#E5E5E5] hover:text-black"
-                                                    }`}
-                                                >
-                                                    Spotify
-                                                    {!hasSpotifyPremium && (
-                                                        <Crown className="w-3 h-3 text-[#FFFF00]" />
-                                                    )}
-                                                </button>
-                                            </div>
-
-                                            <div className="flex-1 bg-[#E5E5E5] border-[3px] border-black p-4">
-                                                {musicTab === "upload" ? (
-                                                    <Controller
-                                                        control={control}
-                                                        name="audio"
-                                                        render={({ field }) => (
-                                                            <MusicUploader
-                                                                value={field.value}
-                                                                onChange={(val) => {
-                                                                    field.onChange(val)
-                                                                    if (val) {
-                                                                        // Clear spotify if upload is chosen
-                                                                        control._formValues.spotifyTrackId = null
-                                                                    }
-                                                                }}
-                                                                isPublic={isPublic}
-                                                            />
-                                                        )}
-                                                    />
-                                                ) : hasSpotifyPremium ? (
-                                                    <Controller
-                                                        control={control}
-                                                        name="spotifyTrackId"
-                                                        render={({ field }) => (
-                                                            <SpotifySearch
-                                                                value={field.value || null}
-                                                                onChange={(val) => {
-                                                                    field.onChange(val)
-                                                                    if (val) {
-                                                                        // Clear upload if spotify is chosen
-                                                                        control._formValues.audio = null
-                                                                    }
-                                                                }}
-                                                            />
-                                                        )}
-                                                    />
-                                                ) : (
-                                                    <PremiumLockedState
-                                                        featureName="Integrasi Spotify"
-                                                        price={500}
-                                                        userPoints={premiumPoints}
-                                                        onUnlocked={() => {
-                                                            setHasSpotifyPremium(true)
-                                                        }}
+                                        <div className="mt-4">
+                                            <Controller
+                                                control={control}
+                                                name="collaborators"
+                                                render={({ field }) => (
+                                                    <CollaboratorPicker
+                                                        value={field.value || []}
+                                                        onChange={field.onChange}
+                                                        maxCollaborators={maxCollaborators}
                                                     />
                                                 )}
-                                            </div>
+                                            />
                                         </div>
+                                        {errors.collaborators && (
+                                            <p className="text-[#FF0000] text-sm mt-3 font-bold">{errors.collaborators.message}</p>
+                                        )}
                                     </div>
-                                </div>
 
-                                {/* Collaborators */}
-                                <div data-tutorial="collaborator-picker" className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000] relative z-20">
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <div className="p-2.5 bg-[#00FFFF] border-[2px] border-black shadow-[2px_2px_0_#000]">
-                                            <Users className="w-5 h-5 text-black" />
-                                        </div>
-                                        <div>
-                                            <h2 className="text-lg font-black text-black uppercase">Kolaborator</h2>
-                                            <p className="text-xs text-neutral-500 font-bold">Tandai teman yang membagikan momen ini (Maks {maxCollaborators})</p>
-                                        </div>
-                                    </div>
-                                    <div className="mt-4">
-                                        <Controller
-                                            control={control}
-                                            name="collaborators"
-                                            render={({ field }) => (
-                                                <CollaboratorPicker
-                                                    value={field.value || []}
-                                                    onChange={field.onChange}
-                                                    maxCollaborators={maxCollaborators}
-                                                />
-                                            )}
-                                        />
-                                    </div>
-                                    {errors.collaborators && (
-                                        <p className="text-[#FF0000] text-sm mt-3 font-bold">{errors.collaborators.message}</p>
-                                    )}
-                                </div>
-
-                                {/* Settings */}
-                                <div data-tutorial="privacy-toggle" className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000] relative z-10">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <div className="p-2.5 bg-[#FFFF00] border-[2px] border-black shadow-[2px_2px_0_#000]">
-                                                <Globe className="w-5 h-5 text-black" />
+                                    {/* Settings */}
+                                    <div data-tutorial="privacy-toggle" className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000] relative z-10">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <div className="p-2.5 bg-[#FFFF00] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                                                    <Globe className="w-5 h-5 text-black" />
+                                                </div>
+                                                <div>
+                                                    <h2 className="text-lg font-black text-black uppercase">Pengaturan Privasi</h2>
+                                                    <p className="text-xs text-neutral-500 font-bold">Izinkan orang lain melihat kenangan ini di peta</p>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <h2 className="text-lg font-black text-black uppercase">Pengaturan Privasi</h2>
-                                                <p className="text-xs text-neutral-500 font-bold">Izinkan orang lain melihat kenangan ini di peta</p>
-                                            </div>
+                                            <label className="relative inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" {...register("isPublic")} className="sr-only peer" />
+                                                <div className="w-14 h-8 bg-[#E5E5E5] border-[3px] border-black peer-focus:outline-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[1px] after:left-[2px] after:bg-white after:border-[2px] after:border-black after:h-6 after:w-6 after:transition-all peer-checked:bg-[#00FF00]"></div>
+                                            </label>
                                         </div>
-                                        <label className="relative inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" {...register("isPublic")} className="sr-only peer" />
-                                            <div className="w-14 h-8 bg-[#E5E5E5] border-[3px] border-black peer-focus:outline-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[1px] after:left-[2px] after:bg-white after:border-[2px] after:border-black after:h-6 after:w-6 after:transition-all peer-checked:bg-[#00FF00]"></div>
-                                        </label>
                                     </div>
-                                </div>
 
-                                {/* Navigation */}
-                                <div className="flex justify-between items-center pt-4 mt-2 border-t-[3px] border-dashed border-black/20">
-                                    <button
-                                        type="button"
-                                        onClick={handleBack}
-                                        disabled={isSubmitting}
-                                        className="flex items-center gap-2 px-6 py-2.5 text-sm font-black text-black uppercase bg-white border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all disabled:opacity-50"
-                                    >
-                                        <ArrowLeft className="w-4 h-4" />
-                                        Kembali
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        disabled={isSubmitting}
-                                        data-tutorial="btn-submit"
-                                        className="flex items-center gap-2 px-8 py-2.5 text-sm font-black text-black uppercase bg-[#00FF00] border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all disabled:opacity-50"
-                                    >
-                                        <Save className="w-4 h-4" />
-                                        {isSubmitting ? "Menyimpan..." : "Simpan Kenangan"}
-                                    </button>
-                                </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </form>
+                                    {/* Navigation */}
+                                    <div className="flex justify-between items-center pt-4 mt-2 border-t-[3px] border-dashed border-black/20">
+                                        <button
+                                            type="button"
+                                            onClick={handleBack}
+                                            disabled={isSubmitting}
+                                            className="flex items-center gap-2 px-6 py-2.5 text-sm font-black text-black uppercase bg-white border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all disabled:opacity-50"
+                                        >
+                                            <ArrowLeft className="w-4 h-4" />
+                                            Kembali
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            disabled={isSubmitting}
+                                            data-tutorial="btn-submit"
+                                            className="flex items-center gap-2 px-8 py-2.5 text-sm font-black text-black uppercase bg-[#00FF00] border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all disabled:opacity-50"
+                                        >
+                                            <Save className="w-4 h-4" />
+                                            {isSubmitting ? "Menyimpan..." : "Simpan Kenangan"}
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </form>
                 </motion.div>
             )}
 

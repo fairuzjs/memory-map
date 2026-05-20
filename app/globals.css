@@ -7,6 +7,7 @@
 @theme {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-outfit: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  --font-caveat: var(--font-caveat), cursive;
 }
 
 @theme inline {
@@ -922,4 +923,151 @@
 }
 .pm-shape-shield {
   clip-path: polygon(50% 0%, 100% 20%, 100% 65%, 50% 100%, 0% 65%, 0% 20%);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   ALBUM SCRAPBOOK DESIGN SYSTEM
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Font Caveat (handwriting accent) ──────────────────── */
+.font-caveat {
+  font-family: var(--font-caveat), cursive;
+}
+
+/* ── Scrapbook card rotation variants ──────────────────── */
+.scrap-rotate-1 { transform: rotate(-1.2deg); }
+.scrap-rotate-2 { transform: rotate(0.8deg); }
+.scrap-rotate-3 { transform: rotate(-0.6deg); }
+.scrap-rotate-4 { transform: rotate(1.4deg); }
+.scrap-rotate-5 { transform: rotate(-1.8deg); }
+.scrap-rotate-6 { transform: rotate(0.4deg); }
+
+/* ── Washi Tape decoration ─────────────────────────────── */
+.washi-tape {
+  position: relative;
+}
+.washi-tape::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-2deg);
+  width: 60px;
+  height: 14px;
+  background: rgba(255, 255, 0, 0.7);
+  border: 2px solid #000;
+  z-index: 10;
+  pointer-events: none;
+}
+.washi-tape-pink::before {
+  background: rgba(255, 0, 255, 0.35);
+}
+.washi-tape-cyan::before {
+  background: rgba(0, 255, 255, 0.5);
+}
+.washi-tape-green::before {
+  background: rgba(0, 255, 0, 0.4);
+}
+
+/* ── Polaroid frame ────────────────────────────────────── */
+.polaroid-frame {
+  background: #fff;
+  padding: 8px 8px 28px 8px;
+  border: 3px solid #000;
+  box-shadow: 5px 5px 0 #000;
+}
+.polaroid-frame-sm {
+  background: #fff;
+  padding: 4px 4px 18px 4px;
+  border: 2px solid #000;
+  box-shadow: 3px 3px 0 #000;
+}
+
+/* ── Push Pin effect ───────────────────────────────────── */
+.push-pin::after {
+  content: '';
+  position: absolute;
+  top: -5px;
+  right: 12px;
+  width: 12px;
+  height: 12px;
+  background: radial-gradient(circle at 40% 40%, #ff4444, #cc0000);
+  border: 2px solid #000;
+  border-radius: 50%;
+  z-index: 15;
+  pointer-events: none;
+}
+.push-pin-yellow::after {
+  background: radial-gradient(circle at 40% 40%, #FFFF00, #ccaa00);
+}
+
+/* ── Scrapbook hover lift ──────────────────────────────── */
+.scrap-lift {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+}
+.scrap-lift:hover {
+  transform: translateY(-6px) rotate(0deg) !important;
+  box-shadow: 10px 12px 0 #000 !important;
+}
+
+/* ── Dot paper background ──────────────────────────────── */
+.dot-paper {
+  background-image: radial-gradient(circle, #000 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+.dot-paper-light {
+  background-image: radial-gradient(circle, rgba(0,0,0,0.08) 1.2px, transparent 1.2px);
+  background-size: 18px 18px;
+}
+
+/* ── Scrapbook binding edge ────────────────────────────── */
+.binding-edge {
+  border-left: 5px solid var(--binding-color, #FF00FF);
+  position: relative;
+}
+.binding-edge::before {
+  content: '';
+  position: absolute;
+  left: -5px;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--binding-color, #FF00FF) 0px,
+    var(--binding-color, #FF00FF) 8px,
+    #000 8px,
+    #000 10px
+  );
+}
+
+/* ── Sticky note ───────────────────────────────────────── */
+.sticky-note {
+  background: #FFFF00;
+  border: 2px solid #000;
+  padding: 8px 12px;
+  font-family: var(--font-caveat), cursive;
+  font-size: 16px;
+  transform: rotate(-3deg);
+  box-shadow: 2px 2px 0 #000;
+}
+
+/* ── Album card hover animation ────────────────────────── */
+@keyframes scrapFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+/* ── Reduced motion ────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .scrap-rotate-1, .scrap-rotate-2, .scrap-rotate-3,
+  .scrap-rotate-4, .scrap-rotate-5, .scrap-rotate-6 {
+    transform: none !important;
+  }
+  .scrap-lift:hover {
+    transform: translateY(-2px) !important;
+  }
+  .sticky-note {
+    transform: none;
+  }
 }

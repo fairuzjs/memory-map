@@ -35,3 +35,25 @@ export function formatDate(date: Date | string | number): string {
   const month = (d.getMonth() + 1).toString().padStart(2, "0")
   return `${day}/${month}/${d.getFullYear()}`
 }
+
+/**
+ * Resolve the cover image for a memory with hybrid fallback:
+ * 1. coverImage (user-chosen cover)
+ * 2. photos[0] (first photo fallback)
+ * 3. null (no cover available — caller handles placeholder)
+ */
+export function getMemoryCover(memory: any): string | null {
+  // 1. Explicit cover image
+  if (memory.coverImage) return memory.coverImage
+
+  // 2. Fallback to first photo
+  const firstPhoto = memory.photos?.[0]
+  if (!firstPhoto) return null
+
+  try {
+    const parsed = JSON.parse(firstPhoto.url)
+    return parsed.url || parsed.path || firstPhoto.url
+  } catch {
+    return firstPhoto.url || null
+  }
+}

@@ -592,55 +592,66 @@ export default function DashboardPage() {
 
                 <motion.div variants={fadeUp} className="grid grid-cols-1 gap-4 lg:grid-cols-3">
                     {albums.slice(0, 3).map((album, index) => {
-                        const accent = ["#00FFFF", "#FFFF00", "#FF00FF"][index % 3]
+                        const accent = ["#00DDEB", "#FFD166", "#FF6B9D", "#06D6A0", "#A78BFA", "#FF9F43"][index % 6]
                         return (
                         <Link
                             key={album.id}
                             href={`/albums/${album.id}`}
-                            className="group relative grid min-h-[122px] grid-cols-[88px_1fr] overflow-hidden border-[4px] border-black bg-white shadow-[5px_5px_0_#000] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[7px_7px_0_#000] sm:grid-cols-[104px_1fr]"
+                            className="group relative grid min-h-[122px] grid-cols-[112px_1fr] overflow-hidden border-[4px] border-black bg-white shadow-[5px_5px_0_#000] transition-all hover:-translate-x-0.5 hover:-translate-y-1 hover:shadow-[7px_7px_0_#000]"
                         >
-                            <div className="relative border-r-[4px] border-black bg-neutral-200">
-                                {album.coverImage ? (
-                                    <Image
-                                        src={album.coverImage}
-                                        alt={album.name}
-                                        fill
-                                        unoptimized
-                                        sizes="104px"
-                                        className="object-cover grayscale-[10%] transition-transform duration-300 group-hover:scale-105"
-                                    />
-                                ) : (
-                                    <div className="flex h-full min-h-[122px] items-center justify-center" style={{ backgroundColor: accent }}>
-                                        <DashboardAlbumIcon icon={album.icon} className="h-8 w-8 text-black" />
+                            {/* Binding edge */}
+                            <div className="absolute left-0 top-0 bottom-0 w-[5px]" style={{ background: `repeating-linear-gradient(to bottom, ${accent} 0px, ${accent} 8px, #000 8px, #000 10px)` }} />
+
+                            {/* Left column: Polaroid stamp frame */}
+                            <div className="relative flex items-center justify-center p-2 pl-4">
+                                <div className="relative w-[78px] aspect-[4/5] border-[2px] border-black bg-white p-1 pb-3.5 shadow-[2px_2px_0_#000] rotate-[-3deg] group-hover:rotate-0 transition-transform duration-300">
+                                    <div className="relative aspect-square w-full bg-neutral-200 overflow-hidden border border-black/10">
+                                        {album.coverImage ? (
+                                            <Image
+                                                src={album.coverImage}
+                                                alt={album.name}
+                                                fill
+                                                unoptimized
+                                                sizes="76px"
+                                                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                            />
+                                        ) : (
+                                            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#00FFFF44] to-[#FF00FF33]">
+                                                <DashboardAlbumIcon icon={album.icon} className="h-5 w-5 text-black/50" />
+                                            </div>
+                                        )}
                                     </div>
-                                )}
-                                <div className="absolute left-2 top-2 flex h-8 w-8 items-center justify-center border-[3px] border-black bg-white shadow-[2px_2px_0_#000]">
-                                    <DashboardAlbumIcon icon={album.icon} className="h-4 w-4 text-black" />
+                                    <span className="mt-1 block truncate text-center font-caveat text-[9px] text-black/75 font-bold leading-none">
+                                        {album.name}
+                                    </span>
                                 </div>
-                                <div className="absolute bottom-0 left-0 h-2 w-full border-t-[3px] border-black" style={{ backgroundColor: accent }} />
                             </div>
 
-                            <div className="flex min-w-0 flex-col p-3 sm:p-4">
-                                <div className="mb-2 flex items-start justify-between gap-3">
-                                    <div className="min-w-0">
-                                        <h3 className="truncate text-base font-black uppercase leading-tight text-black transition-colors group-hover:text-[#FF00FF]" style={{ fontFamily: "'Syne',sans-serif" }}>
+                            {/* Right column: Card details */}
+                            <div className="flex min-w-0 flex-col p-3 sm:p-4 pl-1">
+                                <div className="mb-1.5 flex items-start justify-between gap-3">
+                                    <div className="min-w-0 flex items-center gap-1.5">
+                                        <div
+                                            className="flex h-6 w-6 shrink-0 items-center justify-center border-2 border-black text-black"
+                                            style={{ backgroundColor: accent }}
+                                        >
+                                            <DashboardAlbumIcon icon={album.icon} className="h-3.5 w-3.5" />
+                                        </div>
+                                        <h3 className="truncate text-[15px] font-black uppercase leading-tight text-black transition-colors group-hover:text-[#FF00FF]" style={{ fontFamily: "'Syne',sans-serif" }}>
                                             {album.name}
                                         </h3>
-                                        <p className="mt-1 text-[11px] font-black uppercase text-black/55">
-                                            {album._count.memories} Kenangan
-                                        </p>
                                     </div>
-                                    <span className="shrink-0 border-[2px] border-black bg-[#FFFF00] px-2 py-1 text-[10px] font-black uppercase leading-none shadow-[2px_2px_0_#000]">
+                                    <span className="shrink-0 border-[2px] border-black bg-[#FFFF00] px-2 py-0.5 text-[9px] font-black uppercase leading-none shadow-[1.5px_1.5px_0_#000]">
                                         Baru
                                     </span>
                                 </div>
 
-                                <p className="line-clamp-2 min-h-[32px] text-xs font-bold leading-relaxed text-black/55">
+                                <p className="line-clamp-2 min-h-[30px] text-[11px] font-bold leading-relaxed text-black/55 pr-1">
                                     {album.description || "Belum ada deskripsi album."}
                                 </p>
 
-                                <div className="mt-auto flex items-end justify-between gap-3 border-t-[2.5px] border-dashed border-black pt-2">
-                                    <span className="text-[10px] font-black uppercase leading-none text-black/45">
+                                <div className="mt-auto flex items-end justify-between gap-3 border-t-[2px] border-dashed border-black/20 pt-1.5">
+                                    <span className="text-[9px] font-black uppercase leading-none text-black/45">
                                         {formatDate(new Date(album.createdAt))}
                                     </span>
                                     <span className="flex items-center gap-1 text-[10px] font-black uppercase text-black group-hover:underline">

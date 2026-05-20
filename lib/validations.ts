@@ -57,6 +57,12 @@ export const memorySchema = z.object({
     }).optional().nullable(),
     spotifyTrackId: z.string().optional().nullable(),
     markerStyle: z.string().optional().nullable(),
+    // Cover image fields
+    coverImage: z.string().optional().nullable(),
+    coverPositionX: z.number().optional().nullable(),
+    coverPositionY: z.number().optional().nullable(),
+    coverScale: z.number().optional().nullable(),
+    coverRotation: z.number().optional().nullable(),
 })
 
 export const reactionSchema = z.object({

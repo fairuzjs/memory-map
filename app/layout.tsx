@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { Inter, Outfit } from "next/font/google";
+import { Inter, Outfit, Caveat } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
+const caveat = Caveat({ subsets: ["latin"], variable: "--font-caveat" });
 
 import { Providers } from "./providers";
 import { IdleTimeout } from "@/components/layout/IdleTimeout";
@@ -22,7 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${outfit.variable} font-sans bg-neutral-950 text-neutral-100 antialiased`}>
+      <body className={`${inter.variable} ${outfit.variable} ${caveat.variable} font-sans bg-neutral-950 text-neutral-100 antialiased`}>
         <Providers>
           {children}
           <IdleTimeout />

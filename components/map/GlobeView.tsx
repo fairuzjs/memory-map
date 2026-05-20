@@ -4,7 +4,7 @@ import { useRef, useState, useMemo, useCallback, Suspense } from "react"
 import { Canvas, useFrame } from "@react-three/fiber"
 import { OrbitControls, Stars, Html, useTexture } from "@react-three/drei"
 import * as THREE from "three"
-import { formatDate } from "@/lib/utils"
+import { formatDate, getMemoryCover } from "@/lib/utils"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface Memory {
@@ -373,14 +373,7 @@ function HoverCard({ memory, position }: HoverCardProps) {
       "rgba(255,255,255,0.08)"
   ) : "rgba(255,255,255,0.06)"
 
-  const photos = (memory.photos ?? []).map((p: any) => {
-      try {
-          const parsed = JSON.parse(p.url)
-          return { ...p, url: parsed.url || parsed.path, bucket: parsed.bucket }
-      } catch {
-          return p
-      }
-  })
+  const coverUrl = getMemoryCover(memory)
 
   return (
     <Html
@@ -403,10 +396,10 @@ function HoverCard({ memory, position }: HoverCardProps) {
           fontFamily: "Outfit, sans-serif",
         }}
       >
-        {photos.length > 0 && (
+        {coverUrl && (
           <div style={{ width: "100%", height: "90px", overflow: "hidden", position: "relative" }}>
             <img
-              src={photos[0].url}
+              src={coverUrl}
               alt=""
               style={{ width: "100%", height: "100%", objectFit: "cover" }}
             />

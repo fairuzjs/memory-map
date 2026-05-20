@@ -145,6 +145,11 @@ export default function EditMemoryPage() {
                     } : null,
                     spotifyTrackId: data.spotifyTrackId || null,
                     markerStyle: data.markerStyle || null,
+                    coverImage: data.coverImage || null,
+                    coverPositionX: data.coverPositionX ?? 0,
+                    coverPositionY: data.coverPositionY ?? 0,
+                    coverScale: data.coverScale ?? 1,
+                    coverRotation: data.coverRotation ?? 0,
                 })
                 
                 if (data.spotifyTrackId) {
@@ -180,6 +185,11 @@ export default function EditMemoryPage() {
                 audio: data.audio || null,
                 spotifyTrackId: data.spotifyTrackId || null,
                 markerStyle: data.markerStyle || null,
+                coverImage: data.coverImage || null,
+                coverPositionX: data.coverPositionX ?? null,
+                coverPositionY: data.coverPositionY ?? null,
+                coverScale: data.coverScale ?? null,
+                coverRotation: data.coverRotation ?? null,
             }
 
             const res = await fetch(`/api/memories/${id}`, {
@@ -282,6 +292,7 @@ export default function EditMemoryPage() {
                                     register={register}
                                     control={control}
                                     setValue={setValue}
+                                    watch={watch}
                                     errors={errors}
                                     isSubmitting={isSubmitting}
                                     musicTab={musicTab}

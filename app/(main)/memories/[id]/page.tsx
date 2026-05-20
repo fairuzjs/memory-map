@@ -17,7 +17,7 @@ import { StickerLayer, StickerPlacement } from "@/components/memories/StickerLay
 import { StickerPanel } from "@/components/memories/StickerPanel"
 import { MemoryMusicPlayer } from "@/components/memories/MemoryMusicPlayer"
 import { ConfirmDialog, useConfirm } from "@/components/ui/ConfirmDialog"
-import { formatDate } from "@/lib/utils"
+import { formatDate, getMemoryCover } from "@/lib/utils"
 
 export default function MemoryDetailPage() {
     const { id } = useParams()
@@ -122,8 +122,9 @@ export default function MemoryDetailPage() {
 
     const isOwner = session?.user?.id === memory?.userId || session?.user?.role === "ADMIN"
     const validPhotos = (memory.photos || []).filter((p: any) => p && p.url)
-    const heroPhoto = validPhotos[0]
-    const galleryPhotos = validPhotos.slice(1)
+    const coverUrl = getMemoryCover(memory)
+    const heroPhoto = coverUrl ? { url: coverUrl } : validPhotos[0]
+    const galleryPhotos = validPhotos.slice(coverUrl && !memory.coverImage ? 1 : 0)
     const allPhotos = validPhotos
     const formattedDate = formatDate(memory.date)
 

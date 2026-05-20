@@ -215,7 +215,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Invalid data", details: result.error.flatten() }, { status: 400 })
         }
 
-        const { photos, tags, date, collaborators, audio, ...data } = result.data
+        const { photos, tags, date, collaborators, audio, coverImage, coverPositionX, coverPositionY, coverScale, coverRotation, ...data } = result.data
 
         // ── Enforce dynamic photo limit ──
         if (photos && photos.length > limits.maxPhotos) {
@@ -280,6 +280,12 @@ export async function POST(req: Request) {
                     spotifyTrackId: data.spotifyTrackId || null,
                     // Premium map marker
                     markerStyle: data.markerStyle || null,
+                    // Cover image
+                    coverImage: coverImage || null,
+                    coverPositionX: coverPositionX ?? 0,
+                    coverPositionY: coverPositionY ?? 0,
+                    coverScale: coverScale ?? 1,
+                    coverRotation: coverRotation ?? 0,
                 },
                 include: {
                     photos: true,

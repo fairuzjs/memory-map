@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { MapPin, Calendar, Heart, MessageCircle, Users, Music } from "lucide-react"
 import { StickerRenderer, StickerConfig } from "./StickerRenderer"
-import { formatDate } from "@/lib/utils"
+import { formatDate, getMemoryCover } from "@/lib/utils"
 
 interface MemoryCardProps {
     memory: any
@@ -65,6 +65,7 @@ export function MemoryCard({ memory, isCollaboration, placements = [] }: MemoryC
     })
 
     const hasPhoto = photos.length > 0
+    const coverUrl = getMemoryCover(memory)
 
     return (
         <div
@@ -77,13 +78,13 @@ export function MemoryCard({ memory, isCollaboration, placements = [] }: MemoryC
             }}
         >
             {/* ── Photo area ───────────────────────────────────────────────────── */}
-            {hasPhoto && (
+            {coverUrl && (
                 <div
                     className="relative w-full h-48 shrink-0 overflow-hidden border-b-[3px] border-black"
                     style={{ borderRadius: theme ? `${theme.radius} ${theme.radius} 0 0` : "0px" }}
                 >
                     <img
-                        src={photos[0].url}
+                        src={coverUrl}
                         alt={memory.title}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                     />
@@ -144,7 +145,7 @@ export function MemoryCard({ memory, isCollaboration, placements = [] }: MemoryC
             <div className={`relative flex flex-col flex-1 ${theme?.contentPadding ?? "p-5"}`}>
 
                 {/* Collab badge — jika tidak ada foto, tampil di sini */}
-                {collab && !hasPhoto && (
+                {collab && !coverUrl && (
                     <div className="flex justify-end mb-3">
                         <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#FF00FF] border-[2px] border-black shadow-[2px_2px_0_#000]">
                             <Users className="w-3 h-3 text-white" />
