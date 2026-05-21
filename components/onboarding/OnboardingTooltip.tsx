@@ -60,6 +60,18 @@ export function OnboardingTooltip({
 
     // ── Compute placement & position ─────────────────────────
     const positionStyle = useMemo((): React.CSSProperties => {
+        if (step.isFloatingHelper) {
+            const vw = typeof window !== "undefined" ? window.innerWidth : 375
+            const tw = Math.min(380, vw - 32)
+            const left = (vw - tw) / 2
+            return {
+                position: "fixed",
+                top: "16px",
+                left,
+                width: tw,
+            }
+        }
+
         if (isCenter || !targetRect) {
             return {
                 position: "fixed",
@@ -154,6 +166,122 @@ export function OnboardingTooltip({
     useEffect(() => {
         tooltipRef.current?.focus()
     }, [currentIndex])
+
+    if (step.isFloatingHelper) {
+        return (
+            <motion.div
+                ref={tooltipRef}
+                tabIndex={-1}
+                initial={{ opacity: 0, y: -20, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0.98 }}
+                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                className="z-[10005] outline-none"
+                style={{
+                    pointerEvents: "auto",
+                    ...positionStyle,
+                }}
+            >
+                <div
+                    className="bg-white border-[3px] border-black shadow-[4px_4px_0_#000] overflow-hidden flex flex-col"
+                    style={{
+                        paddingBottom: "env(safe-area-inset-bottom, 0px)",
+                    }}
+                >
+                    {/* ── Header ─────────────────────────────────────── */}
+                    <div
+                        className="flex items-center justify-between px-3 py-2 border-b-[2.5px] border-black shrink-0"
+                        style={{ backgroundColor: step.accentColor }}
+                    >
+                        <div className="flex items-center gap-2 min-w-0">
+                            <div className="w-6 h-6 shrink-0 bg-white border-[2px] border-black shadow-[1px_1px_0_#000] flex items-center justify-center">
+                                <Icon className="w-3 h-3 text-black" />
+                            </div>
+                            <span className="text-[10px] font-black text-black uppercase tracking-widest truncate">
+                                Langkah {currentIndex + 1} / {totalSteps}
+                            </span>
+                        </div>
+                        <button
+                            onClick={onSkip}
+                            className="p-1 shrink-0 bg-white border-[2px] border-black hover:bg-black hover:text-white transition-all text-xs font-black"
+                            title="Lewati Tutorial"
+                            style={{ minWidth: 22, minHeight: 22, display: "flex", alignItems: "center", justifyContent: "center" }}
+                        >
+                            <X className="w-3 h-3" />
+                        </button>
+                    </div>
+
+                    {/* ── Body ───────────────────────────────────────── */}
+                    <div className="px-4 py-3.5 flex flex-col">
+                        <h3
+                            className="text-sm font-black text-black mb-1 leading-tight uppercase"
+                            style={{ fontFamily: "'Outfit', sans-serif" }}
+                        >
+                            {step.title}
+                        </h3>
+                        <p className="text-xs text-black/85 font-medium leading-relaxed mb-3">
+                            {step.description}
+                        </p>
+
+                        {/* Checklist Indicators */}
+                        <div className="bg-neutral-50 border-[2.5px] border-black p-2.5 mb-3 flex flex-col gap-1.5 shadow-[2px_2px_0_#000]">
+                            <div className="flex items-center gap-2">
+                                <span className="text-[#00FF00] font-black text-sm select-none">✓</span>
+                                <span className="text-xs font-black text-black uppercase tracking-wide">Geser foto</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-[#00FF00] font-black text-sm select-none">✓</span>
+                                <span className="text-xs font-black text-black uppercase tracking-wide">Zoom</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-[#00FF00] font-black text-sm select-none">✓</span>
+                                <span className="text-xs font-black text-black uppercase tracking-wide">Rotate</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-[#00FF00] font-black text-sm select-none">✓</span>
+                                <span className="text-xs font-black text-black uppercase tracking-wide">Simpan Cover</span>
+                            </div>
+                        </div>
+
+                        {/* Progress Bar */}
+                        <div className="flex items-center gap-1 mb-3">
+                            {Array.from({ length: totalSteps }).map((_, i) => (
+                                <div
+                                    key={i}
+                                    className="h-[3px] flex-1 transition-all duration-300"
+                                    style={{
+                                        backgroundColor: i <= currentIndex ? step.accentColor : "#E5E5E5",
+                                        border: i <= currentIndex ? "1px solid #000" : "1px solid #CCC",
+                                    }}
+                                />
+                            ))}
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex items-center gap-2">
+                            {!isFirst && (
+                                <button
+                                    onClick={onBack}
+                                    className="flex-1 flex items-center justify-center gap-1 py-2 text-[10px] font-black text-black uppercase bg-white border-[2.5px] border-black shadow-[2px_2px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] active:translate-x-0 active:translate-y-0 active:shadow-none transition-all"
+                                    style={{ minHeight: 36 }}
+                                >
+                                    <ChevronLeft className="w-3 h-3" />
+                                    {step.backLabel || "Kembali"}
+                                </button>
+                            )}
+                            <button
+                                onClick={onSkip}
+                                className="flex-1 py-2 text-[10px] font-black text-black/50 uppercase bg-white border-[2.5px] border-black/20 hover:border-black hover:text-black transition-all"
+                                style={{ minHeight: 36 }}
+                            >
+                                Lewati
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </motion.div>
+        )
+    }
 
     return (
         <motion.div

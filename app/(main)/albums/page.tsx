@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react"
 import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { AnimatePresence, motion, useAnimation } from "framer-motion"
 import type { LucideIcon } from "lucide-react"
@@ -286,6 +287,8 @@ function InteractivePolaroids({ albumsList }: { albumsList: Album[] }) {
    ═══════════════════════════════════════════════════════════ */
 export default function AlbumsPage() {
     const { data: session } = useSession()
+    const router = useRouter()
+    const isDraggingRef = useRef(false)
     const controls0 = useAnimation()
     const controls1 = useAnimation()
     const controls2 = useAnimation()
@@ -592,12 +595,13 @@ export default function AlbumsPage() {
     /* ═══════════════════════════════════════════════════════════
        RENDER: Album Context Menu
        ═══════════════════════════════════════════════════════════ */
-    const renderAlbumMenu = (album: Album) => {
+    const renderAlbumMenu = (album: Album, cardIndex?: number) => {
         const isOpen = activeMenuId === album.id
         const isSystem = album.isSystemAlbum || album.name === SYSTEM_ALBUM_NAME
         return (
             <div className="absolute right-3 top-3 z-[20]" ref={isOpen ? menuRef : null}>
                 <button
+                    {...(cardIndex === 0 ? { "data-tutorial": "album-menu-btn" } : {})}
                     onClick={(e) => {
                         e.stopPropagation()
                         e.preventDefault()
@@ -667,7 +671,7 @@ export default function AlbumsPage() {
                     className="group relative flex gap-4 border-[3px] border-black bg-[#FFFDF0] p-3 shadow-[5px_5px_0_#000] transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[8px_8px_0_#000]"
                     style={{ borderLeftColor: accent, borderLeftWidth: "5px" }}
                 >
-                    {renderAlbumMenu(album)}
+                    {renderAlbumMenu(album, index)}
                     <Link href={`/albums/${album.id}`} className="flex flex-1 gap-4">
                         <AlbumCover album={album} accent={accent} compact />
                         <div className="flex min-w-0 flex-1 flex-col justify-center">
@@ -702,7 +706,7 @@ export default function AlbumsPage() {
                 {/* Binding edge */}
                 <div className="absolute left-0 top-0 bottom-0 w-[5px]" style={{ background: `repeating-linear-gradient(to bottom, ${accent} 0px, ${accent} 8px, #000 8px, #000 10px)` }} />
 
-                {renderAlbumMenu(album)}
+                {renderAlbumMenu(album, index)}
 
                 <Link href={`/albums/${album.id}`} className="block">
                     {/* Cover with inner white frame (polaroid feel) */}
@@ -775,13 +779,14 @@ export default function AlbumsPage() {
                         </p>
 
                         {/* CTA row */}
-                        <div className="mt-6 flex flex-col gap-3 min-[520px]:flex-row min-[520px]:items-stretch">
+                        <div className="mt-6 flex flex-col gap-3 min-[520px]:flex-row min-[520px]:items-stretch w-full">
                             <button
+                                data-tutorial="create-album-btn"
                                 onClick={() => {
                                     resetForm()
                                     setShowCreateModal(true)
                                 }}
-                                className="flex shrink-0 items-center justify-center gap-2 border-[3px] border-black bg-[#FFFF00] px-5 py-3 text-xs font-black uppercase text-black shadow-[4px_4px_0_#000] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#000]"
+                                className="flex w-full min-[520px]:w-auto shrink-0 items-center justify-center gap-2 border-[3px] border-black bg-[#FFFF00] px-5 py-3 text-xs font-black uppercase text-black shadow-[4px_4px_0_#000] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#000]"
                             >
                                 <Plus className="h-4 w-4" /> Buat Album
                             </button>
@@ -792,7 +797,7 @@ export default function AlbumsPage() {
                                     setSearchOpen(false)
                                     fetchAlbums()
                                 }}
-                                className="relative z-[30] flex min-w-[220px] max-w-md flex-1 items-center border-[3px] border-black bg-white shadow-[4px_4px_0_#000]"
+                                className="relative z-[30] flex w-full min-[520px]:w-auto min-w-[220px] max-w-none min-[520px]:max-w-md flex-1 items-center border-[3px] border-black bg-white shadow-[4px_4px_0_#000]"
                             >
                                 <Search className="ml-3 h-4 w-4 text-black" />
                                 <input
@@ -852,51 +857,50 @@ export default function AlbumsPage() {
                             </form>
                         </div>
 
-                        {/* ── Stats row — 4 mini scrapbook cards ──────── */}
-                        <div className="mt-6 grid grid-cols-2 gap-2.5 sm:grid-cols-4 sm:gap-3">
+                        {/* ── Stats row — horizontal scroll on mobile, grid on sm+ ──────── */}
+                        <div className="mt-6 flex justify-center sm:justify-start gap-2.5 overflow-x-auto pb-2 px-1 sm:px-0 sm:grid sm:grid-cols-3 sm:gap-3 sm:overflow-visible sm:pb-0 custom-scrollbar">
                             {[
                                 { label: "Album", value: customAlbums.length, color: "#00DDEB" },
                                 { label: "Memory", value: totalMemoriesCount, color: "#FF6B9D" },
-                                { label: "Chapter", value: customAlbums.length, color: "#06D6A0" },
                             ].map((stat, i) => (
                                 <div
                                     key={stat.label}
-                                    className={`border-[3px] border-black bg-white p-3 shadow-[3px_3px_0_#000] ${ROTATIONS[i % ROTATIONS.length]}`}
+                                    className={`shrink-0 min-w-[95px] sm:min-w-0 border-[3px] border-black bg-white px-3 py-2 shadow-[3px_3px_0_#000] sm:p-3 ${ROTATIONS[i % ROTATIONS.length]}`}
                                     style={{ borderTopColor: stat.color, borderTopWidth: "5px" }}
                                 >
-                                    <span className="mb-1 block text-[10px] font-black uppercase text-black/50">
+                                    <span className="mb-0.5 block text-[9px] font-black uppercase text-black/50 sm:mb-1 sm:text-[10px]">
                                         {stat.label}
                                     </span>
-                                    <strong className="block text-xl font-black uppercase leading-tight text-black">
+                                    <strong className="block text-lg font-black uppercase leading-tight text-black sm:text-xl">
                                         {stat.value}
                                     </strong>
                                 </div>
                             ))}
 
-                            {/* 4th Stat Card: System Album / Belum Rapi (Clickable Link) */}
+                            {/* 3rd Stat Card: System Album / Belum Rapi (Clickable Link) */}
                             {systemAlbum ? (
                                 <Link
                                     href={`/albums/${systemAlbum.id}`}
-                                    className={`group block border-[3px] border-black bg-white p-3 shadow-[3px_3px_0_#000] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#000] hover:bg-[#FFFDF0] ${ROTATIONS[3 % ROTATIONS.length]}`}
+                                    className={`group block shrink-0 min-w-[105px] border-[3px] border-black bg-white px-3 py-2 shadow-[3px_3px_0_#000] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#000] hover:bg-[#FFFDF0] sm:min-w-0 sm:p-3 ${ROTATIONS[2 % ROTATIONS.length]}`}
                                     style={{ borderTopColor: "#FFD166", borderTopWidth: "5px" }}
                                 >
-                                    <span className="mb-1 flex items-center justify-between text-[10px] font-black uppercase text-black/50">
+                                    <span className="mb-0.5 flex items-center justify-between gap-1.5 text-[9px] font-black uppercase text-black/50 sm:mb-1 sm:text-[10px]">
                                         <span>Belum Rapi</span>
-                                        <span className="text-[8px] bg-red-500 text-white px-1.5 py-0.5 rounded border border-black shadow-[1px_1px_0_#000]">Sistem</span>
+                                        <span className="text-[7px] bg-red-500 text-white px-1 py-0.5 rounded border border-black shadow-[1px_1px_0_#000] sm:text-[8px] sm:px-1.5">Sistem</span>
                                     </span>
-                                    <strong className="block text-xl font-black uppercase leading-tight text-black group-hover:text-[#FF00FF]">
+                                    <strong className="block text-lg font-black uppercase leading-tight text-black group-hover:text-[#FF00FF] sm:text-xl">
                                         {systemAlbum._count.memories}
                                     </strong>
                                 </Link>
                             ) : (
                                 <div
-                                    className={`border-[3px] border-black bg-white p-3 shadow-[3px_3px_0_#000] ${ROTATIONS[3 % ROTATIONS.length]}`}
+                                    className={`shrink-0 min-w-[95px] sm:min-w-0 border-[3px] border-black bg-white px-3 py-2 shadow-[3px_3px_0_#000] sm:min-w-0 sm:p-3 ${ROTATIONS[2 % ROTATIONS.length]}`}
                                     style={{ borderTopColor: "#FFD166", borderTopWidth: "5px" }}
                                 >
-                                    <span className="mb-1 block text-[10px] font-black uppercase text-black/50">
+                                    <span className="mb-0.5 block text-[9px] font-black uppercase text-black/50 sm:mb-1 sm:text-[10px]">
                                         Belum Rapi
                                     </span>
-                                    <strong className="block text-xl font-black uppercase leading-tight text-black">
+                                    <strong className="block text-lg font-black uppercase leading-tight text-black sm:text-xl">
                                         0
                                     </strong>
                                 </div>
@@ -918,7 +922,7 @@ export default function AlbumsPage() {
                                         <div className="flex aspect-square items-center justify-center bg-gradient-to-br from-[#00FFFF44] to-[#FF00FF33]">
                                             <Sparkles className="h-10 w-10 text-black/30" />
                                         </div>
-                                        <span className="mt-1 block text-center font-caveat text-xs text-black/50">
+                                        <span className="mt-1.5 block text-center font-caveat text-xs text-black/50">
                                             Album pertamamu
                                         </span>
                                     </div>
@@ -933,45 +937,44 @@ export default function AlbumsPage() {
                     </div>
 
                     {/* ── Mobile visual: centered draggable polaroid row ────────── */}
-                    <div className="flex flex-col items-center justify-center border-t-[3px] border-black bg-[#F5E6D3]/30 p-6 lg:hidden">
+                    <div className="flex flex-col items-center justify-center border-t-[3px] border-black bg-[#F5E6D3]/30 p-6 lg:hidden w-full overflow-hidden">
                         <span className="mb-3.5 font-caveat text-sm text-black/55 select-none">
                             Sentuh dan geser polaroid di bawah!
                         </span>
-                        <div className="flex justify-center items-center gap-4 w-full">
+                        <div className="flex justify-start min-[410px]:justify-center items-center gap-4 w-full overflow-x-auto pb-4 px-4 custom-scrollbar" style={{ touchAction: "none" }}>
                             {(customAlbums.slice(0, 3).length ? customAlbums.slice(0, 3) : albums.slice(0, 2)).map((album, i) => (
                                 <motion.div
                                     key={album.id}
                                     animate={mobileControls[i]}
                                     drag
-                                    dragConstraints={{ left: -40, right: 40, top: -25, bottom: 25 }}
-                                    dragElastic={0.25}
+                                    dragConstraints={{ left: -60, right: 60, top: -40, bottom: 40 }}
+                                    dragElastic={0.3}
                                     dragTransition={{ bounceStiffness: 400, bounceDamping: 20 }}
-                                    whileHover={{ scale: 1.05 }}
+                                    onDragStart={() => { isDraggingRef.current = true }}
+                                    onDragEnd={() => { setTimeout(() => { isDraggingRef.current = false }, 100) }}
                                     whileTap={{ scale: 0.95 }}
-                                    className={`polaroid-frame-sm shrink-0 cursor-grab active:cursor-grabbing ${ROTATIONS[i % ROTATIONS.length]}`}
-                                    style={{ width: "96px" }}
+                                    className={`polaroid-frame-sm shrink-0 cursor-grab active:cursor-grabbing select-none ${ROTATIONS[i % ROTATIONS.length]}`}
+                                    style={{ width: "110px", touchAction: "none" }}
+                                    onClick={() => {
+                                        if (!isDraggingRef.current) {
+                                            router.push(`/albums/${album.id}`)
+                                        }
+                                    }}
                                 >
-                                    <Link href={`/albums/${album.id}`} className="block">
-                                        <div className="aspect-square overflow-hidden bg-[#E5E5E5] border border-black/10">
-                                            {album.coverImage ? (
-                                                <img src={album.coverImage} alt="" className="h-full w-full object-cover pointer-events-none" loading="lazy" />
-                                            ) : (
-                                                <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#00FFFF44] to-[#FF00FF33]">
-                                                    <AlbumGlyph icon={album.icon} className="h-5 w-5 text-black/40" />
-                                                </div>
-                                            )}
-                                        </div>
-                                        <span className="mt-1.5 block max-w-[96px] truncate text-center font-caveat text-[10px] text-black/60 font-bold">
-                                            {album.name}
-                                        </span>
-                                    </Link>
+                                    <div className="aspect-square overflow-hidden bg-[#E5E5E5] border border-black/10 pointer-events-none">
+                                        {album.coverImage ? (
+                                            <img src={album.coverImage} alt="" className="h-full w-full object-cover" loading="lazy" draggable={false} />
+                                        ) : (
+                                            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#00FFFF44] to-[#FF00FF33]">
+                                                <AlbumGlyph icon={album.icon} className="h-6 w-6 text-black/40" />
+                                            </div>
+                                        )}
+                                    </div>
+                                    <span className="mt-1.5 block max-w-[110px] truncate text-center font-caveat text-[11px] text-black/60 font-bold pointer-events-none">
+                                        {album.name}
+                                    </span>
                                 </motion.div>
                             ))}
-                            {albums.length === 0 && (
-                                <div className="flex items-center gap-2 text-xs font-bold text-black/40">
-                                    <Sparkles className="h-4 w-4" /> Buat album pertamamu
-                                </div>
-                            )}
                         </div>
                         {albums.length > 0 && (
                             <button
@@ -1186,7 +1189,7 @@ export default function AlbumsPage() {
                             </div>
                             <form onSubmit={handleSaveAlbum} className="grid gap-6 p-6 lg:grid-cols-[1.1fr_280px_1fr]">
                                 <div className="space-y-4">
-                                    <label className="block text-xs font-black uppercase text-black">
+                                    <label data-tutorial="album-input-name" className="block text-xs font-black uppercase text-black">
                                         Nama Album
                                         <input value={albumName} onChange={e => setAlbumName(e.target.value)} className="mt-2 w-full border-[3px] border-black bg-white p-3 text-sm font-bold outline-none focus:bg-[#FFFF00]" placeholder="Liburan Pantai 2026" />
                                     </label>
@@ -1198,7 +1201,7 @@ export default function AlbumsPage() {
 
                                 <div className="space-y-3">
                                     <p className="text-xs font-black uppercase text-black">Cover Album</p>
-                                    <button type="button" onClick={() => fileInputRef.current?.click()} className="flex h-48 w-full flex-col items-center justify-center gap-2 border-[3px] border-dashed border-black bg-white text-xs font-black uppercase text-black hover:bg-[#E5E5E5]">
+                                    <button data-tutorial="album-cover-upload" type="button" onClick={() => fileInputRef.current?.click()} className="flex h-48 w-full flex-col items-center justify-center gap-2 border-[3px] border-dashed border-black bg-white text-xs font-black uppercase text-black hover:bg-[#E5E5E5]">
                                         {albumCover ? <img src={albumCover} alt="" className="h-full w-full object-cover" /> : isUploading ? <Loader2 className="h-7 w-7 animate-spin" /> : <><ImageIcon className="h-7 w-7" /> Upload Cover</>}
                                     </button>
                                     <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
@@ -1225,7 +1228,7 @@ export default function AlbumsPage() {
                                     </div>
                                     <div className="flex justify-end gap-3 border-t-[3px] border-black pt-4">
                                         <button type="button" onClick={() => { setShowCreateModal(false); setEditingAlbum(null); resetForm() }} className="border-[3px] border-black bg-white px-5 py-2 text-xs font-black uppercase text-black shadow-[3px_3px_0_#000]">Batal</button>
-                                        <button type="submit" disabled={isSaving} className="border-[3px] border-black bg-[#00FF00] px-5 py-2 text-xs font-black uppercase text-black shadow-[3px_3px_0_#000] disabled:opacity-60">
+                                        <button data-tutorial="album-btn-save" type="submit" disabled={isSaving} className="border-[3px] border-black bg-[#00FF00] px-5 py-2 text-xs font-black uppercase text-black shadow-[3px_3px_0_#000] disabled:opacity-60">
                                             {isSaving ? "Menyimpan..." : editingAlbum ? "Simpan" : "Buat Album"}
                                         </button>
                                     </div>
@@ -1283,7 +1286,7 @@ export default function AlbumsPage() {
                                 {memoriesLoading ? (
                                     <div className="flex justify-center py-16"><Loader2 className="h-8 w-8 animate-spin" /></div>
                                 ) : (
-                                    <div className="grid gap-3 sm:grid-cols-2">
+                                    <div data-tutorial="album-memory-list" className="grid gap-3 sm:grid-cols-2">
                                         {allMemories.map(memory => {
                                             const selected = selectedMemoryIds.includes(memory.id)
                                             return (
@@ -1304,7 +1307,7 @@ export default function AlbumsPage() {
                             </div>
                             <div className="flex justify-end gap-3 border-t-[4px] border-black bg-white p-4">
                                 <button onClick={() => setOrganizingAlbum(null)} className="border-[3px] border-black bg-white px-5 py-2 text-xs font-black uppercase text-black shadow-[3px_3px_0_#000]">Batal</button>
-                                <button onClick={handleSaveOrganize} disabled={isSaving} className="border-[3px] border-black bg-[#00FF00] px-5 py-2 text-xs font-black uppercase text-black shadow-[3px_3px_0_#000]">Simpan Pengelompokan</button>
+                                <button data-tutorial="album-btn-save-organize" onClick={handleSaveOrganize} disabled={isSaving} className="border-[3px] border-black bg-[#00FF00] px-5 py-2 text-xs font-black uppercase text-black shadow-[3px_3px_0_#000]">Simpan Pengelompokan</button>
                             </div>
                         </motion.div>
                     </div>

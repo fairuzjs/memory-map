@@ -532,7 +532,7 @@ export default function CreateMemoryPage() {
                                     className="space-y-6"
                                 >
                                     {/* Cover Image Section */}
-                                    <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000]">
+                                    <div data-tutorial="cover-section" className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000]">
                                         <div className="flex items-center justify-between mb-5">
                                             <div className="flex items-center gap-3">
                                                 <div className="p-2.5 bg-[#FFFF00] border-[2px] border-black shadow-[2px_2px_0_#000]">
@@ -545,6 +545,7 @@ export default function CreateMemoryPage() {
                                             </div>
                                             <button
                                                 type="button"
+                                                data-tutorial="btn-atur-cover"
                                                 onClick={() => setShowCoverEditor(true)}
                                                 className="flex items-center gap-2 px-4 py-2 text-xs font-black uppercase text-black border-[3px] border-black bg-[#00FFFF] shadow-[3px_3px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0_#000] transition-all"
                                             >
@@ -573,6 +574,7 @@ export default function CreateMemoryPage() {
 
                                     {/* Cover Editor Modal */}
                                     {showCoverEditor && (
+                                        <div data-tutorial="cover-editor-modal">
                                         <CoverEditor
                                             coverImage={watch("coverImage") || null}
                                             coverPositionX={watch("coverPositionX") ?? 0}
@@ -597,6 +599,7 @@ export default function CreateMemoryPage() {
                                             }}
                                             onClose={() => setShowCoverEditor(false)}
                                         />
+                                        </div>
                                     )}
 
                                     {/* Photos & Music in 2-column grid */}

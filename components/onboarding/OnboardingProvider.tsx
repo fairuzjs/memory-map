@@ -394,9 +394,9 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
         }
     }, [isActive, stepIndex, updateTargetRect, currentStep])
 
-    // ── Block body scroll only during active tutorial ───────
+    // ── Block body scroll only during active tutorial (skip for floating helpers) ───
     useEffect(() => {
-        if (isActive) {
+        if (isActive && !currentStep?.isFloatingHelper) {
             document.body.style.overflow = "hidden"
             document.body.style.touchAction = "none"
         } else {
@@ -407,7 +407,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
             document.body.style.overflow = ""
             document.body.style.touchAction = ""
         }
-    }, [isActive])
+    }, [isActive, currentStep])
 
     // ── Route navigation for step requirements ──────────────
     useEffect(() => {
@@ -489,6 +489,45 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
                 actionListenerCleanup.current()
                 actionListenerCleanup.current = null
             }
+        }
+    }, [isActive, stepIndex, currentStep, steps.length, saveStep])
+
+    // ── DOM observer auto-advance (for modal close detection) ──
+    useEffect(() => {
+        if (!isActive || !currentStep?.observeSelector) return
+
+        // Track whether we've already advanced to prevent double-fire
+        let hasAdvanced = false
+        // Track whether the observed element was initially present
+        let wasPresent = !!document.querySelector(currentStep.observeSelector)
+
+        const observer = new MutationObserver(() => {
+            if (hasAdvanced) return
+
+            const el = document.querySelector(currentStep.observeSelector!)
+
+            if (currentStep.observeDisappear) {
+                // Wait until the element appears first, then advance when it disappears
+                if (el) {
+                    wasPresent = true
+                } else if (wasPresent && !el) {
+                    hasAdvanced = true
+                    const delay = currentStep.actionDelay || 500
+                    setTimeout(() => {
+                        const nextIdx = stepIndex + 1
+                        if (nextIdx < steps.length) {
+                            setStepIndex(nextIdx)
+                            saveStep(nextIdx)
+                        }
+                    }, delay)
+                }
+            }
+        })
+
+        observer.observe(document.body, { childList: true, subtree: true })
+
+        return () => {
+            observer.disconnect()
         }
     }, [isActive, stepIndex, currentStep, steps.length, saveStep])
 
@@ -714,11 +753,14 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
             <AnimatePresence mode="wait">
                 {isActive && currentStep && (
                     <div key={`onboarding-${stepIndex}`}>
-                        <SpotlightOverlay
-                            targetRect={targetRect}
-                            onClickOverlay={() => {}}
-                            passThrough={currentStep.allowInteraction}
-                        />
+                        {/* Skip spotlight overlay for floating helper steps */}
+                        {!currentStep.isFloatingHelper && (
+                            <SpotlightOverlay
+                                targetRect={targetRect}
+                                onClickOverlay={() => {}}
+                                passThrough={currentStep.allowInteraction}
+                            />
+                        )}
                         <OnboardingTooltip
                             step={currentStep}
                             currentIndex={stepIndex}

@@ -2,7 +2,7 @@ import {
     MapPin, Map, BookText, Smile, ImagePlus, Music, Users,
     Globe, Save, ChevronRight, CheckCircle2, Sparkles, Flame, Package, User,
     ShoppingBag, Dices, Crown, Settings, MessageSquareText, HelpCircle,
-    BookOpen, Plus, Image as ImageIcon, FolderPlus, BookHeart
+    BookOpen, Plus, Image as ImageIcon, FolderPlus, BookHeart, Crop, Layers3
 } from "lucide-react"
 
 // ─── Step Types ─────────────────────────────────────────────────────────────
@@ -35,6 +35,12 @@ export interface OnboardingStep {
     requiresHamburger?: boolean
     /** Guide key this step belongs to */
     guideKey?: string
+    /** CSS selector to observe for DOM mutations (appear/disappear) */
+    observeSelector?: string
+    /** If true, advance when observeSelector element disappears from DOM */
+    observeDisappear?: boolean
+    /** If true, render as a compact floating helper that doesn't block interaction */
+    isFloatingHelper?: boolean
 }
 
 // ─── Guide Definitions for Popup ────────────────────────────────────────────
@@ -301,7 +307,57 @@ export const FIRST_MEMORY_STEPS: OnboardingStep[] = [
         formStep: 1,
         guideKey: "firstMemory",
     },
-    // Step 10 — Musik
+    // Step 10 — Cover Memory Section
+    {
+        id: "cover-memory-section",
+        title: "Cover Memory",
+        description: "Cover Memory adalah thumbnail utama memory, seperti thumbnail YouTube. Cover membantu memory tampil lebih menarik di album dan timeline.",
+        icon: Crop,
+        accentColor: "#FFFF00",
+        targetSelector: "[data-tutorial='cover-section']",
+        requiredPath: "/memories/create",
+        position: "auto",
+        allowInteraction: true,
+        scrollToTarget: true,
+        formStep: 1,
+        guideKey: "firstMemory",
+    },
+    // Step 11 — Klik Atur Cover (Action Step)
+    {
+        id: "click-atur-cover",
+        title: "Atur Cover",
+        description: "Klik tombol 'ATUR COVER' untuk membuka Cover Editor. Di sini kamu bisa memilih foto dari galeri atau upload foto baru sebagai cover.",
+        icon: Crop,
+        accentColor: "#00FFFF",
+        targetSelector: "[data-tutorial='btn-atur-cover']",
+        requiredPath: "/memories/create",
+        position: "auto",
+        allowInteraction: true,
+        scrollToTarget: true,
+        formStep: 1,
+        isActionStep: true,
+        actionHint: "Klik tombol yang disorot untuk membuka Cover Editor",
+        actionDelay: 800,
+        guideKey: "firstMemory",
+    },
+    // Step 12 — Cover Editor Guide (floating helper, non-blocking)
+    {
+        id: "cover-editor-guide",
+        title: "Cover Editor",
+        description: "Geser, zoom, atau putar gambar untuk mengatur cover.",
+        icon: Crop,
+        accentColor: "#FF00FF",
+        requiredPath: "/memories/create",
+        formStep: 1,
+        isFloatingHelper: true,
+        isActionStep: true,
+        actionHint: "Simpan cover untuk melanjutkan",
+        observeSelector: "[data-tutorial='cover-editor-modal']",
+        observeDisappear: true,
+        actionDelay: 600,
+        guideKey: "firstMemory",
+    },
+    // Step 13 — Musik
     {
         id: "music-section",
         title: "Tambahkan Musik (Opsional)",
@@ -316,7 +372,7 @@ export const FIRST_MEMORY_STEPS: OnboardingStep[] = [
         formStep: 1,
         guideKey: "firstMemory",
     },
-    // Step 11 — Kolaborator
+    // Step 14 — Kolaborator
     {
         id: "collaborators",
         title: "Undang Kolaborator (Opsional)",
@@ -331,7 +387,7 @@ export const FIRST_MEMORY_STEPS: OnboardingStep[] = [
         formStep: 1,
         guideKey: "firstMemory",
     },
-    // Step 12 — Privasi
+    // Step 15 — Privasi
     {
         id: "privacy-toggle",
         title: "Pengaturan Privasi",
@@ -346,7 +402,7 @@ export const FIRST_MEMORY_STEPS: OnboardingStep[] = [
         formStep: 1,
         guideKey: "firstMemory",
     },
-    // Step 13 — Simpan Kenangan
+    // Step 16 — Simpan Kenangan
     {
         id: "submit-memory",
         title: "Simpan Kenanganmu!",
@@ -368,10 +424,11 @@ export const FIRST_MEMORY_STEPS: OnboardingStep[] = [
 
 // ─── Album Kenangan Onboarding Steps ─────────────────────────────────────────
 export const ALBUM_GUIDE_STEPS: OnboardingStep[] = [
+    // Step 1 — Welcome
     {
         id: "album-welcome",
-        title: "Selamat Datang di Album Kenangan! 📚",
-        description: "Fitur baru ini mempermudahmu mengelompokkan berbagai kenangan hidup berdasarkan cerita, perjalanan, atau tema pilihanmu sendiri.",
+        title: "Cara Membuat Album 📚",
+        description: "Album membantu kamu mengelompokkan kenangan berdasarkan tema atau cerita. Mari buat album pertamamu!",
         icon: BookHeart,
         accentColor: "#FF00FF",
         position: "center",
@@ -379,10 +436,11 @@ export const ALBUM_GUIDE_STEPS: OnboardingStep[] = [
         showSkip: true,
         guideKey: "album",
     },
+    // Step 2 — Klik Buat Album (Action Step)
     {
-        id: "album-create",
-        title: "1. Membuat Album Baru ＋",
-        description: "Klik tombol 'Buat Album' di pojok kanan atas untuk membuka panel pembuatan. Di sini kamu bisa mengisi nama album (misalnya: 🌊 Laut), deskripsi, dan ikon emoji kustom.",
+        id: "album-click-create",
+        title: "Buat Album Baru",
+        description: "Buat album untuk mengelompokkan memory berdasarkan tema atau cerita.",
         icon: Plus,
         accentColor: "#FFFF00",
         targetSelector: "[data-tutorial='create-album-btn']",
@@ -390,41 +448,104 @@ export const ALBUM_GUIDE_STEPS: OnboardingStep[] = [
         position: "auto",
         allowInteraction: true,
         scrollToTarget: true,
+        isActionStep: true,
+        actionHint: "Klik tombol yang disorot untuk membuat album baru",
+        actionDelay: 800,
         guideKey: "album",
     },
+    // Step 3 — Input Nama Album
     {
-        id: "album-cover-manual",
-        title: "2. Memilih Cover Secara Manual 🖼️",
-        description: "Di dalam panel pembuatan album, kamu dapat mengunggah file gambar kustom pilihanmu sendiri melalui tombol 'Upload File Cover' untuk dijadikan banner utama album.",
+        id: "album-input-name",
+        title: "Nama Album",
+        description: "Masukkan nama album, misalnya Gunung, Liburan, Bucin, Kuliner, atau tema lainnya.",
+        icon: BookOpen,
+        accentColor: "#00FFFF",
+        targetSelector: "[data-tutorial='album-input-name']",
+        requiredPath: "/albums",
+        position: "auto",
+        allowInteraction: true,
+        scrollToTarget: true,
+        guideKey: "album",
+    },
+    // Step 4 — Cover Album
+    {
+        id: "album-cover",
+        title: "Cover Album",
+        description: "Tambahkan cover agar album memiliki identitas visual yang menarik. Klik area upload untuk memilih gambar cover.",
         icon: ImageIcon,
         accentColor: "#00FF00",
-        targetSelector: "[data-tutorial='create-album-btn']",
+        targetSelector: "[data-tutorial='album-cover-upload']",
         requiredPath: "/albums",
         position: "auto",
+        allowInteraction: true,
+        scrollToTarget: true,
         guideKey: "album",
     },
+    // Step 5 — Simpan Album (Action Step)
     {
-        id: "album-change-cover",
-        title: "3. Mengganti Cover Album ⚙️",
-        description: "Ingin mengubah cover di kemudian hari? Cukup klik ikon Tiga Titik (⋮) pada kartu album yang diinginkan, lalu pilih opsi 'Ganti Cover' untuk memperbaruinya kapan saja.",
-        icon: ImagePlus,
-        accentColor: "#00FFFF",
-        targetSelector: "[data-tutorial='album-menu-btn']",
+        id: "album-save",
+        title: "Simpan Album",
+        description: "Album siap disimpan. Klik tombol untuk menyimpan album barumu.",
+        icon: Save,
+        accentColor: "#00FF00",
+        targetSelector: "[data-tutorial='album-btn-save']",
         requiredPath: "/albums",
         position: "auto",
+        allowInteraction: true,
+        scrollToTarget: true,
+        isActionStep: true,
+        actionHint: "Klik tombol yang disorot untuk menyimpan album",
+        actionDelay: 1200,
         guideKey: "album",
     },
+    // Step 6 — Buka Menu Album → Kelola Memory (Action Step)
     {
-        id: "album-manage-memories",
-        title: "4. Menambah & Memindahkan Kenangan 🔄",
-        description: "Klik menu Tiga Titik (⋮) pada kartu album, lalu pilih 'Kelola Kenangan'. Centang semua kenangan yang ingin dikelompokkan ke dalam album ini. Satu kenangan boleh masuk ke banyak album sekaligus!",
-        icon: FolderPlus,
+        id: "album-menu-open",
+        title: "Kelola Memory",
+        description: "Masukkan memory ke album ini. Klik tombol menu (⋮) pada kartu album, lalu pilih 'Kelola Memory'.",
+        icon: Layers3,
         accentColor: "#FF00FF",
         targetSelector: "[data-tutorial='album-menu-btn']",
         requiredPath: "/albums",
         position: "auto",
+        allowInteraction: true,
+        scrollToTarget: true,
+        isActionStep: true,
+        actionHint: "Klik menu (⋮) pada album yang disorot",
+        actionDelay: 600,
         guideKey: "album",
-    }
+    },
+    // Step 7 — Pilih Memory dari daftar
+    {
+        id: "album-organize-list",
+        title: "Pilih Memory",
+        description: "Pilih memory yang ingin dimasukkan ke album. Centang satu atau lebih memory, lalu lanjut ke langkah berikutnya.",
+        icon: FolderPlus,
+        accentColor: "#00FFFF",
+        targetSelector: "[data-tutorial='album-memory-list']",
+        requiredPath: "/albums",
+        position: "auto",
+        allowInteraction: true,
+        scrollToTarget: true,
+        guideKey: "album",
+    },
+    // Step 8 — Simpan Pengelompokan (Action Step)
+    {
+        id: "album-save-organize",
+        title: "Simpan Pengelompokan",
+        description: "Album siap disimpan. Klik tombol untuk menyimpan pengelompokan memory.",
+        icon: Save,
+        accentColor: "#00FF00",
+        targetSelector: "[data-tutorial='album-btn-save-organize']",
+        requiredPath: "/albums",
+        position: "auto",
+        allowInteraction: true,
+        scrollToTarget: true,
+        isActionStep: true,
+        actionHint: "Klik tombol yang disorot untuk menyimpan",
+        actionDelay: 1200,
+        guideKey: "album",
+    },
 ]
 
 // ─── Navigation Guide Steps (simple highlight-on-page guides) ───────────────
