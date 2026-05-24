@@ -5,6 +5,7 @@ import { useEffect, useState, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Trophy, Calendar, Zap, Medal, Star, Crown, Users, ChevronRight, Loader2, CheckCircle2, ShoppingBag, BadgeCheck, Shield, Sparkles } from "lucide-react"
 import Link from "next/link"
+import toast from "react-hot-toast"
 import { BadgeUnlockModal } from "@/components/ui/BadgeUnlockModal"
 import { LeaderboardModal } from "@/components/ui/LeaderboardModal"
 import { formatDate } from "@/lib/utils"
@@ -180,6 +181,7 @@ export default function StreakPage() {
     const [justClaimed, setJustClaimed] = useState(false)
     const [lastPointsEarned, setLastPointsEarned] = useState<number | null>(null)
     const [isLeaderboardModalOpen, setIsLeaderboardModalOpen] = useState(false)
+    const [showBadgeToast, setShowBadgeToast] = useState(false)
     const [premiumInfo, setPremiumInfo] = useState<{ isPremium: boolean; multiplier: number; freezesRemaining: number } | null>(null)
 
     // Freeze confirmation state
@@ -223,6 +225,19 @@ export default function StreakPage() {
     const handleClaim = async (useFreeze?: boolean) => {
         if (!streak || streak.alreadyClaimed || claiming) return
         setClaiming(true)
+
+        // 1. Snapshot for rollback
+        const prevStreak = { ...streak }
+
+        // 2. Optimistic update — show claimed state + celebration immediately
+        setStreak(prev => prev ? {
+            ...prev,
+            alreadyClaimed: true,
+            currentStreak: prev.currentStreak + 1,
+            totalActiveDays: prev.totalActiveDays + 1,
+        } : prev)
+        setJustClaimed(true)
+
         try {
             const res = await fetch("/api/streak/claim", {
                 method: "POST",
@@ -231,8 +246,10 @@ export default function StreakPage() {
             })
             const data = await res.json()
 
-            // API asks for freeze confirmation
+            // API asks for freeze confirmation — rollback optimistic and show dialog
             if (data.needsFreezeConfirmation) {
+                setStreak(prevStreak)
+                setJustClaimed(false)
                 setFreezeConfirmData({
                     currentStreak: data.currentStreak,
                     freezesRemaining: data.freezesRemaining,
@@ -242,6 +259,7 @@ export default function StreakPage() {
             }
 
             if (!data.alreadyClaimed) {
+                // 3. Reconcile — sync with actual server data
                 setStreak({
                     currentStreak: data.streak.currentStreak,
                     longestStreak: data.streak.longestStreak,
@@ -255,16 +273,25 @@ export default function StreakPage() {
                 if (data.newBadges?.length) {
                     setNewBadges(data.newBadges)
                     setActiveBadgeIndex(0)
+                    setShowBadgeToast(true)
+                    setTimeout(() => setShowBadgeToast(false), 3500)
                 }
                 setLastPointsEarned(data.pointsEarned ?? null)
-                setJustClaimed(true)
                 setTimeout(() => { setJustClaimed(false); setLastPointsEarned(null) }, 3500)
 
                 // Update freeze count if a freeze was used
                 if (data.freezeUsed && premiumInfo) {
                     setPremiumInfo(prev => prev ? { ...prev, freezesRemaining: data.streakFreezesRemaining ?? 0 } : prev)
                 }
+            } else {
+                // Server says already claimed — just keep the optimistic state
+                setTimeout(() => { setJustClaimed(false) }, 3500)
             }
+        } catch {
+            // 4. Rollback on error
+            setStreak(prevStreak)
+            setJustClaimed(false)
+            toast.error("Gagal mengklaim streak")
         } finally {
             setClaiming(false)
         }
@@ -363,7 +390,7 @@ export default function StreakPage() {
 
             {/* ── Badge Toast ── */}
             <AnimatePresence>
-                {newBadges.map((m) => (
+                {showBadgeToast && newBadges.map((m) => (
                     <motion.div
                         key={m}
                         initial={{ opacity: 0, y: -20, scale: 0.95 }}
@@ -479,13 +506,15 @@ export default function StreakPage() {
                                 )}
                             </div>
 
-                            <button
+                            <motion.button
+                                whileHover={claimedToday ? {} : { scale: 1.05, y: -2 }}
+                                whileTap={claimedToday ? {} : { scale: 0.95, y: 0 }}
                                 onClick={() => handleClaim()}
                                 disabled={claimedToday || claiming}
                                 className={`flex-shrink-0 flex items-center justify-center gap-2 px-6 py-3 text-sm font-black uppercase tracking-wider border-[3px] border-black transition-all ${
                                     claimedToday 
                                     ? "bg-neutral-300 text-neutral-500 cursor-not-allowed shadow-[4px_4px_0_#000]" 
-                                    : "bg-[#FFFF00] text-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000]"
+                                    : "bg-[#FFFF00] text-black shadow-[4px_4px_0_#000]"
                                 }`}
                             >
                                 {claiming ? (
@@ -498,7 +527,7 @@ export default function StreakPage() {
                                         <span>Klaim Hari Ini</span>
                                     </>
                                 )}
-                            </button>
+                            </motion.button>
                         </div>
                     </div>
                 </div>

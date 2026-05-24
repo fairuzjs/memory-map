@@ -421,8 +421,13 @@ export default function DashboardPage() {
     const [showStreakBanner, setShowStreakBanner] = useState(true)
 
     const firstName = session?.user?.name?.split(" ")[0] || "Penjelajah"
-    const hour = new Date().getHours()
-    const greeting = hour < 12 ? "Selamat Pagi" : hour < 18 ? "Selamat Siang" : "Selamat Malam"
+    const [greeting, setGreeting] = useState("Selamat Datang")
+
+    useEffect(() => {
+        const hour = new Date().getHours()
+        const computedGreeting = hour < 12 ? "Selamat Pagi" : hour < 18 ? "Selamat Siang" : "Selamat Malam"
+        setGreeting(computedGreeting)
+    }, [])
 
     useEffect(() => {
         if (!session?.user?.id) return

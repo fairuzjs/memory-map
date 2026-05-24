@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 import { MapPin, Calendar, Heart, MessageCircle, Users, Music } from "lucide-react"
 import { StickerRenderer, StickerConfig } from "./StickerRenderer"
 import { formatDate, getMemoryCover } from "@/lib/utils"
@@ -83,10 +84,13 @@ export function MemoryCard({ memory, isCollaboration, placements = [] }: MemoryC
                     className="relative w-full h-48 shrink-0 overflow-hidden border-b-[3px] border-black"
                     style={{ borderRadius: theme ? `${theme.radius} ${theme.radius} 0 0` : "0px" }}
                 >
-                    <img
+                    <Image
                         src={coverUrl}
                         alt={memory.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                        loading="lazy"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
 
@@ -200,10 +204,13 @@ export function MemoryCard({ memory, isCollaboration, placements = [] }: MemoryC
                         className="relative z-30 flex items-center gap-2 group/author"
                         onClick={e => e.stopPropagation()}
                     >
-                        <img
+                        <Image
                             src={memory.user.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${memory.user.id}`}
                             alt={memory.user.name}
-                            className="w-7 h-7 border-[2px] border-black group-hover/author:border-[#FF00FF] transition-colors object-cover"
+                            width={28}
+                            height={28}
+                            className="border-[2px] border-black group-hover/author:border-[#FF00FF] transition-colors object-cover"
+                            unoptimized={!memory.user.image || memory.user.image.startsWith("https://api.dicebear.com")}
                         />
                         <span className={`text-[12px] font-black uppercase transition-colors group-hover/author:text-[#FF00FF] ${theme?.footerTextColor ?? "text-black"}`}>
                             {memory.user.name}

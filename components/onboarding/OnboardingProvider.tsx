@@ -6,6 +6,7 @@ import {
     useState,
     useEffect,
     useCallback,
+    useMemo,
     useRef,
     type ReactNode,
 } from "react"
@@ -381,8 +382,18 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
             if (rectPollTimer.current) clearInterval(rectPollTimer.current)
         }, 5000)
 
+        let scrollRafId: number | null = null
+        const handleScroll = () => {
+            if (scrollRafId === null) {
+                scrollRafId = requestAnimationFrame(() => {
+                    updateTargetRect()
+                    scrollRafId = null
+                })
+            }
+        }
+
         window.addEventListener("resize", handleResize)
-        window.addEventListener("scroll", updateTargetRect, true)
+        window.addEventListener("scroll", handleScroll, true)
 
         return () => {
             clearTimeout(initTimer)
@@ -390,7 +401,8 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
             if (resizeTimer.current) clearTimeout(resizeTimer.current)
             if (rectPollTimer.current) clearInterval(rectPollTimer.current)
             window.removeEventListener("resize", handleResize)
-            window.removeEventListener("scroll", updateTargetRect, true)
+            window.removeEventListener("scroll", handleScroll, true)
+            if (scrollRafId !== null) cancelAnimationFrame(scrollRafId)
         }
     }, [isActive, stepIndex, updateTargetRect, currentStep])
 
@@ -533,20 +545,26 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
 
     // ── Actions ─────────────────────────────────────────────
     const handleNext = useCallback(() => {
-        const nextIdx = stepIndex + 1
-        if (nextIdx < steps.length) {
-            setStepIndex(nextIdx)
-            saveStep(nextIdx)
-        }
-    }, [stepIndex, steps.length, saveStep])
+        setStepIndex((prevIdx) => {
+            const nextIdx = prevIdx + 1
+            if (nextIdx < steps.length) {
+                saveStep(nextIdx)
+                return nextIdx
+            }
+            return prevIdx
+        })
+    }, [steps.length, saveStep])
 
     const handleBack = useCallback(() => {
-        if (stepIndex > 0) {
-            const prevIdx = stepIndex - 1
-            setStepIndex(prevIdx)
-            saveStep(prevIdx)
-        }
-    }, [stepIndex, saveStep])
+        setStepIndex((prevIdx) => {
+            if (prevIdx > 0) {
+                const nextIdx = prevIdx - 1
+                saveStep(nextIdx)
+                return nextIdx
+            }
+            return prevIdx
+        })
+    }, [saveStep])
 
     const handleSkip = useCallback(() => {
         setMode("idle")
@@ -709,20 +727,20 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
         router.push("/memories")
     }, [router])
 
+    const contextValue = useMemo(() => ({
+        isActive,
+        currentStepIndex: stepIndex,
+        currentStep,
+        mode,
+        startOnboarding,
+        openGuideSelection,
+        completeOnboarding,
+        notifyMemoryCreated,
+        advanceStep: handleNext,
+    }), [isActive, stepIndex, currentStep, mode, startOnboarding, openGuideSelection, completeOnboarding, notifyMemoryCreated, handleNext])
+
     return (
-        <OnboardingContext.Provider
-            value={{
-                isActive,
-                currentStepIndex: stepIndex,
-                currentStep,
-                mode,
-                startOnboarding,
-                openGuideSelection,
-                completeOnboarding,
-                notifyMemoryCreated,
-                advanceStep: handleNext,
-            }}
-        >
+        <OnboardingContext.Provider value={contextValue}>
             {children}
 
             {/* Confetti */}

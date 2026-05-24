@@ -114,19 +114,38 @@ export default function UserProfilePage() {
     }
 
     const handleSaveProfile = async (data: any) => {
-        const res = await fetch(`/api/users/${id}`, {
+        // 1. Snapshot for rollback
+        const prevUser = { ...user }
+
+        // 2. Optimistic update — apply changes locally + toast immediately
+        setUser((prev: any) => ({ ...prev, ...data }))
+        toast.success("Profil diperbarui!")
+
+        // 3. Fetch in background (do not await so modal closes immediately)
+        fetch(`/api/users/${id}`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data),
         })
-        if (!res.ok) {
-            const err = await res.json()
-            throw new Error(err.error || "Gagal memperbarui profil")
-        }
-        const updated = await res.json()
-        setUser((prev: any) => ({ ...prev, ...updated }))
-        await updateSession()
-        toast.success("Profil diperbarui!")
+            .then(async (res) => {
+                if (!res.ok) {
+                    const err = await res.json()
+                    // Rollback
+                    setUser(prevUser)
+                    toast.error(err.error || "Gagal memperbarui profil")
+                    return
+                }
+                // 4. Reconcile — sync with server truth
+                const updated = await res.json()
+                setUser((prev: any) => ({ ...prev, ...updated }))
+                // Update session in background (non-blocking)
+                updateSession().catch(() => {})
+            })
+            .catch(() => {
+                // Rollback on network error
+                setUser(prevUser)
+                toast.error("Gagal memperbarui profil. Koneksi bermasalah.")
+            })
     }
 
     const copyProfileLink = () => {
@@ -145,9 +164,7 @@ export default function UserProfilePage() {
         const previousMemories = [...memories]
         setMemories(prev => prev.map(m => {
             if (m.id !== memoryId) return m
-            // This is a simplified check, ideally we'd know if user already liked it
-            // For now, let's just toggle the count optimistically
-            const isAdding = !m.isLikedByMe // assuming we add this flag
+            const isAdding = !m.isLikedByMe
             return {
                 ...m,
                 isLikedByMe: isAdding,
@@ -167,13 +184,24 @@ export default function UserProfilePage() {
             if (!res.ok) throw new Error()
             const data = await res.json()
             
-            // Sync with actual state
+            // Sync with actual state — reconcile both flag and count
             setMemories(prev => prev.map(m => {
                 if (m.id !== memoryId) return m
+                const wasLiked = previousMemories.find(pm => pm.id === memoryId)?.isLikedByMe ?? false
+                const isNowLiked = data.action === "added" || data.action === "updated"
+                // Reconcile count: adjust from the previous server-truth count
+                const prevCount = previousMemories.find(pm => pm.id === memoryId)?._count?.reactions || 0
+                let countDelta = 0
+                if (data.action === "added") countDelta = 1
+                else if (data.action === "removed") countDelta = -1
+                // "updated" means type changed, count stays the same
                 return {
                     ...m,
-                    isLikedByMe: data.action === "added" || data.action === "updated",
-                    // The count might be updated by others, so we might need a refetch or partial update
+                    isLikedByMe: isNowLiked,
+                    _count: {
+                        ...m._count,
+                        reactions: Math.max(0, prevCount + countDelta)
+                    }
                 }
             }))
         } catch (error) {

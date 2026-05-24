@@ -94,18 +94,32 @@ export default function MemoryDetailPage() {
     }
 
     const handleStickerUpdate = useCallback(async (placementId: string, posX: number, posY: number, rotation: number, scale: number) => {
+        const prevPlacements = [...placements]
         setPlacements(prev => prev.map(p => p.id === placementId ? { ...p, posX, posY, rotation, scale } : p))
-        await fetch(`/api/memories/${id}/stickers`, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ placementId, posX, posY, rotation, scale }),
-        })
-    }, [id])
+        try {
+            const res = await fetch(`/api/memories/${id}/stickers`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ placementId, posX, posY, rotation, scale }),
+            })
+            if (!res.ok) throw new Error()
+        } catch {
+            setPlacements(prevPlacements)
+            toast.error("Gagal memperbarui posisi stiker")
+        }
+    }, [id, placements])
 
     const handleStickerDelete = useCallback(async (placementId: string) => {
+        const prevPlacements = [...placements]
         setPlacements(prev => prev.filter(p => p.id !== placementId))
-        await fetch(`/api/memories/${id}/stickers?placementId=${placementId}`, { method: "DELETE" })
-    }, [id])
+        try {
+            const res = await fetch(`/api/memories/${id}/stickers?placementId=${placementId}`, { method: "DELETE" })
+            if (!res.ok) throw new Error()
+        } catch {
+            setPlacements(prevPlacements)
+            toast.error("Gagal menghapus stiker")
+        }
+    }, [id, placements])
 
     if (loading) {
         return (
@@ -556,7 +570,18 @@ export default function MemoryDetailPage() {
                     memoryId={memory.id}
                     memoryDate={memory.date}
                     currentCount={placements.length}
-                    onStickerAdded={placement => setPlacements(prev => [...prev, placement])}
+                    onStickerAdded={placement => {
+                        if (placement.__rollback) {
+                            // Error: remove the temp placement
+                            setPlacements(prev => prev.filter(p => p.id !== placement.tempId))
+                        } else if (placement.__replace) {
+                            // Success: replace temp with real server data
+                            setPlacements(prev => prev.map(p => p.id === placement.tempId ? placement.placement : p))
+                        } else {
+                            // Initial optimistic add
+                            setPlacements(prev => [...prev, placement])
+                        }
+                    }}
                     onClose={() => setShowStickerPanel(false)}
                 />
             )}

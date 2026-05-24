@@ -3,8 +3,6 @@
 import { useEffect, useState } from "react"
 import { createPortal } from "react-dom"
 import { motion, AnimatePresence } from "framer-motion"
-// @ts-ignore
-import confetti from "canvas-confetti"
 import { Flame, Trophy, X } from "lucide-react"
 
 interface BadgeUnlockModalProps {
@@ -60,25 +58,32 @@ export function BadgeUnlockModal({
     useEffect(() => {
         if (!isOpen) return
 
-        const timer = setTimeout(() => {
+        const timer = setTimeout(async () => {
 
             const particleCount =
                 milestone >= 90 ? 220 :
                     milestone >= 60 ? 160 :
                         120
 
-            confetti({
-                particleCount,
-                spread: 80,
-                origin: { y: 0.6 },
-                colors: badge.colors
-            })
+            try {
+                // @ts-ignore
+                const confettiModule = await import("canvas-confetti")
+                const confettiTrigger = confettiModule.default || confettiModule
+                confettiTrigger({
+                    particleCount,
+                    spread: 80,
+                    origin: { y: 0.6 },
+                    colors: badge.colors
+                })
+            } catch (err) {
+                console.error("Failed to load confetti dynamically:", err)
+            }
 
         }, 500)
 
         return () => clearTimeout(timer)
 
-    }, [isOpen])
+    }, [isOpen, milestone, badge])
 
     if (!badge || !mounted) return null
 
@@ -86,7 +91,7 @@ export function BadgeUnlockModal({
         <AnimatePresence>
             {isOpen && (
 
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
 
                     {/* BACKDROP */}
                     <motion.div
@@ -105,7 +110,7 @@ export function BadgeUnlockModal({
                             scale: 1,
                             opacity: 1,
                             y: 0,
-                            transition: { type: "spring", stiffness: 220, damping: 16 }
+                            transition: { type: "spring", stiffness: 280, damping: 15 }
                         }}
                         exit={{ scale: 0.8, opacity: 0 }}
                         className="relative w-full max-w-sm rounded-[2rem] p-10 text-center overflow-hidden"
@@ -117,12 +122,14 @@ export function BadgeUnlockModal({
                     >
 
                         {/* CLOSE */}
-                        <button
+                        <motion.button
+                            whileHover={{ scale: 1.15 }}
+                            whileTap={{ scale: 0.85 }}
                             onClick={onClose}
                             className="absolute top-4 right-4 text-white/40 hover:text-white"
                         >
                             <X />
-                        </button>
+                        </motion.button>
 
                         {/* CINEMATIC LIGHT BURST */}
                         <motion.div
@@ -223,6 +230,8 @@ export function BadgeUnlockModal({
                         <motion.button
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
+                            whileHover={{ scale: 1.03 }}
+                            whileTap={{ scale: 0.97 }}
                             transition={{ delay: 0.5 }}
                             onClick={onClose}
                             className="w-full py-4 rounded-2xl font-bold text-white flex items-center justify-center gap-2"

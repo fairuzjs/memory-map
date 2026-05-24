@@ -20,6 +20,7 @@ export function Comments({ memoryId, initialComments }: { memoryId: string, init
 
     const handleSubmit = async (e: React.FormEvent, parentId: string | null = null) => {
         e.preventDefault()
+        if (submitting) return
         if (!session?.user) return toast.error("Please login to comment")
 
         const text = parentId ? replyContent : content

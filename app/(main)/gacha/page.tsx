@@ -847,6 +847,22 @@ export default function GachaPage() {
             return
         }
 
+        // 1. Optimistic point deduction — instant visual feedback
+        const prevPoints = points
+        if (actualCost > 0) {
+            setPoints(prev => prev - actualCost)
+        }
+
+        // Optimistic premium status update (free pulls remaining & pity counter)
+        const prevPremiumStatus = premiumStatus ? { ...premiumStatus } : null
+        if (premiumStatus) {
+            setPremiumStatus(prev => prev ? {
+                ...prev,
+                freeGachaPullsRemaining: Math.max(0, prev.freeGachaPullsRemaining - freePullsToUse),
+                pityCounter: prev.pityCounter + count
+            } : null)
+        }
+
         setPhase("spinning")
         setPullCount(count)
         setCurrentReelIndex(0)
@@ -863,6 +879,9 @@ export default function GachaPage() {
 
             if (!res.ok) {
                 toast.error(data.error || "Gagal membuka box")
+                // 2. Rollback points and premium status on error
+                setPoints(prevPoints)
+                if (prevPremiumStatus) setPremiumStatus(prevPremiumStatus)
                 setPhase("idle")
                 return
             }
@@ -878,10 +897,13 @@ export default function GachaPage() {
                     pityCounter: data.pityCounter ?? prev.pityCounter,
                 } : prev)
             }
-            // Reel animation handles the rest — no setTimeout needed
+            // Reel animation handles the rest — points finalized via resultMeta.newPoints at reveal
 
         } catch (error) {
             toast.error("Terjadi kesalahan sistem")
+            // Rollback points and premium status on network error
+            setPoints(prevPoints)
+            if (prevPremiumStatus) setPremiumStatus(prevPremiumStatus)
             setPhase("idle")
         }
     }

@@ -2,6 +2,7 @@
 
 import React from "react"
 import { ImageIcon } from "lucide-react"
+import Image from "next/image"
 import { getMemoryCover } from "@/lib/utils"
 
 interface MemoryCoverProps {
@@ -25,12 +26,16 @@ export function MemoryCover({ memory, className = "h-full w-full" }: MemoryCover
     
     if (coverUrl) {
         return (
-            <img
-                src={coverUrl}
-                alt={memory.title || "Memory cover"}
-                className={`object-cover ${className}`}
-                loading="lazy"
-            />
+            <div className="relative w-full h-full">
+                <Image
+                    src={coverUrl}
+                    alt={memory.title || "Memory cover"}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className={`object-cover ${className}`}
+                    loading="lazy"
+                />
+            </div>
         )
     }
 

@@ -200,6 +200,13 @@ export function AlbumSelectionModal({ memoryId, memoryPhotos = [], onClose }: Al
 
     const handleSaveAssociations = async () => {
         setIsSaving(true)
+
+        // 1. Optimistic — close modal + navigate + toast immediately
+        toast.success("Kenangan berhasil dikelompokkan!")
+        router.push("/albums")
+        onClose()
+
+        // 2. Fetch in background
         try {
             const res = await fetch(`/api/memories/${memoryId}/albums`, {
                 method: "POST",
@@ -210,13 +217,9 @@ export function AlbumSelectionModal({ memoryId, memoryPhotos = [], onClose }: Al
             })
 
             if (!res.ok) throw new Error("Gagal mengelompokkan kenangan")
-
-            toast.success("Kenangan berhasil dikelompokkan!")
-            router.push("/albums")
-            onClose()
         } catch (error: unknown) {
-            toast.error(getErrorMessage(error, "Gagal mengaitkan album"))
-            setIsSaving(false)
+            // Show error after the fact — user already navigated
+            toast.error(getErrorMessage(error, "Gagal mengaitkan album. Silakan coba lagi dari halaman album."))
         }
     }
 

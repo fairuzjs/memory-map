@@ -1,6 +1,7 @@
 import React from "react"
 import { BadgeCheck, Calendar, Instagram, Facebook, UserCheck, UserPlus, Package, Settings, Pencil, MapPin, Users } from "lucide-react"
 import Link from "next/link"
+import { motion } from "framer-motion"
 import { getFrameClass, getDecorationClass } from "./ProfileUtils"
 import { getBadgeConfig } from "./BadgeConfigs"
 import { formatDate } from "@/lib/utils"
@@ -175,10 +176,15 @@ export function ProfileHeader({
                                 <Settings className="w-4 h-4 text-black" />
                             </Link>
                             <div className="relative">
-                                <button onClick={onEdit} className="flex items-center gap-1.5 px-5 h-10 bg-[#FFFF00] border-[3px] border-black text-black text-xs font-black uppercase shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all">
+                                <motion.button 
+                                    whileHover={{ scale: 1.04, rotate: 1 }}
+                                    whileTap={{ scale: 0.96 }}
+                                    onClick={onEdit} 
+                                    className="flex items-center gap-1.5 px-5 h-10 bg-[#FFFF00] border-[3px] border-black text-black text-xs font-black uppercase shadow-[3px_3px_0_#000]"
+                                >
                                     <Pencil className="w-3.5 h-3.5" />
                                     <span>Edit Profil</span>
-                                </button>
+                                </motion.button>
                                 {!user.username && (
                                     <div className="absolute -top-9 -right-2 animate-bounce flex flex-col items-center">
                                         <span className="bg-[#FF0000] text-white text-[10px] font-black px-2.5 py-1 border-[2px] border-black shadow-[2px_2px_0_#000]">Atur username!</span>
@@ -188,10 +194,15 @@ export function ProfileHeader({
                             </div>
                         </div>
                     ) : (
-                        <button onClick={onFollow} className={`flex items-center gap-1.5 px-6 h-10 border-[3px] border-black text-xs font-black uppercase shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all ${user.isFollowing ? 'bg-white text-black' : 'bg-[#FF00FF] text-white'}`}>
+                        <motion.button 
+                            whileHover={{ scale: 1.04, rotate: -1 }}
+                            whileTap={{ scale: 0.96 }}
+                            onClick={onFollow} 
+                            className={`flex items-center gap-1.5 px-6 h-10 border-[3px] border-black text-xs font-black uppercase shadow-[3px_3px_0_#000] ${user.isFollowing ? 'bg-white text-black' : 'bg-[#FF00FF] text-white'}`}
+                        >
                             {user.isFollowing ? <UserCheck className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
                             <span>{user.isFollowing ? "Mengikuti" : "Ikuti"}</span>
-                        </button>
+                        </motion.button>
                     )}
                 </div>
             </div>

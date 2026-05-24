@@ -11,40 +11,40 @@ datasource db {
 }
 
 model User {
-  id            String     @id @default(cuid())
-  role          Role       @default(USER)
-  username      String?    @unique
-  name          String
-  email         String     @unique
-  password      String
-  image         String?
-  bio           String?
-  isVerified      Boolean    @default(false)  // Admin-granted verified badge (blue checkmark)
-  isEmailVerified Boolean    @default(false)  // User email verified (gates features)
-  instagram     String?
-  tiktok        String?
-  facebook      String?
-  points        Int        @default(0)
-  createdAt     DateTime   @default(now())
+  id              String   @id @default(cuid())
+  role            Role     @default(USER)
+  username        String?  @unique
+  name            String
+  email           String   @unique
+  password        String
+  image           String?
+  bio             String?
+  isVerified      Boolean  @default(false) // Admin-granted verified badge (blue checkmark)
+  isEmailVerified Boolean  @default(false) // User email verified (gates features)
+  instagram       String?
+  tiktok          String?
+  facebook        String?
+  points          Int      @default(0)
+  createdAt       DateTime @default(now())
 
   // ── Premium ──────────────────────────────
-  isPremium            Boolean    @default(false)
-  premiumExpiresAt     DateTime?                    // null = belum pernah premium
-  freeGachaPullsUsed   Int        @default(0)       // Reset setiap hari Senin
-  freeGachaPullsResetAt DateTime?                   // Kapan weekly reset berikutnya
-  streakFreezesUsed    Int        @default(0)       // Reset setiap tanggal 1
-  streakFreezesResetAt DateTime?                    // Kapan monthly reset berikutnya
-  premiumItemsClaimed  Boolean    @default(false)    // Apakah sudah klaim item premium (bingkai + banner)
-  hasCompletedOnboarding Boolean  @default(false)    // Apakah sudah menyelesaikan/skip tutorial onboarding
-  hasSeenWelcomeGuide    Boolean  @default(false)    // Apakah sudah melihat intro welcome (arahkan ke Buku Panduan)
+  isPremium              Boolean   @default(false)
+  premiumExpiresAt       DateTime? // null = belum pernah premium
+  freeGachaPullsUsed     Int       @default(0) // Reset setiap hari Senin
+  freeGachaPullsResetAt  DateTime? // Kapan weekly reset berikutnya
+  streakFreezesUsed      Int       @default(0) // Reset setiap tanggal 1
+  streakFreezesResetAt   DateTime? // Kapan monthly reset berikutnya
+  premiumItemsClaimed    Boolean   @default(false) // Apakah sudah klaim item premium (bingkai + banner)
+  hasCompletedOnboarding Boolean   @default(false) // Apakah sudah menyelesaikan/skip tutorial onboarding
+  hasSeenWelcomeGuide    Boolean   @default(false) // Apakah sudah melihat intro welcome (arahkan ke Buku Panduan)
 
   memories          Memory[]
   comments          Comment[]
   reactions         Reaction[]
   feedbacks         Feedback[]
   reports           Report[]
-  notifications     Notification[] @relation("ReceivedNotifications")
-  actions           Notification[] @relation("TriggeredNotifications")
+  notifications     Notification[]           @relation("ReceivedNotifications")
+  actions           Notification[]           @relation("TriggeredNotifications")
   collaborations    MemoryCollaborator[]
   streakData        UserStreak?
   streakBadges      UserStreakBadge[]
@@ -53,11 +53,11 @@ model User {
   topupOrders       TopupOrder[]
   stickerPlacements MemoryStickerPlacement[]
   gachaLogs         GachaLog[]
-  followers           Follow[] @relation("UserFollowers")
-  following           Follow[] @relation("UserFollowing")
-  verificationCodes   VerificationCode[]
-  premiumOrders       PremiumOrder[]
-  albums              Album[]
+  followers         Follow[]                 @relation("UserFollowers")
+  following         Follow[]                 @relation("UserFollowing")
+  verificationCodes VerificationCode[]
+  premiumOrders     PremiumOrder[]
+  albums            Album[]
 }
 
 model Notification {
@@ -87,9 +87,9 @@ enum NotificationType {
 }
 
 model Follow {
-  followerId  String    @map("follower_id")
-  followingId String    @map("following_id")
-  createdAt   DateTime  @default(now())
+  followerId  String   @map("follower_id")
+  followingId String   @map("following_id")
+  createdAt   DateTime @default(now())
 
   follower  User @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
   following User @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
@@ -105,19 +105,19 @@ enum Role {
 }
 
 model Memory {
-  id           String     @id @default(cuid())
-  title        String
-  story        String     @db.Text
-  date         DateTime
-  latitude     Float
-  longitude    Float
-  locationName String?
-  emotion      Emotion
-  isPublic     Boolean    @default(true)
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  userId       String
-  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String                   @id @default(cuid())
+  title             String
+  story             String                   @db.Text
+  date              DateTime
+  latitude          Float
+  longitude         Float
+  locationName      String?
+  emotion           Emotion
+  isPublic          Boolean                  @default(true)
+  createdAt         DateTime                 @default(now())
+  updatedAt         DateTime                 @updatedAt
+  userId            String
+  user              User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
   photos            Photo[]
   comments          Comment[]
   reactions         Reaction[]
@@ -128,28 +128,31 @@ model Memory {
   stickerPlacements MemoryStickerPlacement[]
 
   // Audio clip fields
-  audioUrl       String?   // URL file MP3 di Supabase Storage
-  audioBucket    String?   // "public_uploads" / "private_uploads"
-  audioPath      String?   // Storage path untuk management
-  audioStartTime Float?    // Detik mulai clip
-  audioDuration  Int?      // Durasi clip dalam detik (10, 15, atau 30)
-  audioFileName  String?   // Nama file asli untuk display
+  audioUrl       String? // URL file MP3 di Supabase Storage
+  audioBucket    String? // "public_uploads" / "private_uploads"
+  audioPath      String? // Storage path untuk management
+  audioStartTime Float? // Detik mulai clip
+  audioDuration  Int? // Durasi clip dalam detik (10, 15, atau 30)
+  audioFileName  String? // Nama file asli untuk display
 
   // Spotify integration
-  spotifyTrackId String?   // Spotify Track ID
+  spotifyTrackId String? // Spotify Track ID
 
   // Premium map marker
-  markerStyle    String?   // Premium marker style ID (e.g. "royal-gold")
+  markerStyle String? // Premium marker style ID (e.g. "royal-gold")
 
   // Cover image fields
-  coverImage     String?   // URL cover yang sudah di-crop (Supabase)
-  coverPositionX Float?    @default(0)   // Posisi X untuk re-edit
-  coverPositionY Float?    @default(0)   // Posisi Y untuk re-edit
-  coverScale     Float?    @default(1)   // Zoom level untuk re-edit
-  coverRotation  Float?    @default(0)   // Rotasi dalam derajat
+  coverImage     String? // URL cover yang sudah di-crop (Supabase)
+  coverPositionX Float?  @default(0) // Posisi X untuk re-edit
+  coverPositionY Float?  @default(0) // Posisi Y untuk re-edit
+  coverScale     Float?  @default(1) // Zoom level untuk re-edit
+  coverRotation  Float?  @default(0) // Rotasi dalam derajat
 
-  isPinned       Boolean   @default(false)
-  albums         AlbumMemory[]
+  isPinned Boolean       @default(false)
+  albums   AlbumMemory[]
+
+  @@index([userId])
+  @@index([createdAt])
 }
 
 enum Emotion {
@@ -182,6 +185,10 @@ model Comment {
   memory    Memory    @relation(fields: [memoryId], references: [id], onDelete: Cascade)
   parent    Comment?  @relation("Replies", fields: [parentId], references: [id])
   replies   Comment[] @relation("Replies")
+
+  @@index([memoryId])
+  @@index([parentId])
+  @@index([userId])
 }
 
 model Reaction {
@@ -190,9 +197,10 @@ model Reaction {
   userId   String
   memoryId String
   user     User         @relation(fields: [userId], references: [id])
-  memory    Memory       @relation(fields: [memoryId], references: [id], onDelete: Cascade)
-  
+  memory   Memory       @relation(fields: [memoryId], references: [id], onDelete: Cascade)
+
   @@unique([userId, memoryId])
+  @@index([memoryId])
 }
 
 enum ReactionType {
@@ -209,11 +217,11 @@ model Tag {
 }
 
 model MemoryCollaborator {
-  id        String              @id @default(cuid())
-  memoryId  String              @map("memory_id")
-  userId    String              @map("user_id")
-  status    CollaboratorStatus  @default(PENDING)
-  createdAt DateTime            @default(now())
+  id        String             @id @default(cuid())
+  memoryId  String             @map("memory_id")
+  userId    String             @map("user_id")
+  status    CollaboratorStatus @default(PENDING)
+  createdAt DateTime           @default(now())
 
   memory Memory @relation(fields: [memoryId], references: [id], onDelete: Cascade)
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -230,16 +238,16 @@ enum CollaboratorStatus {
 }
 
 model Feedback {
-  id         String             @id @default(cuid())
-  message    String             @db.Text
+  id         String           @id @default(cuid())
+  message    String           @db.Text
   imageUrl   String?
-  adminReply String?            @db.Text
-  status     FeedbackStatus     @default(PENDING)
-  category   FeedbackCategory   @default(SUGGESTION)
-  createdAt  DateTime           @default(now())
-  updatedAt  DateTime           @updatedAt
+  adminReply String?          @db.Text
+  status     FeedbackStatus   @default(PENDING)
+  category   FeedbackCategory @default(SUGGESTION)
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
   userId     String
-  user       User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum FeedbackStatus {
@@ -262,12 +270,12 @@ model Report {
   status    ReportStatus @default(PENDING)
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
-  
+
   reporterId String
-  reporter   User        @relation(fields: [reporterId], references: [id], onDelete: Cascade)
-  
-  memoryId  String
-  memory    Memory      @relation(fields: [memoryId], references: [id], onDelete: Cascade)
+  reporter   User   @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+
+  memoryId String
+  memory   Memory @relation(fields: [memoryId], references: [id], onDelete: Cascade)
 }
 
 enum ReportReason {
@@ -324,7 +332,7 @@ model VerificationCode {
   id        String   @id @default(cuid())
   userId    String
   email     String
-  code      String   // 6-digit OTP
+  code      String // 6-digit OTP
   expires   DateTime
   createdAt DateTime @default(now())
 
@@ -338,8 +346,8 @@ model PreRegisterOtp {
   id        String   @id @default(cuid())
   email     String   @unique
   name      String
-  password  String   // hashed password, stored temporarily
-  code      String   // 6-digit OTP
+  password  String // hashed password, stored temporarily
+  code      String // 6-digit OTP
   expires   DateTime
   createdAt DateTime @default(now())
 }
@@ -356,14 +364,14 @@ enum ItemType {
 }
 
 model ShopItem {
-  id          String   @id @default(cuid())
-  name        String
-  description String
-  price       Int
-  type        ItemType
-  value       String   // CSS gradient / identifier used by frontend
+  id           String   @id @default(cuid())
+  name         String
+  description  String
+  price        Int
+  type         ItemType
+  value        String // CSS gradient / identifier used by frontend
   previewColor String? // Accent hex for card UI preview
-  createdAt   DateTime @default(now())
+  createdAt    DateTime @default(now())
 
   owners            UserInventory[]
   stickerPlacements MemoryStickerPlacement[]
@@ -389,11 +397,11 @@ model UserInventory {
 model TopupOrder {
   id         String      @id @default(cuid())
   userId     String
-  amount     Int         // nominal point yang dibeli
-  price      Int         // harga dalam rupiah
+  amount     Int // nominal point yang dibeli
+  price      Int // harga dalam rupiah
   status     TopupStatus @default(PENDING)
-  note       String?     // catatan dari admin
-  proofImage String?     // URL bukti transfer dari user
+  note       String? // catatan dari admin
+  proofImage String? // URL bukti transfer dari user
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
 
@@ -416,12 +424,12 @@ model MemoryStickerPlacement {
   memoryId   String   @map("memory_id")
   userId     String   @map("user_id")
   itemId     String   @map("item_id")
-  posX       Float    @default(50)   // % dari lebar area foto (0-100)
-  posY       Float    @default(50)   // % dari tinggi area foto (0-100)
-  rotation   Float    @default(0)    // derajat
-  scale      Float    @default(1.0)  // 0.5 - 2.0
+  posX       Float    @default(50) // % dari lebar area foto (0-100)
+  posY       Float    @default(50) // % dari tinggi area foto (0-100)
+  rotation   Float    @default(0) // derajat
+  scale      Float    @default(1.0) // 0.5 - 2.0
   zIndex     Int      @default(10)
-  customText String?                 // teks kustom user (maks 20 karakter)
+  customText String? // teks kustom user (maks 20 karakter)
   createdAt  DateTime @default(now())
 
   memory Memory   @relation(fields: [memoryId], references: [id], onDelete: Cascade)
@@ -438,7 +446,7 @@ model GachaLog {
   id           String   @id @default(cuid())
   userId       String
   itemId       String
-  tier         String   // "BASIC" | "ELITE" | "EPIC" | "LEGEND"
+  tier         String // "BASIC" | "ELITE" | "EPIC" | "LEGEND"
   isDuplicate  Boolean  @default(false)
   refundAmount Int      @default(0)
   createdAt    DateTime @default(now())
@@ -452,15 +460,15 @@ model GachaLog {
 // ── Premium Subscription System ────────────────────────────────
 
 model PremiumOrder {
-  id            String      @id @default(cuid())
-  userId        String
-  durationDays  Int                                 // 30
-  price         Int                                 // harga dalam Rupiah (29900)
-  status        TopupStatus @default(PENDING)       // reuse: PENDING / COMPLETED / CANCELLED
-  proofImage    String?                             // bukti transfer
-  note          String?                             // catatan admin
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id           String      @id @default(cuid())
+  userId       String
+  durationDays Int // 30
+  price        Int // harga dalam Rupiah (29900)
+  status       TopupStatus @default(PENDING) // reuse: PENDING / COMPLETED / CANCELLED
+  proofImage   String? // bukti transfer
+  note         String? // catatan admin
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -480,8 +488,8 @@ model Album {
   user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   memories    AlbumMemory[]
 
-  @@map("albums")
   @@index([userId])
+  @@map("albums")
 }
 
 model AlbumMemory {
@@ -491,7 +499,7 @@ model AlbumMemory {
   memory   Memory @relation(fields: [memoryId], references: [id], onDelete: Cascade)
 
   @@id([albumId, memoryId])
-  @@map("album_memories")
   @@index([albumId])
   @@index([memoryId])
+  @@map("album_memories")
 }

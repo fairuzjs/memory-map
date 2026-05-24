@@ -40,15 +40,19 @@ export function MemoryModal({ memory, onClose, onReact, isOwner, onPin }: Memory
         >
             <motion.div
                 initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.92, opacity: 0 }}
-                transition={{ type: "spring", stiffness: 300, damping: 26 }}
+                transition={{ type: "spring", stiffness: 350, damping: 26 }}
                 onClick={e => e.stopPropagation()}
                 className="relative flex flex-col sm:flex-row w-full max-w-3xl max-h-[90vh] overflow-hidden bg-white border-[4px] border-black shadow-[12px_12px_0_#000]"
             >
                 {/* Close */}
-                <button onClick={onClose}
-                    className="absolute top-3 right-3 z-30 w-8 h-8 flex items-center justify-center bg-white border-[2px] border-black text-black shadow-[2px_2px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all">
+                <motion.button 
+                    whileHover={{ scale: 1.08 }} 
+                    whileTap={{ scale: 0.92 }}
+                    onClick={onClose}
+                    className="absolute top-3 right-3 z-30 w-8 h-8 flex items-center justify-center bg-white border-[2px] border-black text-black shadow-[2px_2px_0_#000]"
+                >
                     <X className="w-4 h-4" />
-                </button>
+                </motion.button>
 
                 {/* Left: Photo / Visual */}
                 <div className="relative sm:w-[55%] aspect-[4/5] sm:aspect-square bg-[#E5E5E5] flex-shrink-0 border-b-[4px] sm:border-b-0 sm:border-r-[4px] border-black">
@@ -65,16 +69,24 @@ export function MemoryModal({ memory, onClose, onReact, isOwner, onPin }: Memory
                                                 style={{ background: i === photoIdx ? "#FFFF00" : "#fff" }} />
                                         ))}
                                     </div>
-                                    <button onClick={() => setPhotoIdx(p => Math.max(0, p - 1))}
-                                        className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white border-[2px] border-black flex items-center justify-center text-black shadow-[2px_2px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all disabled:opacity-0"
-                                        disabled={photoIdx === 0}>
+                                    <motion.button 
+                                        whileHover={photoIdx === 0 ? {} : { scale: 1.1 }}
+                                        whileTap={photoIdx === 0 ? {} : { scale: 0.9 }}
+                                        onClick={() => setPhotoIdx(p => Math.max(0, p - 1))}
+                                        className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white border-[2px] border-black flex items-center justify-center text-black shadow-[2px_2px_0_#000] disabled:opacity-0"
+                                        disabled={photoIdx === 0}
+                                    >
                                         <ChevronLeft className="w-4 h-4" />
-                                    </button>
-                                    <button onClick={() => setPhotoIdx(p => Math.min(photos.length - 1, p + 1))}
-                                        className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white border-[2px] border-black flex items-center justify-center text-black shadow-[2px_2px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all disabled:opacity-0"
-                                        disabled={photoIdx === photos.length - 1}>
+                                    </motion.button>
+                                    <motion.button 
+                                        whileHover={photoIdx === photos.length - 1 ? {} : { scale: 1.1 }}
+                                        whileTap={photoIdx === photos.length - 1 ? {} : { scale: 0.9 }}
+                                        onClick={() => setPhotoIdx(p => Math.min(photos.length - 1, p + 1))}
+                                        className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white border-[2px] border-black flex items-center justify-center text-black shadow-[2px_2px_0_#000] disabled:opacity-0"
+                                        disabled={photoIdx === photos.length - 1}
+                                    >
                                         <ChevronRight className="w-4 h-4" />
-                                    </button>
+                                    </motion.button>
                                 </>
                             )}
                         </>

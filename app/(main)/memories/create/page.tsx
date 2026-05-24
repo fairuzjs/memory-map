@@ -24,9 +24,18 @@ import {
     ShieldAlert, Settings, Crop, Image as ImageIcon
 } from "lucide-react"
 import Link from "next/link"
-import { CoverEditor } from "@/components/memories/CoverEditor"
-
 import dynamic from "next/dynamic"
+
+const CoverEditor = dynamic(() => import("@/components/memories/CoverEditor").then(m => m.CoverEditor), {
+    ssr: false,
+    loading: () => (
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/70">
+            <div className="bg-white border-[4px] border-black shadow-[8px_8px_0_#000] p-6 text-center font-black uppercase text-sm tracking-wider">
+                Memuat Editor...
+            </div>
+        </div>
+    )
+})
 
 const LocationPicker = dynamic(() => import("@/components/map/LocationPicker"), {
     ssr: false,

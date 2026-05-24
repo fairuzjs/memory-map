@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { X, Loader2, Sticker, AlertCircle, Check } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { StickerRenderer, StickerConfig } from "./StickerRenderer"
+import toast from "react-hot-toast"
 
 type OwnedSticker = {
     id: string
@@ -55,8 +56,44 @@ export function StickerPanel({
     }, [])
 
     const handleAdd = async (itemId: string, text?: string) => {
-        if (currentCount >= maxCount) return
+        if (adding !== null || currentCount >= maxCount) return
         setAdding(itemId)
+
+        // Find the sticker item data for optimistic placement
+        const stickerItem = stickers.find(s => s.item.id === itemId)
+        let defaultRotation = 0
+        if (stickerItem) {
+            try {
+                const cfg = JSON.parse(stickerItem.item.value)
+                defaultRotation = cfg.defaultRotation ?? 0
+            } catch { }
+        }
+
+        // 1. Build optimistic placement — matches server response shape
+        const tempPlacement = {
+            id: `temp-${Date.now()}`,
+            memoryId,
+            userId: "",
+            itemId,
+            posX: 50,
+            posY: 50,
+            rotation: defaultRotation,
+            scale: 1.0,
+            customText: text?.slice(0, 20) ?? null,
+            item: stickerItem ? {
+                id: stickerItem.item.id,
+                name: stickerItem.item.name,
+                value: stickerItem.item.value,
+                previewColor: stickerItem.item.previewColor,
+            } : { id: itemId, name: "", value: "{}", previewColor: null },
+            createdAt: new Date().toISOString(),
+        }
+
+        // 2. Optimistic: add to parent + close panel immediately
+        onStickerAdded(tempPlacement)
+        onClose()
+
+        // 3. Fetch in background
         try {
             const body: any = { itemId }
             if (text !== undefined && text.trim() !== "") body.customText = text.slice(0, 20)
@@ -68,20 +105,23 @@ export function StickerPanel({
             })
             const data = await res.json()
             if (!res.ok) {
-                alert(data.error ?? "Gagal menambahkan stiker")
+                // Rollback: remove the temp placement from parent
+                onStickerAdded({ __rollback: true, tempId: tempPlacement.id })
+                toast.error(data.error ?? "Gagal menambahkan stiker")
                 return
             }
-            onStickerAdded(data)
-            onClose()
+            // 4. Reconcile: replace temp with real server data
+            onStickerAdded({ __replace: true, tempId: tempPlacement.id, placement: data })
         } catch {
-            alert("Terjadi kesalahan")
+            onStickerAdded({ __rollback: true, tempId: tempPlacement.id })
+            toast.error("Terjadi kesalahan saat menambahkan stiker")
         } finally {
             setAdding(null)
         }
     }
 
     const handleStickerClick = (s: OwnedSticker, cfg: StickerConfig | null) => {
-        if (currentCount >= maxCount) return
+        if (adding !== null || currentCount >= maxCount) return
         // If editable, show text input step first
         if (cfg?.editable) {
             setPendingSticker(s)

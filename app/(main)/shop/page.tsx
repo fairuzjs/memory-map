@@ -770,6 +770,23 @@ export default function ShopPage() {
 
     const handlePurchase = async (item: ShopItem) => {
         setPurchasing(item.id)
+
+        // 1. Snapshot for rollback
+        const prevPoints = points
+        const prevItems = [...items]
+        const prevPreview = previewItem ? { ...previewItem } : null
+
+        // 2. Optimistic update — deduct points + mark owned
+        setPoints(prev => prev - item.price)
+        setItems(prev => prev.map(i => i.id === item.id ? { ...i, owned: true } : i))
+        if (previewItem?.id === item.id) {
+            setPreviewItem(prev => prev ? { ...prev, owned: true } : null)
+        }
+        toast.success(`🎉 "${item.name}" berhasil dibeli!`, {
+            style: { border: "3px solid black", borderRadius: 0, background: "#00FF00", color: "#000", fontWeight: 900 }
+        })
+
+        // 3. Fetch in background
         try {
             const res = await fetch("/api/shop/purchase", {
                 method: "POST",
@@ -778,19 +795,20 @@ export default function ShopPage() {
             })
             const data = await res.json()
             if (!res.ok) {
+                // Rollback
+                setPoints(prevPoints)
+                setItems(prevItems)
+                setPreviewItem(prevPreview)
                 toast.error(data.error === "Insufficient points" ? "Poin tidak cukup!" : (data.error || "Gagal membeli"))
                 return
             }
+            // 4. Reconcile — sync exact points from server
             setPoints(data.newPoints)
-            setItems(prev => prev.map(i => i.id === item.id ? { ...i, owned: true } : i))
-            // Update preview if open
-            if (previewItem?.id === item.id) {
-                setPreviewItem(prev => prev ? { ...prev, owned: true } : null)
-            }
-            toast.success(`🎉 "${item.name}" berhasil dibeli!`, {
-                style: { border: "3px solid black", borderRadius: 0, background: "#00FF00", color: "#000", fontWeight: 900 }
-            })
         } catch {
+            // Rollback
+            setPoints(prevPoints)
+            setItems(prevItems)
+            setPreviewItem(prevPreview)
             toast.error("Terjadi kesalahan")
         } finally {
             setPurchasing(null)
@@ -799,6 +817,28 @@ export default function ShopPage() {
 
     const handleEquip = async (item: ShopItem) => {
         setEquipping(item.id)
+
+        // 1. Snapshot for rollback
+        const prevItems = [...items]
+        const prevPreview = previewItem ? { ...previewItem } : null
+
+        // 2. Predict: toggle equip. If currently equipped → unequip, else equip (and unequip others of same type)
+        const wasEquipped = item.equipped
+        const willEquip = !wasEquipped
+
+        setItems(prev => prev.map(i => {
+            if (i.type !== item.type) return i
+            if (i.id === item.id) return { ...i, equipped: willEquip }
+            return { ...i, equipped: false }
+        }))
+        if (previewItem?.id === item.id) {
+            setPreviewItem(prev => prev ? { ...prev, equipped: willEquip } : null)
+        }
+        toast.success(willEquip ? `✨ "${item.name}" sedang dipakai!` : `"${item.name}" dilepas.`, {
+            style: { border: "3px solid black", borderRadius: 0, background: "#FFFF00", color: "#000", fontWeight: 900 }
+        })
+
+        // 3. Fetch in background
         try {
             const res = await fetch("/api/inventory/equip", {
                 method: "POST",
@@ -806,22 +846,30 @@ export default function ShopPage() {
                 body: JSON.stringify({ itemId: item.id }),
             })
             const data = await res.json()
-            if (!res.ok) { toast.error(data.error || "Gagal memakai item"); return }
-
-            const willEquip = data.equipped
-            setItems(prev => prev.map(i => {
-                if (i.type !== item.type) return i
-                if (i.id === item.id) return { ...i, equipped: willEquip }
-                return { ...i, equipped: false }
-            }))
-            // Update preview if open
-            if (previewItem?.id === item.id) {
-                setPreviewItem(prev => prev ? { ...prev, equipped: willEquip } : null)
+            if (!res.ok) {
+                // Rollback
+                setItems(prevItems)
+                setPreviewItem(prevPreview)
+                toast.error(data.error || "Gagal memakai item")
+                return
             }
-            toast.success(willEquip ? `✨ "${item.name}" sedang dipakai!` : `"${item.name}" dilepas.`, {
-                style: { border: "3px solid black", borderRadius: 0, background: "#FFFF00", color: "#000", fontWeight: 900 }
-            })
+
+            // 4. Reconcile — sync with server truth in case prediction was wrong
+            const serverEquipped = data.equipped
+            if (serverEquipped !== willEquip) {
+                setItems(prev => prev.map(i => {
+                    if (i.type !== item.type) return i
+                    if (i.id === item.id) return { ...i, equipped: serverEquipped }
+                    return { ...i, equipped: false }
+                }))
+                if (previewItem?.id === item.id) {
+                    setPreviewItem(prev => prev ? { ...prev, equipped: serverEquipped } : null)
+                }
+            }
         } catch {
+            // Rollback
+            setItems(prevItems)
+            setPreviewItem(prevPreview)
             toast.error("Terjadi kesalahan")
         } finally {
             setEquipping(null)

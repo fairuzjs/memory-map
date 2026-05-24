@@ -52,6 +52,9 @@ export function StickerLayer({
     const getTransform = (p: StickerPlacement) =>
         transforms[p.id] ?? { x: p.posX, y: p.posY, r: p.rotation, s: p.scale }
 
+    // ── Active pointers tracking for unified multitouch ────────
+    const activePointers = useRef<Map<number, { x: number; y: number }>>(new Map())
+
     // ── Pointer drag ──────────────────────────────────────────
     const dragState = useRef<{
         id: string
@@ -59,37 +62,6 @@ export function StickerLayer({
         origX: number; origY: number
     } | null>(null)
 
-    const onPointerDown = useCallback((e: React.PointerEvent, id: string) => {
-        if (!isOwner) return
-        e.preventDefault()
-        e.stopPropagation()
-        setSelected(id)
-        const p = placements.find(p => p.id === id)
-        const t = transforms[id] ?? { x: p?.posX ?? 50, y: p?.posY ?? 50, r: p?.rotation ?? 0, s: p?.scale ?? 1 }
-        dragState.current = { id, startX: e.clientX, startY: e.clientY, origX: t.x, origY: t.y }
-        ;(e.target as Element).setPointerCapture(e.pointerId)
-    }, [isOwner, placements, transforms])
-
-    const onPointerMove = useCallback((e: React.PointerEvent, id: string) => {
-        if (!dragState.current || dragState.current.id !== id) return
-        const container = containerRef.current
-        if (!container) return
-        const { width, height } = container.getBoundingClientRect()
-        const dx = ((e.clientX - dragState.current.startX) / width) * 100
-        const dy = ((e.clientY - dragState.current.startY) / height) * 100
-        const newX = Math.max(0, Math.min(100, dragState.current.origX + dx))
-        const newY = Math.max(0, Math.min(100, dragState.current.origY + dy))
-        setTransforms(prev => ({ ...prev, [id]: { ...prev[id], x: newX, y: newY } }))
-    }, [])
-
-    const onPointerUp = useCallback((e: React.PointerEvent, id: string) => {
-        if (!dragState.current || dragState.current.id !== id) return
-        const t = transforms[id]
-        if (t) onPlacementUpdate(id, t.x, t.y, t.r, t.s)
-        dragState.current = null
-    }, [transforms, onPlacementUpdate])
-
-    // ── Pinch / rotate (two fingers) ─────────────────────────
     const touchState = useRef<{
         id: string
         touches: Map<number, { x: number; y: number }>
@@ -102,42 +74,82 @@ export function StickerLayer({
     const getTouchAngle = (a: { x: number; y: number }, b: { x: number; y: number }) =>
         Math.atan2(b.y - a.y, b.x - a.x) * (180 / Math.PI)
 
-    const onTouchStart = useCallback((e: React.TouchEvent, id: string) => {
-        if (!isOwner || e.touches.length < 2) return
+    const onPointerDown = useCallback((e: React.PointerEvent, id: string) => {
+        if (!isOwner) return
         e.preventDefault()
-        const t = transforms[id]
-        const [t1, t2] = [e.touches[0], e.touches[1]]
-        const a = { x: t1.clientX, y: t1.clientY }
-        const b = { x: t2.clientX, y: t2.clientY }
-        touchState.current = {
-            id, touches: new Map(),
-            initDist: getTouchDist(a, b),
-            initAngle: getTouchAngle(a, b),
-            initScale: t?.s ?? 1,
-            initRotation: t?.r ?? 0,
-        }
-    }, [isOwner, transforms])
+        e.stopPropagation()
+        setSelected(id)
+        
+        activePointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY })
+        const target = e.target as Element
+        try {
+            target.setPointerCapture(e.pointerId)
+        } catch (err) {}
 
-    const onTouchMove = useCallback((e: React.TouchEvent, id: string) => {
-        if (!touchState.current || touchState.current.id !== id || e.touches.length < 2) return
-        e.preventDefault()
-        const [t1, t2] = [e.touches[0], e.touches[1]]
-        const a = { x: t1.clientX, y: t1.clientY }
-        const b = { x: t2.clientX, y: t2.clientY }
-        const dist = getTouchDist(a, b)
-        const angle = getTouchAngle(a, b)
-        const scaleRatio = dist / touchState.current.initDist
-        const angleDelta = angle - touchState.current.initAngle
-        const newScale = Math.max(0.5, Math.min(2.5, touchState.current.initScale * scaleRatio))
-        const newRot = touchState.current.initRotation + angleDelta
-        setTransforms(prev => ({ ...prev, [id]: { ...prev[id], s: newScale, r: newRot } }))
+        const p = placements.find(p => p.id === id)
+        const t = transforms[id] ?? { x: p?.posX ?? 50, y: p?.posY ?? 50, r: p?.rotation ?? 0, s: p?.scale ?? 1 }
+
+        if (activePointers.current.size === 1) {
+            dragState.current = { id, startX: e.clientX, startY: e.clientY, origX: t.x, origY: t.y }
+        } else if (activePointers.current.size === 2) {
+            const pointers = Array.from(activePointers.current.values())
+            const a = pointers[0]
+            const b = pointers[1]
+            touchState.current = {
+                id,
+                touches: new Map(),
+                initDist: getTouchDist(a, b),
+                initAngle: getTouchAngle(a, b),
+                initScale: t.s,
+                initRotation: t.r,
+            }
+            dragState.current = null
+        }
+    }, [isOwner, placements, transforms])
+
+    const onPointerMove = useCallback((e: React.PointerEvent, id: string) => {
+        if (!activePointers.current.has(e.pointerId)) return
+        activePointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+        if (activePointers.current.size === 1 && dragState.current && dragState.current.id === id) {
+            const container = containerRef.current
+            if (!container) return
+            const { width, height } = container.getBoundingClientRect()
+            const dx = ((e.clientX - dragState.current.startX) / width) * 100
+            const dy = ((e.clientY - dragState.current.startY) / height) * 100
+            const newX = Math.max(0, Math.min(100, dragState.current.origX + dx))
+            const newY = Math.max(0, Math.min(100, dragState.current.origY + dy))
+            setTransforms(prev => ({ ...prev, [id]: { ...prev[id], x: newX, y: newY } }))
+        } else if (activePointers.current.size === 2 && touchState.current && touchState.current.id === id) {
+            const pointers = Array.from(activePointers.current.values())
+            const a = pointers[0]
+            const b = pointers[1]
+            const dist = getTouchDist(a, b)
+            const angle = getTouchAngle(a, b)
+            const scaleRatio = dist / touchState.current.initDist
+            const angleDelta = angle - touchState.current.initAngle
+            const newScale = Math.max(0.5, Math.min(2.5, touchState.current.initScale * scaleRatio))
+            const newRot = touchState.current.initRotation + angleDelta
+            setTransforms(prev => ({ ...prev, [id]: { ...prev[id], s: newScale, r: newRot } }))
+        }
     }, [])
 
-    const onTouchEnd = useCallback((e: React.TouchEvent, id: string) => {
-        if (!touchState.current || touchState.current.id !== id) return
-        const t = transforms[id]
-        if (t) onPlacementUpdate(id, t.x, t.y, t.r, t.s)
-        touchState.current = null
+    const onPointerUp = useCallback((e: React.PointerEvent, id: string) => {
+        const target = e.target as Element
+        try {
+            if (target.hasPointerCapture(e.pointerId)) {
+                target.releasePointerCapture(e.pointerId)
+            }
+        } catch (err) {}
+        
+        activePointers.current.delete(e.pointerId)
+
+        if (activePointers.current.size === 0) {
+            const t = transforms[id]
+            if (t) onPlacementUpdate(id, t.x, t.y, t.r, t.s)
+            dragState.current = null
+            touchState.current = null
+        }
     }, [transforms, onPlacementUpdate])
 
     // ── Button Controls (D-Pad / Analog) ──────────────────────
@@ -196,9 +208,7 @@ export function StickerLayer({
                         onPointerDown={e => onPointerDown(e, placement.id)}
                         onPointerMove={e => onPointerMove(e, placement.id)}
                         onPointerUp={e => onPointerUp(e, placement.id)}
-                        onTouchStart={e => onTouchStart(e, placement.id)}
-                        onTouchMove={e => onTouchMove(e, placement.id)}
-                        onTouchEnd={e => onTouchEnd(e, placement.id)}
+                        onPointerCancel={e => onPointerUp(e, placement.id)}
                         onClick={e => { e.stopPropagation(); setSelected(placement.id) }}
                     >
                         <StickerRenderer

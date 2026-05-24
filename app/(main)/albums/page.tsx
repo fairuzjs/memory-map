@@ -554,42 +554,67 @@ export default function AlbumsPage() {
     const handleSaveOrganize = async () => {
         if (!organizingAlbum) return
         setIsSaving(true)
-        try {
-            const albumRes = await fetch(`/api/albums/${organizingAlbum.id}`)
-            if (!albumRes.ok) throw new Error("Gagal menyimpan relasi album")
-            const albumData = await albumRes.json() as AlbumDetailResponse
-            const initialIds = (albumData.memories || []).map(m => m.id)
-            const added = selectedMemoryIds.filter(id => !initialIds.includes(id))
-            const removed = initialIds.filter((id: string) => !selectedMemoryIds.includes(id))
 
-            for (const memoryId of added) {
-                const currentRes = await fetch(`/api/memories/${memoryId}/albums`)
-                const currentIds = currentRes.ok ? await currentRes.json() as string[] : []
-                await fetch(`/api/memories/${memoryId}/albums`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ albumIds: [...new Set([...currentIds, organizingAlbum.id])] }),
-                })
+        // 1. Snapshot for rollback
+        const prevAlbums = [...albums]
+
+        // 2. Optimistic Update: close modal + update memory counts + toast immediately
+        setAlbums(prev => prev.map(a => {
+            if (a.id === organizingAlbum.id) {
+                return {
+                    ...a,
+                    _count: {
+                        ...a._count,
+                        memories: selectedMemoryIds.length
+                    }
+                }
             }
+            return a
+        }))
+        toast.success("Pengelompokan kenangan berhasil disimpan")
+        const currentOrganizingAlbum = organizingAlbum
+        setOrganizingAlbum(null)
 
-            for (const memoryId of removed) {
-                const currentRes = await fetch(`/api/memories/${memoryId}/albums`)
-                const currentIds = currentRes.ok ? await currentRes.json() as string[] : []
-                await fetch(`/api/memories/${memoryId}/albums`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ albumIds: currentIds.filter((id: string) => id !== organizingAlbum.id) }),
-                })
+        // 3. Fetch in background
+        ;(async () => {
+            try {
+                const albumRes = await fetch(`/api/albums/${currentOrganizingAlbum.id}`)
+                if (!albumRes.ok) throw new Error("Gagal menyimpan relasi album")
+                const albumData = await albumRes.json() as AlbumDetailResponse
+                const initialIds = (albumData.memories || []).map(m => m.id)
+                const added = selectedMemoryIds.filter(id => !initialIds.includes(id))
+                const removed = initialIds.filter((id: string) => !selectedMemoryIds.includes(id))
+
+                await Promise.all(added.map(async (memoryId) => {
+                    const currentRes = await fetch(`/api/memories/${memoryId}/albums`)
+                    const currentIds = currentRes.ok ? await currentRes.json() as string[] : []
+                    const postRes = await fetch(`/api/memories/${memoryId}/albums`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ albumIds: [...new Set([...currentIds, currentOrganizingAlbum.id])] }),
+                    })
+                    if (!postRes.ok) throw new Error()
+                }))
+
+                await Promise.all(removed.map(async (memoryId) => {
+                    const currentRes = await fetch(`/api/memories/${memoryId}/albums`)
+                    const currentIds = currentRes.ok ? await currentRes.json() as string[] : []
+                    const postRes = await fetch(`/api/memories/${memoryId}/albums`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ albumIds: currentIds.filter((id: string) => id !== currentOrganizingAlbum.id) }),
+                    })
+                    if (!postRes.ok) throw new Error()
+                }))
+
+                fetchAlbums()
+            } catch (error: unknown) {
+                setAlbums(prevAlbums)
+                toast.error("Gagal menyinkronkan pengelompokan kenangan ke server. Silakan coba lagi.")
+            } finally {
+                setIsSaving(false)
             }
-
-            toast.success("Pengelompokan kenangan berhasil disimpan")
-            setOrganizingAlbum(null)
-            fetchAlbums()
-        } catch (error: unknown) {
-            toast.error(getErrorMessage(error, "Gagal mengatur kenangan"))
-        } finally {
-            setIsSaving(false)
-        }
+        })()
     }
 
     /* ═══════════════════════════════════════════════════════════
@@ -780,16 +805,18 @@ export default function AlbumsPage() {
 
                         {/* CTA row */}
                         <div className="mt-6 flex flex-col gap-3 min-[520px]:flex-row min-[520px]:items-stretch w-full">
-                            <button
+                            <motion.button
+                                whileHover={{ scale: 1.05, rotate: -1 }}
+                                whileTap={{ scale: 0.95 }}
                                 data-tutorial="create-album-btn"
                                 onClick={() => {
                                     resetForm()
                                     setShowCreateModal(true)
                                 }}
-                                className="flex w-full min-[520px]:w-auto shrink-0 items-center justify-center gap-2 border-[3px] border-black bg-[#FFFF00] px-5 py-3 text-xs font-black uppercase text-black shadow-[4px_4px_0_#000] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#000]"
+                                className="flex w-full min-[520px]:w-auto shrink-0 items-center justify-center gap-2 border-[3px] border-black bg-[#FFFF00] px-5 py-3 text-xs font-black uppercase text-black shadow-[4px_4px_0_#000]"
                             >
                                 <Plus className="h-4 w-4" /> Buat Album
-                            </button>
+                            </motion.button>
                             <form
                                 ref={searchRef}
                                 onSubmit={(e) => {
@@ -1053,9 +1080,14 @@ export default function AlbumsPage() {
                     <p className="mx-auto mb-7 font-caveat text-lg text-black/40">
                         Mulai chapter pertama cerita hidupmu
                     </p>
-                    <button onClick={() => setShowCreateModal(true)} className="border-[3px] border-black bg-[#00FF00] px-6 py-3 text-xs font-black uppercase text-black shadow-[4px_4px_0_#000]">
+                    <motion.button 
+                        whileHover={{ scale: 1.05, rotate: 1 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => setShowCreateModal(true)} 
+                        className="border-[3px] border-black bg-[#00FF00] px-6 py-3 text-xs font-black uppercase text-black shadow-[4px_4px_0_#000]"
+                    >
                         Buat Album Pertama
-                    </button>
+                    </motion.button>
                 </div>
             ) : (
                 <div className="space-y-7">
