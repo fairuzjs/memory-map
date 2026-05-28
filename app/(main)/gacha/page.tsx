@@ -61,45 +61,45 @@ const TIER_CONFIG: Record<TierName, {
     BASIC: {
         label: "Basic",
         icon: "◆",
-        color: "#E5E5E5",
+        color: "#e5e5e5",
         glow: "#000",
-        bg: "#E5E5E5",
+        bg: "#e5e5e5",
         border: "#000",
         text: "#000",
     },
     ELITE: {
         label: "Elite",
         icon: "◈",
-        color: "#00FFFF",
+        color: "#67e8f9",
         glow: "#000",
-        bg: "#00FFFF",
+        bg: "#67e8f9",
         border: "#000",
         text: "#000",
     },
     EPIC: {
         label: "Epic",
         icon: "✦",
-        color: "#FF00FF",
+        color: "#f5d0fe",
         glow: "#000",
-        bg: "#FF00FF",
+        bg: "#f5d0fe",
         border: "#000",
-        text: "#FFF",
+        text: "#000",
     },
     LEGEND: {
         label: "Legend",
         icon: "★",
-        color: "#FFFF00",
+        color: "#fef08a",
         glow: "#000",
-        bg: "#FFFF00",
+        bg: "#fef08a",
         border: "#000",
         text: "#000",
     },
     SPECIAL: {
         label: "Special",
         icon: "✧",
-        color: "#00FF00",
+        color: "#86efac",
         glow: "#000",
-        bg: "#00FF00",
+        bg: "#86efac",
         border: "#000",
         text: "#000",
     },
@@ -222,7 +222,7 @@ function TierBadge({ tier, size = "sm" }: { tier: TierName; size?: "sm" | "md" }
 
     return (
         <span
-            className="inline-flex items-center gap-1 font-black uppercase tracking-wider border-[2px] border-black"
+            className="inline-flex items-center gap-1 font-black uppercase tracking-wider border-[2px] border-black rounded-[6px]"
             style={{
                 fontSize: size === "md" ? "11px" : "10px",
                 padding: size === "md" ? "3px 8px" : "2px 6px",
@@ -970,22 +970,22 @@ export default function GachaPage() {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -20, filter: "blur(4px)" }}
                             transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                            className="mb-8"
+                            className="mb-8 bg-white rounded-2xl border-[3px] border-black p-4 sm:p-5 shadow-[6px_6px_0_#000]"
                         >
-                            <div className="flex items-start sm:items-center justify-between gap-4">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                 <div className="flex items-center gap-3 sm:gap-4">
                                     <div
-                                        className="relative w-11 h-11 sm:w-14 sm:h-14 flex items-center justify-center bg-[#FFFF00] border-[3px] border-black shadow-[4px_4px_0_#000]"
+                                        className="relative w-11 h-11 sm:w-14 sm:h-14 flex items-center justify-center bg-yellow-300 rounded-xl border-[2.5px] border-black shadow-[3px_3px_0_#000]"
                                     >
                                         <Sparkles className="w-5 h-5 sm:w-7 sm:h-7 text-black" />
                                     </div>
                                     <div>
                                         <div className="flex items-center gap-3">
-                                            <h1 className="text-2xl sm:text-4xl font-black text-black tracking-tight leading-none uppercase" style={{ textShadow: "2px 2px 0 #00FFFF" }}>Mystery Box</h1>
+                                            <h1 className="text-2xl sm:text-4xl font-black text-black tracking-tight leading-none uppercase" style={{ textShadow: "2px 2px 0 #67e8f9" }}>Mystery Box</h1>
                                             {/* Mobile Shop Button */}
                                             <Link
                                                 href="/shop"
-                                                className="sm:hidden flex items-center justify-center w-8 h-8 bg-white border-[2px] border-black text-black font-black shadow-[2px_2px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none"
+                                                className="sm:hidden flex items-center justify-center w-8 h-8 bg-white rounded-xl border-[2px] border-black text-black font-black shadow-[2.5px_2.5px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#000] transition-all"
                                                 title="Ke Shop"
                                             >
                                                 <ShoppingBag className="w-4 h-4" />
@@ -1000,7 +1000,7 @@ export default function GachaPage() {
                                 {/* Desktop Shop Button */}
                                 <Link
                                     href="/shop"
-                                    className="hidden sm:flex items-center gap-2 px-6 py-3 bg-white border-[3px] border-black text-black font-black uppercase text-[12px] shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all active:translate-x-[0px] active:translate-y-[0px] active:shadow-none"
+                                    className="hidden sm:flex items-center gap-2 px-6 py-3 bg-white rounded-xl border-[2.5px] border-black text-black font-black uppercase text-[12px] shadow-[3.5px_3.5px_0_#000] hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] transition-all active:translate-x-[0px] active:translate-y-[0px] active:shadow-none"
                                 >
                                     <ShoppingBag className="w-4 h-4" />
                                     Ke Shop
@@ -1009,15 +1009,15 @@ export default function GachaPage() {
                             </div>
 
                             {/* Stat pills */}
-                            <div className="flex items-center gap-3 mt-6 flex-wrap">
+                            <div className="flex items-center gap-2 sm:gap-3 mt-5 flex-wrap">
                                 <span
-                                    className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#FFFF00] border-[2px] border-black text-black text-[10px] font-black uppercase shadow-[2px_2px_0_#000]"
+                                    className="inline-flex items-center gap-2 px-4 py-1.5 bg-yellow-300 rounded-xl border-[2px] border-black text-black text-[10px] font-black uppercase shadow-[2.5px_2.5px_0_#000]"
                                 >
                                     <Star className="w-3 h-3 fill-black text-black" />
                                     {formatPoints(points)} poin
                                 </span>
                                 <span
-                                    className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#00FFFF] border-[2px] border-black text-black text-[10px] font-black uppercase shadow-[2px_2px_0_#000]"
+                                    className="inline-flex items-center gap-2 px-4 py-1.5 bg-cyan-300 rounded-xl border-[2px] border-black text-black text-[10px] font-black uppercase shadow-[2.5px_2.5px_0_#000]"
                                 >
                                     <div className="w-2 h-2 bg-black" />
                                     {BOOSTER_CONFIGS[boosterLevel].single} poin / buka
@@ -1025,7 +1025,7 @@ export default function GachaPage() {
                                 {/* Premium: Free Pulls Remaining */}
                                 {premiumStatus?.isPremium && premiumStatus.freeGachaPullsRemaining > 0 && boosterLevel === 0 && (
                                     <span
-                                        className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#00FF00] border-[2px] border-black text-black text-[10px] font-black uppercase shadow-[2px_2px_0_#000]"
+                                        className="inline-flex items-center gap-2 px-4 py-1.5 bg-green-300 rounded-xl border-[2px] border-black text-black text-[10px] font-black uppercase shadow-[2.5px_2.5px_0_#000]"
                                     >
                                         <Sparkles className="w-3 h-3 text-black" />
                                         {premiumStatus.freeGachaPullsRemaining} Free Pull
@@ -1034,7 +1034,7 @@ export default function GachaPage() {
                                 {/* Premium: Pity Counter */}
                                 {premiumStatus?.isPremium && premiumStatus.pityGuarantee && boosterLevel === 0 && (
                                     <span
-                                        className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#FF00FF] border-[2px] border-black text-white text-[10px] font-black uppercase shadow-[2px_2px_0_#000]"
+                                        className="inline-flex items-center gap-2 px-4 py-1.5 bg-fuchsia-400 rounded-xl border-[2px] border-black text-black text-[10px] font-black uppercase shadow-[2.5px_2.5px_0_#000]"
                                         title={`Pity: dapatkan Legend dijamin dalam ${premiumStatus.pityCounter} pull`}
                                     >
                                         ★ Pity {premiumStatus.pityCounter}/{premiumStatus.pityGuarantee}
@@ -1071,16 +1071,16 @@ export default function GachaPage() {
                                     transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
                                     className="relative z-10"
                                 >
-                                    <div className="relative flex items-center justify-center bg-[#FF00FF] border-[6px] border-black shadow-[12px_12px_0_#000]" style={{ width: 140, height: 140 }}>
-                                        <Sparkles className="w-14 h-14 text-white" />
+                                    <div className="relative flex items-center justify-center bg-fuchsia-400 rounded-2xl border-[3px] border-black shadow-[6px_6px_0_#000]" style={{ width: 140, height: 140 }}>
+                                        <Sparkles className="w-14 h-14 text-white" style={{ filter: "drop-shadow(2px 2px 0 black)" }} />
                                     </div>
                                 </motion.div>
 
                                 {/* Box shadow on floor */}
                                 <motion.div
-                                    animate={{ scaleX: [1, 0.8, 1], opacity: [1, 0.5, 1] }}
+                                    animate={{ scaleX: [1, 0.8, 1], opacity: [0.25, 0.12, 0.25] }}
                                     transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
-                                    className="mt-6 pointer-events-none bg-black"
+                                    className="mt-6 pointer-events-none bg-black rounded-full"
                                     style={{
                                         width: 100,
                                         height: 8,
@@ -1089,9 +1089,9 @@ export default function GachaPage() {
 
                                 {/* CTA label */}
                                 <motion.p
-                                    animate={{ opacity: [0.5, 1, 0.5] }}
+                                    animate={{ opacity: [0.6, 1, 0.6] }}
                                     transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-                                    className="mt-6 px-4 py-1.5 bg-[#FFFF00] border-[2px] border-black shadow-[2px_2px_0_#000] text-[12px] font-black uppercase tracking-widest text-black"
+                                    className="mt-6 px-4 py-1.5 bg-yellow-300 border-[2px] border-black rounded-xl shadow-[3px_3px_0_#000] text-[11px] font-black uppercase tracking-widest text-black"
                                 >
                                     Buka untuk dapatkan hadiah
                                 </motion.p>
@@ -1124,18 +1124,18 @@ export default function GachaPage() {
                                             return (
                                                 <div
                                                     key={i}
-                                                    className="w-36 sm:w-40 bg-white border-[3px] border-black shadow-[4px_4px_0_#000] flex flex-col relative overflow-hidden shrink-0 transition-all duration-300 hover:scale-[1.05] hover:-translate-y-1 hover:shadow-[6px_6px_0_#000]"
+                                                    className="w-36 sm:w-40 bg-white border-[2.5px] border-black shadow-[4px_4px_0_#000] flex flex-col relative rounded-2xl overflow-hidden shrink-0 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#000]"
                                                 >
                                                     {/* Tier Badge */}
                                                     <div className="absolute top-2 left-2 z-20">
                                                         <TierBadge tier={tier} />
                                                     </div>
                                                     {/* Item preview */}
-                                                    <div className="h-28 sm:h-32 flex items-center justify-center p-3 relative z-10 bg-[#E5E5E5] border-b-[3px] border-black m-1">
+                                                    <div className="h-28 sm:h-32 flex items-center justify-center p-3 relative z-10 bg-neutral-100 border-b-[2.5px] border-black rounded-t-[13px] m-[1px] overflow-hidden">
                                                         <ItemPreview item={item} />
                                                     </div>
                                                     {/* Name */}
-                                                    <div className="px-2.5 pb-3 flex flex-col items-center gap-1.5 relative z-10 bg-white mt-1">
+                                                    <div className="px-2.5 pb-3 pt-2.5 flex flex-col items-center gap-1.5 relative z-10 bg-white rounded-b-[13px]">
                                                         <span
                                                             className="text-[10px] text-center font-black uppercase text-black line-clamp-1 w-full"
                                                         >{item.name}</span>
@@ -1155,7 +1155,7 @@ export default function GachaPage() {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.2, duration: 0.5 }}
-                                className="bg-white border-[4px] border-black p-4 sm:p-5 relative overflow-hidden shadow-[8px_8px_0_#000]"
+                                className="bg-white border-[3px] border-black p-4 sm:p-5 relative overflow-hidden rounded-2xl shadow-[6px_6px_0_#000]"
                             >
                                 {/* Section: Booster Relic Slots */}
                                 <div className="relative z-10 mb-6 sm:mb-8">
@@ -1168,20 +1168,20 @@ export default function GachaPage() {
                                             const active = boosterLevel === lvl
                                             const bcfg = BOOSTER_CONFIGS[lvl]
                                             const IconComp = BOOSTER_ICONS[lvl]
-                                            const activeColors: Record<number, string> = { 1: "#00FFFF", 2: "#FF00FF", 3: "#FFFF00" }
+                                            const activeColors: Record<number, string> = { 1: "#67e8f9", 2: "#f5d0fe", 3: "#fef08a" }
                                             return (
                                                 <button
                                                     key={lvl}
                                                     onClick={() => { GachaAudio.init(); setBoosterLevel(prev => prev === lvl ? 0 : lvl as any); }}
-                                                    className="relative flex flex-col items-center justify-center gap-1.5 py-4 sm:py-5 border-[3px] border-black text-black text-[10px] sm:text-xs font-black uppercase transition-all shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none"
+                                                    className="relative flex flex-col items-center justify-center gap-1.5 py-4 sm:py-5 rounded-xl border-[2.5px] border-black text-black text-[10px] sm:text-xs font-black uppercase transition-all shadow-[3px_3px_0_#000] hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none"
                                                     style={{
-                                                        background: active ? activeColors[lvl] : "#E5E5E5",
+                                                        background: active ? activeColors[lvl] : "#f5f5f5",
                                                     }}
                                                 >
                                                     <IconComp className="relative z-10 w-6 h-6 sm:w-8 sm:h-8 mb-1 text-black" />
                                                     <span className="relative z-10 tracking-widest">{bcfg.name}</span>
                                                     {/* Legend rate — highlighted */}
-                                                    <span className="relative z-10 text-[10px] sm:text-[11px] font-black tabular-nums bg-white border-[2px] border-black px-2 mt-1">
+                                                    <span className="relative z-10 text-[10px] sm:text-[11px] font-black tabular-nums bg-white border-[1.5px] border-black rounded-lg px-2 py-0.5 mt-1 shadow-[1px_1px_0_#000]">
                                                         ★ {bcfg.rates.LEGEND}%
                                                     </span>
                                                 </button>
@@ -1190,24 +1190,24 @@ export default function GachaPage() {
                                     </div>
 
                                     {/* Inline Drop Rate Bars */}
-                                    <div className="mt-6 sm:mt-8 grid grid-cols-2 gap-x-6 sm:gap-x-8 gap-y-3">
+                                    <div className="mt-6 sm:mt-8 grid grid-cols-1 sm:grid-cols-2 gap-x-6 sm:gap-x-8 gap-y-3.5">
                                         {(["BASIC", "ELITE", "EPIC", "LEGEND"] as const).map(tier => {
                                             const rate = BOOSTER_CONFIGS[boosterLevel].rates[tier]
                                             const tierColors: Record<string, string> = {
-                                                "BASIC": "#4ADE80", // Green
-                                                "ELITE": "#00FFFF", // Cyan
-                                                "EPIC": "#FF00FF",  // Magenta
-                                                "LEGEND": "#FFFF00" // Yellow
+                                                "BASIC": "#86efac", // Soft Green
+                                                "ELITE": "#67e8f9", // Soft Cyan
+                                                "EPIC": "#f5d0fe",  // Soft Fuchsia
+                                                "LEGEND": "#fef08a" // Soft Yellow
                                             }
                                             return (
                                                 <div key={tier} className="flex items-center gap-3">
-                                                    <div className="border-[2px] border-black px-2 py-0.5 text-[10px] font-black text-black min-w-[50px] text-center"
+                                                    <div className="border-[1.5px] border-black rounded-lg px-2.5 py-0.5 text-[9px] font-black text-black min-w-[55px] text-center shadow-[1px_1px_0_#000]"
                                                          style={{ background: tierColors[tier] }}>
                                                         {tier}
                                                     </div>
-                                                    <div className="flex-1 h-3 border-[2px] border-black bg-[#E5E5E5] relative overflow-hidden">
+                                                    <div className="flex-1 h-3.5 rounded-xl border-[2px] border-black bg-[#f5f5f5] relative overflow-hidden">
                                                         <motion.div
-                                                            className="h-full border-r-[2px] border-black"
+                                                            className="h-full rounded-l-[9px] border-r-[2px] border-black"
                                                             initial={false}
                                                             animate={{ width: `${rate}%` }}
                                                             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
@@ -1224,7 +1224,7 @@ export default function GachaPage() {
                                 </div>
 
                                 {/* Divider */}
-                                <div className="relative z-10 border-t-[4px] border-black border-dashed w-full mb-6 sm:mb-8" />
+                                <div className="relative z-10 border-t-[3px] border-black border-dashed w-full mb-6 sm:mb-8" />
 
                                 {/* Section: Action Buttons */}
                                 <div className="relative z-10 grid grid-cols-2 gap-4 sm:gap-6">
@@ -1237,16 +1237,16 @@ export default function GachaPage() {
                                             <button
                                                 onClick={() => { GachaAudio.init(); openBox(1); }}
                                                 disabled={!isFree && points < singleCost}
-                                                className="relative flex flex-col items-center justify-center gap-2 py-5 sm:py-6 bg-[#00FFFF] border-[4px] border-black text-black text-sm font-black uppercase transition-all shadow-[6px_6px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed"
+                                                className="relative flex flex-col items-center justify-center gap-2 py-5 sm:py-6 bg-cyan-300 rounded-xl border-[3px] border-black text-black text-sm font-black uppercase transition-all shadow-[4px_4px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[5.5px_5.5px_0_#000] active:translate-y-px active:shadow-none disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed"
                                             >
                                                 <span className="relative text-[14px] sm:text-[16px] font-black text-black tracking-widest">Buka 1x</span>
                                                 {isFree ? (
-                                                    <span className="relative flex items-center gap-1.5 text-black bg-white border-[2px] border-black px-2 py-0.5 text-xs font-black shadow-[2px_2px_0_#000]">
+                                                    <span className="relative flex items-center gap-1.5 text-black bg-white border-[1.5px] border-black rounded-lg px-2.5 py-0.5 text-[10px] font-black shadow-[1.5px_1.5px_0_#000]">
                                                         <Sparkles className="w-3 h-3 text-black" />
                                                         GRATIS
                                                     </span>
                                                 ) : (
-                                                    <span className="relative flex items-center gap-1.5 text-black bg-white border-[2px] border-black px-2 py-0.5 text-xs font-black shadow-[2px_2px_0_#000]">
+                                                    <span className="relative flex items-center gap-1.5 text-black bg-white border-[1.5px] border-black rounded-lg px-2.5 py-0.5 text-[10px] font-black shadow-[1.5px_1.5px_0_#000]">
                                                         <Star className="w-3 h-3 fill-black text-black" />
                                                         {singleCost} poin
                                                     </span>
@@ -1268,24 +1268,24 @@ export default function GachaPage() {
                                                 <button
                                                     onClick={() => { GachaAudio.init(); openBox(5); }}
                                                     disabled={!allFree && points < actualCost}
-                                                    className="w-full h-full relative flex flex-col items-center justify-center gap-2 py-5 sm:py-6 bg-[#FF00FF] border-[4px] border-black text-black text-sm font-black uppercase transition-all shadow-[6px_6px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed"
+                                                    className="w-full h-full relative flex flex-col items-center justify-center gap-2 py-5 sm:py-6 bg-fuchsia-400 rounded-xl border-[3px] border-black text-black text-sm font-black uppercase transition-all shadow-[4px_4px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[5.5px_5.5px_0_#000] active:translate-y-px active:shadow-none disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed"
                                                 >
-                                                    <span className="relative z-10 text-[14px] sm:text-[16px] font-black tracking-widest text-white" style={{ textShadow: "2px 2px 0 black" }}>Buka 5x</span>
+                                                    <span className="relative z-10 text-[14px] sm:text-[16px] font-black tracking-widest text-black" style={{ textShadow: "1px 1px 0 rgba(255,255,255,0.4)" }}>Buka 5x</span>
                                                     {allFree ? (
-                                                        <span className="relative z-10 flex items-center gap-1.5 text-black bg-white border-[2px] border-black px-2 py-0.5 text-xs font-black shadow-[2px_2px_0_#000]">
+                                                        <span className="relative z-10 flex items-center gap-1.5 text-black bg-white border-[1.5px] border-black rounded-lg px-2.5 py-0.5 text-[10px] font-black shadow-[1.5px_1.5px_0_#000]">
                                                             <Sparkles className="w-3 h-3 text-black" />
                                                             SEMUA GRATIS
                                                         </span>
                                                     ) : freePulls > 0 ? (
-                                                        <span className="relative z-10 flex items-center gap-1.5 text-black bg-white border-[2px] border-black px-2 py-0.5 text-xs font-black shadow-[2px_2px_0_#000]">
+                                                        <span className="relative z-10 flex items-center gap-1.5 text-black bg-white border-[1.5px] border-black rounded-lg px-2.5 py-0.5 text-[10px] font-black shadow-[1.5px_1.5px_0_#000]">
                                                             <Sparkles className="w-3 h-3 text-black" />
                                                             <span className="text-black">{freePulls} gratis</span> + {actualCost} poin
                                                         </span>
                                                     ) : (
-                                                        <span className="relative z-10 flex items-center gap-1.5 text-black bg-white border-[2px] border-black px-2 py-0.5 text-xs font-black shadow-[2px_2px_0_#000]">
+                                                        <span className="relative z-10 flex items-center gap-1.5 text-black bg-white border-[1.5px] border-black rounded-lg px-2.5 py-0.5 text-[10px] font-black shadow-[1.5px_1.5px_0_#000]">
                                                             <Star className="w-3 h-3 fill-black text-black" />
                                                             {multiCost} poin
-                                                            <span className="text-black line-through">{BOOSTER_CONFIGS[boosterLevel].single * 5}</span>
+                                                            <span className="text-neutral-500 font-normal line-through ml-1">{BOOSTER_CONFIGS[boosterLevel].single * 5}</span>
                                                         </span>
                                                     )}
                                                 </button>
@@ -1380,27 +1380,27 @@ export default function GachaPage() {
                                             animate={{ opacity: 1 }}
                                             exit={{ opacity: 0, scale: 1.05, filter: "blur(8px)" }}
                                             transition={{ duration: 0.4 }}
-                                            className="w-full relative flex items-center justify-center bg-[#E5E5E5] border-[4px] border-black shadow-[8px_8px_0_#000] overflow-hidden"
+                                            className="w-full relative flex items-center justify-center bg-[#1f1f2e] border-[3px] border-black shadow-[6px_6px_0_#000] rounded-2xl overflow-hidden"
                                             style={{ height: 189 }}
                                         >
                                             {/* Scanning grid overlay */}
                                             <div 
                                                 className="absolute inset-0 pointer-events-none"
                                                 style={{
-                                                    backgroundImage: "linear-gradient(#00000020 2px, transparent 2px), linear-gradient(90deg, #00000020 2px, transparent 2px)",
+                                                    backgroundImage: "linear-gradient(#ffffff08 2px, transparent 2px), linear-gradient(90deg, #ffffff08 2px, transparent 2px)",
                                                     backgroundSize: "30px 30px"
                                                 }}
                                             />
                                             
                                             {/* Empty item slots wireframes */}
-                                            <div className="flex gap-4 sm:gap-6 opacity-30">
+                                            <div className="flex gap-4 sm:gap-6 opacity-20">
                                                 {Array.from({length: 7}).map((_, i) => (
-                                                    <div key={i} className="hidden sm:block shrink-0 w-[140px] h-[165px] border-[4px] border-black bg-white shadow-[4px_4px_0_#000]" />
+                                                    <div key={i} className="hidden sm:block shrink-0 w-[140px] h-[165px] border-[2.5px] border-black bg-white rounded-xl shadow-[3px_3px_0_#000]" />
                                                 ))}
                                             </div>
-                                            <div className="flex sm:hidden gap-3 absolute inset-0 items-center justify-center opacity-30">
+                                            <div className="flex sm:hidden gap-3 absolute inset-0 items-center justify-center opacity-20">
                                                 {Array.from({length: 5}).map((_, i) => (
-                                                    <div key={i} className="shrink-0 w-[100px] h-[120px] border-[4px] border-black bg-white shadow-[4px_4px_0_#000]" />
+                                                    <div key={i} className="shrink-0 w-[100px] h-[120px] border-[2.5px] border-black bg-white rounded-xl shadow-[3px_3px_0_#000]" />
                                                 ))}
                                             </div>
 
@@ -1410,8 +1410,8 @@ export default function GachaPage() {
                                                 animate={{ x: ["-100vw", "100vw", "-100vw"] }}
                                                 transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
                                                 style={{
-                                                    background: "linear-gradient(90deg, transparent, rgba(255,0,255,0.4), transparent)",
-                                                    borderRight: "4px solid #FF00FF"
+                                                    background: "linear-gradient(90deg, transparent, rgba(245,208,254,0.3), transparent)",
+                                                    borderRight: "3px solid #f5d0fe"
                                                 }}
                                             />
 
@@ -1423,11 +1423,11 @@ export default function GachaPage() {
                                             </div>
 
                                             {/* Status Text overlay */}
-                                            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 bg-[#FFFF00] border-[3px] border-black px-4 py-1.5 shadow-[4px_4px_0_#000]">
+                                            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 bg-yellow-300 border-[2.5px] border-black rounded-xl px-4 py-1.5 shadow-[3px_3px_0_#000]">
                                                 <motion.div
                                                     animate={{ opacity: [0.5, 1, 0.5] }}
                                                     transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
-                                                    className="text-[12px] font-black uppercase tracking-widest flex items-center gap-2 text-black"
+                                                    className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2 text-black"
                                                 >
                                                     DECRYPTING...
                                                 </motion.div>
@@ -1444,7 +1444,7 @@ export default function GachaPage() {
                                     animate={{ opacity: 1, y: 0 }}
                                     className="relative z-10 mt-8"
                                 >
-                                    <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-600 text-center mb-3">
+                                    <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-400 text-center mb-3">
                                         Hasil Terkumpul
                                     </p>
                                     <div className="flex items-center justify-center gap-2 flex-wrap">
@@ -1460,7 +1460,7 @@ export default function GachaPage() {
                                 {results.length > 0 && pullCount > 1 && collectedResults.length < results.length && (
                                     <button
                                         onClick={handleSkipAnimation}
-                                        className="px-6 py-2 bg-white border-[3px] border-black text-black font-black uppercase text-[12px] shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all active:translate-x-[0px] active:translate-y-[0px] active:shadow-none"
+                                        className="px-6 py-2 bg-white border-[2.5px] border-black text-black font-black uppercase text-[11px] rounded-xl shadow-[3px_3px_0_#000] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] transition-all active:translate-y-px active:shadow-none"
                                     >
                                         Skip Semua
                                     </button>
@@ -1500,10 +1500,10 @@ export default function GachaPage() {
                                         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                                         className="text-center mb-12 flex flex-col items-center"
                                     >
-                                        <p className="text-[12px] font-black uppercase tracking-widest text-black bg-[#00FFFF] border-[2px] border-black px-4 py-1 shadow-[2px_2px_0_#000] inline-block mb-4 transform -rotate-2">
+                                        <p className="text-[11px] font-black uppercase tracking-widest text-black bg-cyan-300 border-[2px] border-black rounded-lg px-4 py-1.5 shadow-[2.5px_2.5px_0_#000] inline-block mb-4 transform -rotate-2">
                                             Hasil Gacha
                                         </p>
-                                        <h2 className="text-4xl sm:text-5xl font-black text-black tracking-tight uppercase" style={{ textShadow: "4px 4px 0 #FF00FF" }}>
+                                        <h2 className="text-4xl sm:text-5xl font-black text-black tracking-tight uppercase" style={{ textShadow: "3px 3px 0 #f5d0fe" }}>
                                             ITEM DIDAPATKAN
                                         </h2>
                                     </motion.div>
@@ -1543,14 +1543,14 @@ export default function GachaPage() {
                                                     className="relative group w-full"
                                                     style={{ perspective: "1000px" }}
                                                 >
-                                                    <div className="relative flex flex-col bg-white border-[4px] border-black shadow-[8px_8px_0_#000] h-full overflow-hidden"
+                                                    <div className="relative flex flex-col bg-white border-[3px] border-black rounded-2xl overflow-hidden h-full"
                                                         style={{
-                                                            boxShadow: isLegend ? "8px 8px 0 #FF00FF" : isEpic ? "8px 8px 0 #00FFFF" : "8px 8px 0 #000"
+                                                            boxShadow: isLegend ? "5px 5px 0 #fef08a" : isEpic ? "5px 5px 0 #f5d0fe" : "5px 5px 0 #000"
                                                         }}
                                                     >
                                                         {/* Tier + Duplicate badge row */}
-                                                        <div className="flex justify-between items-start z-10 p-3 bg-neutral-100 border-b-[4px] border-black">
-                                                            <div className="bg-white border-[2px] border-black px-2 py-0.5 text-[10px] font-black text-black">
+                                                        <div className="flex justify-between items-center z-10 p-3 bg-neutral-50 border-b-[2.5px] border-black rounded-t-[13px]">
+                                                            <div className="bg-white border-[1.5px] border-black rounded-[6px] px-2 py-0.5 text-[9px] font-black text-black">
                                                                 {cfg.label}
                                                             </div>
                                                             {res.isDuplicate && (
@@ -1558,7 +1558,7 @@ export default function GachaPage() {
                                                                     initial={{ scale: 0, rotate: -15 }}
                                                                     animate={{ scale: 1, rotate: 0 }}
                                                                     transition={{ delay: i * 0.12 + 0.5, type: "spring", bounce: 0.5 }}
-                                                                    className="text-[10px] font-black text-white px-2 py-0.5 bg-[#FF3300] border-[2px] border-black shadow-[2px_2px_0_#000]"
+                                                                    className="text-[9px] font-black text-black px-2 py-0.5 bg-rose-400 border-[1.5px] border-black rounded-lg shadow-[1.5px_1.5px_0_#000]"
                                                                 >
                                                                     Duplikat +{res.refundAmount}
                                                                 </motion.span>
@@ -1566,7 +1566,7 @@ export default function GachaPage() {
                                                         </div>
 
                                                         {/* Item preview */}
-                                                        <div className="flex items-center justify-center relative z-10 bg-[#E5E5E5] border-b-[4px] border-black p-4" style={{ height: isLegend ? "9rem" : "7rem" }}>
+                                                        <div className="flex items-center justify-center relative z-10 bg-neutral-100 border-b-[2.5px] border-black p-4" style={{ height: isLegend ? "9rem" : "7rem" }}>
                                                             <motion.div
                                                                 animate={isLegend ? { y: [-4, 4, -4], rotate: [-1, 1, -1] } : isEpic ? { y: [-2, 2, -2] } : {}}
                                                                 transition={{ duration: isLegend ? 3 : 4, repeat: Infinity, ease: "easeInOut" }}
@@ -1577,16 +1577,18 @@ export default function GachaPage() {
                                                         </div>
 
                                                         {/* Item info */}
-                                                        <div className="text-center z-10 relative p-4 flex-1 flex flex-col justify-center bg-white">
-                                                            <p className="text-[10px] uppercase tracking-widest font-black text-neutral-500 mb-1">
+                                                        <div className="text-center z-10 relative p-4 flex-1 flex flex-col justify-center bg-white rounded-b-[13px]">
+                                                            <p className="text-[9px] uppercase tracking-widest font-black text-neutral-400 mb-1">
                                                                 {TYPE_SHORT_LABELS[res.item.type]}
                                                             </p>
-                                                            <h3 className="text-[16px] font-black text-black leading-tight mb-2 uppercase">
+                                                            <h3 className="text-[15px] font-black text-black leading-tight mb-2 uppercase line-clamp-1 w-full">
                                                                 {res.item.name}
                                                             </h3>
-                                                            <div className="flex items-center justify-center gap-1.5 mt-auto">
-                                                                <Star className="w-3.5 h-3.5 fill-black text-black" />
-                                                                <span className="text-[12px] font-black text-black">{res.item.price} poin</span>
+                                                            <div className="flex items-center justify-center gap-1.5 mt-2">
+                                                                <span className="inline-flex items-center gap-1 bg-white border-[1.5px] border-black rounded-lg px-2.5 py-0.5 text-[11px] font-black text-black shadow-[1px_1px_0_#000]">
+                                                                    <Star className="w-3.5 h-3.5 fill-black text-black shrink-0" />
+                                                                    {res.item.price} poin
+                                                                </span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1603,7 +1605,7 @@ export default function GachaPage() {
                                         className="w-full max-w-lg mt-12 space-y-4"
                                     >
                                         {/* Summary pill */}
-                                        <div className="bg-white border-[4px] border-black p-5 shadow-[8px_8px_0_#000] flex items-center justify-between gap-4 relative">
+                                        <div className="bg-white border-[3px] border-black p-5 rounded-2xl shadow-[5px_5px_0_#000] flex items-center justify-between gap-4 relative">
                                             <div className="space-y-2">
                                                 <div className="flex items-center gap-2">
                                                     <Star className="w-4 h-4 text-black fill-black" />
@@ -1620,8 +1622,8 @@ export default function GachaPage() {
                                                     </div>
                                                 )}
                                             </div>
-                                            <div className="text-right shrink-0 border-l-[3px] border-black pl-4">
-                                                <p className="text-[12px] text-black uppercase tracking-widest font-bold mb-1">Sisa Poin</p>
+                                            <div className="text-right shrink-0 border-l-[2.5px] border-black pl-4">
+                                                <p className="text-[11px] text-neutral-400 uppercase tracking-widest font-black mb-0.5">Sisa Poin</p>
                                                 <p className="text-2xl font-black text-black">{formatPoints(resultMeta.newPoints)}</p>
                                             </div>
                                         </div>
@@ -1630,7 +1632,7 @@ export default function GachaPage() {
                                         <div className="flex gap-4">
                                             <button
                                                 onClick={closeResults}
-                                                className="flex-1 flex items-center justify-center gap-2 py-4 bg-[#E5E5E5] border-[3px] border-black text-black text-[12px] sm:text-sm font-black uppercase transition-all shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none"
+                                                className="flex-1 flex items-center justify-center gap-2 py-4 bg-neutral-100 border-[2.5px] border-black text-black text-xs sm:text-sm font-black uppercase transition-all shadow-[3.5px_3.5px_0_#000] hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none"
                                             >
                                                 <Package className="w-5 h-5" />
                                                 Simpan
@@ -1640,7 +1642,7 @@ export default function GachaPage() {
                                                     closeResults()
                                                     setTimeout(() => openBox(pullCount), 300)
                                                 }}
-                                                className="flex-1 flex items-center justify-center gap-2 py-4 bg-[#00FF00] border-[3px] border-black text-black text-[12px] sm:text-sm font-black uppercase transition-all shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none"
+                                                className="flex-1 flex items-center justify-center gap-2 py-4 bg-green-300 border-[2.5px] border-black text-black text-xs sm:text-sm font-black uppercase transition-all shadow-[3.5px_3.5px_0_#000] hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none"
                                             >
                                                 <Repeat2 className="w-5 h-5" />
                                                 Buka {pullCount}x Lagi

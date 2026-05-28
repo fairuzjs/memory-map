@@ -179,16 +179,16 @@ export function NotificationDropdown() {
                         setIsOpen(!isOpen)
                         if (!isOpen) fetchNotifications()
                     }}
-                    className={`flex items-center justify-center w-10 h-10 border-[3px] transition-all relative ${
+                    className={`flex items-center justify-center w-10 h-10 border-[3px] rounded-xl transition-all relative ${
                         isOpen 
-                        ? "bg-[#FFFF00] border-black shadow-[3px_3px_0_#000] text-black" 
-                        : "bg-white border-transparent hover:border-black text-black hover:bg-[#FFFF00]"
+                        ? "bg-[#FFFF00] border-black shadow-[4px_4px_0_#000] text-black" 
+                        : "bg-white border-transparent hover:border-black text-black hover:bg-[#FFFF00] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000]"
                     }`}
                     title="Notifications"
                 >
                     <Bell className="w-5 h-5" />
                     {unreadCount > 0 && (
-                        <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-none bg-[#FF00FF] border-[2px] border-black text-[10px] font-black text-white shadow-[2px_2px_0_#000]">
+                        <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-lg bg-[#FF00FF] border-[2.5px] border-black text-[10px] font-black text-white shadow-[2px_2px_0_#000]">
                             {unreadCount > 9 ? "9+" : unreadCount}
                         </span>
                     )}
@@ -200,10 +200,10 @@ export function NotificationDropdown() {
                             initial={{ opacity: 0, y: 10, scale: 0.95 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                            className="fixed left-1/2 -translate-x-1/2 top-[88px] w-[calc(100vw-32px)] max-w-[400px] sm:absolute sm:left-auto sm:translate-x-0 sm:right-0 sm:top-full sm:mt-4 sm:w-80 md:w-96 z-[200] bg-white border-[4px] border-black shadow-[8px_8px_0_#000] overflow-hidden"
+                            className="fixed left-1/2 -translate-x-1/2 top-[88px] w-[calc(100vw-32px)] max-w-[400px] sm:absolute sm:left-auto sm:translate-x-0 sm:right-0 sm:top-full sm:mt-4 sm:w-80 md:w-96 z-[200] bg-white rounded-2xl border-[3px] border-black shadow-[6px_6px_0_#000] overflow-hidden"
                         >
                             {/* Header */}
-                            <div className="p-4 border-b-[4px] border-black flex items-center justify-between bg-[#FFFF00] relative z-20">
+                            <div className="p-4 border-b-[3px] border-black flex items-center justify-between bg-[#FFFF00] relative z-20">
                                 <h3 className="text-sm font-black text-black flex items-center gap-2 uppercase tracking-wide">
                                     <Bell className="w-4 h-4" />
                                     Notifikasi
@@ -231,7 +231,7 @@ export function NotificationDropdown() {
                                     </div>
                                 ) : notifications.length === 0 ? (
                                     <div className="flex flex-col items-center justify-center py-12 px-6 text-center gap-3">
-                                        <div className="w-16 h-16 bg-white border-[3px] border-black shadow-[4px_4px_0_#000] flex items-center justify-center mb-2">
+                                        <div className="w-16 h-16 bg-white rounded-2xl border-[3px] border-black shadow-[4px_4px_0_#000] flex items-center justify-center mb-2">
                                             <Bell className="w-8 h-8 text-black" />
                                         </div>
                                         <p className="text-base font-black text-black uppercase">Belum ada notifikasi</p>
@@ -251,10 +251,10 @@ export function NotificationDropdown() {
                                                     <div className="relative shrink-0">
                                                         <img
                                                             src={n.actor.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${n.actor.id}`}
-                                                            className="w-12 h-12 border-[3px] border-black bg-white"
+                                                            className="w-12 h-12 rounded-xl border-[3px] border-black bg-white"
                                                             alt=""
                                                         />
-                                                        <div className={`absolute -bottom-2 -right-2 w-6 h-6 flex items-center justify-center border-[2px] border-black shadow-[2px_2px_0_#000] ${
+                                                        <div className={`absolute -bottom-2 -right-2 w-6 h-6 rounded-lg flex items-center justify-center border-[2px] border-black shadow-[2px_2px_0_#000] ${
                                                             n.type === "PREMIUM_ACTIVATED" ? "bg-[#FFD700]" :
                                                             n.type === "REACTION" ? "bg-[#FF00FF]" :
                                                             n.type === "COLLABORATION_INVITE" ? "bg-[#00FFFF]" :
@@ -307,7 +307,7 @@ export function NotificationDropdown() {
                                                                 <button
                                                                     disabled={respondingId === n.id}
                                                                     onClick={(e) => handleCollaborationRespond(e, n.id, n.memoryId!, "ACCEPTED")}
-                                                                    className="flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-black bg-[#00FF00] border-[2px] border-black text-black shadow-[2px_2px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] transition-all disabled:opacity-50 uppercase"
+                                                                    className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black bg-[#00FF00] border-[2px] border-black text-black shadow-[2px_2px_0_#000] hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#000] active:translate-y-0 active:shadow-none transition-all disabled:opacity-50 uppercase"
                                                                 >
                                                                     {respondingId === n.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <CheckCircle2 className="w-3 h-3" />}
                                                                     Terima
@@ -315,7 +315,7 @@ export function NotificationDropdown() {
                                                                 <button
                                                                     disabled={respondingId === n.id}
                                                                     onClick={(e) => handleCollaborationRespond(e, n.id, n.memoryId!, "DECLINED")}
-                                                                    className="flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-black bg-white border-[2px] border-black text-black shadow-[2px_2px_0_#000] hover:bg-[#FF00FF] hover:text-white hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] transition-all disabled:opacity-50 uppercase"
+                                                                    className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black bg-white border-[2px] border-black text-black shadow-[2px_2px_0_#000] hover:bg-[#FF00FF] hover:text-white hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#000] active:translate-y-0 active:shadow-none transition-all disabled:opacity-50 uppercase"
                                                                 >
                                                                     <XCircle className="w-3 h-3" />
                                                                     Tolak
@@ -332,7 +332,7 @@ export function NotificationDropdown() {
                                                                         if (!n.isRead) markAsRead(n.id)
                                                                         setIsOpen(false)
                                                                     }}
-                                                                    className="flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-black bg-[#FFD700] border-[2px] border-black text-black shadow-[2px_2px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] transition-all uppercase"
+                                                                    className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black bg-[#FFD700] border-[2px] border-black text-black shadow-[2px_2px_0_#000] hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#000] active:translate-y-0 active:shadow-none transition-all uppercase"
                                                                 >
                                                                     <Crown className="w-3 h-3" />
                                                                     Klaim Hadiah
@@ -345,7 +345,7 @@ export function NotificationDropdown() {
                                                     {n.type !== "COLLABORATION_INVITE" && n.type !== "PREMIUM_ACTIVATED" && (
                                                         <button
                                                             onClick={(e) => deleteNotification(e, n.id)}
-                                                            className="shrink-0 self-center p-2 border-[2px] border-transparent hover:border-black bg-white hover:bg-[#FF00FF] text-black hover:text-white hover:shadow-[2px_2px_0_#000] transition-all opacity-0 group-hover:opacity-100 relative z-30"
+                                                            className="shrink-0 self-center p-2 rounded-lg border-[2px] border-transparent hover:border-black bg-white hover:bg-[#FF00FF] text-black hover:text-white hover:shadow-[2px_2px_0_#000] transition-all opacity-0 group-hover:opacity-100 relative z-30"
                                                             title="Delete"
                                                         >
                                                             <X className="w-4 h-4" />

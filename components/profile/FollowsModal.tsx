@@ -58,26 +58,29 @@ export function FollowsModal({ isOpen, onClose, type, userId, isOwner, onAction 
                     <motion.div
                         initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
                         onClick={e => e.stopPropagation()}
-                        className="w-full max-w-md bg-white border-[4px] border-black overflow-hidden shadow-[8px_8px_0_#000]"
+                        className="w-full max-w-md bg-[#FFFDF0] border-[3px] border-black overflow-hidden shadow-[6px_6px_0_#000] rounded-3xl"
                     >
-                        <div className="flex items-center justify-between px-6 py-5 border-b-[3px] border-black">
+                        <div className="flex items-center justify-between px-6 py-5 border-b-[3px] border-black bg-[#F5F2EB]">
                             <h2 className="text-lg font-black text-black uppercase">
                                 {type === "followers" ? "Pengikut" : "Diikuti"}
                             </h2>
-                            <button onClick={onClose} className="p-2 bg-white border-[2px] border-black shadow-[2px_2px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all">
+                            <button
+                                onClick={onClose}
+                                className="w-9 h-9 flex items-center justify-center bg-white border-[2px] border-black rounded-xl shadow-[2px_2px_0_#000] hover:bg-[#f5d0fe] hover:-translate-y-0.5 active:translate-y-px active:shadow-none transition-all"
+                            >
                                 <X className="w-5 h-5 text-black" />
                             </button>
                         </div>
 
                         <div className="p-4">
                             <div className="relative">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+                                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50" />
                                 <input
                                     type="text"
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
                                     placeholder="Cari nama..."
-                                    className="w-full bg-[#E5E5E5] border-[3px] border-black py-2.5 pl-10 pr-4 text-sm text-black font-bold focus:outline-none focus:bg-[#FFFF00] transition-all placeholder:text-neutral-400"
+                                    className="w-full bg-white border-[2.5px] border-black py-2.5 pl-10 pr-4 text-sm text-black font-bold focus:outline-none focus:bg-[#fef08a] focus:shadow-[2px_2px_0_#000] rounded-xl shadow-[1px_1px_0_#000] transition-all placeholder:text-neutral-400/60"
                                 />
                             </div>
                         </div>
@@ -101,35 +104,35 @@ export function FollowsModal({ isOpen, onClose, type, userId, isOwner, onAction 
                                             key={targetUser.id} 
                                             initial={{ opacity: 1 }}
                                             exit={{ opacity: 0, x: -20 }}
-                                            className="group flex items-center justify-between p-3 hover:bg-[#E5E5E5] transition-all border-[2px] border-transparent hover:border-black"
+                                            className="group flex items-center justify-between p-3.5 mx-2 my-1.5 bg-white border-[2.5px] border-black rounded-2xl shadow-[2.5px_2.5px_0_#000] hover:shadow-[4px_4px_0_#000] hover:-translate-y-0.5 active:translate-y-px active:shadow-none transition-all"
                                         >
-                                            <Link href={`/profile/${targetUser.id}`} onClick={onClose} className="flex items-center gap-3 flex-1">
+                                            <Link href={`/profile/${targetUser.id}`} onClick={onClose} className="flex items-center gap-3 flex-1 min-w-0">
                                                 <img 
                                                     src={targetUser.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${targetUser.id}`} 
                                                     alt={targetUser.name} 
-                                                    className="w-10 h-10 rounded-full object-cover border-[2px] border-black"
+                                                    className="w-10 h-10 rounded-xl object-cover border-[2px] border-black shrink-0"
                                                 />
-                                                <div className="flex flex-col">
-                                                    <div className="flex items-center gap-1">
-                                                        <span className="text-sm font-black text-black">
+                                                <div className="flex flex-col min-w-0">
+                                                    <div className="flex items-center gap-1.5">
+                                                        <span className="text-sm font-black text-black truncate">
                                                             {targetUser.username || targetUser.name}
                                                         </span>
-                                                        {targetUser.isVerified && <BadgeCheck className="w-3.5 h-3.5 text-white shrink-0 fill-[#0095F6]" />}
+                                                        {targetUser.isVerified && <BadgeCheck className="w-3.5 h-3.5 text-black shrink-0 fill-[#00FFFF]" />}
                                                     </div>
-                                                    {targetUser.username && <span className="text-[11px] text-neutral-500 font-bold">{targetUser.name}</span>}
+                                                    {targetUser.username && <span className="text-[11px] text-neutral-500 font-bold truncate">{targetUser.name}</span>}
                                                 </div>
                                             </Link>
-
+ 
                                             {isOwner && (
                                                 <button
                                                     onClick={() => handleInternalAction(targetUser)}
-                                                    className="px-3 py-1.5 text-[10px] font-black uppercase bg-white border-[2px] border-black text-black shadow-[2px_2px_0_#000] hover:bg-[#FF0000] hover:text-white hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all"
+                                                    className="px-3.5 py-2 text-[10px] font-black uppercase bg-[#fecaca] text-[#991b1b] border-[2px] border-black rounded-xl shadow-[2px_2px_0_#000] hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#000] active:translate-y-0 active:shadow-none transition-all shrink-0"
                                                 >
                                                     {type === "following" ? "Unfollow" : "Hapus"}
                                                 </button>
                                             )}
                                             {!isOwner && (
-                                                <ChevronRight className="w-4 h-4 text-neutral-300" />
+                                                <ChevronRight className="w-4 h-4 text-black shrink-0" />
                                             )}
                                         </motion.div>
                                     ))}

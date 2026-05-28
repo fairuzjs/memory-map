@@ -130,54 +130,52 @@ export default function AdminTopupProcessPage() {
 
     if (status === "loading") {
         return (
-            <div className="flex h-[60vh] items-center justify-center">
-                <Loader2 className="w-7 h-7 animate-spin text-indigo-500" />
+            <div className="flex h-[60vh] items-center justify-center font-[Outfit]">
+                <Loader2 className="w-8 h-8 animate-spin text-black" />
             </div>
         )
     }
 
     return (
-        <div className="space-y-6" style={{ fontFamily: "Outfit, sans-serif" }}>
+        <div className="space-y-6 pb-10 font-[Outfit]">
             {/* Header */}
             <div>
                 <div className="flex items-center gap-2 mb-1">
-                    <Link href="/admin/topup" className="text-neutral-600 hover:text-neutral-300 transition-colors">
-                        <ArrowLeft className="w-4 h-4" />
+                    <Link href="/admin/topup" className="p-1 rounded-lg bg-white border-[2px] border-black shadow-[2px_2px_0_#000] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#000] transition-all text-black">
+                        <ArrowLeft className="w-4 h-4 font-black" />
                     </Link>
-                    <div className="w-5 h-5 rounded-md bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center">
-                        <Zap className="w-3 h-3 text-white" />
+                    <div className="w-6 h-6 rounded-md bg-yellow-300 border-[2px] border-black shadow-[2px_2px_0_#000] flex items-center justify-center">
+                        <Zap className="w-3.5 h-3.5 text-black" />
                     </div>
-                    <span className="text-xs font-semibold tracking-widest text-neutral-600 uppercase">Admin Panel</span>
+                    <span className="text-[11px] font-black tracking-widest text-black uppercase">Admin Panel</span>
                 </div>
-                <h1 className="text-2xl font-bold text-white">Proses Topup</h1>
-                <p className="text-neutral-500 text-sm mt-1">Tambah poin langsung ke akun user</p>
+                <h1 className="text-3xl lg:text-4xl font-black text-black tracking-tight uppercase">Proses Topup</h1>
+                <p className="text-black font-bold text-sm mt-1">Tambah poin langsung ke akun user</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Form Panel */}
-                <div className="lg:col-span-2 space-y-5">
+                <div className="lg:col-span-2 space-y-6">
                     {/* Step 1: Cari User */}
                     <div
-                        className="rounded-2xl p-5"
-                        style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}
+                        className="rounded-2xl p-6 bg-white border-[3px] border-black shadow-[6px_6px_0_#000]"
                     >
-                        <p className="text-xs font-bold tracking-widest text-neutral-600 uppercase mb-3 flex items-center gap-2">
-                            <span className="w-5 h-5 rounded-full bg-amber-500/20 text-amber-400 text-[10px] font-black flex items-center justify-center">1</span>
+                        <p className="text-sm font-black tracking-widest text-black uppercase mb-4 flex items-center gap-2">
+                            <span className="w-6 h-6 rounded-full bg-yellow-300 border-[2px] border-black shadow-[2px_2px_0_#000] text-black text-xs font-black flex items-center justify-center">1</span>
                             Cari User
                         </p>
 
                         <div className="relative">
-                            <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl transition-all"
-                                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)" }}>
-                                <Search className="w-4 h-4 text-neutral-500 shrink-0" />
+                            <div className="flex items-center gap-2 px-4 py-3 rounded-xl transition-all bg-white border-[3px] border-black shadow-[4px_4px_0_#000] focus-within:translate-y-[2px] focus-within:shadow-[2px_2px_0_#000]">
+                                <Search className="w-5 h-5 text-black shrink-0 font-black" />
                                 <input
                                     type="text"
                                     value={query}
                                     onChange={e => { setQuery(e.target.value); if (selectedUser) setSelectedUser(null) }}
                                     placeholder="Cari berdasarkan nama atau email..."
-                                    className="flex-1 bg-transparent text-sm text-white placeholder-neutral-600 outline-none"
+                                    className="flex-1 bg-transparent text-sm font-bold text-black placeholder-neutral-500 outline-none"
                                 />
-                                {searching && <Loader2 className="w-4 h-4 animate-spin text-neutral-500 shrink-0" />}
+                                {searching && <Loader2 className="w-5 h-5 animate-spin text-black shrink-0" />}
                             </div>
 
                             {/* Dropdown */}
@@ -188,26 +186,25 @@ export default function AdminTopupProcessPage() {
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, y: -8 }}
                                         transition={{ duration: 0.15 }}
-                                        className="absolute top-full mt-2 left-0 right-0 z-30 rounded-xl overflow-hidden shadow-2xl"
-                                        style={{ background: "#0f0f16", border: "1px solid rgba(255,255,255,0.1)" }}
+                                        className="absolute top-full mt-2 left-0 right-0 z-30 rounded-xl overflow-hidden bg-[#FFFDF0] border-[3px] border-black shadow-[8px_8px_0_#000]"
                                     >
                                         {searchResults.map(user => (
                                             <button
                                                 key={user.id}
                                                 onClick={() => handleSelectUser(user)}
-                                                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/[0.05] transition-colors text-left"
+                                                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-yellow-300 transition-colors text-left border-b-[2px] border-black last:border-b-0"
                                             >
-                                                <div className="w-8 h-8 rounded-full bg-neutral-800 overflow-hidden shrink-0 flex items-center justify-center">
+                                                <div className="w-10 h-10 rounded-xl bg-cyan-100 overflow-hidden border-[2px] border-black shadow-[2px_2px_0_#000] shrink-0 flex items-center justify-center">
                                                     {user.image
                                                         ? <img src={user.image} alt="" className="w-full h-full object-cover" />
-                                                        : <User className="w-4 h-4 text-neutral-500" />
+                                                        : <User className="w-5 h-5 text-black" />
                                                     }
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="text-sm font-semibold text-white truncate">{user.name}</p>
-                                                    <p className="text-xs text-neutral-500 truncate">{user.email}</p>
+                                                    <p className="text-sm font-black text-black uppercase truncate">{user.name}</p>
+                                                    <p className="text-xs font-bold text-neutral-700 truncate">{user.email}</p>
                                                 </div>
-                                                <span className="text-xs text-amber-400 font-bold shrink-0">
+                                                <span className="text-xs font-black text-black bg-cyan-300 px-2 py-1 rounded-lg border-[2px] border-black shadow-[2px_2px_0_#000] shrink-0 uppercase">
                                                     {user.points.toLocaleString("id-ID")} pts
                                                 </span>
                                             </button>
@@ -224,24 +221,23 @@ export default function AdminTopupProcessPage() {
                                     initial={{ opacity: 0, height: 0 }}
                                     animate={{ opacity: 1, height: "auto" }}
                                     exit={{ opacity: 0, height: 0 }}
-                                    className="mt-3 rounded-xl p-3 flex items-center gap-3"
-                                    style={{ background: "rgba(251,191,36,0.04)", border: "1px solid rgba(251,191,36,0.12)" }}
+                                    className="mt-4 rounded-xl p-4 flex items-center gap-3 bg-cyan-100 border-[3px] border-black shadow-[4px_4px_0_#000]"
                                 >
-                                    <div className="w-10 h-10 rounded-full bg-neutral-800 overflow-hidden shrink-0 flex items-center justify-center border border-white/[0.08]">
+                                    <div className="w-12 h-12 rounded-xl bg-white overflow-hidden border-[2px] border-black shadow-[2px_2px_0_#000] shrink-0 flex items-center justify-center">
                                         {selectedUser.image
                                             ? <img src={selectedUser.image} alt="" className="w-full h-full object-cover" />
-                                            : <User className="w-5 h-5 text-neutral-500" />
+                                            : <User className="w-6 h-6 text-black" />
                                         }
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-bold text-white">{selectedUser.name}</p>
-                                        <p className="text-xs text-neutral-500">{selectedUser.email}</p>
+                                        <p className="text-sm font-black text-black uppercase">{selectedUser.name}</p>
+                                        <p className="text-xs font-bold text-neutral-700">{selectedUser.email}</p>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-xs text-neutral-500">Poin saat ini</p>
-                                        <p className="text-sm font-black text-amber-400">{selectedUser.points.toLocaleString("id-ID")}</p>
+                                        <p className="text-xs font-bold text-neutral-700 uppercase tracking-wide">Poin saat ini</p>
+                                        <p className="text-sm font-black text-black bg-yellow-300 px-2 py-0.5 rounded-lg border-[2px] border-black shadow-[2px_2px_0_#000] inline-block">{selectedUser.points.toLocaleString("id-ID")}</p>
                                     </div>
-                                    <button onClick={resetForm} className="text-neutral-600 hover:text-neutral-300 transition-colors">✕</button>
+                                    <button onClick={resetForm} className="ml-2 w-8 h-8 rounded-lg bg-rose-400 border-[2px] border-black shadow-[2px_2px_0_#000] flex items-center justify-center hover:translate-y-[1px] hover:shadow-[1px_1px_0_#000] transition-all text-black font-black">✕</button>
                                 </motion.div>
                             )}
                         </AnimatePresence>
@@ -249,35 +245,34 @@ export default function AdminTopupProcessPage() {
 
                     {/* Step 2: Pilih Nominal */}
                     <div
-                        className={`rounded-2xl p-5 transition-all ${!selectedUser ? "opacity-40 pointer-events-none" : ""}`}
-                        style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}
+                        className={`rounded-2xl p-6 bg-white border-[3px] border-black shadow-[6px_6px_0_#000] transition-all ${!selectedUser ? "opacity-50 grayscale pointer-events-none" : ""}`}
                     >
-                        <p className="text-xs font-bold tracking-widest text-neutral-600 uppercase mb-3 flex items-center gap-2">
-                            <span className="w-5 h-5 rounded-full bg-amber-500/20 text-amber-400 text-[10px] font-black flex items-center justify-center">2</span>
+                        <p className="text-sm font-black tracking-widest text-black uppercase mb-4 flex items-center gap-2">
+                            <span className="w-6 h-6 rounded-full bg-yellow-300 border-[2px] border-black shadow-[2px_2px_0_#000] text-black text-xs font-black flex items-center justify-center">2</span>
                             Pilih Nominal
                         </p>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                             {TOPUP_OPTIONS.map(opt => {
                                 const isSelected = selectedAmount === opt.amount
                                 return (
                                     <button
                                         key={opt.amount}
                                         onClick={() => setSelectedAmount(opt.amount)}
-                                        className="flex flex-col text-left p-3.5 rounded-xl transition-all"
-                                        style={{
-                                            background: isSelected ? "rgba(251,191,36,0.1)" : "rgba(255,255,255,0.03)",
-                                            border: isSelected ? "1px solid rgba(251,191,36,0.4)" : "1px solid rgba(255,255,255,0.07)",
-                                        }}
+                                        className={`flex flex-col text-left p-4 rounded-xl transition-all border-[3px] border-black ${
+                                            isSelected
+                                                ? "bg-cyan-300 shadow-[2px_2px_0_#000] translate-y-[2px]"
+                                                : "bg-white shadow-[4px_4px_0_#000] hover:-translate-y-1 hover:shadow-[6px_6px_0_#000]"
+                                        }`}
                                     >
-                                        <span className="text-[10px] text-neutral-600 font-bold uppercase mb-1">{opt.label}</span>
-                                        <div className="flex items-center gap-1 mb-0.5">
-                                            <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
-                                            <span className="text-base font-black text-white">
+                                        <span className="text-[11px] text-black font-black uppercase tracking-wider mb-1 bg-yellow-300 px-2 py-0.5 rounded border-[2px] border-black self-start">{opt.label}</span>
+                                        <div className="flex items-center gap-1 mb-1 mt-1">
+                                            <Star className="w-4 h-4 text-black fill-black" />
+                                            <span className="text-xl font-black text-black">
                                                 {opt.amount >= 1000 ? `${opt.amount / 1000}k` : opt.amount}
                                             </span>
-                                            <span className="text-[10px] text-neutral-500">pts</span>
+                                            <span className="text-[10px] font-black uppercase text-black">pts</span>
                                         </div>
-                                        <p className="text-xs font-bold text-amber-400">{formatRupiah(opt.price)}</p>
+                                        <p className="text-sm font-black text-black bg-white px-2 py-0.5 rounded border-[2px] border-black inline-block shadow-[2px_2px_0_#000]">{formatRupiah(opt.price)}</p>
                                     </button>
                                 )
                             })}
@@ -286,31 +281,29 @@ export default function AdminTopupProcessPage() {
 
                     {/* Step 3: Konfirmasi */}
                     <div
-                        className={`rounded-2xl p-5 transition-all ${(!selectedUser || !selectedAmount) ? "opacity-40 pointer-events-none" : ""}`}
-                        style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}
+                        className={`rounded-2xl p-6 bg-white border-[3px] border-black shadow-[6px_6px_0_#000] transition-all ${(!selectedUser || !selectedAmount) ? "opacity-50 grayscale pointer-events-none" : ""}`}
                     >
-                        <p className="text-xs font-bold tracking-widest text-neutral-600 uppercase mb-3 flex items-center gap-2">
-                            <span className="w-5 h-5 rounded-full bg-amber-500/20 text-amber-400 text-[10px] font-black flex items-center justify-center">3</span>
+                        <p className="text-sm font-black tracking-widest text-black uppercase mb-4 flex items-center gap-2">
+                            <span className="w-6 h-6 rounded-full bg-yellow-300 border-[2px] border-black shadow-[2px_2px_0_#000] text-black text-xs font-black flex items-center justify-center">3</span>
                             Konfirmasi & Proses
                         </p>
 
                         {selectedUser && selectedAmount && (
                             <div
-                                className="rounded-xl p-4 mb-4"
-                                style={{ background: "rgba(251,191,36,0.04)", border: "1px solid rgba(251,191,36,0.1)" }}
+                                className="rounded-xl p-5 mb-5 bg-yellow-300 border-[3px] border-black shadow-[4px_4px_0_#000]"
                             >
-                                <div className="flex justify-between text-sm mb-2">
-                                    <span className="text-neutral-500">User</span>
-                                    <span className="font-bold text-white">{selectedUser.name}</span>
+                                <div className="flex justify-between text-sm mb-3 items-center">
+                                    <span className="font-bold text-black uppercase">User</span>
+                                    <span className="font-black text-black bg-white px-2 py-1 rounded border-[2px] border-black shadow-[2px_2px_0_#000]">{selectedUser.name}</span>
                                 </div>
-                                <div className="flex justify-between text-sm mb-2">
-                                    <span className="text-neutral-500">Poin ditambahkan</span>
-                                    <span className="font-black text-amber-400">+{selectedAmount.toLocaleString("id-ID")} poin</span>
+                                <div className="flex justify-between text-sm mb-3 items-center">
+                                    <span className="font-bold text-black uppercase">Poin ditambahkan</span>
+                                    <span className="font-black text-black bg-cyan-300 px-2 py-1 rounded border-[2px] border-black shadow-[2px_2px_0_#000]">+{selectedAmount.toLocaleString("id-ID")} poin</span>
                                 </div>
-                                <div className="flex justify-between text-sm">
-                                    <span className="text-neutral-500">Total poin setelah</span>
-                                    <span className="font-bold text-white">
-                                        {(selectedUser.points + selectedAmount).toLocaleString("id-ID")} poin
+                                <div className="flex justify-between text-sm items-center pt-3 border-t-[3px] border-black border-dashed">
+                                    <span className="font-bold text-black uppercase">Total poin setelah</span>
+                                    <span className="text-lg font-black text-black bg-white px-2 py-1 rounded border-[2px] border-black shadow-[2px_2px_0_#000]">
+                                        {(selectedUser.points + selectedAmount).toLocaleString("id-ID")}
                                     </span>
                                 </div>
                             </div>
@@ -319,50 +312,49 @@ export default function AdminTopupProcessPage() {
                         <button
                             onClick={handleProcess}
                             disabled={!selectedUser || !selectedAmount || processing}
-                            className="w-full py-3.5 rounded-xl text-sm font-black flex items-center justify-center gap-2 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-                            style={{ background: "linear-gradient(135deg,#f59e0b,#fbbf24)", color: "#1a1000" }}
+                            className="w-full py-4 rounded-xl text-sm font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all bg-green-300 text-black border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#000] disabled:opacity-50 disabled:shadow-none disabled:translate-y-[4px]"
                         >
                             {processing
-                                ? <><Loader2 className="w-4 h-4 animate-spin" /> Memproses...</>
-                                : <><Zap className="w-4 h-4" /> Tambahkan Poin Sekarang</>
+                                ? <><Loader2 className="w-5 h-5 animate-spin" /> Memproses...</>
+                                : <><Zap className="w-5 h-5" /> Tambahkan Poin Sekarang</>
                             }
                         </button>
                     </div>
                 </div>
 
                 {/* History Panel */}
-                <div className="space-y-4">
+                <div className="space-y-6">
                     <div
-                        className="rounded-2xl p-5"
-                        style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}
+                        className="rounded-2xl p-6 bg-[#FFFDF0] border-[3px] border-black shadow-[6px_6px_0_#000]"
                     >
-                        <div className="flex items-center gap-2 mb-4">
-                            <History className="w-4 h-4 text-neutral-500" />
-                            <p className="text-sm font-bold text-neutral-300">Riwayat Sesi Ini</p>
+                        <div className="flex items-center gap-2 mb-5">
+                            <History className="w-5 h-5 text-black font-black" />
+                            <p className="text-base font-black text-black uppercase tracking-wide">Riwayat Sesi Ini</p>
                         </div>
 
                         {history.length === 0 ? (
-                            <div className="text-center py-8">
-                                <Coins className="w-8 h-8 text-neutral-700 mx-auto mb-2" />
-                                <p className="text-xs text-neutral-600">Belum ada topup yang diproses</p>
+                            <div className="text-center py-10 bg-white border-[3px] border-black rounded-xl shadow-[4px_4px_0_#000]">
+                                <Coins className="w-10 h-10 text-neutral-400 mx-auto mb-3" />
+                                <p className="text-sm font-bold text-neutral-500 uppercase">Belum ada topup</p>
                             </div>
                         ) : (
-                            <div className="space-y-2">
+                            <div className="space-y-3">
                                 <AnimatePresence>
                                     {history.map((entry, i) => (
                                         <motion.div
                                             key={i}
                                             initial={{ opacity: 0, x: 10 }}
                                             animate={{ opacity: 1, x: 0 }}
-                                            className="flex items-center gap-2 p-2.5 rounded-xl"
-                                            style={{ background: "rgba(52,211,153,0.04)", border: "1px solid rgba(52,211,153,0.1)" }}
+                                            className="flex items-center gap-3 p-3 rounded-xl bg-white border-[3px] border-black shadow-[4px_4px_0_#000]"
                                         >
-                                            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-xs font-bold text-white truncate">{entry.userName}</p>
-                                                <p className="text-[10px] text-neutral-500">{entry.time}</p>
+                                            <div className="w-8 h-8 rounded-lg bg-green-300 border-[2px] border-black flex items-center justify-center shrink-0">
+                                                <CheckCircle2 className="w-5 h-5 text-black" />
                                             </div>
-                                            <span className="text-xs font-black text-emerald-400 shrink-0">
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-black text-black uppercase truncate">{entry.userName}</p>
+                                                <p className="text-[10px] font-bold text-neutral-600">{entry.time}</p>
+                                            </div>
+                                            <span className="text-sm font-black text-black bg-yellow-300 px-2 py-1 rounded border-[2px] border-black shadow-[2px_2px_0_#000] shrink-0 uppercase">
                                                 +{entry.amount >= 1000 ? `${entry.amount / 1000}k` : entry.amount}
                                             </span>
                                         </motion.div>
@@ -374,12 +366,13 @@ export default function AdminTopupProcessPage() {
 
                     {/* Quick tip */}
                     <div
-                        className="rounded-2xl p-4"
-                        style={{ background: "rgba(99,102,241,0.04)", border: "1px solid rgba(99,102,241,0.1)" }}
+                        className="rounded-2xl p-5 bg-cyan-100 border-[3px] border-black shadow-[6px_6px_0_#000]"
                     >
-                        <p className="text-xs font-bold text-indigo-400 mb-2">💡 Tips Admin</p>
-                        <p className="text-xs text-neutral-500 leading-relaxed">
-                            Gunakan halaman <Link href="/admin/topup" className="text-indigo-400 hover:underline">Pesanan Topup</Link> untuk melihat daftar pesanan dari user dan meng-approve satu per satu dengan verifikasi pembayaran.
+                        <p className="text-sm font-black text-black uppercase tracking-wide mb-2 flex items-center gap-2">
+                            <span className="text-xl">💡</span> Tips Admin
+                        </p>
+                        <p className="text-sm font-bold text-neutral-800 leading-relaxed">
+                            Gunakan halaman <Link href="/admin/topup" className="text-black bg-white px-1 border-[2px] border-black rounded shadow-[2px_2px_0_#000] hover:bg-yellow-300 transition-colors uppercase font-black text-[11px] mx-1">Pesanan Topup</Link> untuk melihat daftar pesanan dari user dan meng-approve satu per satu dengan verifikasi pembayaran.
                         </p>
                     </div>
                 </div>

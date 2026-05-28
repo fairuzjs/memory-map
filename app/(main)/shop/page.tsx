@@ -60,12 +60,12 @@ const TYPE_ICONS: Record<ItemType, React.FC<any>> = {
 }
 
 const TYPE_COLORS: Record<ItemType, { bg: string; text: string }> = {
-    AVATAR_FRAME:       { bg: "#FFFF00", text: "#000" }, // Yellow
-    PROFILE_BANNER:     { bg: "#FF00FF", text: "#FFF" }, // Pink
-    MEMORY_CARD_THEME:  { bg: "#00FFFF", text: "#000" }, // Cyan
-    USERNAME_DECORATION:{ bg: "#FF9900", text: "#000" }, // Orange
-    MEMORY_STICKER:     { bg: "#00FF00", text: "#000" }, // Green
-    PREMIUM_FEATURE:    { bg: "#1DB954", text: "#FFF" }, // Spotify Green
+    AVATAR_FRAME:       { bg: "#fef08a", text: "#000" }, // Soft Yellow
+    PROFILE_BANNER:     { bg: "#f5d0fe", text: "#000" }, // Soft Fuchsia
+    MEMORY_CARD_THEME:  { bg: "#67e8f9", text: "#000" }, // Soft Cyan
+    USERNAME_DECORATION:{ bg: "#fcd34d", text: "#000" }, // Soft Amber
+    MEMORY_STICKER:     { bg: "#86efac", text: "#000" }, // Soft Green
+    PREMIUM_FEATURE:    { bg: "#1db954", text: "#fff" }, // Spotify Green
 }
 
 const ALL_TYPES: ItemType[] = [
@@ -89,11 +89,11 @@ const TIER_CONFIG: Record<TierName, {
     bg: string
     text: string
 }> = {
-    BASIC:   { label: "Basic",   icon: "◆", bg: "#E5E5E5", text: "#000" },
-    ELITE:   { label: "Elite",   icon: "◈", bg: "#00FFFF", text: "#000" },
-    EPIC:    { label: "Epic",    icon: "✦", bg: "#FF00FF", text: "#FFF" },
-    LEGEND:  { label: "Legend",  icon: "★", bg: "#FFFF00", text: "#000" },
-    SPECIAL: { label: "Special", icon: "✧", bg: "#00FF00", text: "#000" },
+    BASIC:   { label: "Basic",   icon: "◆", bg: "#e5e5e5", text: "#000" },
+    ELITE:   { label: "Elite",   icon: "◈", bg: "#67e8f9", text: "#000" },
+    EPIC:    { label: "Epic",    icon: "✦", bg: "#f5d0fe", text: "#000" },
+    LEGEND:  { label: "Legend",  icon: "★", bg: "#fef08a", text: "#000" },
+    SPECIAL: { label: "Special", icon: "✧", bg: "#86efac", text: "#000" },
 }
 
 const SPECIAL_ITEM_NAMES = new Set(["Cuddlysun", "Shape Coquette", "Grape Blossom", "Soft Bubble Tea"])
@@ -112,7 +112,7 @@ function TierBadge({ price, size = "sm", name }: { price: number; size?: "sm" | 
 
     return (
         <span
-            className="inline-flex items-center gap-1 font-black uppercase tracking-wider border-[2px] border-black"
+            className="inline-flex items-center gap-1 font-black uppercase tracking-wider border-[2px] border-black rounded-[6px]"
             style={{
                 fontSize: size === "md" ? "11px" : "10px",
                 padding: size === "md" ? "3px 8px" : "2px 6px",
@@ -372,12 +372,12 @@ function PremiumFeaturePreview({ item }: { item: ShopItem }) {
 
 function SectionDivider({ label, count, color }: { label: string; count: number; color: string }) {
     return (
-        <div className="flex items-center gap-3 w-full col-span-full mt-4 mb-2">
-            <span className="text-[14px] font-black uppercase tracking-[0.1em] shrink-0 px-3 py-1 border-[3px] border-black bg-white shadow-[2px_2px_0_#000]">
+        <div className="flex items-center gap-3 w-full col-span-full mt-4 mb-2 font-[Outfit]">
+            <span className="text-[12px] font-black uppercase tracking-[0.1em] shrink-0 px-3 py-1 border-[2.5px] border-black bg-white shadow-[2px_2px_0_#000] rounded-xl">
                 {label}
             </span>
-            <div className="flex-1 h-[4px] bg-black" />
-            <span className="text-[12px] font-black px-3 py-1 shrink-0 border-[3px] border-black bg-[#FFFF00] shadow-[2px_2px_0_#000]">
+            <div className="flex-1 h-[2.5px] bg-black" />
+            <span className="text-[10px] font-black px-3 py-1 shrink-0 border-[2.5px] border-black bg-yellow-300 shadow-[2px_2px_0_#000] rounded-xl">
                 {count} ITEM
             </span>
         </div>
@@ -417,30 +417,30 @@ function ShopCard({
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="relative flex flex-col bg-white border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all group overflow-hidden"
+            className="relative flex flex-col bg-white border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[6px_6px_0_#000] transition-all group overflow-hidden rounded-2xl"
         >
             {/* Equipped badge */}
             {item.equipped && (
-                <div className="absolute top-2 right-2 z-10 flex items-center gap-1 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider bg-[#00FF00] border-[2px] border-black shadow-[2px_2px_0_#000]">
-                    <CheckCircle2 className="w-3 h-3" />
+                <div className="absolute top-2 right-2 z-10 flex items-center gap-1 px-1.5 py-0.5 text-[8px] sm:text-[9px] font-black uppercase tracking-wider bg-green-300 border-[2px] border-black shadow-[2px_2px_0_#000] rounded-lg">
+                    <CheckCircle2 className="w-2.5 h-2.5" />
                     DIPAKAI
                 </div>
             )}
 
             {/* Owned badge */}
             {item.owned && !item.equipped && (
-                <div className="absolute top-2 right-2 z-10 flex items-center gap-1 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider bg-[#E5E5E5] border-[2px] border-black shadow-[2px_2px_0_#000]">
-                    <CheckCircle2 className="w-3 h-3" />
+                <div className="absolute top-2 right-2 z-10 flex items-center gap-1 px-1.5 py-0.5 text-[8px] sm:text-[9px] font-black uppercase tracking-wider bg-neutral-200 border-[2px] border-black shadow-[2px_2px_0_#000] rounded-lg">
+                    <CheckCircle2 className="w-2.5 h-2.5" />
                     DIMILIKI
                 </div>
             )}
 
             {/* Preview area */}
             <div
-                className="p-3 cursor-pointer h-32 flex items-center justify-center border-b-[3px] border-black bg-neutral-100"
+                className="p-2 sm:p-3 cursor-pointer h-24 sm:h-32 flex items-center justify-center border-b-[3px] border-black bg-neutral-100 rounded-t-[13px]"
                 onClick={() => onPreview(item)}
             >
-                <div className="w-full h-full flex items-center justify-center relative">
+                <div className="w-full h-full flex items-center justify-center relative scale-90 sm:scale-100">
                     {item.type === "AVATAR_FRAME"        && <FramePreview value={item.value} name={item.name} />}
                     {item.type === "PROFILE_BANNER"      && <BannerPreview value={item.value} name={item.name} />}
                     {item.type === "MEMORY_CARD_THEME"   && <CardThemePreview value={item.value} name={item.name} />}
@@ -451,11 +451,11 @@ function ShopCard({
             </div>
 
             {/* Info */}
-            <div className="p-3 flex flex-col gap-3 flex-1 bg-white">
-                <div>
-                    <div className="flex items-center gap-2 mb-2 flex-wrap">
+            <div className="p-2.5 sm:p-3 flex flex-col gap-2 sm:gap-3 flex-1 bg-white min-w-0">
+                <div className="min-w-0">
+                    <div className="flex items-center gap-1 sm:gap-2 mb-1.5 flex-wrap">
                         <span
-                            className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[9px] font-black uppercase border-[2px] border-black"
+                            className="inline-flex items-center gap-0.5 sm:gap-1 px-1.5 py-0.5 text-[8px] sm:text-[9px] font-black uppercase border-[2px] border-black rounded-lg shrink-0"
                             style={{ background: colorInfo.bg, color: colorInfo.text }}
                         >
                             {(() => {
@@ -466,66 +466,66 @@ function ShopCard({
                         </span>
                         <TierBadge price={item.price} size="sm" name={item.name} />
                     </div>
-                    <p className="text-[13px] font-black text-black leading-tight line-clamp-1">{item.name}</p>
-                    <p className="text-[10px] font-bold text-black/60 mt-1 leading-snug line-clamp-2">{item.description}</p>
+                    <p className="text-[12px] sm:text-[13px] font-black text-black leading-tight line-clamp-1 font-[Outfit] truncate">{item.name}</p>
+                    <p className="text-[9px] sm:text-[10px] font-bold text-black/60 mt-1 leading-snug line-clamp-2 min-h-[28px]">{item.description}</p>
                 </div>
 
                 {/* Price */}
                 {!item.owned && (
-                    <div className="flex items-center gap-1.5 mt-auto">
-                        <Star className="w-4 h-4 text-black fill-black" />
+                    <div className="flex items-center gap-1 mt-auto">
+                        <Star className="w-3.5 h-3.5 text-black fill-black shrink-0" />
                         {isPremium ? (
-                            <>
-                                <span className="text-sm font-black text-black">{formatPoints(discountedPrice)}</span>
-                                <span className="text-[10px] text-black/40 line-through font-bold">{formatPoints(item.price)}</span>
-                            </>
+                            <div className="flex items-center gap-1 flex-wrap">
+                                <span className="text-xs sm:text-sm font-black text-black leading-none">{formatPoints(discountedPrice)}</span>
+                                <span className="text-[9px] sm:text-[10px] text-black/40 line-through font-bold leading-none">{formatPoints(item.price)}</span>
+                            </div>
                         ) : (
-                            <span className="text-sm font-black text-black">{formatPoints(item.price)}</span>
+                            <span className="text-xs sm:text-sm font-black text-black leading-none">{formatPoints(item.price)}</span>
                         )}
-                        <span className="text-[10px] font-black text-black uppercase">pts</span>
+                        <span className="text-[9px] sm:text-[10px] font-black text-black uppercase leading-none">pts</span>
                     </div>
                 )}
 
                 {/* Actions */}
-                <div className="flex gap-2 mt-auto pt-2 border-t-[3px] border-black">
+                <div className="flex gap-1.5 sm:gap-2 mt-auto pt-2 border-t-[2px] border-black">
                     <button
                         onClick={() => onPreview(item)}
-                        className="w-10 h-10 flex items-center justify-center shrink-0 bg-white border-[3px] border-black shadow-[2px_2px_0_#000] hover:bg-[#FFFF00] transition-colors"
+                        className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center shrink-0 bg-white border-[2px] sm:border-[2.5px] border-black shadow-[2px_2px_0_#000] hover:bg-yellow-300 transition-all rounded-xl active:translate-y-px"
                         title="Lihat preview"
                     >
-                        <Eye className="w-5 h-5 text-black" />
+                        <Eye className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-black" />
                     </button>
 
-                    <div className="flex-1">
+                    <div className="flex-1 font-[Outfit] min-w-0">
                         {!item.owned ? (
                             <button
                                 onClick={() => onPurchase(item)}
                                 disabled={isBuying || points < discountedPrice}
-                                className="w-full h-10 flex items-center justify-center gap-1.5 bg-[#00FFFF] border-[3px] border-black text-[12px] font-black uppercase shadow-[2px_2px_0_#000] transition-all disabled:opacity-50 disabled:bg-neutral-300 disabled:shadow-none hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[4px_4px_0_#000] hover:bg-[#FFFF00]"
+                                className="w-full h-8 sm:h-10 flex items-center justify-center gap-1 bg-cyan-300 border-[2px] sm:border-[2.5px] border-black text-[10px] sm:text-[12px] font-black uppercase shadow-[2px_2px_0_#000] transition-all rounded-xl disabled:opacity-50 disabled:bg-neutral-300 disabled:shadow-none hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] hover:bg-yellow-300 active:translate-y-px"
                             >
-                                {isBuying ? <Loader2 className="w-4 h-4 animate-spin" /> : <Coins className="w-4 h-4" />}
-                                {isBuying ? "Membeli" : points < discountedPrice ? "Poin Kurang" : "Beli"}
+                                {isBuying ? <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" /> : <Coins className="w-3.5 h-3.5 shrink-0" />}
+                                <span className="truncate">{isBuying ? "Membeli" : points < discountedPrice ? "Poin Kurang" : "Beli"}</span>
                             </button>
                         ) : isNonEquip ? (
-                            <div className="w-full h-10 flex items-center justify-center gap-1.5 bg-[#00FF00] border-[3px] border-black text-[12px] font-black uppercase shadow-[2px_2px_0_#000]">
-                                <CheckCircle2 className="w-4 h-4" />
-                                Dimiliki
+                            <div className="w-full h-8 sm:h-10 flex items-center justify-center gap-1 bg-green-300 border-[2px] sm:border-[2.5px] border-black text-[10px] sm:text-[12px] font-black uppercase shadow-[2px_2px_0_#000] rounded-xl">
+                                <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                                <span className="truncate">Miliki</span>
                             </div>
                         ) : (
                             <button
                                 onClick={() => onEquip(item)}
                                 disabled={isEquipping}
-                                className={`w-full h-10 flex items-center justify-center gap-1.5 border-[3px] border-black text-[12px] font-black uppercase transition-all disabled:opacity-50 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[4px_4px_0_#000] ${
+                                className={`w-full h-8 sm:h-10 flex items-center justify-center gap-1 border-[2px] sm:border-[2.5px] border-black text-[10px] sm:text-[12px] font-black uppercase rounded-xl transition-all disabled:opacity-50 hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] active:translate-y-px ${
                                     item.equipped 
-                                    ? "bg-[#FF00FF] text-white shadow-[2px_2px_0_#000]" 
-                                    : "bg-white text-black shadow-[2px_2px_0_#000] hover:bg-[#FFFF00]"
+                                    ? "bg-fuchsia-400 text-black shadow-[2px_2px_0_#000]" 
+                                    : "bg-white text-black shadow-[2px_2px_0_#000] hover:bg-yellow-300"
                                 }`}
                             >
                                 {isEquipping
-                                    ? <Loader2 className="w-4 h-4 animate-spin" />
+                                    ? <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" />
                                     : item.equipped
-                                        ? <><CheckCircle2 className="w-4 h-4" /> Dipakai</>
-                                        : <><Sparkles className="w-4 h-4" /> Pakai</>
+                                        ? <><CheckCircle2 className="w-3.5 h-3.5 shrink-0" /> <span className="truncate">Pakai</span></>
+                                        : <><Sparkles className="w-3.5 h-3.5 shrink-0" /> <span className="truncate">Pakai</span></>
                                 }
                             </button>
                         )}
@@ -579,36 +579,36 @@ function ShopPreviewModal({
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
                 transition={{ ease: "backOut", duration: 0.3 }}
-                className="w-full max-w-sm bg-[#FFFDF0] border-[4px] border-black shadow-[12px_12px_0_#000] flex flex-col"
+                className="w-full max-w-sm bg-[#FFFDF0] border-[3px] border-black shadow-[8px_8px_0_#000] rounded-2xl flex flex-col overflow-hidden"
                 onClick={e => e.stopPropagation()}
             >
                 {/* Header */}
-                <div className="flex items-center justify-between px-5 py-4 border-b-[4px] border-black bg-white">
+                <div className="flex items-center justify-between px-5 py-4 border-b-[3px] border-black bg-white">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 border-[3px] border-black flex items-center justify-center shadow-[2px_2px_0_#000]"
+                        <div className="w-10 h-10 border-[2.5px] border-black flex items-center justify-center shadow-[2px_2px_0_#000] rounded-xl"
                             style={{ background: colorInfo.bg }}>
                             <TypeIcon className="w-5 h-5" style={{ color: colorInfo.text }} />
                         </div>
                         <div>
-                            <div className="flex items-center gap-2 mb-1">
-                                <p className="text-[10px] font-black uppercase tracking-wider bg-black text-white px-1.5 py-0.5">
+                            <div className="flex items-center gap-2 mb-1 flex-wrap">
+                                <p className="text-[10px] font-black uppercase tracking-wider bg-black text-white px-1.5 py-0.5 rounded-md">
                                     {TYPE_LABELS[item.type]}
                                 </p>
                                 <TierBadge price={item.price} size="md" name={item.name} />
                             </div>
-                            <p className="text-[16px] font-black text-black leading-tight uppercase">{item.name}</p>
+                            <p className="text-[16px] font-black text-black leading-tight uppercase font-[Outfit]">{item.name}</p>
                         </div>
                     </div>
                     <button
                         onClick={onClose}
-                        className="w-8 h-8 bg-white border-[3px] border-black flex items-center justify-center hover:bg-[#FF00FF] hover:text-white transition-colors shadow-[2px_2px_0_#000]"
+                        className="w-8 h-8 bg-white border-[2.5px] border-black flex items-center justify-center hover:bg-rose-400 hover:text-black transition-colors shadow-[2px_2px_0_#000] rounded-lg"
                     >
                         <X className="w-5 h-5" />
                     </button>
                 </div>
 
                 {/* Preview */}
-                <div className="p-5 border-b-[4px] border-black bg-neutral-100 flex items-center justify-center overflow-hidden min-h-[160px]">
+                <div className="p-5 border-b-[3px] border-black bg-neutral-100 flex items-center justify-center overflow-hidden min-h-[160px]">
                     {item.type === "AVATAR_FRAME" && (() => {
                         const fc = getFrameClass(item.name)
                         return (
@@ -620,7 +620,7 @@ function ShopPreviewModal({
                                 <div className={`absolute -inset-1 rounded-full p-[2px] ${fc}`} style={{ background: item.value }}>
                                     <div className="w-full h-full rounded-full" style={{ background: "rgba(14,14,24,1)" }} />
                                 </div>
-                                <div className="w-16 h-16 rounded-full relative z-10 flex items-center justify-center overflow-hidden"
+                                <div className="w-16 h-16 rounded-full relative z-10 flex items-center justify-center overflow-hidden border-2 border-black"
                                     style={{ background: "rgba(255,255,255,0.05)" }}>
                                     {session?.user?.image ? (
                                         <img src={session.user.image} alt="Avatar" className="w-full h-full object-cover" />
@@ -672,18 +672,18 @@ function ShopPreviewModal({
                 </div>
 
                 {/* Description */}
-                <div className="p-5 bg-white">
+                <div className="p-5 bg-white font-[Outfit]">
                     <p className="text-[13px] font-bold text-black/70 leading-relaxed">{item.description}</p>
                     
                     {/* Price in modal */}
                     {!item.owned && (
-                        <div className="flex items-center gap-2 mt-4 bg-[#E5E5E5] border-[3px] border-black p-3 shadow-[2px_2px_0_#000] w-max">
+                        <div className="flex items-center gap-2 mt-4 bg-neutral-200 border-[2.5px] border-black p-2.5 shadow-[2px_2px_0_#000] w-max rounded-xl">
                             <Star className="w-5 h-5 text-black fill-black" />
                             {isPremium ? (
                                 <>
                                     <span className="text-[18px] font-black text-black">{formatPoints(discountedPrice)}</span>
                                     <span className="text-[12px] text-black/50 line-through font-bold">{formatPoints(item.price)}</span>
-                                    <span className="text-[10px] font-black bg-[#FF00FF] text-white px-1.5 py-0.5 border-[2px] border-black uppercase">-10%</span>
+                                    <span className="text-[10px] font-black bg-fuchsia-400 text-black px-1.5 py-0.5 border-[2px] border-black uppercase rounded-md">-10%</span>
                                 </>
                             ) : (
                                 <span className="text-[18px] font-black text-black">{formatPoints(item.price)}</span>
@@ -694,18 +694,18 @@ function ShopPreviewModal({
                 </div>
 
                 {/* Action */}
-                <div className="p-5 pt-0 bg-white">
+                <div className="p-5 pt-0 bg-white font-[Outfit]">
                     {!item.owned ? (
                         <button
                             onClick={() => onPurchase(item)}
                             disabled={isBuying || points < discountedPrice}
-                            className="w-full flex items-center justify-center gap-2 py-3 bg-[#FFFF00] border-[4px] border-black text-[14px] font-black uppercase shadow-[4px_4px_0_#000] transition-all disabled:opacity-50 disabled:bg-neutral-300 disabled:shadow-none hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] hover:bg-[#00FFFF]"
+                            className="w-full flex items-center justify-center gap-2 py-3 bg-yellow-300 border-[2.5px] border-black text-[14px] font-black uppercase shadow-[3px_3px_0_#000] rounded-xl transition-all disabled:opacity-50 disabled:bg-neutral-300 disabled:shadow-none hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] hover:bg-cyan-300 active:translate-y-px"
                         >
                             {isBuying ? <Loader2 className="w-5 h-5 animate-spin" /> : <Coins className="w-5 h-5" />}
                             {isBuying ? "Membeli..." : points < discountedPrice ? "Poin Tidak Cukup" : "Beli Sekarang"}
                         </button>
                     ) : isNonEquip ? (
-                        <div className="w-full flex items-center justify-center gap-2 py-3 bg-[#00FF00] border-[4px] border-black text-[14px] font-black uppercase shadow-[4px_4px_0_#000]">
+                        <div className="w-full flex items-center justify-center gap-2 py-3 bg-green-300 border-[2.5px] border-black text-[14px] font-black uppercase shadow-[3px_3px_0_#000] rounded-xl">
                             <CheckCircle2 className="w-5 h-5" />
                             {item.type === "PREMIUM_FEATURE" ? "Fitur Premium Aktif" : "Sudah Dimiliki"}
                         </div>
@@ -713,10 +713,10 @@ function ShopPreviewModal({
                         <button
                             onClick={() => onEquip(item)}
                             disabled={isEquipping}
-                            className={`w-full flex items-center justify-center gap-2 py-3 border-[4px] border-black text-[14px] font-black uppercase shadow-[4px_4px_0_#000] transition-all disabled:opacity-50 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] ${
+                            className={`w-full flex items-center justify-center gap-2 py-3 border-[2.5px] border-black text-[14px] font-black uppercase shadow-[3px_3px_0_#000] rounded-xl transition-all disabled:opacity-50 hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-y-px ${
                                 item.equipped
-                                ? "bg-[#FF00FF] text-white"
-                                : "bg-[#FFFF00] text-black hover:bg-[#00FFFF]"
+                                ? "bg-fuchsia-400 text-black shadow-[3px_3px_0_#000]"
+                                : "bg-yellow-300 text-black hover:bg-cyan-300"
                             }`}
                         >
                             {isEquipping
@@ -886,10 +886,10 @@ export default function ShopPage() {
 
     if (loading) {
         return (
-            <div className="flex-1 flex items-center justify-center min-h-[50vh]">
+            <div className="flex-1 flex items-center justify-center min-h-[50vh] font-[Outfit]">
                 <div className="flex flex-col items-center gap-4">
                     <Loader2 className="w-10 h-10 animate-spin text-black" />
-                    <span className="text-black font-black uppercase tracking-widest text-sm bg-[#FFFF00] border-[2px] border-black px-4 py-1 shadow-[2px_2px_0_#000]">Memuat Shop...</span>
+                    <span className="text-black font-black uppercase tracking-widest text-xs bg-yellow-300 border-[2px] border-black px-4 py-1.5 shadow-[2px_2px_0_#000] rounded-xl">Memuat Shop...</span>
                 </div>
             </div>
         )
@@ -905,27 +905,27 @@ export default function ShopPage() {
                 transition={{ duration: 0.5, ease: "easeOut" }}
                 className="mb-8"
             >
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                    <div className="flex items-center gap-4 bg-white border-[4px] border-black p-4 shadow-[8px_8px_0_#000] flex-1">
-                        <div className="w-14 h-14 bg-[#FF00FF] border-[3px] border-black flex items-center justify-center shrink-0 shadow-[4px_4px_0_#000]">
-                            <ShoppingBag className="w-7 h-7 text-white" />
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6">
+                    <div className="flex items-center gap-4 bg-white border-[3px] border-black p-4 sm:p-5 shadow-[6px_6px_0_#000] rounded-2xl flex-1">
+                        <div className="w-12 h-12 sm:w-14 sm:h-14 bg-fuchsia-400 border-[2.5px] border-black flex items-center justify-center shrink-0 shadow-[3px_3px_0_#000] rounded-xl">
+                            <ShoppingBag className="w-6 h-6 sm:w-7 sm:h-7 text-black" />
                         </div>
                         <div>
                             <div className="flex items-center gap-3 mb-1">
-                                <h1 className="text-2xl sm:text-3xl font-black text-black uppercase tracking-widest leading-none">Memory Shop</h1>
+                                <h1 className="text-2xl sm:text-3xl font-[Outfit] font-black text-black uppercase tracking-widest leading-none">Memory Shop</h1>
                             </div>
-                            <p className="text-[13px] font-bold text-black/60 uppercase">
+                            <p className="text-[11px] font-black text-black/60 uppercase">
                                 Tukar poin dengan dekorasi profil eksklusif
                             </p>
                         </div>
                     </div>
 
-                    <div className="flex flex-row md:flex-col items-center md:items-end gap-3 justify-between">
+                    <div className="flex flex-row md:flex-col items-center md:items-end gap-3 justify-between w-full md:w-auto">
                         <Link
                             href="/inventory"
-                            className="flex items-center gap-2 px-5 py-3 bg-[#00FFFF] border-[4px] border-black text-[14px] font-black uppercase shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all shrink-0"
+                            className="flex items-center justify-center gap-2 w-full md:w-auto px-5 py-3 sm:py-3.5 bg-cyan-300 border-[3px] border-black text-[12px] sm:text-[13px] font-[Outfit] font-black uppercase shadow-[4px_4px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#000] transition-all shrink-0 active:translate-y-px"
                         >
-                            <Package className="w-5 h-5" />
+                            <Package className="w-5 h-5 animate-pulse" />
                             Ke Inventori
                             <ChevronRight className="w-4 h-4" />
                         </Link>
@@ -933,75 +933,75 @@ export default function ShopPage() {
                 </div>
 
                 {/* Stat pills */}
-                <div className="flex items-center gap-3 mt-6 flex-wrap">
-                    <span className="inline-flex items-center gap-2 px-4 py-2 bg-white border-[3px] border-black text-[12px] font-black uppercase shadow-[2px_2px_0_#000]">
-                        <span className="w-2.5 h-2.5 bg-[#FF00FF] border-[2px] border-black block" />
+                <div className="flex items-center gap-2 mt-4 sm:mt-6 flex-wrap">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-1.5 bg-white border-[2px] border-black text-[9px] sm:text-[10px] font-black uppercase shadow-[2px_2px_0_#000] rounded-xl shrink-0">
+                        <span className="w-2.5 h-2.5 bg-fuchsia-400 border-[1.5px] border-black rounded-full block" />
                         {items.length} Tersedia
                     </span>
-                    <span className="inline-flex items-center gap-2 px-4 py-2 bg-white border-[3px] border-black text-[12px] font-black uppercase shadow-[2px_2px_0_#000]">
-                        <span className="w-2.5 h-2.5 bg-[#00FF00] border-[2px] border-black block" />
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-1.5 bg-white border-[2px] border-black text-[9px] sm:text-[10px] font-black uppercase shadow-[2px_2px_0_#000] rounded-xl shrink-0">
+                        <span className="w-2.5 h-2.5 bg-green-300 border-[1.5px] border-black rounded-full block" />
                         {ownedCount} Dimiliki
                     </span>
                     {isPremiumUser && (
-                        <span className="inline-flex items-center gap-2 px-4 py-2 bg-[#FFFF00] border-[3px] border-black text-[12px] font-black uppercase shadow-[2px_2px_0_#000]">
-                            <Sparkles className="w-4 h-4 fill-black text-black" />
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-1.5 bg-yellow-300 border-[2px] border-black text-[9px] sm:text-[10px] font-black uppercase shadow-[2px_2px_0_#000] rounded-xl shrink-0">
+                            <Sparkles className="w-3.5 h-3.5 fill-black text-black shrink-0" />
                             10% Diskon Premium
                         </span>
                     )}
                 </div>
 
                 {/* Promo Banners */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+                <div className="grid grid-cols-1 min-[340px]:grid-cols-2 gap-3 sm:gap-4 mt-4 sm:mt-6">
                     {/* Topup Banner */}
                     <Link
                         href="/topup"
-                        className="flex items-center gap-4 p-4 bg-[#FF3300] border-[4px] border-black shadow-[6px_6px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0_#000] transition-all group"
+                        className="flex items-center gap-2.5 sm:gap-4 p-3 sm:p-4 bg-rose-400 border-[3px] border-black shadow-[4px_4px_0_#000] hover:-translate-y-1 hover:shadow-[7px_7px_0_#000] transition-all rounded-2xl group active:translate-y-px min-w-0"
                     >
-                        <div className="w-12 h-12 bg-white border-[3px] border-black flex items-center justify-center shrink-0 shadow-[2px_2px_0_#000]">
-                            <Zap className="w-6 h-6 text-black fill-black group-hover:scale-110 transition-transform" />
+                        <div className="w-9 h-9 sm:w-12 sm:h-12 bg-white border-[2.5px] border-black flex items-center justify-center shrink-0 shadow-[2px_2px_0_#000] rounded-xl">
+                            <Zap className="w-4.5 h-4.5 sm:w-6 sm:h-6 text-black fill-black group-hover:scale-110 transition-transform" />
                         </div>
-                        <div className="flex-1">
-                            <p className="text-[16px] font-black text-white uppercase tracking-wider">Topup Poin</p>
-                            <p className="text-[11px] font-bold text-white/80 uppercase">Tambah poin mu disini</p>
+                        <div className="flex-1 font-[Outfit] min-w-0">
+                            <p className="text-[12px] sm:text-[14px] md:text-[15px] font-black text-black uppercase tracking-wider truncate">Topup Poin</p>
+                            <p className="text-[8px] sm:text-[10px] md:text-[11px] font-bold text-black/80 uppercase truncate">Tambah poin</p>
                         </div>
-                        <div className="w-10 h-10 bg-black flex items-center justify-center border-[2px] border-black group-hover:bg-[#FFFF00] group-hover:text-black text-white transition-colors">
-                            <ChevronRight className="w-6 h-6" />
+                        <div className="hidden sm:flex w-8 h-8 sm:w-10 sm:h-10 bg-white items-center justify-center border-[2.5px] border-black group-hover:bg-yellow-300 group-hover:text-black text-black transition-colors rounded-xl shadow-[2px_2px_0_#000] shrink-0">
+                            <ChevronRight className="w-5 h-5" />
                         </div>
                     </Link>
 
                     {/* Mystery Box Banner */}
                     <Link
                         href="/gacha"
-                        className="flex items-center gap-4 p-4 bg-[#8B5CF6] border-[4px] border-black shadow-[6px_6px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0_#000] transition-all group"
+                        className="flex items-center gap-2.5 sm:gap-4 p-3 sm:p-4 bg-indigo-400 border-[3px] border-black shadow-[4px_4px_0_#000] hover:-translate-y-1 hover:shadow-[7px_7px_0_#000] transition-all rounded-2xl group active:translate-y-px min-w-0"
                     >
-                        <div className="w-12 h-12 bg-white border-[3px] border-black flex items-center justify-center shrink-0 shadow-[2px_2px_0_#000]">
-                            <span className="text-2xl group-hover:rotate-12 transition-transform">🎲</span>
+                        <div className="w-9 h-9 sm:w-12 sm:h-12 bg-white border-[2.5px] border-black flex items-center justify-center shrink-0 shadow-[2px_2px_0_#000] rounded-xl">
+                            <span className="text-xl sm:text-2xl group-hover:rotate-12 transition-transform select-none">🎲</span>
                         </div>
-                        <div className="flex-1">
-                            <p className="text-[16px] font-black text-white uppercase tracking-wider">Gacha Box</p>
-                            <p className="text-[11px] font-bold text-white/80 uppercase">Uji keberuntunganmu</p>
+                        <div className="flex-1 font-[Outfit] min-w-0">
+                            <p className="text-[12px] sm:text-[14px] md:text-[15px] font-black text-black uppercase tracking-wider truncate">Gacha Box</p>
+                            <p className="text-[8px] sm:text-[10px] md:text-[11px] font-bold text-black/80 uppercase truncate">Keberuntungan</p>
                         </div>
-                        <div className="w-10 h-10 bg-black flex items-center justify-center border-[2px] border-black group-hover:bg-[#00FFFF] group-hover:text-black text-white transition-colors">
-                            <ChevronRight className="w-6 h-6" />
+                        <div className="hidden sm:flex w-8 h-8 sm:w-10 sm:h-10 bg-white items-center justify-center border-[2.5px] border-black group-hover:bg-cyan-300 group-hover:text-black text-black transition-colors rounded-xl shadow-[2px_2px_0_#000] shrink-0">
+                            <ChevronRight className="w-5 h-5" />
                         </div>
                     </Link>
                 </div>
             </motion.div>
 
             {/* ── Filter Tabs ── */}
-            <div className="mb-8 overflow-x-auto pb-4 custom-scrollbar">
-                <div className="flex items-center gap-3 min-w-max">
+            <div className="mb-6 sm:mb-8 overflow-x-auto pb-3 custom-scrollbar">
+                <div className="flex items-center gap-2 sm:gap-3 min-w-max">
                     <button
                         onClick={() => setActiveType("ALL")}
-                        className={`flex items-center gap-2 px-5 py-3 border-[3px] border-black text-[12px] font-black uppercase transition-all shadow-[4px_4px_0_#000] ${
+                        className={`flex items-center gap-1.5 sm:gap-2 px-3.5 py-2.5 sm:px-5 sm:py-3 border-[2px] sm:border-[2.5px] border-black text-[10px] sm:text-[12px] font-black uppercase transition-all shadow-[2px_2px_0_#000] sm:shadow-[3px_3px_0_#000] rounded-xl active:translate-y-px ${
                             activeType === "ALL" 
-                            ? "bg-[#FFFF00] text-black translate-x-[-2px] translate-y-[-2px] shadow-[6px_6px_0_#000]" 
-                            : "bg-white text-black hover:bg-neutral-100"
+                            ? "bg-yellow-300 text-black translate-x-[-1px] translate-y-[-1px] shadow-[3px_3px_0_#000] sm:shadow-[4px_4px_0_#000]" 
+                            : "bg-white text-black hover:bg-neutral-50"
                         }`}
                     >
                         <ShoppingBag className="w-4 h-4" />
                         Semua
-                        <span className="ml-1 px-2 py-0.5 bg-black text-white text-[10px]">{items.length}</span>
+                        <span className="ml-1 px-1.5 py-0.5 bg-black text-white text-[9px] rounded-md">{items.length}</span>
                     </button>
 
                     {ALL_TYPES.map(type => {
@@ -1013,15 +1013,15 @@ export default function ShopPage() {
                             <button
                                 key={type}
                                 onClick={() => setActiveType(type)}
-                                className={`flex items-center gap-2 px-5 py-3 border-[3px] border-black text-[12px] font-black uppercase transition-all shadow-[4px_4px_0_#000] ${
+                                className={`flex items-center gap-1.5 sm:gap-2 px-3.5 py-2.5 sm:px-5 sm:py-3 border-[2px] sm:border-[2.5px] border-black text-[10px] sm:text-[12px] font-black uppercase transition-all shadow-[2px_2px_0_#000] sm:shadow-[3px_3px_0_#000] rounded-xl active:translate-y-px ${
                                     isActive 
-                                    ? "bg-[#00FFFF] text-black translate-x-[-2px] translate-y-[-2px] shadow-[6px_6px_0_#000]" 
-                                    : "bg-white text-black hover:bg-neutral-100"
+                                    ? "bg-cyan-300 text-black translate-x-[-1px] translate-y-[-1px] shadow-[3px_3px_0_#000] sm:shadow-[4px_4px_0_#000]" 
+                                    : "bg-white text-black hover:bg-neutral-50"
                                 }`}
                             >
                                 <Icon className="w-4 h-4" />
                                 {TYPE_LABELS[type]}
-                                <span className="ml-1 px-2 py-0.5 bg-black text-white text-[10px]">{count}</span>
+                                <span className="ml-1 px-1.5 py-0.5 bg-black text-white text-[9px] rounded-md">{count}</span>
                             </button>
                         )
                     })}
@@ -1030,17 +1030,17 @@ export default function ShopPage() {
 
             {/* ── Content ── */}
             {filtered.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-24 text-center bg-white border-[4px] border-black shadow-[8px_8px_0_#000]">
-                    <div className="w-20 h-20 bg-[#E5E5E5] border-[4px] border-black flex items-center justify-center mb-6 shadow-[4px_4px_0_#000]">
-                        <ShoppingBag className="w-10 h-10 text-black" />
+                <div className="flex flex-col items-center justify-center py-24 text-center bg-white border-[3px] border-black shadow-[6px_6px_0_#000] rounded-2xl font-[Outfit]">
+                    <div className="w-16 h-16 bg-neutral-200 border-[2.5px] border-black flex items-center justify-center mb-6 shadow-[3px_3px_0_#000] rounded-xl">
+                        <ShoppingBag className="w-8 h-8 text-black" />
                     </div>
-                    <p className="text-[20px] font-black text-black uppercase tracking-wider mb-2">Item Kosong</p>
-                    <p className="text-[14px] font-bold text-black/60 max-w-sm mb-6 uppercase">
+                    <p className="text-[18px] font-black text-black uppercase tracking-wider mb-2">Item Kosong</p>
+                    <p className="text-[12px] font-bold text-black/60 max-w-sm mb-6 uppercase">
                         Belum ada item untuk kategori ini.
                     </p>
                     <button
                         onClick={() => setActiveType("ALL")}
-                        className="px-6 py-3 bg-[#FFFF00] border-[3px] border-black text-[14px] font-black uppercase shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all"
+                        className="px-6 py-3 bg-yellow-300 border-[2.5px] border-black text-[13px] font-black uppercase shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] transition-all active:translate-y-px"
                     >
                         Lihat Semua
                     </button>
@@ -1049,9 +1049,9 @@ export default function ShopPage() {
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                     {/* Belum Dimiliki Section */}
                     {notOwnedItems.length > 0 && (
-                        <div className="mb-12">
+                        <div className="mb-8 sm:mb-12">
                             <SectionDivider label="Tersedia untuk Dibeli" count={notOwnedItems.length} color="#000" />
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
+                            <div className="grid grid-cols-1 min-[340px]:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mt-6">
                                 <AnimatePresence mode="popLayout">
                                     {notOwnedItems.map(item => (
                                         <ShopCard
@@ -1073,9 +1073,9 @@ export default function ShopPage() {
 
                     {/* Sudah Dimiliki Section */}
                     {ownedItems.length > 0 && (
-                        <div className="mb-8">
+                        <div className="mb-6 sm:mb-8">
                             <SectionDivider label="Sudah Dimiliki" count={ownedItems.length} color="#000" />
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
+                            <div className="grid grid-cols-1 min-[340px]:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mt-6">
                                 <AnimatePresence mode="popLayout">
                                     {ownedItems.map(item => (
                                         <ShopCard
@@ -1115,13 +1115,13 @@ export default function ShopPage() {
             </AnimatePresence>
 
             {/* ── Floating Points Balance ── */}
-            <div className="fixed top-24 right-4 sm:top-24 sm:right-8 z-40 flex items-center gap-3 px-3 py-2 bg-white border-[4px] border-black shadow-[6px_6px_0_#FF0000]">
-                <div className="w-8 h-8 bg-[#FFFF00] border-[2px] border-black flex items-center justify-center shadow-[2px_2px_0_#000]">
-                    <Star className="w-5 h-5 text-black fill-black" />
+            <div className="fixed top-24 right-4 sm:top-24 sm:right-8 z-40 flex items-center gap-3 px-4 py-2.5 bg-white border-[3px] border-black shadow-[5px_5px_0_#000] rounded-2xl font-[Outfit]">
+                <div className="w-8 h-8 bg-yellow-300 border-[2px] border-black flex items-center justify-center shadow-[2px_2px_0_#000] rounded-xl">
+                    <Star className="w-4 h-4 text-black fill-black" />
                 </div>
-                <div className="flex flex-col pr-2">
-                    <p className="text-[18px] font-black text-black leading-none">{formatPoints(points)}</p>
-                    <p className="text-[10px] font-black text-black/60 uppercase tracking-widest leading-none mt-1">Points</p>
+                <div className="flex flex-col pr-1">
+                    <p className="text-[16px] font-black text-black leading-none">{formatPoints(points)}</p>
+                    <p className="text-[9px] font-black text-black/60 uppercase tracking-widest leading-none mt-1">Points</p>
                 </div>
             </div>
         </div>

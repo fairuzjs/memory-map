@@ -66,7 +66,7 @@ function CrownIcon() {
         d="M3 26 L6 10 L13 18 L19 4 L25 18 L32 10 L35 26 Z"
         fill="#FFFF00" stroke="#000" strokeWidth="2" strokeLinejoin="round"
       />
-      <rect x="3" y="25" width="32" height="5" fill="#FFFF00" stroke="#000" strokeWidth="2" />
+      <rect x="3" y="25" width="32" height="5" fill="#FFFF00" stroke="#000" strokeWidth="2" rx="1.5" />
     </svg>
   )
 }
@@ -77,7 +77,7 @@ function SilverMedalIcon() {
       <circle cx="15" cy="20" r="12" fill="#E5E5E5" stroke="#000" strokeWidth="2" />
       <path d="M10 10 L6 2 L12 5 L15 8Z" fill="#E5E5E5" stroke="#000" strokeWidth="2" />
       <path d="M20 10 L24 2 L18 5 L15 8Z" fill="#E5E5E5" stroke="#000" strokeWidth="2" />
-      <text x="15" y="25" textAnchor="middle" fontSize="12" fontWeight="900" fill="#000" fontFamily="sans-serif">2</text>
+      <text x="15" y="24" textAnchor="middle" fontSize="12" fontWeight="900" fill="#000" fontFamily="sans-serif">2</text>
     </svg>
   )
 }
@@ -88,7 +88,7 @@ function BronzeMedalIcon() {
       <circle cx="15" cy="20" r="12" fill="#FF9900" stroke="#000" strokeWidth="2" />
       <path d="M10 10 L6 2 L12 5 L15 8Z" fill="#FF9900" stroke="#000" strokeWidth="2" />
       <path d="M20 10 L24 2 L18 5 L15 8Z" fill="#FF9900" stroke="#000" strokeWidth="2" />
-      <text x="15" y="25" textAnchor="middle" fontSize="12" fontWeight="900" fill="#000" fontFamily="sans-serif">3</text>
+      <text x="15" y="24" textAnchor="middle" fontSize="12" fontWeight="900" fill="#000" fontFamily="sans-serif">3</text>
     </svg>
   )
 }
@@ -119,19 +119,16 @@ function Avatar({
 }) {
   return (
     <div
+      className="rounded-xl border-[3px] border-black bg-white overflow-hidden flex items-center justify-center shrink-0"
       style={{
-        width: size, height: size,
-        border: `3px solid #000`,
-        overflow: "hidden",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        background: "#FFF",
-        flexShrink: 0,
+        width: size,
+        height: size,
       }}
     >
       {image ? (
-        <img src={image} alt={name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        <img src={image} alt={name} className="w-full h-full object-cover" />
       ) : (
-        <span style={{ fontSize: size * 0.4, fontWeight: 900, color: "#000" }}>
+        <span className="font-black text-black" style={{ fontSize: size * 0.4 }}>
           {name.charAt(0).toUpperCase()}
         </span>
       )}
@@ -180,14 +177,14 @@ function PodiumStep({
         </motion.div>
 
         {/* Avatar */}
-        <div className="relative mb-3 group-hover:translate-y-[-4px] transition-transform">
+        <div className="relative mb-3 group-hover:translate-y-[-4px] transition-transform duration-200">
           <Avatar
             image={entry.image}
             name={entry.name}
             size={avatarSize}
           />
           {isMe && (
-            <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[#FF00FF] text-white text-[10px] font-black px-2 py-0.5 border-[2px] border-black shadow-[2px_2px_0_#000] whitespace-nowrap uppercase">
+            <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[#FF00FF] text-white text-[9px] font-black px-2 py-0.5 border-[2px] border-black shadow-[2px_2px_0_#000] rounded-lg whitespace-nowrap uppercase">
               Kamu
             </span>
           )}
@@ -200,14 +197,14 @@ function PodiumStep({
         </div>
 
         {/* Streak */}
-        <div className="flex items-center gap-1.5 text-base font-black text-black mb-3 bg-white border-[2px] border-black px-2 shadow-[2px_2px_0_#000]">
+        <div className="flex items-center gap-1.5 text-sm font-black text-black mb-3 bg-white border-[2px] border-black px-2.5 py-0.5 rounded-xl shadow-[2px_2px_0_#000]">
           <FlameIcon size={14} />
           <span>{entry.longestStreak}</span>
         </div>
 
         {/* Pillar */}
         <div 
-          className="w-full flex items-center justify-center border-[4px] border-black relative overflow-hidden shadow-[4px_4px_0_rgba(0,0,0,0.2)]"
+          className="w-full flex items-center justify-center border-[3px] border-black relative overflow-hidden rounded-t-2xl shadow-[4px_4px_0_rgba(0,0,0,0.15)]"
           style={{ height: rs.pillarHeight, background: rs.pillarBg }}
         >
           {/* Number */}
@@ -253,21 +250,21 @@ export function LeaderboardModal({
           <motion.div
             variants={modalVariants}
             initial="hidden" animate="visible" exit="exit"
-            className="relative w-full flex flex-col bg-[#FFFDF0] border-[4px] border-black shadow-[12px_12px_0_#000] overflow-hidden"
+            className="relative w-full flex flex-col bg-[#FFFDF0] border-[3px] border-black rounded-3xl shadow-[8px_8px_0_#000] overflow-hidden"
             style={{ maxWidth: 600, maxHeight: "88vh" }}
           >
 
             {/* ── Header ── */}
-            <div className="relative px-5 py-4 border-b-[4px] border-black bg-[#00FFFF] flex items-center justify-between overflow-hidden shrink-0">
+            <div className="relative px-5 py-4 border-b-[3px] border-black bg-[#00FFFF] flex items-center justify-between overflow-hidden shrink-0">
               <div className="flex items-center gap-4 z-10">
-                <div className="w-12 h-12 bg-[#FFFF00] border-[3px] border-black shadow-[3px_3px_0_#000] flex items-center justify-center">
+                <div className="w-12 h-12 bg-[#FFFF00] border-[3px] border-black shadow-[3px_3px_0_#000] flex items-center justify-center rounded-xl">
                   <Trophy className="w-6 h-6 text-black fill-black" />
                 </div>
                 <div>
                   <div className="text-[20px] font-black text-black uppercase tracking-widest">
                     Leaderboard
                   </div>
-                  <div className="text-[12px] font-bold text-black/60 uppercase tracking-widest bg-white border-[2px] border-black px-2 py-0.5 inline-block mt-1">
+                  <div className="text-[11px] font-black text-black/60 uppercase tracking-widest bg-white border-[2px] border-black px-2.5 py-0.5 inline-block mt-1 rounded-lg shadow-[1.5px_1.5px_0_#000]">
                     Top 50 Streakers
                   </div>
                 </div>
@@ -275,7 +272,7 @@ export function LeaderboardModal({
 
               <button
                 onClick={onClose}
-                className="w-10 h-10 bg-white border-[3px] border-black shadow-[3px_3px_0_#000] flex items-center justify-center cursor-pointer z-10 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0_#000] hover:bg-[#FF00FF] hover:text-white transition-all"
+                className="w-10 h-10 bg-white border-[3px] border-black shadow-[3px_3px_0_#000] flex items-center justify-center cursor-pointer z-10 rounded-xl hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] hover:bg-[#FF00FF] hover:text-white transition-all active:translate-y-0 active:shadow-[2px_2px_0_#000]"
               >
                 <X className="w-6 h-6" />
               </button>
@@ -286,7 +283,7 @@ export function LeaderboardModal({
 
               {/* Podium */}
               {topThree.length > 0 && (
-                <div className="px-5 pt-8 pb-6 flex items-end justify-center gap-4 border-b-[4px] border-black bg-[#FFFDF0]">
+                <div className="px-5 pt-8 pb-6 flex items-end justify-center gap-4 border-b-[3px] border-black bg-[#FFFDF0]">
                   {podiumOrder.map((entry) =>
                     entry ? (
                       <PodiumStep
@@ -307,11 +304,13 @@ export function LeaderboardModal({
                   {others.map((entry) => {
                     const isMe = entry.userId === currentUserId
                     return (
-                      <motion.div key={entry.userId} variants={itemVariants} whileHover={{ x: 4 }}>
+                      <motion.div key={entry.userId} variants={itemVariants}>
                         <Link
                           href={`/profile/${entry.userId}`}
                           onClick={onClose}
-                          className={`flex items-center gap-4 p-3 border-[3px] border-black shadow-[4px_4px_0_#000] transition-colors group ${isMe ? "bg-[#FFFF00]" : "bg-white hover:bg-[#00FFFF]"}`}
+                          className={`flex items-center gap-4 p-3.5 border-[3px] border-black rounded-2xl shadow-[4px_4px_0_#000] hover:shadow-[6px_6px_0_#000] hover:-translate-y-0.5 active:translate-y-px active:shadow-none transition-all group ${
+                            isMe ? "bg-[#FFFF00]" : "bg-white hover:bg-[#00FFFF]"
+                          }`}
                         >
                           {/* Rank */}
                           <div className="w-8 text-[16px] font-black text-black text-center shrink-0">
@@ -319,9 +318,9 @@ export function LeaderboardModal({
                           </div>
 
                           {/* Avatar */}
-                          <div className="w-12 h-12 border-[3px] border-black bg-white flex items-center justify-center text-[16px] font-black text-black overflow-hidden shrink-0">
+                          <div className="w-12 h-12 border-[3px] border-black bg-white flex items-center justify-center text-[16px] font-black text-black overflow-hidden rounded-xl shrink-0">
                             {entry.image ? (
-                              <img src={entry.image} alt={entry.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                              <img src={entry.image} alt={entry.name} className="w-full h-full object-cover" />
                             ) : (
                               <span>{entry.name.charAt(0).toUpperCase()}</span>
                             )}
@@ -335,7 +334,7 @@ export function LeaderboardModal({
                               </span>
                               {entry.isVerified && <BadgeCheck className="w-4 h-4 text-black shrink-0 fill-[#00FFFF]" />}
                               {isMe && (
-                                <span className="text-[10px] px-2 py-0.5 bg-[#FF00FF] border-[2px] border-black text-white font-black uppercase shrink-0 shadow-[2px_2px_0_#000]">
+                                <span className="text-[9px] px-2 py-0.5 bg-[#FF00FF] border-[2px] border-black text-white font-black uppercase shrink-0 shadow-[2px_2px_0_#000] rounded-lg">
                                   Kamu
                                 </span>
                               )}
@@ -346,7 +345,7 @@ export function LeaderboardModal({
                           </div>
 
                           {/* Streak pill */}
-                          <div className="flex items-center gap-2 bg-[#FF0000] border-[2px] border-black px-3 py-1.5 shadow-[2px_2px_0_#000] shrink-0">
+                          <div className="flex items-center gap-2 bg-[#FF0000] border-[2px] border-black px-3.5 py-1.5 shadow-[2px_2px_0_#000] rounded-xl shrink-0">
                             <FlameIcon size={16} />
                             <span className="text-[14px] font-black text-white">
                               {entry.longestStreak}

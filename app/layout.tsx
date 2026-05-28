@@ -35,22 +35,22 @@ export default function RootLayout({
                 background: "#fff",
                 color: "#000",
                 border: "3px solid #000",
-                borderRadius: "0px",
+                borderRadius: "16px",
                 padding: "12px 20px",
                 fontSize: "14px",
                 fontWeight: "900",
                 fontFamily: "var(--font-outfit)",
-                boxShadow: "4px 4px 0 #000",
+                boxShadow: "6px 6px 0 #000",
                 textTransform: "uppercase" as const,
                 letterSpacing: "0.02em",
               },
               success: {
                 iconTheme: {
                   primary: "#000",
-                  secondary: "#00FF00",
+                  secondary: "#86efac",
                 },
                 style: {
-                  background: "#00FF00",
+                  background: "#86efac",
                   color: "#000",
                   border: "3px solid #000",
                 }
@@ -58,7 +58,7 @@ export default function RootLayout({
               error: {
                 iconTheme: {
                   primary: "#fff",
-                  secondary: "#FF0000",
+                  secondary: "#FF3300",
                 },
                 style: {
                   background: "#FF3300",

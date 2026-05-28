@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
 import { checkRateLimit, rateLimitResponse, RATE_LIMITS } from "@/lib/rate-limit"
 import { isPremiumActive, getUserLimits } from "@/lib/premium-config"
+import { checkAndCleanupPremium } from "@/lib/premium-enforcement"
 
 // POST /api/shop/purchase  { itemId: string }
 export async function POST(req: Request) {
@@ -24,9 +25,13 @@ export async function POST(req: Request) {
 
     const [item, user, existingInventory] = await Promise.all([
         prisma.shopItem.findUnique({ where: { id: itemId } }),
-        prisma.user.findUnique({ where: { id: userId }, select: { points: true, premiumExpiresAt: true } }),
+        prisma.user.findUnique({ where: { id: userId }, select: { id: true, isPremium: true, points: true, premiumExpiresAt: true } }),
         prisma.userInventory.findUnique({ where: { userId_itemId: { userId, itemId } } }),
     ])
+
+    if (user) {
+        checkAndCleanupPremium(user).catch(console.error);
+    }
 
     if (!item) {
         return NextResponse.json({ error: "Item not found" }, { status: 404 })

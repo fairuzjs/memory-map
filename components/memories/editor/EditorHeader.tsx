@@ -17,7 +17,7 @@ export function EditorHeader({ currentStep, setCurrentStep, setDirection }: Edit
     return (
         <div className="mb-8">
             <div className="mb-8 text-center">
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#00FFFF] border-[3px] border-black shadow-[3px_3px_0_#000] mb-4">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#00FFFF] border-[3px] border-black shadow-[3px_3px_0_#000] mb-4 rounded-xl">
                     <BookText className="w-4 h-4 text-black" />
                     <span className="text-xs font-black text-black uppercase tracking-widest">Editor</span>
                 </div>
@@ -46,17 +46,17 @@ export function EditorHeader({ currentStep, setCurrentStep, setDirection }: Edit
                                     }
                                 }}
                                 className={`
-                                    flex items-center gap-2.5 px-4 py-2.5 border-[3px] border-black transition-all duration-200
+                                    flex items-center gap-2.5 px-4 py-2.5 border-[3px] border-black transition-all duration-200 rounded-xl
                                     ${isActive
-                                        ? "bg-[#FFFF00] text-black shadow-[4px_4px_0_#000]"
+                                        ? "bg-[#FFFF00] text-black shadow-[3px_3px_0_#000]"
                                         : isCompleted
-                                            ? "bg-[#00FF00] text-black shadow-[3px_3px_0_#000] cursor-pointer hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000]"
+                                            ? "bg-[#00FF00] text-black shadow-[2.5px_2.5px_0_#000] cursor-pointer hover:-translate-y-0.5 hover:shadow-[3.5px_3.5px_0_#000] active:translate-y-px active:shadow-none"
                                             : "bg-[#E5E5E5] text-neutral-400"
                                     }
                                 `}
                             >
                                 <div className={`
-                                    w-7 h-7 flex items-center justify-center text-xs font-black transition-all border-[2px] border-black
+                                    w-7 h-7 flex items-center justify-center text-xs font-black transition-all border-[2px] border-black rounded-lg
                                     ${isActive
                                         ? "bg-black text-[#FFFF00]"
                                         : isCompleted
@@ -74,7 +74,7 @@ export function EditorHeader({ currentStep, setCurrentStep, setDirection }: Edit
                                 </div>
                             </button>
                             {index < STEPS.length - 1 && (
-                                <div className={`w-6 h-[3px] ${currentStep > index ? "bg-black" : "bg-[#E5E5E5]"}`} />
+                                <div className={`w-6 h-[3px] rounded-full ${currentStep > index ? "bg-black" : "bg-[#E5E5E5]"}`} />
                             )}
                         </div>
                     )

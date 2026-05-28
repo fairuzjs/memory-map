@@ -166,15 +166,15 @@ export default function FeedbacksPage() {
                 {/* ── Hero Header ── */}
                 <div className="mb-12">
                     {/* Badge */}
-                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#E5E5E5] border-[3px] border-black shadow-[4px_4px_0_#000] mb-6">
-                        <span className="w-2 h-2 border-[2px] border-black bg-[#FF00FF]" />
+                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-[#E5E5E5] border-[3px] border-black rounded-xl shadow-[4px_4px_0_#000] mb-6">
+                        <span className="w-2 h-2 border-[2px] border-black bg-[#FF00FF] rounded-full" />
                         <span className="text-[12px] font-black text-black uppercase tracking-widest">Support Center</span>
                     </div>
 
                     <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-black tracking-tight uppercase drop-shadow-[0_4px_0_rgba(0,0,0,1)] mb-6">
                         Pusat Bantuan & <span className="text-[#8b5cf6]">Masukan</span>
                     </h1>
-                    <p className="text-[16px] font-bold text-black/70 max-w-lg leading-relaxed bg-white inline-block border-[2px] border-black p-3 shadow-[4px_4px_0_#000]">
+                    <p className="text-[15px] font-bold text-black/70 max-w-lg leading-relaxed bg-white inline-block border-[3px] border-black p-4 rounded-2xl shadow-[4px_4px_0_#000] font-outfit uppercase tracking-wide">
                         Sampaikan saran, laporkan bug, atau ajukan pertanyaan. Tim kami siap merespon setiap masukan darimu.
                     </p>
 
@@ -186,7 +186,7 @@ export default function FeedbacksPage() {
                                 { label: "Menunggu", value: pendingCount, bg: "bg-[#f59e0b]", text: "text-black" },
                                 { label: "Dibalas", value: repliedCount, bg: "bg-[#34d399]", text: "text-black" },
                             ].map((stat) => (
-                                <div key={stat.label} className={`flex items-center gap-2 sm:gap-3 px-3 py-1.5 sm:px-4 sm:py-2 border-[2px] sm:border-[3px] border-black shadow-[2px_2px_0_#000] sm:shadow-[4px_4px_0_#000] bg-white shrink-0`}>
+                                <div key={stat.label} className="flex items-center gap-2 sm:gap-3 px-4 py-2 border-[3px] border-black shadow-[3px_3px_0_#000] rounded-xl bg-white shrink-0">
                                     <span className={`text-[14px] sm:text-[18px] font-black ${stat.text}`}>{stat.value}</span>
                                     <span className="text-[10px] sm:text-[12px] font-bold text-black uppercase tracking-wider">{stat.label}</span>
                                 </div>
@@ -205,15 +205,15 @@ export default function FeedbacksPage() {
                         <button
                             key={id}
                             onClick={() => setActiveTab(id)}
-                            className={`flex items-center shrink-0 gap-2 sm:gap-3 px-4 sm:px-6 py-2 sm:py-3 border-[2px] sm:border-[3px] border-black text-[12px] sm:text-[14px] font-black uppercase transition-all shadow-[2px_2px_0_#000] sm:shadow-[4px_4px_0_#000] ${
+                            className={`flex items-center shrink-0 gap-2 sm:gap-3 px-5 sm:px-6 py-2.5 sm:py-3 border-[3px] border-black text-[12px] sm:text-[14px] font-black uppercase rounded-2xl transition-all shadow-[3px_3px_0_#000] sm:shadow-[4px_4px_0_#000] ${
                                 activeTab === id
-                                    ? `${bg} text-black translate-x-[-1px] sm:translate-x-[-2px] translate-y-[-1px] sm:translate-y-[-2px] shadow-[3px_3px_0_#000] sm:shadow-[6px_6px_0_#000]`
-                                    : "bg-[#E5E5E5] text-black hover:translate-x-[-1px] sm:hover:translate-x-[-2px] hover:translate-y-[-1px] sm:hover:translate-y-[-2px] hover:shadow-[3px_3px_0_#000] sm:hover:shadow-[6px_6px_0_#000]"
+                                    ? `${bg} text-black -translate-y-0.5 shadow-[4px_4px_0_#000] sm:shadow-[5px_5px_0_#000]`
+                                    : "bg-white hover:bg-neutral-50 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] sm:hover:shadow-[5px_5px_0_#000]"
                             }`}
                         >
                             <span>{label}</span>
                             {count !== undefined && count > 0 && (
-                                <span className="px-1.5 py-0.5 sm:px-2 border-[2px] border-black bg-white text-black text-[10px] sm:text-[12px]">
+                                <span className="px-2 py-0.5 border-[2px] border-black bg-white text-black text-[10px] sm:text-[12px] rounded-lg">
                                     {count}
                                 </span>
                             )}
@@ -234,12 +234,12 @@ export default function FeedbacksPage() {
                                 exit={{ opacity: 0, y: -20 }}
                                 transition={{ duration: 0.3, ease: "easeOut" }}
                             >
-                                <div className="bg-white border-[4px] border-black shadow-[12px_12px_0_#000]">
+                                <div className="bg-white border-[3px] border-black rounded-3xl shadow-[8px_8px_0_#000] overflow-hidden">
                                     <div className="p-6 sm:p-10">
                                         {/* Section title */}
                                         <div className="flex flex-wrap items-center justify-between mb-8 gap-4">
                                             <div className="flex items-center gap-4">
-                                                <div className="w-12 h-12 flex items-center justify-center border-[3px] border-black bg-[#FF00FF] shadow-[2px_2px_0_#000]">
+                                                <div className="w-12 h-12 flex items-center justify-center border-[3px] border-black bg-[#FF00FF] shadow-[2px_2px_0_#000] rounded-xl">
                                                     <MessageSquareText className="w-6 h-6 text-white" />
                                                 </div>
                                                 <div>
@@ -247,7 +247,7 @@ export default function FeedbacksPage() {
                                                     <p className="text-[12px] font-bold text-black/60 uppercase">Isi form di bawah ini dengan detail</p>
                                                 </div>
                                             </div>
-                                            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 border-[2px] border-black bg-[#E5E5E5] shadow-[2px_2px_0_#000]">
+                                            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 border-[2px] border-black bg-[#E5E5E5] shadow-[2px_2px_0_#000] rounded-lg">
                                                 <span className="text-[10px] font-bold text-black uppercase">Response time</span>
                                                 <span className="text-[12px] font-black text-[#FF3300]">&lt; 24 jam</span>
                                             </div>
@@ -256,7 +256,7 @@ export default function FeedbacksPage() {
                                         <form onSubmit={handleSubmit} className="space-y-8">
                                             {/* Category Picker */}
                                             <div>
-                                                <label className="block text-[14px] font-black text-black mb-4 uppercase tracking-widest bg-[#FFFF00] border-[2px] border-black inline-block px-2 py-1 shadow-[2px_2px_0_#000]">
+                                                <label className="block text-[14px] font-black text-black mb-4 uppercase tracking-widest bg-[#FFFF00] border-[2px] border-black inline-block px-2.5 py-1 rounded-lg shadow-[2px_2px_0_#000]">
                                                     Kategori Masukan
                                                 </label>
                                                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -265,13 +265,13 @@ export default function FeedbacksPage() {
                                                             key={id}
                                                             type="button"
                                                             onClick={() => setCategory(id)}
-                                                            className={`flex flex-col items-center gap-3 p-4 border-[3px] border-black transition-all shadow-[4px_4px_0_#000] ${
+                                                            className={`flex flex-col items-center gap-3 p-4 border-[3px] border-black rounded-2xl transition-all shadow-[4px_4px_0_#000] ${
                                                                 category === id 
-                                                                    ? `${bg} translate-x-[-2px] translate-y-[-2px] shadow-[6px_6px_0_#000]`
-                                                                    : "bg-white hover:bg-[#E5E5E5] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000]"
+                                                                    ? `${bg} -translate-y-0.5 shadow-[5px_5px_0_#000]`
+                                                                    : "bg-white hover:bg-neutral-50 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#000]"
                                                             }`}
                                                         >
-                                                            <div className="w-10 h-10 border-[2px] border-black bg-white flex items-center justify-center shadow-[2px_2px_0_#000]">
+                                                            <div className="w-10 h-10 border-[2px] border-black bg-white flex items-center justify-center rounded-xl shadow-[2px_2px_0_#000]">
                                                                 <CatIcon className={`w-5 h-5 ${category === id ? "text-black" : "text-black/70"}`} />
                                                             </div>
                                                             <span className={`text-[14px] font-black uppercase ${category === id ? color : "text-black"}`}>
@@ -284,7 +284,7 @@ export default function FeedbacksPage() {
 
                                             {/* Textarea */}
                                             <div>
-                                                <label className="block text-[14px] font-black text-black mb-4 uppercase tracking-widest bg-[#00FFFF] border-[2px] border-black inline-block px-2 py-1 shadow-[2px_2px_0_#000]">
+                                                <label className="block text-[14px] font-black text-black mb-4 uppercase tracking-widest bg-[#00FFFF] border-[2px] border-black inline-block px-2.5 py-1 rounded-lg shadow-[2px_2px_0_#000]">
                                                     Pesan
                                                 </label>
                                                 <div className="relative">
@@ -292,12 +292,12 @@ export default function FeedbacksPage() {
                                                         value={message}
                                                         onChange={(e) => setMessage(e.target.value)}
                                                         placeholder={`Ceritakan ${selectedCat.label.toLowerCase()} kamu secara detail...`}
-                                                        className="w-full bg-white border-[4px] border-black p-5 text-[14px] font-bold text-black placeholder:text-black/50 outline-none focus:translate-x-[-2px] focus:translate-y-[-2px] focus:shadow-[8px_8px_0_#000] shadow-[6px_6px_0_#000] resize-none h-48 transition-all"
+                                                        className="w-full bg-white border-[3px] border-black p-5 text-[14px] font-bold text-black placeholder:text-black/50 outline-none rounded-2xl focus:-translate-y-0.5 focus:shadow-[6px_6px_0_#000] shadow-[4px_4px_0_#000] resize-none h-48 transition-all"
                                                         required
                                                     />
                                                     {/* Char count */}
                                                     <div className="absolute bottom-4 right-5 flex items-center gap-2">
-                                                        <div className="text-[12px] font-black text-black bg-[#E5E5E5] border-[2px] border-black px-2 shadow-[2px_2px_0_#000]">
+                                                        <div className="text-[12px] font-black text-black bg-[#E5E5E5] border-[2px] border-black px-2.5 py-0.5 rounded-lg shadow-[2px_2px_0_#000]">
                                                             {message.length}
                                                         </div>
                                                     </div>
@@ -306,7 +306,7 @@ export default function FeedbacksPage() {
 
                                             {/* Image Upload */}
                                             <div>
-                                                <label className="block text-[14px] font-black text-black mb-4 uppercase tracking-widest bg-[#E5E5E5] border-[2px] border-black inline-block px-2 py-1 shadow-[2px_2px_0_#000]">
+                                                <label className="block text-[14px] font-black text-black mb-4 uppercase tracking-widest bg-[#E5E5E5] border-[2px] border-black inline-block px-2.5 py-1 rounded-lg shadow-[2px_2px_0_#000]">
                                                     Lampiran Foto <span className="normal-case font-normal">(opsional)</span>
                                                 </label>
                                                 <input
@@ -323,16 +323,16 @@ export default function FeedbacksPage() {
                                                             initial={{ opacity: 0, scale: 0.95 }}
                                                             animate={{ opacity: 1, scale: 1 }}
                                                             exit={{ opacity: 0, scale: 0.95 }}
-                                                            className="relative border-[4px] border-black shadow-[6px_6px_0_#000] bg-white group overflow-hidden"
+                                                            className="relative border-[3px] border-black shadow-[4px_4px_0_#000] bg-white group rounded-2xl overflow-hidden"
                                                         >
                                                             <img src={imagePreview} alt="Preview" className="w-full h-56 object-cover" />
                                                             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-4 backdrop-blur-sm">
                                                                 <button type="button" onClick={removeImage}
-                                                                    className="flex items-center gap-2 px-4 py-2 bg-[#FF3300] border-[3px] border-black text-white text-[14px] font-black uppercase shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all">
+                                                                    className="flex items-center gap-2 px-4 py-2 bg-[#FF3300] border-[3px] border-black text-white text-[14px] font-black uppercase rounded-xl shadow-[3px_3px_0_#000] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] transition-all">
                                                                     <X className="w-4 h-4" /> Hapus
                                                                 </button>
                                                                 <button type="button" onClick={() => fileInputRef.current?.click()}
-                                                                    className="flex items-center gap-2 px-4 py-2 bg-[#FFFF00] border-[3px] border-black text-black text-[14px] font-black uppercase shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all">
+                                                                    className="flex items-center gap-2 px-4 py-2 bg-[#FFFF00] border-[3px] border-black text-black text-[14px] font-black uppercase rounded-xl shadow-[3px_3px_0_#000] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] transition-all">
                                                                     <ImageIcon className="w-4 h-4" /> Ganti
                                                                 </button>
                                                             </div>
@@ -344,9 +344,9 @@ export default function FeedbacksPage() {
                                                             animate={{ opacity: 1 }}
                                                             type="button"
                                                             onClick={() => fileInputRef.current?.click()}
-                                                            className="w-full py-12 flex flex-col items-center justify-center gap-4 bg-[#E5E5E5] border-[4px] border-black border-dashed hover:border-solid hover:bg-[#00FF00] transition-all hover:shadow-[8px_8px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px]"
+                                                            className="w-full py-12 flex flex-col items-center justify-center gap-4 bg-[#E5E5E5] border-[3px] border-black border-dashed rounded-2xl hover:border-solid hover:bg-[#00FF00] transition-all hover:shadow-[6px_6px_0_#000] hover:-translate-y-0.5"
                                                         >
-                                                            <div className="w-16 h-16 border-[3px] border-black bg-white flex items-center justify-center shadow-[4px_4px_0_#000]">
+                                                            <div className="w-16 h-16 border-[3px] border-black bg-white flex items-center justify-center rounded-xl shadow-[3px_3px_0_#000]">
                                                                 <ImageIcon className="w-8 h-8 text-black" />
                                                             </div>
                                                             <div className="text-center">
@@ -364,7 +364,7 @@ export default function FeedbacksPage() {
                                             <button
                                                 type="submit"
                                                 disabled={isSubmitting || !message.trim()}
-                                                className="w-full py-4 bg-[#6366f1] text-white border-[4px] border-black text-[18px] font-black uppercase shadow-[8px_8px_0_#000] flex items-center justify-center gap-3 transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[10px_10px_0_#000] disabled:opacity-50 disabled:cursor-not-allowed"
+                                                className="w-full py-4 bg-[#6366f1] text-white border-[3px] border-black text-[18px] font-black uppercase rounded-2xl shadow-[6px_6px_0_#000] flex items-center justify-center gap-3 transition-all hover:-translate-y-0.5 hover:shadow-[8px_8px_0_#000] active:translate-y-px active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
                                                 {isSubmitting ? (
                                                     <><Loader2 className="w-6 h-6 animate-spin" /> Mengirim...</>
@@ -381,7 +381,7 @@ export default function FeedbacksPage() {
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     transition={{ delay: 0.3 }}
-                                    className="text-center text-[12px] font-bold text-black bg-[#E5E5E5] border-[2px] border-black inline-block mt-6 px-4 py-2 shadow-[2px_2px_0_#000] mx-auto w-fit block"
+                                    className="text-center text-[12px] font-bold text-black bg-[#E5E5E5] border-[2px] border-black inline-block mt-6 px-4.5 py-2.5 rounded-xl shadow-[2px_2px_0_#000] mx-auto w-fit block"
                                 >
                                     Tiket bersifat pribadi dan hanya dapat dilihat oleh kamu dan admin
                                 </motion.p>
@@ -399,21 +399,21 @@ export default function FeedbacksPage() {
                             >
                                 {/* Header row */}
                                 <div className="flex items-center justify-between mb-8">
-                                    <div className="bg-[#FFFF00] border-[3px] border-black px-4 py-2 shadow-[4px_4px_0_#000]">
+                                    <div className="bg-[#FFFF00] border-[3px] border-black px-4 py-2 rounded-xl shadow-[4px_4px_0_#000]">
                                         <h2 className="text-[20px] font-black uppercase text-black">Riwayat Tiket</h2>
                                     </div>
                                 </div>
 
                                 {isLoading ? (
                                     <div className="flex flex-col items-center justify-center py-28 gap-4">
-                                        <div className="w-16 h-16 border-[4px] border-black bg-[#00FFFF] shadow-[4px_4px_0_#000] flex items-center justify-center">
+                                        <div className="w-16 h-16 border-[3px] border-black bg-[#00FFFF] shadow-[4px_4px_0_#000] flex items-center justify-center rounded-2xl">
                                             <Loader2 className="w-8 h-8 text-black animate-spin" />
                                         </div>
-                                        <span className="text-[14px] font-black uppercase text-black">Memuat tiket...</span>
+                                        <span className="text-[14px] font-black uppercase text-black bg-white border-[2.5px] border-black px-4 py-2 rounded-xl shadow-[3.5px_3.5px_0_#000]">Memuat tiket...</span>
                                     </div>
                                 ) : tickets.length === 0 ? (
-                                    <div className="bg-white border-[4px] border-black shadow-[8px_8px_0_#000] py-20 px-8 text-center">
-                                        <div className="w-20 h-20 border-[4px] border-black bg-[#FF00FF] shadow-[4px_4px_0_#000] mx-auto mb-6 flex items-center justify-center">
+                                    <div className="bg-white border-[3px] border-black shadow-[6px_6px_0_#000] rounded-3xl py-20 px-8 text-center">
+                                        <div className="w-20 h-20 border-[3px] border-black bg-[#FF00FF] shadow-[4px_4px_0_#000] mx-auto mb-6 flex items-center justify-center rounded-2xl">
                                             <Inbox className="w-10 h-10 text-white" />
                                         </div>
                                         <p className="text-[24px] font-black uppercase text-black">Belum ada tiket</p>
@@ -422,7 +422,7 @@ export default function FeedbacksPage() {
                                         </p>
                                         <button
                                             onClick={() => setActiveTab("create")}
-                                            className="mt-8 inline-flex items-center gap-2 px-6 py-3 border-[3px] border-black bg-[#00FF00] text-[14px] font-black uppercase shadow-[4px_4px_0_#000] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000]"
+                                            className="mt-8 inline-flex items-center gap-2 px-6 py-3 border-[3px] border-black bg-[#00FF00] text-[14px] font-black uppercase rounded-xl shadow-[3px_3px_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] active:translate-y-px active:shadow-none"
                                         >
                                             <Sparkles className="w-4 h-4" />
                                             Buat Tiket
@@ -438,20 +438,24 @@ export default function FeedbacksPage() {
                                             return (
                                                 <div
                                                     key={ticket.id}
-                                                    className={`bg-white border-[4px] border-black transition-all cursor-pointer ${isExpanded ? "shadow-[8px_8px_0_#000] translate-x-[-2px] translate-y-[-2px]" : "shadow-[4px_4px_0_#000] hover:shadow-[6px_6px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px]"}`}
+                                                    className={`bg-white border-[3px] border-black rounded-2xl transition-all cursor-pointer overflow-hidden ${
+                                                        isExpanded 
+                                                            ? "shadow-[6px_6px_0_#000] -translate-y-0.5" 
+                                                            : "shadow-[4px_4px_0_#000] hover:shadow-[6px_6px_0_#000] hover:-translate-y-0.5"
+                                                    }`}
                                                     onClick={() => setExpandedTicket(isExpanded ? null : ticket.id)}
                                                 >
                                                     {/* Ticket Header */}
                                                     <div className="p-5 flex flex-wrap items-center justify-between gap-4">
                                                         <div className="flex flex-wrap items-center gap-4 flex-1">
                                                             {/* Status badge */}
-                                                            <div className={`flex items-center gap-2 px-3 py-1.5 border-[2px] border-black ${status.bg} ${status.color} shrink-0 shadow-[2px_2px_0_#000]`}>
+                                                            <div className={`flex items-center gap-2 px-3 py-1.5 border-[2px] border-black rounded-lg ${status.bg} ${status.color} shrink-0 shadow-[2px_2px_0_#000]`}>
                                                                 <StatusIcon className="w-4 h-4" />
                                                                 <span className="text-[12px] font-black uppercase">{status.text}</span>
                                                             </div>
                                                             {/* Ticket ID + time */}
                                                             <div>
-                                                                <span className="text-[14px] font-black uppercase text-black bg-[#E5E5E5] px-2 py-0.5 border-[2px] border-black shadow-[2px_2px_0_#000] mr-3">
+                                                                <span className="text-[14px] font-black uppercase text-black bg-[#E5E5E5] px-2 py-0.5 border-[2px] border-black rounded-lg shadow-[2px_2px_0_#000] mr-3">
                                                                     #{ticket.id.slice(-6).toUpperCase()}
                                                                 </span>
                                                                 <span className="text-[12px] font-bold text-black/60 uppercase">{timeAgo(ticket.createdAt)}</span>
@@ -461,7 +465,7 @@ export default function FeedbacksPage() {
                                                         {/* Right: expand chevron */}
                                                         <div className="flex items-center gap-3">
                                                             {ticket.adminReply && (
-                                                                <span className="text-[10px] font-black uppercase bg-[#00FF00] border-[2px] border-black text-black px-2 py-1 shadow-[2px_2px_0_#000]">
+                                                                <span className="text-[10px] font-black uppercase bg-[#00FF00] border-[2px] border-black text-black px-2 py-1 rounded-lg shadow-[2px_2px_0_#000]">
                                                                     Ada balasan
                                                                 </span>
                                                             )}
@@ -490,7 +494,7 @@ export default function FeedbacksPage() {
                                                                 transition={{ duration: 0.2 }}
                                                                 style={{ overflow: "hidden" }}
                                                             >
-                                                                <div className="mx-5 mb-5 p-5 bg-[#E5E5E5] border-[3px] border-black shadow-[4px_4px_0_#000]">
+                                                                <div className="mx-5 mb-5 p-5 bg-[#E5E5E5] border-[2px] border-black rounded-xl shadow-[3px_3px_0_#000]">
                                                                     <p className="text-[14px] font-bold text-black whitespace-pre-wrap leading-relaxed">
                                                                         {ticket.message}
                                                                     </p>
@@ -499,7 +503,7 @@ export default function FeedbacksPage() {
                                                                             <img
                                                                                 src={ticket.imageUrl}
                                                                                 alt="Lampiran"
-                                                                                className="max-h-64 border-[3px] border-black shadow-[4px_4px_0_#000] object-cover cursor-pointer hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all"
+                                                                                className="max-h-64 border-[3px] border-black rounded-xl shadow-[3px_3px_0_#000] object-cover cursor-pointer hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] transition-all"
                                                                                 onClick={(e) => { e.stopPropagation(); window.open(ticket.imageUrl, "_blank") }}
                                                                             />
                                                                         </div>
@@ -508,9 +512,9 @@ export default function FeedbacksPage() {
 
                                                                 {/* Admin Reply */}
                                                                 {ticket.adminReply && (
-                                                                    <div className="mx-5 mb-5 p-5 bg-[#00FF00] border-[3px] border-black shadow-[4px_4px_0_#000]">
+                                                                    <div className="mx-5 mb-5 p-5 bg-[#00FF00] border-[2.5px] border-black rounded-xl shadow-[3px_3px_0_#000]">
                                                                         <div className="flex items-center gap-3 mb-3">
-                                                                            <div className="w-8 h-8 border-[2px] border-black bg-white flex items-center justify-center text-[14px] font-black text-black shadow-[2px_2px_0_#000]">
+                                                                            <div className="w-8 h-8 border-[2px] border-black bg-white flex items-center justify-center text-[14px] font-black text-black rounded-lg shadow-[2px_2px_0_#000]">
                                                                                 A
                                                                             </div>
                                                                             <div>
@@ -545,21 +549,21 @@ export default function FeedbacksPage() {
                             >
                                 {/* Header row */}
                                 <div className="flex items-center justify-between mb-8">
-                                    <div className="bg-[#00FFFF] border-[3px] border-black px-4 py-2 shadow-[4px_4px_0_#000]">
+                                    <div className="bg-[#00FFFF] border-[3px] border-black px-4 py-2 rounded-xl shadow-[4px_4px_0_#000]">
                                         <h2 className="text-[20px] font-black uppercase text-black">Laporan Memory</h2>
                                     </div>
                                 </div>
 
                                 {isLoadingReports ? (
                                     <div className="flex flex-col items-center justify-center py-28 gap-4">
-                                        <div className="w-16 h-16 border-[4px] border-black bg-[#FF00FF] shadow-[4px_4px_0_#000] flex items-center justify-center">
+                                        <div className="w-16 h-16 border-[3px] border-black bg-[#FF00FF] shadow-[4px_4px_0_#000] flex items-center justify-center rounded-2xl">
                                             <Loader2 className="w-8 h-8 text-white animate-spin" />
                                         </div>
-                                        <span className="text-[14px] font-black uppercase text-black">Memuat laporan...</span>
+                                        <span className="text-[14px] font-black uppercase text-black bg-white border-[2.5px] border-black px-4 py-2 rounded-xl shadow-[3.5px_3.5px_0_#000]">Memuat laporan...</span>
                                     </div>
                                 ) : reports.length === 0 ? (
-                                    <div className="bg-white border-[4px] border-black shadow-[8px_8px_0_#000] py-20 px-8 text-center">
-                                        <div className="w-20 h-20 border-[4px] border-black bg-[#FF3300] shadow-[4px_4px_0_#000] mx-auto mb-6 flex items-center justify-center">
+                                    <div className="bg-white border-[3px] border-black shadow-[6px_6px_0_#000] rounded-3xl py-20 px-8 text-center">
+                                        <div className="w-20 h-20 border-[3px] border-black bg-[#FF3300] shadow-[4px_4px_0_#000] mx-auto mb-6 flex items-center justify-center rounded-2xl">
                                             <Flag className="w-10 h-10 text-white" />
                                         </div>
                                         <p className="text-[24px] font-black uppercase text-black">Belum ada laporan</p>
@@ -577,17 +581,21 @@ export default function FeedbacksPage() {
                                             return (
                                                 <div
                                                     key={report.id}
-                                                    className={`bg-white border-[4px] border-black transition-all cursor-pointer ${isExpanded ? "shadow-[8px_8px_0_#000] translate-x-[-2px] translate-y-[-2px]" : "shadow-[4px_4px_0_#000] hover:shadow-[6px_6px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px]"}`}
+                                                    className={`bg-white border-[3px] border-black rounded-2xl transition-all cursor-pointer overflow-hidden ${
+                                                        isExpanded 
+                                                            ? "shadow-[6px_6px_0_#000] -translate-y-0.5" 
+                                                            : "shadow-[4px_4px_0_#000] hover:shadow-[6px_6px_0_#000] hover:-translate-y-0.5"
+                                                    }`}
                                                     onClick={() => setExpandedReport(isExpanded ? null : report.id)}
                                                 >
                                                     <div className="p-5 flex flex-wrap items-center justify-between gap-4">
                                                         <div className="flex flex-wrap items-center gap-4 flex-1">
-                                                            <div className={`flex items-center gap-2 px-3 py-1.5 border-[2px] border-black ${status.bg} ${status.color} shrink-0 shadow-[2px_2px_0_#000]`}>
+                                                            <div className={`flex items-center gap-2 px-3 py-1.5 border-[2px] border-black rounded-lg ${status.bg} ${status.color} shrink-0 shadow-[2px_2px_0_#000]`}>
                                                                 <StatusIcon className="w-4 h-4" />
                                                                 <span className="text-[12px] font-black uppercase">{status.text}</span>
                                                             </div>
                                                             <div>
-                                                                <span className="text-[14px] font-black uppercase text-black bg-[#E5E5E5] px-2 py-0.5 border-[2px] border-black shadow-[2px_2px_0_#000] mr-3 inline-block mb-1">
+                                                                <span className="text-[14px] font-black uppercase text-black bg-[#E5E5E5] px-2 py-0.5 border-[2px] border-black rounded-lg shadow-[2px_2px_0_#000] mr-3 inline-block mb-1">
                                                                     Memory: {report.memory?.title || "Dihapus"}
                                                                 </span>
                                                                 <p className="text-[12px] font-bold text-black/60 uppercase">{timeAgo(report.createdAt)} &bull; Alasan: {report.reason}</p>
@@ -618,7 +626,7 @@ export default function FeedbacksPage() {
                                                                 transition={{ duration: 0.2 }}
                                                                 style={{ overflow: "hidden" }}
                                                             >
-                                                                <div className="mx-5 mb-5 p-5 bg-[#E5E5E5] border-[3px] border-black shadow-[4px_4px_0_#000]">
+                                                                <div className="mx-5 mb-5 p-5 bg-[#E5E5E5] border-[2px] border-black rounded-xl shadow-[3px_3px_0_#000]">
                                                                     <p className="text-[14px] font-bold text-black whitespace-pre-wrap leading-relaxed">
                                                                         {report.details ? report.details : "Tidak ada detail tambahan"}
                                                                     </p>

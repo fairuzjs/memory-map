@@ -20,7 +20,7 @@ const fadeUp: Variants = {
     })
 }
 
-const inputCls = "h-12 w-full border-[3px] border-black bg-white text-black text-sm placeholder:text-black/30 focus:bg-[#FFFF00]/10 focus:border-black focus:ring-0 transition-all px-4 outline-none font-medium"
+const inputCls = "h-12 w-full border-[3px] border-black bg-white text-black text-sm placeholder:text-black/30 focus:bg-[#FFFF00]/10 focus:border-black focus:ring-0 transition-all px-4 outline-none font-medium rounded-xl"
 
 export default function ForgotPasswordPage() {
     const router = useRouter()
@@ -82,13 +82,13 @@ export default function ForgotPasswordPage() {
                     <motion.div custom={0.5} variants={fadeUp} initial="hidden" animate="show"
                         className="flex items-center justify-center lg:justify-start gap-3 mb-10">
                         <div className="relative w-9 h-9">
-                            <div className="absolute inset-0 bg-[#FFFF00] border-[3px] border-black shadow-[2px_2px_0_#000]" />
+                            <div className="absolute inset-0 bg-[#FFFF00] border-[3px] border-black shadow-[2px_2px_0_#000] rounded-xl" />
                             <div className="relative w-9 h-9 flex items-center justify-center">
                                 <MapPin className="w-4 h-4 text-black" />
                             </div>
                         </div>
                         <span className="font-black text-xl font-[Outfit] text-black tracking-tight">
-                            Memory<span className="text-[#FF00FF]">Map</span>
+                            Memory<span className="text-[#d946ef]">Map</span>
                         </span>
                     </motion.div>
 
@@ -117,7 +117,7 @@ export default function ForgotPasswordPage() {
 
                             <motion.div custom={4} variants={fadeUp} initial="hidden" animate="show">
                                 <button type="submit" disabled={isLoading}
-                                    className="group w-full h-12 text-sm font-black text-black bg-[#FFFF00] border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide">
+                                    className="group w-full h-12 text-sm font-black text-black bg-[#FFFF00] border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide rounded-xl">
                                     <span className="flex items-center justify-center gap-2">
                                         {isLoading ? (
                                             <>
@@ -140,7 +140,7 @@ export default function ForgotPasswordPage() {
                     ) : (
                         <motion.div custom={2} variants={fadeUp} initial="hidden" animate="show" className="text-center mt-6">
                             <button onClick={() => setIsSent(false)}
-                                className="inline-flex items-center gap-2 text-sm font-black text-black px-6 py-3 border-[3px] border-black bg-white shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] hover:bg-[#00FFFF] transition-all">
+                                className="inline-flex items-center gap-2 text-sm font-black text-black px-6 py-3 border-[3px] border-black bg-white shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] hover:bg-[#67e8f9] transition-all rounded-xl">
                                 Coba email lain
                             </button>
                         </motion.div>

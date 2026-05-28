@@ -16,7 +16,7 @@ const stagger = {
 
 // ─── Shared card style ────────────────────────────────────────────────────────
 const card =
-  "relative bg-white border-[3px] border-black shadow-[4px_4px_0_#000] overflow-hidden group transition-all duration-300 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000]"
+  "relative bg-white border-[3px] border-black shadow-[4px_4px_0_#000] overflow-hidden group transition-all duration-300 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] rounded-2xl"
 
 // ─── Mini mock components ─────────────────────────────────────────────────────
 function MapDot({ x, y, size = 2, glow = false }: { x: number; y: number; size?: number; glow?: boolean }) {
@@ -26,7 +26,7 @@ function MapDot({ x, y, size = 2, glow = false }: { x: number; y: number; size?:
       style={{ left: `${x}%`, top: `${y}%` }}
     >
       <div
-        className={`bg-[#FF00FF] border-2 border-black ${glow ? "shadow-[0_0_0_2px_#FFFF00]" : ""}`}
+        className={`bg-[#FF00FF] border-2 border-black rounded-full ${glow ? "shadow-[0_0_0_2px_#FFFF00]" : ""}`}
         style={{ width: size * 4, height: size * 4 }}
       />
     </div>
@@ -46,10 +46,10 @@ function MiniMap() {
         }}
       />
       {/* Continent blobs */}
-      <div className="absolute top-[30%] left-[15%] w-[25%] h-[30%] bg-[#00FFFF]/20 border-2 border-black/10" />
-      <div className="absolute top-[25%] left-[43%] w-[28%] h-[40%] bg-[#FFFF00]/20 border-2 border-black/10" />
-      <div className="absolute top-[45%] left-[38%] w-[12%] h-[20%] bg-[#FF00FF]/15 border-2 border-black/10" />
-      <div className="absolute top-[20%] right-[8%] w-[20%] h-[35%] bg-[#00FF00]/20 border-2 border-black/10" />
+      <div className="absolute top-[30%] left-[15%] w-[25%] h-[30%] bg-[#00FFFF]/20 border-2 border-black/10 rounded-full" />
+      <div className="absolute top-[25%] left-[43%] w-[28%] h-[40%] bg-[#FFFF00]/20 border-2 border-black/10 rounded-full" />
+      <div className="absolute top-[45%] left-[38%] w-[12%] h-[20%] bg-[#FF00FF]/15 border-2 border-black/10 rounded-full" />
+      <div className="absolute top-[20%] right-[8%] w-[20%] h-[35%] bg-[#00FF00]/20 border-2 border-black/10 rounded-full" />
       {/* Memory pins */}
       <MapDot x={22} y={42} size={2} glow />
       <MapDot x={57} y={35} size={1.5} />
@@ -59,11 +59,11 @@ function MiniMap() {
       <MapDot x={35} y={38} size={2} glow />
       {/* Active pin tooltip */}
       <div className="absolute left-[19%] top-[26%] -translate-x-1/2 pointer-events-none">
-        <div className="px-2.5 py-1.5 bg-[#FFFF00] border-[3px] border-black text-[10px] text-black font-bold whitespace-nowrap shadow-[2px_2px_0_#000]">
+        <div className="px-2.5 py-1.5 bg-[#FFFF00] border-[3px] border-black text-[10px] text-black font-bold whitespace-nowrap shadow-[2px_2px_0_#000] rounded-xl">
           📍 Bajo, NTT
         </div>
         <div className="w-[3px] h-3 bg-black mx-auto" />
-        <div className="w-3 h-3 bg-[#FF00FF] border-2 border-black mx-auto" />
+        <div className="w-3 h-3 bg-[#FF00FF] border-2 border-black mx-auto rounded-full" />
       </div>
     </div>
   )
@@ -73,38 +73,38 @@ function MiniJournal() {
   return (
     <div className="w-full h-full flex flex-col gap-2 p-4">
       <div className="flex items-center gap-2 mb-1">
-        <div className="w-6 h-6 bg-[#FF00FF] border-2 border-black shrink-0" />
+        <div className="w-6 h-6 bg-[#FF00FF] border-2 border-black shrink-0 rounded-lg" />
         <div className="space-y-1 flex-1">
-          <div className="h-2 w-3/4 bg-black/20" />
-          <div className="h-1.5 w-1/2 bg-black/10" />
+          <div className="h-2 w-3/4 bg-black/20 rounded-full" />
+          <div className="h-1.5 w-1/2 bg-black/10 rounded-full" />
         </div>
       </div>
       <div className="space-y-1.5 flex-1">
-        <div className="h-2 bg-black/10 w-full" />
-        <div className="h-2 bg-black/10 w-5/6" />
-        <div className="h-2 bg-black/10 w-4/6" />
-        <div className="h-2 bg-black/10 w-5/6" />
-        <div className="h-2 bg-black/[0.06] w-3/4" />
+        <div className="h-2 bg-black/10 w-full rounded-full" />
+        <div className="h-2 bg-black/10 w-5/6 rounded-full" />
+        <div className="h-2 bg-black/10 w-4/6 rounded-full" />
+        <div className="h-2 bg-black/10 w-5/6 rounded-full" />
+        <div className="h-2 bg-black/[0.06] w-3/4 rounded-full" />
       </div>
       <div className="flex gap-2 mt-1">
         {["😊", "🌊", "✨"].map((e, i) => (
-          <div key={i} className="px-2 py-1 bg-[#FFFF00]/30 border-2 border-black text-[10px] font-bold">
+          <div key={i} className="px-2 py-1 bg-[#FFFF00]/30 border-2 border-black text-[10px] font-bold rounded-lg">
             {e}
           </div>
         ))}
       </div>
-      <div className="relative overflow-hidden h-16 bg-[#00FFFF]/20 border-[3px] border-black">
+      <div className="relative overflow-hidden h-16 bg-[#00FFFF]/20 border-[3px] border-black rounded-xl">
         <div className="absolute inset-0 flex items-center px-3 gap-2">
-          <div className="w-10 h-10 bg-[#FF00FF]/30 border-2 border-black shrink-0 flex items-center justify-center">
+          <div className="w-10 h-10 bg-[#FF00FF]/30 border-2 border-black shrink-0 flex items-center justify-center rounded-xl">
             <Music className="w-4 h-4 text-black" />
           </div>
           <div className="flex-1 space-y-1.5">
-            <div className="h-1.5 w-2/3 bg-black/20" />
-            <div className="h-1.5 w-1/2 bg-black/10" />
+            <div className="h-1.5 w-2/3 bg-black/20 rounded-full" />
+            <div className="h-1.5 w-1/2 bg-black/10 rounded-full" />
           </div>
           <div className="flex gap-0.5">
             {[3, 5, 4, 6, 3, 5, 4].map((h, i) => (
-              <div key={i} className="w-1 bg-black/40" style={{ height: h * 3 }} />
+              <div key={i} className="w-1 bg-black/40 rounded-full" style={{ height: h * 3 }} />
             ))}
           </div>
         </div>
@@ -123,7 +123,7 @@ function PrivacyMock() {
       ].map((item) => (
         <div
           key={item.label}
-          className={`flex items-center gap-3 px-3 py-2.5 border-[3px] border-black transition-all ${
+          className={`flex items-center gap-3 px-3 py-2.5 border-[3px] border-black transition-all rounded-xl ${
             item.active
               ? "bg-[#00FF00] shadow-[3px_3px_0_#000] text-black font-bold"
               : "bg-white text-black/50"
@@ -132,7 +132,7 @@ function PrivacyMock() {
           <span className="text-sm">{item.icon}</span>
           <span className="text-xs font-bold">{item.label}</span>
           {item.active && (
-            <span className="ml-auto text-[9px] font-black text-black uppercase tracking-wider bg-white px-2 py-0.5 border-2 border-black">Aktif</span>
+            <span className="ml-auto text-[9px] font-black text-black uppercase tracking-wider bg-white px-2 py-0.5 border-2 border-black rounded-lg">Aktif</span>
           )}
         </div>
       ))}
@@ -156,12 +156,12 @@ export function LandingFeatures() {
       >
         {/* ── Section Header ─────────────────────────────────────────────────── */}
         <motion.div variants={fadeUp} className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#FF00FF] border-[3px] border-black shadow-[3px_3px_0_#000] text-sm text-white font-bold mb-6">
+          <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#FF00FF] border-[3px] border-black shadow-[3px_3px_0_#000] text-sm text-white font-bold mb-6 rounded-xl">
             Semua yang kamu butuhkan
           </div>
           <h2 className="text-4xl md:text-5xl font-black font-[Outfit] text-black leading-tight mb-4">
             When Loves End,{" "}
-            <span className="inline-block bg-[#FFFF00] px-3 -rotate-1 border-[3px] border-black shadow-[3px_3px_0_#000]">
+            <span className="inline-block bg-[#FFFF00] px-3 -rotate-1 border-[3px] border-black shadow-[3px_3px_0_#000] rounded-xl">
               Memories Begin
             </span>
           </h2>
@@ -177,7 +177,7 @@ export function LandingFeatures() {
           <motion.div variants={fadeUp} className={`${card} col-span-12 md:col-span-7 p-7`}>
             <div className="flex flex-col h-full gap-5">
               <div className="flex items-start gap-4">
-                <div className="p-2.5 bg-[#FFFF00] border-[3px] border-black shadow-[2px_2px_0_#000] shrink-0">
+                <div className="p-2.5 bg-[#FFFF00] border-[3px] border-black shadow-[2px_2px_0_#000] shrink-0 rounded-xl">
                   <MapPin className="w-5 h-5 text-black" />
                 </div>
                 <div>
@@ -188,7 +188,7 @@ export function LandingFeatures() {
                   </p>
                 </div>
               </div>
-              <div className="flex-1 overflow-hidden border-[3px] border-black min-h-[180px]">
+              <div className="flex-1 overflow-hidden border-[3px] border-black min-h-[180px] rounded-xl">
                 <MiniMap />
               </div>
             </div>
@@ -198,7 +198,7 @@ export function LandingFeatures() {
           <motion.div variants={fadeUp} className={`${card} col-span-12 md:col-span-5 p-7`}>
             <div className="flex flex-col h-full gap-5">
               <div className="flex items-start gap-4">
-                <div className="p-2.5 bg-[#00FFFF] border-[3px] border-black shadow-[2px_2px_0_#000] shrink-0">
+                <div className="p-2.5 bg-[#00FFFF] border-[3px] border-black shadow-[2px_2px_0_#000] shrink-0 rounded-xl">
                   <Lock className="w-5 h-5 text-black" />
                 </div>
                 <div>
@@ -219,7 +219,7 @@ export function LandingFeatures() {
           <motion.div variants={fadeUp} className={`${card} col-span-12 md:col-span-5 p-7`}>
             <div className="flex flex-col h-full gap-5">
               <div className="flex items-start gap-4">
-                <div className="p-2.5 bg-[#FF00FF] border-[3px] border-black shadow-[2px_2px_0_#000] shrink-0">
+                <div className="p-2.5 bg-[#FF00FF] border-[3px] border-black shadow-[2px_2px_0_#000] shrink-0 rounded-xl">
                   <BookOpen className="w-5 h-5 text-white" />
                 </div>
                 <div>
@@ -230,7 +230,7 @@ export function LandingFeatures() {
                   </p>
                 </div>
               </div>
-              <div className="flex-1 overflow-hidden border-[3px] border-black bg-[#FFFDF0] min-h-[200px]">
+              <div className="flex-1 overflow-hidden border-[3px] border-black bg-[#FFFDF0] min-h-[200px] rounded-xl">
                 <MiniJournal />
               </div>
             </div>
@@ -242,7 +242,7 @@ export function LandingFeatures() {
             {/* Community card */}
             <div className={`${card} p-6 flex-1`}>
               <div className="flex items-center gap-4 h-full">
-                <div className="p-2.5 bg-[#00FF00] border-[3px] border-black shadow-[2px_2px_0_#000] shrink-0">
+                <div className="p-2.5 bg-[#00FF00] border-[3px] border-black shadow-[2px_2px_0_#000] shrink-0 rounded-xl">
                   <Heart className="w-5 h-5 text-black" />
                 </div>
                 <div className="flex-1">
@@ -258,7 +258,7 @@ export function LandingFeatures() {
                     <img
                       key={seed}
                       src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`}
-                      className="w-9 h-9 border-[3px] border-black bg-[#FFFF00]"
+                      className="w-9 h-9 border-[3px] border-black bg-[#FFFF00] rounded-full"
                       alt=""
                     />
                   ))}
@@ -269,7 +269,7 @@ export function LandingFeatures() {
             {/* Search card */}
             <div className={`${card} p-6 flex-1`}>
               <div className="flex items-center gap-4 h-full">
-                <div className="p-2.5 bg-[#FFFF00] border-[3px] border-black shadow-[2px_2px_0_#000] shrink-0">
+                <div className="p-2.5 bg-[#FFFF00] border-[3px] border-black shadow-[2px_2px_0_#000] shrink-0 rounded-xl">
                   <Zap className="w-5 h-5 text-black" />
                 </div>
                 <div className="flex-1">
@@ -280,9 +280,9 @@ export function LandingFeatures() {
                   </p>
                 </div>
                 {/* Fake search bar */}
-                <div className="shrink-0 hidden sm:flex items-center gap-2 px-3 py-2 bg-[#FFFDF0] border-[3px] border-black w-36">
+                <div className="shrink-0 hidden sm:flex items-center gap-2 px-3 py-2 bg-[#FFFDF0] border-[3px] border-black w-36 rounded-xl">
                   <Zap className="w-3 h-3 text-black shrink-0" />
-                  <div className="h-2 w-full bg-black/15" />
+                  <div className="h-2 w-full bg-black/15 rounded-full" />
                 </div>
               </div>
             </div>
@@ -293,7 +293,7 @@ export function LandingFeatures() {
           <motion.div variants={fadeUp} className={`${card} col-span-12 p-7`}>
             <div className="flex flex-col md:flex-row items-center gap-6">
               <div className="flex items-start gap-4 flex-1">
-                <div className="p-2.5 bg-[#00FFFF] border-[3px] border-black shadow-[2px_2px_0_#000] shrink-0">
+                <div className="p-2.5 bg-[#00FFFF] border-[3px] border-black shadow-[2px_2px_0_#000] shrink-0 rounded-xl">
                   <Share2 className="w-5 h-5 text-black" />
                 </div>
                 <div>
@@ -305,8 +305,8 @@ export function LandingFeatures() {
                 </div>
               </div>
               {/* Shareable link mockup */}
-              <div className="shrink-0 flex items-center gap-3 px-4 py-3 bg-[#FFFDF0] border-[3px] border-black shadow-[3px_3px_0_#000]">
-                <div className="w-3 h-3 bg-[#00FF00] border-2 border-black" />
+              <div className="shrink-0 flex items-center gap-3 px-4 py-3 bg-[#FFFDF0] border-[3px] border-black shadow-[3px_3px_0_#000] rounded-xl">
+                <div className="w-3 h-3 bg-[#00FF00] border-2 border-black rounded-full" />
                 <span className="text-xs text-black/50 font-mono font-bold">memorymap.app/m/</span>
                 <span className="text-xs text-black font-mono font-black">bajo-trip-2024</span>
               </div>

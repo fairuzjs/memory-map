@@ -79,3 +79,36 @@ export type RegisterInput = z.infer<typeof registerSchema>
 export type MemoryInput = z.infer<typeof memorySchema>
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>
+
+// ── Admin Actions Validation Schemas ──
+export const adminFeedbackStatusSchema = z.object({
+    status: z.enum(["PENDING", "READ", "REPLIED"]).optional(),
+    adminReply: z.string().max(2000, { message: "Balasan maksimal 2000 karakter" }).optional().nullable(),
+})
+
+export const adminReportStatusSchema = z.object({
+    status: z.enum(["PENDING", "REVIEWED", "RESOLVED", "DISMISSED"]),
+})
+
+export const adminTopupProcessSchema = z.object({
+    emailOrName: z.string().min(1, { message: "Email atau nama diperlukan" }),
+    amount: z.number().refine(val => [500, 1000, 2500, 5000, 10000, 25000].includes(val), {
+        message: "Nominal tidak valid",
+    }),
+})
+
+export const adminOrderActionSchema = z.object({
+    status: z.enum(["COMPLETED", "CANCELLED"]),
+    note: z.string().max(500, { message: "Catatan maksimal 500 karakter" }).optional().nullable(),
+})
+
+export const adminUserVerifySchema = z.object({
+    isVerified: z.boolean(),
+})
+
+export type AdminFeedbackStatusInput = z.infer<typeof adminFeedbackStatusSchema>
+export type AdminReportStatusInput = z.infer<typeof adminReportStatusSchema>
+export type AdminTopupProcessInput = z.infer<typeof adminTopupProcessSchema>
+export type AdminOrderActionInput = z.infer<typeof adminOrderActionSchema>
+export type AdminUserVerifyInput = z.infer<typeof adminUserVerifySchema>
+

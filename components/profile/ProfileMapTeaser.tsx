@@ -20,12 +20,12 @@ export function ProfileMapTeaser({ mappedMemories, isOwner, userName }: ProfileM
         : 103.8198
 
     return (
-        <div className="overflow-hidden flex flex-col relative group h-full bg-white border-[4px] border-black shadow-[8px_8px_0_#000]"
+        <div className="overflow-hidden flex flex-col relative group h-full bg-white border-[3px] border-black shadow-[6px_6px_0_#000] rounded-2xl"
             style={{ minHeight: "280px" }}>
             <div className="absolute top-0 inset-x-0 p-5 z-20 flex items-start justify-between pointer-events-none"
                 style={{ background: "linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0) 100%)" }}>
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 flex items-center justify-center shrink-0 bg-[#FF00FF] border-[3px] border-black shadow-[2px_2px_0_#000]">
+                    <div className="w-10 h-10 flex items-center justify-center shrink-0 bg-[#FF00FF] border-[2.5px] border-black shadow-[2.5px_2.5px_0_#000] rounded-xl">
                         <Navigation2 className="w-4 h-4 text-white" />
                     </div>
                     <div>
@@ -36,7 +36,7 @@ export function ProfileMapTeaser({ mappedMemories, isOwner, userName }: ProfileM
                     </div>
                 </div>
                 {mappedMemories.length > 0 && (
-                    <Link href="/map" className="flex items-center justify-center p-2.5 bg-white border-[3px] border-black shadow-[2px_2px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all pointer-events-auto">
+                    <Link href="/map" className="flex items-center justify-center p-2.5 bg-white border-[2.5px] border-black shadow-[2.5px_2.5px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[3.5px_3.5px_0_#000] active:translate-y-px active:shadow-none transition-all pointer-events-auto">
                         <Globe className="w-4 h-4 text-black" />
                     </Link>
                 )}
@@ -77,13 +77,13 @@ export function ProfileMapTeaser({ mappedMemories, isOwner, userName }: ProfileM
                         {mappedMemories.map((m, i) => (
                             <Marker key={m.id} longitude={m.longitude} latitude={m.latitude} anchor="center">
                                 <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.5 + (i * 0.1) }} className="relative flex items-center justify-center">
-                                    <div className="w-4 h-4 bg-[#FF00FF] border-[2px] border-black shadow-[2px_2px_0_#000]" />
+                                    <div className="w-4 h-4 bg-[#FF00FF] border-[2px] border-black shadow-[2px_2px_0_#000] rounded-lg" />
                                 </motion.div>
                             </Marker>
                         ))}
                     </Map>
                 ) : (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 px-6 text-center bg-[#E5E5E5]"
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 px-6 text-center bg-neutral-100 rounded-xl"
                         style={{
                             backgroundImage: "linear-gradient(#D5D5D5 2px, transparent 2px), linear-gradient(90deg, #D5D5D5 2px, transparent 2px)",
                             backgroundSize: "24px 24px",

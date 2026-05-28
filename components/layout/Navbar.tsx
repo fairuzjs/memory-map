@@ -24,10 +24,10 @@ function NavLink({
             href={href}
             onClick={onClick}
             data-tutorial={tutorialId}
-            className={`flex items-center gap-2 px-3 py-1.5 text-[13px] font-bold border-[2px] border-transparent transition-all ${
+            className={`flex items-center gap-2 px-3 py-1.5 text-[13px] font-bold border-[2px] transition-all rounded-xl ${
                 active
                     ? "bg-[#00FFFF] border-black shadow-[2px_2px_0_#000] text-black"
-                    : "text-black hover:bg-[#FFFF00] hover:border-black"
+                    : "border-transparent text-black hover:bg-[#FFFF00] hover:border-black"
             } ${className}`}
         >
             <Icon className="w-3.5 h-3.5" />
@@ -71,21 +71,21 @@ function ProfileDropdown({
         <div className="relative hidden md:block" ref={ref}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className={`flex items-center gap-1.5 border-[2px] transition-all ${
+                className={`flex items-center gap-1.5 border-[2px] rounded-xl transition-all ${
                     isOpen
                         ? "border-black shadow-[2px_2px_0_#000] bg-[#FFFF00]"
                         : "border-transparent hover:border-black"
                 }`}
                 style={{ padding: "3px 6px 3px 3px" }}
             >
-                <div className="w-8 h-8 border-[2px] border-black overflow-hidden bg-white flex items-center justify-center shrink-0">
+                <div className="w-8 h-8 border-[2px] border-black overflow-hidden bg-white flex items-center justify-center shrink-0 rounded-lg">
                     {session.user.image ? (
                         <img src={session.user.image} alt="" className="w-full h-full object-cover" />
                     ) : (
                         <UserIcon className="w-3.5 h-3.5 text-black" />
                     )}
                 </div>
-                <ChevronDown className={`w-3 h-3 text-black transition-transform ${isOpen ? "rotate-180" : ""}`} />
+                <ChevronDown className={`w-3 h-3 text-black transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
             </button>
 
             <AnimatePresence>
@@ -95,7 +95,7 @@ function ProfileDropdown({
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 6, scale: 0.96 }}
                         transition={{ duration: 0.15 }}
-                        className="absolute right-0 top-full mt-2 w-56 bg-white border-[3px] border-black shadow-[6px_6px_0_#000] z-[200] py-1"
+                        className="absolute right-0 top-full mt-2 w-56 bg-white border-[3px] border-black shadow-[6px_6px_0_#000] z-[200] py-2 rounded-2xl overflow-hidden"
                     >
                         {items.map((item, i) => {
                             if (item === "divider") {
@@ -111,7 +111,7 @@ function ProfileDropdown({
                                     href={item.href}
                                     data-tutorial={item.tutorialId}
                                     onClick={() => setIsOpen(false)}
-                                    className={`flex items-center gap-2.5 mx-1 px-3 py-2 text-[13px] font-bold transition-all border-[2px] border-transparent ${
+                                    className={`flex items-center gap-2.5 mx-1.5 px-3 py-2 text-[13px] font-bold transition-all border-[2px] border-transparent rounded-xl ${
                                         isActive
                                             ? "bg-[#FFFF00] border-black text-black"
                                             : "text-black hover:bg-[#FFFF00] hover:border-black"
@@ -125,7 +125,7 @@ function ProfileDropdown({
                         <div className="h-[2px] bg-black/15 mx-3 my-1" />
                         <button
                             onClick={() => { setIsOpen(false); signOut({ callbackUrl: "/login" }) }}
-                            className="flex items-center gap-2.5 mx-1 px-3 py-2 text-[13px] font-bold text-black hover:bg-black hover:text-white transition-all w-[calc(100%-8px)] border-[2px] border-transparent hover:border-black"
+                            className="flex items-center gap-2.5 mx-1.5 px-3 py-2 text-[13px] font-bold text-black hover:bg-black hover:text-white transition-all w-[calc(100%-12px)] border-[2px] border-transparent rounded-xl hover:border-black"
                         >
                             <LogOut className="w-4 h-4 shrink-0" />
                             Sign Out
@@ -148,7 +148,7 @@ function DrawerItem({
             href={href}
             onClick={onClick}
             data-tutorial={tutorialId}
-            className={`flex items-center gap-3 px-3 py-2.5 text-[14px] font-bold border-[2px] border-transparent transition-all ${
+            className={`flex items-center gap-3 px-3 py-2.5 text-[14px] font-bold border-[2px] border-transparent rounded-xl transition-all ${
                 active
                     ? `border-black shadow-[2px_2px_0_#000] text-black`
                     : "text-black hover:bg-[#FFFF00] hover:border-black"
@@ -172,7 +172,7 @@ function GridItem({
             href={href}
             onClick={onClick}
             data-tutorial={tutorialId}
-            className={`flex flex-col items-center justify-center gap-1.5 py-3 text-[11px] font-black uppercase tracking-wide border-[2px] transition-all ${
+            className={`flex flex-col items-center justify-center gap-1.5 py-3 text-[11px] font-black uppercase tracking-wide border-[2px] rounded-xl transition-all ${
                 active
                     ? "border-black shadow-[2px_2px_0_#000] text-black"
                     : "border-black/15 hover:border-black text-black/80 hover:text-black"
@@ -237,19 +237,19 @@ export function Navbar() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
                 <motion.div
                     animate={{
-                        boxShadow: scrolled ? "4px 4px 0px #000" : "none",
-                        borderColor: scrolled ? "#000" : "transparent",
+                        boxShadow: scrolled ? "4px 4px 0px #000" : "4px 4px 0px #000",
+                        borderColor: "#000",
                         backgroundColor: scrolled ? "#FFFFFF" : "rgba(255,253,240,0.95)",
                     }}
                     transition={{ duration: 0.2, ease: "easeOut" }}
-                    className="relative border-[3px] border-transparent transition-colors"
+                    className="relative border-[3px] border-black rounded-2xl shadow-[4px_4px_0_#000] transition-colors"
                 >
                     <div className="flex items-center justify-between h-[56px] px-4" style={{ minWidth: 0 }}>
 
                         {/* ── LEFT: Logo ──────────────────────────────── */}
                         <Link href="/" className="flex items-center gap-2 group shrink-0">
                             <div className="relative w-8 h-8 flex items-center justify-center shrink-0">
-                                <div className="absolute inset-0 bg-[#FFFF00] border-[3px] border-black group-hover:translate-x-[-2px] group-hover:translate-y-[-2px] group-hover:shadow-[3px_3px_0_#000] transition-all duration-200" />
+                                <div className="absolute inset-0 bg-[#FFFF00] border-[3px] border-black rounded-lg group-hover:translate-x-[-2px] group-hover:translate-y-[-2px] group-hover:shadow-[3px_3px_0_#000] transition-all duration-200" />
                                 <MapPin className="relative w-3.5 h-3.5 text-black z-10" />
                             </div>
                             <span className="font-black text-[18px] font-[Outfit] text-black tracking-tight">
@@ -268,7 +268,7 @@ export function Navbar() {
                             <button
                                 onClick={() => openOnboardingGuide()}
                                 data-tutorial="nav-guide"
-                                className="flex items-center gap-2 px-3 py-1.5 text-[13px] font-bold border-[2px] border-transparent text-black hover:bg-[#00FF00] hover:border-black transition-all"
+                                className="flex items-center gap-2 px-3 py-1.5 text-[13px] font-bold border-[2px] border-transparent rounded-xl text-black hover:bg-[#00FF00] hover:border-black transition-all"
                             >
                                 <BookOpen className="w-3.5 h-3.5" />
                                 <span className="hidden xl:inline">Panduan</span>
@@ -288,7 +288,7 @@ export function Navbar() {
                                     <Link
                                         href="/premium"
                                         data-tutorial="nav-premium"
-                                        className={`hidden md:flex items-center gap-1.5 px-2.5 py-1.5 text-[12px] font-black border-[2px] transition-all uppercase tracking-wider ${
+                                        className={`hidden md:flex items-center gap-1.5 px-2.5 py-1.5 text-[12px] font-black border-[2px] rounded-xl transition-all uppercase tracking-wider ${
                                             pathname === "/premium"
                                                 ? "bg-[#FFFF00] border-black shadow-[2px_2px_0_#000] text-black"
                                                 : isPremium
@@ -308,12 +308,12 @@ export function Navbar() {
                                 </>
                             ) : (
                                 <>
-                                    <Link href="/login" className="hidden sm:block px-3 py-1.5 text-[13px] font-bold text-black hover:bg-[#00FFFF] border-[2px] border-transparent hover:border-black transition-all">
+                                    <Link href="/login" className="hidden sm:block px-3 py-1.5 text-[13px] font-bold text-black hover:bg-[#00FFFF] border-[2px] border-transparent hover:border-black transition-all rounded-xl">
                                         Masuk
                                     </Link>
                                     <Link
                                         href="/register"
-                                        className="hidden sm:inline-flex items-center justify-center px-4 py-1.5 text-[13px] font-black text-black bg-[#FFFF00] border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] transition-all uppercase tracking-wide"
+                                        className="hidden sm:inline-flex items-center justify-center px-4 py-1.5 text-[13px] font-black text-black bg-[#FFFF00] border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] transition-all uppercase tracking-wide rounded-xl"
                                     >
                                         Mulai Gratis
                                     </Link>
@@ -325,7 +325,7 @@ export function Navbar() {
                                 <Link
                                     href={`/profile/${session.user.id}`}
                                     data-tutorial="mobile-nav-profile"
-                                    className="flex md:hidden items-center justify-center w-8 h-8 border-[2px] border-black overflow-hidden bg-white hover:shadow-[2px_2px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all"
+                                    className="flex md:hidden items-center justify-center w-8 h-8 border-[2px] border-black overflow-hidden bg-white hover:shadow-[2px_2px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all rounded-lg"
                                 >
                                     {session.user.image ? (
                                         <img src={session.user.image} alt="" className="w-full h-full object-cover" />
@@ -339,7 +339,7 @@ export function Navbar() {
                             <button
                                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                                 data-tutorial="mobile-menu-button"
-                                className="flex md:hidden items-center justify-center w-9 h-9 text-black hover:bg-[#FFFF00] border-[2px] border-transparent hover:border-black transition-all"
+                                className="flex md:hidden items-center justify-center w-9 h-9 text-black hover:bg-[#FFFF00] border-[2px] border-transparent rounded-lg hover:border-black transition-all"
                                 aria-label="Toggle menu"
                             >
                                 <AnimatePresence mode="wait" initial={false}>
@@ -368,11 +368,11 @@ export function Navbar() {
                             animate={{ opacity: 1, y: 0, height: "auto" }}
                             exit={{ opacity: 0, y: -8, height: 0 }}
                             transition={{ duration: 0.2, ease: "easeOut" }}
-                            className="overflow-hidden mt-2"
+                            className="overflow-hidden mt-2 animate-none"
                         >
                             <div
                                 data-tutorial="mobile-drawer"
-                                className="border-[4px] border-black bg-white shadow-[6px_6px_0_#000] flex flex-col"
+                                className="border-[3px] border-black bg-white rounded-3xl shadow-[6px_6px_0_#000] flex flex-col overflow-hidden"
                                 style={{
                                     maxHeight: "calc(100vh - 120px)",
                                     paddingBottom: "env(safe-area-inset-bottom, 0px)",
@@ -407,7 +407,7 @@ export function Navbar() {
                                                 <button
                                                     onClick={() => { close(); openOnboardingGuide() }}
                                                     data-tutorial="mobile-nav-guide"
-                                                    className="flex flex-col items-center justify-center gap-1.5 py-3 text-[11px] font-black uppercase tracking-wide border-[2px] border-black/15 hover:border-black text-black/80 hover:text-black transition-all"
+                                                    className="flex flex-col items-center justify-center gap-1.5 py-3 text-[11px] font-black uppercase tracking-wide border-[2px] border-black/15 hover:border-black text-black/80 hover:text-black transition-all rounded-xl"
                                                     style={{ backgroundColor: "rgba(0, 255, 0, 0.25)" }}
                                                 >
                                                     <BookOpen className="w-5 h-5" />
@@ -434,14 +434,14 @@ export function Navbar() {
 
                                     {!session?.user && (
                                         <div className="space-y-2 pt-3">
-                                            <Link href="/login" onClick={close} className="flex items-center gap-3 px-3 py-2.5 text-[14px] font-bold text-black hover:bg-[#00FFFF] border-[2px] border-transparent hover:border-black transition-all">
+                                            <Link href="/login" onClick={close} className="flex items-center gap-3 px-3 py-2.5 text-[14px] font-bold text-black hover:bg-[#00FFFF] border-[2px] border-transparent hover:border-black transition-all rounded-xl">
                                                 <UserIcon className="w-[18px] h-[18px] shrink-0" />
                                                 Sign In
                                             </Link>
                                             <Link
                                                 href="/register"
                                                 onClick={close}
-                                                className="w-full inline-flex items-center justify-center py-2.5 text-[14px] font-black text-black bg-[#FFFF00] border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] transition-all uppercase"
+                                                className="w-full inline-flex items-center justify-center py-2.5 text-[14px] font-black text-black bg-[#FFFF00] border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] transition-all uppercase rounded-xl"
                                             >
                                                 Mulai Gratis
                                             </Link>
@@ -454,7 +454,7 @@ export function Navbar() {
                                     <div className="shrink-0 border-t-[3px] border-black px-3 py-2">
                                         <button
                                             onClick={() => { close(); signOut({ callbackUrl: "/login" }) }}
-                                            className="flex items-center justify-center gap-2 w-full px-3 py-2.5 text-[13px] font-black text-white bg-black hover:bg-[#FF00FF] border-[2px] border-black transition-all uppercase tracking-wider"
+                                            className="flex items-center justify-center gap-2 w-full px-3 py-2.5 text-[13px] font-black text-white bg-black hover:bg-[#FF00FF] border-[2px] border-black rounded-xl transition-all uppercase tracking-wider"
                                         >
                                             <LogOut className="w-4 h-4" />
                                             Sign Out

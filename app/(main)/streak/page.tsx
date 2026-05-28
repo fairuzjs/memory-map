@@ -342,7 +342,7 @@ export default function StreakPage() {
             <div className="flex-1 flex items-center justify-center min-h-[500px]">
                 <div className="flex flex-col items-center gap-3">
                     <Loader2 className="w-8 h-8 text-black animate-spin" />
-                    <span className="text-black font-black uppercase text-sm">Memuat data streak…</span>
+                    <span className="text-black font-black uppercase text-xs sm:text-sm tracking-wider">Memuat data streak…</span>
                 </div>
             </div>
         )
@@ -377,12 +377,12 @@ export default function StreakPage() {
                         initial={{ opacity: 0, y: -20, scale: 0.9 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -16, scale: 0.95 }}
-                        className="fixed top-20 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-6 py-4 bg-[#FFFF00] border-[4px] border-black shadow-[8px_8px_0_#000]"
+                        className="fixed top-20 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-6 py-4 bg-[#FFFF00] border-[2.5px] border-black shadow-[5px_5px_0_#000] rounded-2xl"
                     >
                         <Star className="w-6 h-6 text-black fill-black" />
                         <span className="text-base font-black text-black uppercase tracking-wide">
                             +{lastPointsEarned} <span className="text-[#FF00FF]">Memory Points</span> didapat!
-                            {premiumInfo?.isPremium && <span className="text-[#00FF00] ml-2 border-[2px] border-black px-1.5 py-0.5 bg-white">(x2 Premium)</span>}
+                            {premiumInfo?.isPremium && <span className="text-[#00FF00] ml-2 border-[2px] border-black px-1.5 py-0.5 bg-white rounded-md shadow-[1px_1px_0_#000]">(x2 Premium)</span>}
                         </span>
                     </motion.div>
                 )}
@@ -396,11 +396,11 @@ export default function StreakPage() {
                         initial={{ opacity: 0, y: -20, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -16, scale: 0.95 }}
-                        className="fixed top-24 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-6 py-4 bg-[#00FFFF] border-[4px] border-black shadow-[8px_8px_0_#000]"
+                        className="fixed top-24 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-6 py-4 bg-[#00FFFF] border-[2.5px] border-black shadow-[5px_5px_0_#000] rounded-2xl"
                     >
                         <Star className="w-6 h-6 text-black fill-black" />
                         <span className="text-base font-black text-black uppercase tracking-wide">
-                            🎉 Badge baru! <span className="text-white bg-black px-2 py-0.5 ml-1">Streak {m} Hari</span> diraih!
+                            🎉 Badge baru! <span className="text-white bg-black px-2 py-0.5 ml-1 rounded-md">Streak {m} Hari</span> diraih!
                         </span>
                     </motion.div>
                 ))}
@@ -409,15 +409,15 @@ export default function StreakPage() {
             {/* ── Page Header ── */}
             <motion.div initial="hidden" animate="show" variants={fadeUp}>
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-2">
-                    <div className="flex items-center gap-3 bg-white border-[3px] border-black px-4 py-2 shadow-[4px_4px_0_#FF4500]">
-                        <FlameIcon size={24} />
-                        <h1 className="text-2xl font-black text-black uppercase tracking-widest">
+                    <div className="flex items-center gap-3 bg-white border-[2.5px] border-black px-4.5 py-2.5 shadow-[3px_3px_0_#FF4500] rounded-xl">
+                        <FlameIcon size={22} className="shrink-0" />
+                        <h1 className="text-xl sm:text-2xl font-black text-black uppercase tracking-widest">
                             Daily Streak
                         </h1>
                     </div>
                     <Link
                         href="/shop"
-                        className="flex items-center gap-2 px-5 py-3 text-sm font-black text-black bg-[#FFFF00] border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all uppercase"
+                        className="flex items-center gap-2 px-5 py-3 text-sm font-black text-black bg-[#FFFF00] border-[2.5px] border-black shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none transition-all uppercase"
                     >
                         <ShoppingBag className="w-5 h-5" />
                         <span>Memory Shop</span>
@@ -428,12 +428,12 @@ export default function StreakPage() {
                 {/* Premium Status Indicators */}
                 {premiumInfo?.isPremium && (
                     <div className="flex items-center gap-3 mt-4 flex-wrap">
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-black uppercase tracking-widest bg-[#FFFF00] border-[2px] border-black text-black shadow-[2px_2px_0_#000]">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[10px] font-black uppercase tracking-widest bg-[#FFFF00] border-[2px] border-black text-black shadow-[2px_2px_0_#000] rounded-lg">
                             <Sparkles className="w-4 h-4 fill-black" />
                             x{premiumInfo.multiplier} Poin
                         </span>
                         {premiumInfo.freezesRemaining > 0 && (
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-black uppercase tracking-widest bg-[#00FFFF] border-[2px] border-black text-black shadow-[2px_2px_0_#000]">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[10px] font-black uppercase tracking-widest bg-[#00FFFF] border-[2px] border-black text-black shadow-[2px_2px_0_#000] rounded-lg">
                                 <Shield className="w-4 h-4 fill-black" />
                                 {premiumInfo.freezesRemaining} Freeze
                             </span>
@@ -444,7 +444,7 @@ export default function StreakPage() {
 
             {/* ── Hero Banner ── */}
             <motion.div variants={fadeUp} initial="hidden" animate="show">
-                <div className="relative border-[4px] border-black bg-[#FF3300] shadow-[8px_8px_0_#000] overflow-hidden">
+                <div className="relative border-[3px] border-black bg-[#FF3300] shadow-[6px_6px_0_#000] rounded-2xl overflow-hidden">
                     {/* Background Pattern */}
                     <div className="absolute inset-0 opacity-[0.15]" style={{ backgroundImage: "radial-gradient(black 2px, transparent 2px)", backgroundSize: "20px 20px" }} />
 
@@ -454,11 +454,11 @@ export default function StreakPage() {
 
                             {/* Left: flame icon + streak number */}
                             <div className="flex items-end gap-5">
-                                <div className="w-[88px] h-[88px] bg-white border-[4px] border-black shadow-[4px_4px_0_#000] flex items-center justify-center flex-shrink-0 -rotate-3 hover:rotate-0 transition-transform">
+                                <div className="w-[88px] h-[88px] bg-white border-[3px] border-black shadow-[3px_3px_0_#000] flex items-center justify-center flex-shrink-0 -rotate-3 hover:rotate-0 transition-transform rounded-2xl">
                                     <HeroFlameIcon />
                                 </div>
                                 <div>
-                                    <p className="text-black text-[12px] font-black uppercase tracking-widest mb-1 bg-white border-[2px] border-black px-2 py-0.5 inline-block">Streak saat ini</p>
+                                    <p className="text-black text-[11px] font-black uppercase tracking-widest mb-1 bg-white border-[2px] border-black px-2.5 py-0.5 inline-block rounded-lg shadow-[1.5px_1.5px_0_#000]">Streak saat ini</p>
                                     <div className="flex items-baseline gap-2">
                                         <p className="text-white leading-none font-black" style={{ fontSize: 80, textShadow: "4px 4px 0 #000" }}>
                                             {streak.currentStreak}
@@ -476,45 +476,45 @@ export default function StreakPage() {
                                 ].map((s) => (
                                     <div
                                         key={s.label}
-                                        className="px-5 py-3 border-[3px] border-black shadow-[4px_4px_0_#000] text-center w-[120px]"
+                                        className="px-5 py-3 border-[2.5px] border-black shadow-[3px_3px_0_#000] text-center w-[120px] rounded-xl"
                                         style={{ background: s.bg }}
                                     >
-                                        <p className="text-black font-black text-3xl">{s.value}</p>
-                                        <p className="text-black text-[10px] font-black uppercase tracking-widest mt-1">{s.label}</p>
+                                        <p className="text-black font-black text-2xl sm:text-3xl leading-tight">{s.value}</p>
+                                        <p className="text-black text-[9px] sm:text-[10px] font-black uppercase tracking-widest mt-1.5">{s.label}</p>
                                     </div>
                                 ))}
                             </div>
                         </div>
 
                         {/* Bottom row: status + claim button */}
-                        <div className="mt-8 pt-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-t-[4px] border-black">
+                        <div className="mt-8 pt-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-t-[2.5px] border-black">
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-3">
                                     {claimedToday ? (
-                                        <span className="text-sm font-black text-black bg-[#00FF00] border-[2px] border-black px-3 py-1 uppercase tracking-wider">Sudah Aktif Hari Ini!</span>
+                                        <span className="text-xs sm:text-sm font-black text-black bg-[#00FF00] border-[2px] border-black px-3.5 py-1.5 uppercase tracking-wider rounded-xl shadow-[2px_2px_0_#000]">Sudah Aktif Hari Ini!</span>
                                     ) : (
                                         <>
-                                            <span className="w-3 h-3 border-[2px] border-black bg-[#FFFF00] animate-pulse flex-shrink-0 shadow-[1px_1px_0_#000]" />
+                                            <span className="w-3 h-3 border-[2px] border-black bg-[#FFFF00] animate-pulse flex-shrink-0 shadow-[1px_1px_0_#000] rounded-full" />
                                             <span className="text-sm font-black text-white uppercase tracking-wider text-shadow-sm">Belum klaim streakmu hari ini</span>
                                         </>
                                     )}
                                 </div>
                                 {streak.daysToNext !== null && streak.daysToNext > 0 && (
-                                    <p className="text-[11px] font-black mt-2 text-white bg-black px-2 py-0.5 inline-block uppercase">
+                                    <p className="text-[10px] font-black mt-2 text-white bg-black px-2.5 py-1 inline-block uppercase rounded-md">
                                         {streak.daysToNext} hari lagi untuk badge {streak.nextMilestone} Hari
                                     </p>
                                 )}
                             </div>
 
                             <motion.button
-                                whileHover={claimedToday ? {} : { scale: 1.05, y: -2 }}
-                                whileTap={claimedToday ? {} : { scale: 0.95, y: 0 }}
+                                whileHover={claimedToday ? {} : { scale: 1.02, y: -0.5 }}
+                                whileTap={claimedToday ? {} : { scale: 0.98 }}
                                 onClick={() => handleClaim()}
                                 disabled={claimedToday || claiming}
-                                className={`flex-shrink-0 flex items-center justify-center gap-2 px-6 py-3 text-sm font-black uppercase tracking-wider border-[3px] border-black transition-all ${
+                                className={`flex-shrink-0 flex items-center justify-center gap-2 px-6 py-3 text-sm font-black uppercase tracking-wider border-[2.5px] border-black rounded-xl transition-all ${
                                     claimedToday 
-                                    ? "bg-neutral-300 text-neutral-500 cursor-not-allowed shadow-[4px_4px_0_#000]" 
-                                    : "bg-[#FFFF00] text-black shadow-[4px_4px_0_#000]"
+                                    ? "bg-neutral-300 text-neutral-500 cursor-not-allowed shadow-[2.5px_2.5px_0_#000]" 
+                                    : "bg-[#FFFF00] text-black shadow-[3px_3px_0_#000] hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none"
                                 }`}
                             >
                                 {claiming ? (
@@ -549,11 +549,11 @@ export default function StreakPage() {
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.88, y: 20 }}
                             transition={{ type: "spring", stiffness: 380, damping: 28 }}
-                            className="relative w-full max-w-sm overflow-hidden bg-white border-[4px] border-black shadow-[8px_8px_0_#000]"
+                            className="relative w-full max-w-sm overflow-hidden bg-white border-[3px] border-black shadow-[8px_8px_0_#000] rounded-2xl"
                         >
                             <div className="p-6">
                                 {/* Icon */}
-                                <div className="w-14 h-14 bg-[#00FFFF] border-[3px] border-black shadow-[3px_3px_0_#000] flex items-center justify-center mb-5">
+                                <div className="w-14 h-14 bg-[#00FFFF] border-[2.5px] border-black shadow-[3px_3px_0_#000] flex items-center justify-center mb-5 rounded-xl">
                                     <Shield className="w-7 h-7 text-black fill-black" />
                                 </div>
 
@@ -562,10 +562,10 @@ export default function StreakPage() {
                                     Gunakan Streak Freeze?
                                 </h3>
                                 <p className="text-sm text-neutral-600 font-bold leading-relaxed mb-2">
-                                    Kamu melewatkan 1 hari! Streak-mu saat ini <span className="text-black bg-[#FFFF00] border-[2px] border-black px-1.5 py-0.5 font-black inline-block mx-0.5">{freezeConfirmData.currentStreak} hari</span> akan direset ke 1 jika tidak menggunakan freeze.
+                                    Kamu melewatkan 1 hari! Streak-mu saat ini <span className="text-black bg-[#FFFF00] border-[2px] border-black px-2 py-0.5 font-black inline-block mx-0.5 rounded-md">{freezeConfirmData.currentStreak} hari</span> akan direset ke 1 jika tidak menggunakan freeze.
                                 </p>
                                 <div className="flex items-center gap-2 mb-6 mt-4">
-                                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-black uppercase tracking-widest bg-[#00FFFF] border-[2px] border-black text-black shadow-[2px_2px_0_#000]">
+                                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest bg-[#00FFFF] border-[2px] border-black text-black shadow-[2px_2px_0_#000] rounded-lg">
                                         <Shield className="w-3.5 h-3.5 fill-black" />
                                         {freezeConfirmData.freezesRemaining} Freeze tersisa bulan ini
                                     </span>
@@ -576,7 +576,7 @@ export default function StreakPage() {
                                     <button
                                         onClick={handleFreezeConfirm}
                                         disabled={claiming}
-                                        className="w-full py-3 text-sm font-black text-black uppercase bg-[#00FF00] border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                        className="w-full py-3 text-sm font-black text-black uppercase bg-[#00FF00] border-[2.5px] border-black rounded-xl shadow-[3px_3px_0_#000] hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                                     >
                                         <Shield className="w-4 h-4" />
                                         {claiming ? "Menggunakan..." : "Ya, Gunakan Freeze"}
@@ -584,7 +584,7 @@ export default function StreakPage() {
                                     <button
                                         onClick={handleFreezeDecline}
                                         disabled={claiming}
-                                        className="w-full py-3 text-sm font-black text-black uppercase bg-white border-[3px] border-black shadow-[3px_3px_0_#000] hover:bg-[#FF3300] hover:text-white hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all disabled:opacity-50"
+                                        className="w-full py-3 text-sm font-black text-black uppercase bg-white border-[2.5px] border-black rounded-xl shadow-[3px_3px_0_#000] hover:bg-[#FF3300] hover:text-white hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none transition-all disabled:opacity-50"
                                     >
                                         {claiming ? "Mengklaim..." : "Tidak, Reset Streak Saja"}
                                     </button>
@@ -601,14 +601,14 @@ export default function StreakPage() {
                 {/* Milestone Progress (3/5) */}
                 <motion.div
                     variants={fadeUp} initial="hidden" animate="show"
-                    className="lg:col-span-3 bg-white border-[4px] border-black shadow-[8px_8px_0_#000] p-6"
+                    className="lg:col-span-3 bg-white border-[3px] border-black shadow-[6px_6px_0_#000] rounded-2xl p-6"
                 >
                     <div className="flex items-center gap-3 mb-6">
-                        <div className="w-10 h-10 bg-[#FF00FF] border-[3px] border-black shadow-[3px_3px_0_#000] flex items-center justify-center">
+                        <div className="w-10 h-10 bg-[#FF00FF] border-[2.5px] border-black shadow-[2.5px_2.5px_0_#000] flex items-center justify-center rounded-xl">
                             <Trophy className="w-5 h-5 text-white" />
                         </div>
-                        <h2 className="font-black text-black text-[15px] uppercase tracking-widest">Milestone Progress</h2>
-                        <span className="ml-auto text-[11px] font-black bg-[#FFFF00] border-[2px] border-black px-2 py-1 uppercase">{earnedMilestones.length}/4 badge</span>
+                        <h2 className="font-black text-black text-[14px] sm:text-[15px] uppercase tracking-widest">Milestone Progress</h2>
+                        <span className="ml-auto text-[10px] font-black bg-[#FFFF00] border-[2px] border-black px-2.5 py-1 uppercase rounded-md shadow-[1.5px_1.5px_0_#000]">{earnedMilestones.length}/4 badge</span>
                     </div>
 
                     <div className="flex flex-col gap-6">
@@ -621,7 +621,7 @@ export default function StreakPage() {
                                 <div key={m.days} className="flex items-start gap-4">
                                     {/* Icon */}
                                     <div
-                                        className={`w-12 h-12 flex items-center justify-center flex-shrink-0 border-[3px] border-black ${earned ? 'shadow-[3px_3px_0_#000]' : ''}`}
+                                        className={`w-12 h-12 flex items-center justify-center flex-shrink-0 border-[2.5px] border-black rounded-xl transition-all duration-200 ${earned ? 'shadow-[2.5px_2.5px_0_#000]' : 'opacity-60'}`}
                                         style={{ background: earned ? m.badgeBg : "#E5E5E5" }}
                                     >
                                         {earned ? m.icon : <LockIcon />}
@@ -638,9 +638,9 @@ export default function StreakPage() {
                                         <p className="text-[11px] font-bold text-black/50 mb-3">{m.desc}</p>
 
                                         {/* Progress bar */}
-                                        <div className="h-3 w-full border-[2px] border-black bg-white overflow-hidden shadow-[inset_2px_2px_0_rgba(0,0,0,0.1)]">
+                                        <div className="h-3.5 w-full border-[2px] border-black bg-neutral-50 overflow-hidden rounded-full">
                                             <motion.div
-                                                className="h-full border-r-[2px] border-black"
+                                                className="h-full border-r-[2px] border-black rounded-full"
                                                 style={{ background: m.barColor }}
                                                 initial={{ width: 0 }}
                                                 animate={{ width: `${progress}%` }}
@@ -653,7 +653,7 @@ export default function StreakPage() {
                                                 {streak.currentStreak} / {m.days} hari
                                             </span>
                                             {earned ? (
-                                                <span className="text-[11px] font-black text-black bg-[#00FF00] border-[2px] border-black px-2 py-0.5 uppercase">✓ Diraih!</span>
+                                                <span className="text-[10px] font-black text-black bg-[#00FF00] border-[2px] border-black px-2.5 py-0.5 uppercase rounded-md shadow-[1px_1px_0_#000]">✓ Diraih!</span>
                                             ) : (
                                                 <span className="text-[10px] font-bold text-black/50 uppercase">Sisa {remaining} hari</span>
                                             )}
@@ -668,18 +668,18 @@ export default function StreakPage() {
                 {/* Badge Saya (2/5) */}
                 <motion.div
                     variants={fadeUp} initial="hidden" animate="show"
-                    className="lg:col-span-2 bg-white border-[4px] border-black shadow-[8px_8px_0_#000] p-6 flex flex-col"
+                    className="lg:col-span-2 bg-white border-[3px] border-black shadow-[6px_6px_0_#000] rounded-2xl p-6 flex flex-col"
                 >
                     <div className="flex items-center gap-3 mb-6">
-                        <div className="w-10 h-10 bg-[#FFFF00] border-[3px] border-black shadow-[3px_3px_0_#000] flex items-center justify-center">
+                        <div className="w-10 h-10 bg-[#FFFF00] border-[2.5px] border-black shadow-[2.5px_2.5px_0_#000] flex items-center justify-center rounded-xl">
                             <Star className="w-5 h-5 text-black fill-black" />
                         </div>
-                        <h2 className="font-black text-black text-[15px] uppercase tracking-widest">Badge Saya</h2>
-                        <span className="ml-auto text-[11px] font-black bg-black text-white px-2 py-1 uppercase">{earnedMilestones.length} Badge</span>
+                        <h2 className="font-black text-black text-[14px] sm:text-[15px] uppercase tracking-widest">Badge Saya</h2>
+                        <span className="ml-auto text-[10px] font-black bg-black text-white px-2.5 py-1 uppercase rounded-md">{earnedMilestones.length} Badge</span>
                     </div>
 
                     {earnedMilestones.length === 0 ? (
-                        <div className="flex-1 flex flex-col items-center justify-center text-center py-8 bg-[#E5E5E5] border-[3px] border-black">
+                        <div className="flex-1 flex flex-col items-center justify-center text-center py-8 bg-neutral-100 border-[2.5px] border-black rounded-xl">
                             <Medal className="w-10 h-10 text-black mb-3" />
                             <p className="text-sm text-black font-black uppercase">Belum Ada Badge</p>
                             <p className="text-xs font-bold text-black/60 mt-1">Login setiap hari untuk mendapat badge!</p>
@@ -693,15 +693,15 @@ export default function StreakPage() {
                                 return earned ? (
                                     <div
                                         key={m.days}
-                                        className="flex flex-col items-center justify-center gap-2 p-4 border-[3px] border-black text-center shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all cursor-default"
+                                        className="flex flex-col items-center justify-center gap-2 p-4 border-[2.5px] border-black text-center shadow-[3.5px_3.5px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#000] transition-all cursor-default"
                                         style={{ background: m.badgeBg }}
                                     >
-                                        <div className="w-12 h-12 border-[2px] border-black bg-white flex items-center justify-center mb-1">
+                                        <div className="w-12 h-12 border-[2px] border-black bg-white flex items-center justify-center mb-1 rounded-lg">
                                             {m.icon}
                                         </div>
                                         <p className="text-[12px] font-black text-black leading-tight uppercase">{m.label}</p>
                                         {badge && (
-                                            <p className="text-[10px] font-bold text-black/60 bg-white border-[1px] border-black px-1.5 mt-1">
+                                            <p className="text-[9px] font-bold text-black/60 bg-white border-[1.5px] border-black px-1.5 py-0.5 mt-1 rounded-md">
                                                 {formatDate(badge.earnedAt)}
                                             </p>
                                         )}
@@ -709,9 +709,9 @@ export default function StreakPage() {
                                 ) : (
                                     <div
                                         key={m.days}
-                                        className="flex flex-col items-center justify-center gap-2 p-4 border-[3px] border-black bg-[#E5E5E5] text-center opacity-60"
+                                        className="flex flex-col items-center justify-center gap-2 p-4 border-[2.5px] border-black bg-neutral-100 text-center opacity-60 rounded-xl"
                                     >
-                                        <div className="w-12 h-12 border-[2px] border-black bg-white flex items-center justify-center mb-1">
+                                        <div className="w-12 h-12 border-[2px] border-black bg-white flex items-center justify-center mb-1 rounded-lg">
                                             <LockIcon />
                                         </div>
                                         <p className="text-[12px] font-black text-black/40 leading-tight uppercase">{m.label}</p>
@@ -728,14 +728,14 @@ export default function StreakPage() {
             {leaderboard.length > 0 && (
                 <motion.div
                     variants={fadeUp} initial="hidden" animate="show"
-                    className="bg-white border-[4px] border-black shadow-[8px_8px_0_#000] p-6"
+                    className="bg-white border-[3px] border-black shadow-[6px_6px_0_#000] rounded-2xl p-6"
                 >
                     <div className="flex items-center gap-3 mb-6">
-                        <div className="w-10 h-10 bg-[#00FFFF] border-[3px] border-black shadow-[3px_3px_0_#000] flex items-center justify-center">
+                        <div className="w-10 h-10 bg-[#00FFFF] border-[2.5px] border-black shadow-[2.5px_2.5px_0_#000] flex items-center justify-center rounded-xl">
                             <Users className="w-5 h-5 text-black" />
                         </div>
-                        <h2 className="font-black text-black text-[15px] uppercase tracking-widest">Top Streakers</h2>
-                        <span className="ml-auto text-[11px] font-black bg-black text-white px-3 py-1 uppercase">Streak terpanjang</span>
+                        <h2 className="font-black text-black text-[14px] sm:text-[15px] uppercase tracking-widest">Top Streakers</h2>
+                        <span className="ml-auto text-[10px] font-black bg-black text-white px-3 py-1.5 uppercase rounded-md">Streak terpanjang</span>
                     </div>
 
                     <div className="flex flex-col">
@@ -746,7 +746,9 @@ export default function StreakPage() {
                                 <motion.div
                                     key={entry.userId}
                                     whileHover={{ x: 4, transition: { type: "spring", stiffness: 400, damping: 28 } }}
-                                    className={`flex items-center gap-4 px-4 py-3 transition-all border-b-[3px] border-black last:border-b-0 ${isMe ? "bg-[#FFFF00]" : "hover:bg-[#FFFDF0]"}`}
+                                    className={`flex items-center gap-4 px-4 py-3.5 transition-all border-b-[2px] border-dashed border-black/20 last:border-b-0 ${
+                                        isMe ? "bg-[#FFFF00]/10 border-solid border-t-[2px] border-b-[2px] border-black" : "hover:bg-neutral-50 hover:rounded-xl"
+                                    }`}
                                 >
                                     {/* Rank icon */}
                                     <div className="w-8 flex items-center justify-center flex-shrink-0">
@@ -754,7 +756,7 @@ export default function StreakPage() {
                                     </div>
 
                                     {/* Avatar */}
-                                    <div className="w-10 h-10 border-[3px] border-black flex-shrink-0 overflow-hidden flex items-center justify-center bg-white">
+                                    <div className="w-10 h-10 border-[2.5px] border-black flex-shrink-0 overflow-hidden flex items-center justify-center bg-white rounded-xl">
                                         {entry.image ? (
                                             <img src={entry.image} alt="" className="w-full h-full object-cover" />
                                         ) : (
@@ -774,7 +776,7 @@ export default function StreakPage() {
                                                 {entry.isVerified && <BadgeCheck className="w-4 h-4 text-black shrink-0 fill-[#00FFFF]" />}
                                             </div>
                                             {isMe && (
-                                                <span className="text-[9px] px-2 py-0.5 border-[2px] border-black bg-[#FF00FF] text-white font-black uppercase flex-shrink-0 shadow-[2px_2px_0_#000]">
+                                                <span className="text-[9px] px-2 py-0.5 border-[2.5px] border-black bg-[#FF00FF] text-white font-black uppercase flex-shrink-0 shadow-[2px_2px_0_#000] rounded-md">
                                                     Kamu
                                                 </span>
                                             )}
@@ -782,7 +784,7 @@ export default function StreakPage() {
                                     </div>
 
                                     {/* Streak */}
-                                    <div className="flex items-center gap-2 flex-shrink-0 bg-[#FF3300] border-[2px] border-black px-3 py-1 shadow-[2px_2px_0_#000]">
+                                    <div className="flex items-center gap-1.5 flex-shrink-0 bg-[#FF3300] border-[2px] border-black px-3 py-1.5 shadow-[2px_2px_0_#000] rounded-xl">
                                         <FlameIcon size={14} />
                                         <span className="text-sm font-black text-white">
                                             {entry.longestStreak}
@@ -796,7 +798,7 @@ export default function StreakPage() {
                     {leaderboard.length > 5 && (
                         <button
                             onClick={() => setIsLeaderboardModalOpen(true)}
-                            className="mt-6 w-full py-4 text-sm font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 bg-white border-[3px] border-black text-black shadow-[4px_4px_0_#000] hover:bg-[#FFFF00] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000]"
+                            className="mt-6 w-full py-4 text-sm font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 bg-white border-[2.5px] border-black text-black rounded-xl shadow-[3px_3px_0_#000] hover:bg-[#FFFF00] hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none"
                         >
                             Lihat Semua Leaderboard
                             <ChevronRight className="w-5 h-5" />

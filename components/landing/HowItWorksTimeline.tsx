@@ -31,9 +31,9 @@ interface Step {
 function RegisterPreview() {
   return (
     <div className="w-full h-full flex items-center justify-center p-6">
-      <div className="w-full max-w-[280px] bg-[#FFFDF0] border-[3px] border-black p-6 space-y-4 shadow-[4px_4px_0_#000]">
+      <div className="w-full max-w-[280px] bg-[#FFFDF0] border-[3px] border-black p-6 space-y-4 shadow-[4px_4px_0_#000] rounded-2xl">
         <div className="text-center mb-5">
-          <div className="w-12 h-12 bg-[#FFFF00] border-[3px] border-black flex items-center justify-center mx-auto mb-3 shadow-[2px_2px_0_#000]">
+          <div className="w-12 h-12 bg-[#FFFF00] border-[3px] border-black flex items-center justify-center mx-auto mb-3 shadow-[2px_2px_0_#000] rounded-xl">
             <UserPlus className="w-6 h-6 text-black" />
           </div>
           <p className="text-sm font-black text-black">Buat Akun</p>
@@ -41,12 +41,12 @@ function RegisterPreview() {
         </div>
         <div className="space-y-3">
           {["Nama Lengkap", "Email Kamu", "Password"].map((placeholder, i) => (
-            <div key={i} className="px-4 py-2.5 bg-white border-[3px] border-black text-xs text-black/50 font-bold">
+            <div key={i} className="px-4 py-2.5 bg-white border-[3px] border-black text-xs text-black/50 font-bold rounded-xl">
               {placeholder}
             </div>
           ))}
         </div>
-        <div className="w-full py-2.5 bg-[#FFFF00] border-[3px] border-black text-center text-xs font-black text-black shadow-[2px_2px_0_#000] uppercase">
+        <div className="w-full py-2.5 bg-[#FFFF00] border-[3px] border-black text-center text-xs font-black text-black shadow-[2px_2px_0_#000] uppercase rounded-xl">
           Daftar Sekarang →
         </div>
       </div>
@@ -57,7 +57,7 @@ function RegisterPreview() {
 function MapPickPreview() {
   return (
     <div className="w-full h-full flex items-center justify-center p-6">
-      <div className="w-full relative overflow-hidden border-[3px] border-black bg-[#FFFDF0] min-h-[220px] shadow-[4px_4px_0_#000]">
+      <div className="w-full relative overflow-hidden border-[3px] border-black bg-[#FFFDF0] min-h-[220px] shadow-[4px_4px_0_#000] rounded-2xl">
         <div
           className="absolute inset-0"
           style={{
@@ -66,21 +66,21 @@ function MapPickPreview() {
             backgroundSize: "24px 24px",
           }}
         />
-        <div className="absolute top-[25%] left-[10%] w-[35%] h-[40%] bg-[#00FFFF]/20 border-2 border-black/10" />
-        <div className="absolute top-[20%] left-[50%] w-[40%] h-[50%] bg-[#FFFF00]/20 border-2 border-black/10" />
+        <div className="absolute top-[25%] left-[10%] w-[35%] h-[40%] bg-[#00FFFF]/20 border-2 border-black/10 rounded-full" />
+        <div className="absolute top-[20%] left-[50%] w-[40%] h-[50%] bg-[#FFFF00]/20 border-2 border-black/10 rounded-full" />
         {/* Active pin */}
         <div className="absolute left-[55%] top-[32%] -translate-x-1/2 -translate-y-full">
-          <div className="px-3 py-1.5 bg-[#FFFF00] border-[3px] border-black text-[10px] text-black font-black whitespace-nowrap shadow-[2px_2px_0_#000] mb-1 flex items-center gap-1.5">
-            <span className="w-2 h-2 bg-[#FF00FF] border border-black" />
+          <div className="px-3 py-1.5 bg-[#FFFF00] border-[3px] border-black text-[10px] text-black font-black whitespace-nowrap shadow-[2px_2px_0_#000] mb-1 flex items-center gap-1.5 rounded-xl">
+            <span className="w-2 h-2 bg-[#FF00FF] border border-black rounded-full" />
             Pilih lokasi ini
           </div>
           <div className="w-[3px] h-4 bg-black mx-auto" />
-          <div className="w-4 h-4 bg-[#FF00FF] border-[3px] border-black mx-auto" />
+          <div className="w-4 h-4 bg-[#FF00FF] border-[3px] border-black mx-auto rounded-full" />
         </div>
         {/* Other pins */}
-        <div className="absolute left-[25%] top-[50%] w-3 h-3 bg-[#FF00FF]/60 border-2 border-black/40" />
-        <div className="absolute left-[72%] top-[60%] w-2 h-2 bg-[#FF00FF]/40 border-2 border-black/30" />
-        <div className="absolute left-[40%] top-[40%] w-2 h-2 bg-[#FF00FF]/30 border-2 border-black/20" />
+        <div className="absolute left-[25%] top-[50%] w-3 h-3 bg-[#FF00FF]/60 border-2 border-black/40 rounded-full" />
+        <div className="absolute left-[72%] top-[60%] w-2 h-2 bg-[#FF00FF]/40 border-2 border-black/30 rounded-full" />
+        <div className="absolute left-[40%] top-[40%] w-2 h-2 bg-[#FF00FF]/30 border-2 border-black/20 rounded-full" />
       </div>
     </div>
   )
@@ -90,28 +90,28 @@ function WritePreview() {
   return (
     <div className="w-full h-full flex items-center justify-center p-6">
       <div className="w-full max-w-[300px] space-y-3">
-        <div className="bg-white border-[3px] border-black p-4 space-y-2.5 shadow-[3px_3px_0_#000]">
+        <div className="bg-white border-[3px] border-black p-4 space-y-2.5 shadow-[3px_3px_0_#000] rounded-2xl">
           <div className="flex items-center gap-2 text-xs text-black/60 font-black uppercase tracking-wider">
             <PenLine className="w-3 h-3" />
             Tulis Kenangan
           </div>
           <div className="space-y-2">
-            <div className="px-3 py-2 bg-[#FFFDF0] border-[3px] border-black">
+            <div className="px-3 py-2 bg-[#FFFDF0] border-[3px] border-black rounded-xl">
               <p className="text-[10px] text-black/40 mb-1 font-bold">Judul</p>
               <p className="text-xs text-black font-bold">Sunset di Labuan Bajo</p>
             </div>
-            <div className="px-3 py-2 bg-[#FFFDF0] border-[3px] border-black min-h-[60px]">
+            <div className="px-3 py-2 bg-[#FFFDF0] border-[3px] border-black min-h-[60px] rounded-xl">
               <p className="text-[10px] text-black/40 mb-1 font-bold">Cerita</p>
               <p className="text-xs text-black/60 leading-relaxed font-medium">Akhirnya setelah semua perjalanan, aku bisa berdiri di sini dan melihat...</p>
             </div>
           </div>
         </div>
         <div className="flex gap-2">
-          <div className="flex-1 px-3 py-2 bg-[#FFFF00]/30 border-[3px] border-black flex items-center gap-1.5">
+          <div className="flex-1 px-3 py-2 bg-[#FFFF00]/30 border-[3px] border-black flex items-center gap-1.5 rounded-xl">
             <span className="text-[10px]">📅</span>
             <span className="text-[10px] text-black/60 font-bold">14 Apr 2025</span>
           </div>
-          <div className="flex-1 px-3 py-2 bg-[#00FFFF]/30 border-[3px] border-black flex items-center gap-1.5">
+          <div className="flex-1 px-3 py-2 bg-[#00FFFF]/30 border-[3px] border-black flex items-center gap-1.5 rounded-xl">
             <span className="text-[10px]">📍</span>
             <span className="text-[10px] text-black/60 font-bold">Labuan Bajo</span>
           </div>
@@ -126,26 +126,26 @@ function MediaPreview() {
     <div className="w-full h-full flex items-center justify-center p-6">
       <div className="w-full max-w-[300px] space-y-3">
         <div className="grid grid-cols-3 gap-2">
-          <div className="col-span-2 bg-[#FF00FF]/20 border-[3px] border-black overflow-hidden h-28 relative">
+          <div className="col-span-2 bg-[#FF00FF]/20 border-[3px] border-black overflow-hidden h-28 relative rounded-xl">
             <div className="absolute inset-0 flex items-center justify-center">
               <ImagePlus className="w-6 h-6 text-black/40" />
             </div>
             <div className="absolute bottom-2 left-2">
-              <div className="px-2 py-1 bg-[#FFFF00] border-2 border-black text-[9px] text-black font-black">Foto Utama</div>
+              <div className="px-2 py-1 bg-[#FFFF00] border-2 border-black text-[9px] text-black font-black rounded-lg">Foto Utama</div>
             </div>
           </div>
           <div className="flex flex-col gap-2">
-            <div className="bg-[#00FFFF]/20 border-[3px] border-black h-[54px] flex items-center justify-center">
+            <div className="bg-[#00FFFF]/20 border-[3px] border-black h-[54px] flex items-center justify-center rounded-xl">
               <ImagePlus className="w-4 h-4 text-black/30" />
             </div>
-            <div className="bg-[#00FF00]/20 border-[3px] border-black h-[54px] flex items-center justify-center">
+            <div className="bg-[#00FF00]/20 border-[3px] border-black h-[54px] flex items-center justify-center rounded-xl">
               <ImagePlus className="w-4 h-4 text-black/30" />
             </div>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
           {[{ label: "😊 Bahagia", active: true }, { label: "🌊 Petualangan", active: false }, { label: "✨ Nostalgia", active: true }].map((tag) => (
-            <div key={tag.label} className={`px-2.5 py-1 text-[10px] font-bold border-[3px] border-black ${tag.active ? "bg-[#FFFF00] text-black shadow-[2px_2px_0_#000]" : "bg-white text-black/50"}`}>
+            <div key={tag.label} className={`px-2.5 py-1 text-[10px] font-bold border-[3px] border-black rounded-xl ${tag.active ? "bg-[#FFFF00] text-black shadow-[2px_2px_0_#000]" : "bg-white text-black/50"}`}>
               {tag.label}
             </div>
           ))}
@@ -159,10 +159,10 @@ function SharePreview() {
   return (
     <div className="w-full h-full flex items-center justify-center p-6">
       <div className="w-full max-w-[300px] space-y-4">
-        <div className="bg-white border-[3px] border-black p-5 shadow-[3px_3px_0_#000]">
+        <div className="bg-white border-[3px] border-black p-5 shadow-[3px_3px_0_#000] rounded-2xl">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-[#FF00FF] border-[3px] border-black shrink-0 overflow-hidden">
-              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=explorer1" className="w-full h-full" alt="" />
+            <div className="w-10 h-10 bg-[#FF00FF] border-[3px] border-black shrink-0 overflow-hidden rounded-xl">
+              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=explorer1" className="w-full h-full object-cover" alt="" />
             </div>
             <div>
               <p className="text-xs font-black text-black">Sunset di Labuan Bajo</p>
@@ -170,19 +170,19 @@ function SharePreview() {
             </div>
           </div>
           <div className="space-y-1.5 mb-4">
-            <div className="h-1.5 bg-black/10 w-full" />
-            <div className="h-1.5 bg-black/10 w-5/6" />
-            <div className="h-1.5 bg-black/[0.06] w-3/4" />
+            <div className="h-1.5 bg-black/10 w-full rounded-full" />
+            <div className="h-1.5 bg-black/10 w-5/6 rounded-full" />
+            <div className="h-1.5 bg-black/[0.06] w-3/4 rounded-full" />
           </div>
-          <div className="flex items-center gap-1.5 px-3 py-2 bg-[#00FF00]/20 border-[3px] border-black">
-            <div className="w-2 h-2 bg-[#00FF00] border-2 border-black" />
+          <div className="flex items-center gap-1.5 px-3 py-2 bg-[#00FF00]/20 border-[3px] border-black rounded-xl">
+            <div className="w-2 h-2 bg-[#00FF00] border-2 border-black rounded-full" />
             <span className="text-[10px] text-black/50 font-mono font-bold flex-1">memorymap.app/m/bajo-trip</span>
-            <div className="text-[9px] font-black text-black uppercase tracking-wider bg-[#FFFF00] px-2 py-0.5 border-2 border-black">Salin</div>
+            <div className="text-[9px] font-black text-black uppercase tracking-wider bg-[#FFFF00] px-2 py-0.5 border-2 border-black rounded-lg">Salin</div>
           </div>
         </div>
         <div className="flex gap-2">
-          <div className="flex-1 px-3 py-2 bg-white border-[3px] border-black text-center text-[10px] text-black/50 font-bold">🔒 Privat</div>
-          <div className="flex-1 px-3 py-2 bg-[#00FFFF] border-[3px] border-black text-center text-[10px] text-black font-black shadow-[2px_2px_0_#000]">🌍 Publik</div>
+          <div className="flex-1 px-3 py-2 bg-white border-[3px] border-black text-center text-[10px] text-black/50 font-bold rounded-xl">🔒 Privat</div>
+          <div className="flex-1 px-3 py-2 bg-[#00FFFF] border-[3px] border-black text-center text-[10px] text-black font-black shadow-[2px_2px_0_#000] rounded-xl">🌍 Publik</div>
         </div>
       </div>
     </div>
@@ -256,12 +256,12 @@ export function HowItWorksTimeline() {
     >
       {/* ── Section Header ─────────────────────────────────────────────────── */}
       <motion.div variants={fadeUp} className="text-center mb-10">
-        <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#00FFFF] border-[3px] border-black shadow-[3px_3px_0_#000] text-sm text-black font-bold mb-5">
+        <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#00FFFF] border-[3px] border-black shadow-[3px_3px_0_#000] text-sm text-black font-bold mb-5 rounded-xl">
           Langkah demi langkah
         </div>
         <h2 className="text-4xl md:text-5xl font-black font-[Outfit] text-black leading-tight mb-3">
           Cara{" "}
-          <span className="inline-block bg-[#FFFF00] px-3 -rotate-1 border-[3px] border-black shadow-[3px_3px_0_#000]">
+          <span className="inline-block bg-[#FFFF00] px-3 -rotate-1 border-[3px] border-black shadow-[3px_3px_0_#000] rounded-xl">
             Kerjanya
           </span>
         </h2>
@@ -288,7 +288,7 @@ export function HowItWorksTimeline() {
                   {/* Step button */}
                   <button
                     onClick={() => setActiveStep(step.number)}
-                    className={`w-full flex items-start gap-5 p-4 text-left transition-all duration-200 group ${
+                    className={`w-full flex items-start gap-5 p-4 text-left transition-all duration-200 group rounded-2xl ${
                       isActive
                         ? "bg-white border-[3px] border-black shadow-[4px_4px_0_#000]"
                         : "border-[3px] border-transparent hover:border-black/30 hover:bg-white/50"
@@ -297,7 +297,7 @@ export function HowItWorksTimeline() {
                     {/* Step icon */}
                     <div className="relative shrink-0">
                       <div
-                        className={`relative w-11 h-11 flex items-center justify-center z-10 transition-all duration-200 border-[3px] border-black ${
+                        className={`relative w-11 h-11 flex items-center justify-center z-10 transition-all duration-200 border-[3px] border-black rounded-xl ${
                           isActive
                             ? `${step.color} shadow-[3px_3px_0_#000]`
                             : "bg-white group-hover:bg-[#FFFDF0]"
@@ -343,7 +343,7 @@ export function HowItWorksTimeline() {
                     </div>
 
                     {/* Active indicator */}
-                    <div className={`shrink-0 mt-3 w-3 h-3 border-2 border-black transition-all duration-200 ${isActive ? `${step.color} shadow-[2px_2px_0_#000]` : "bg-transparent border-transparent"}`} />
+                    <div className={`shrink-0 mt-3 w-3 h-3 border-2 border-black transition-all duration-200 rounded-full ${isActive ? `${step.color} shadow-[2px_2px_0_#000]` : "bg-transparent border-transparent"}`} />
                   </button>
 
                   {/* ── Mobile inline preview ── */}
@@ -358,11 +358,11 @@ export function HowItWorksTimeline() {
                         style={{ overflow: "hidden" }}
                         className="lg:hidden ml-4 mt-2 mb-1"
                       >
-                        <div className="overflow-hidden border-[3px] border-black bg-white shadow-[4px_4px_0_#000]">
+                        <div className="overflow-hidden border-[3px] border-black bg-white shadow-[4px_4px_0_#000] rounded-2xl">
                           {/* Mini header */}
                           <div className="flex items-center justify-between px-4 py-3 border-b-[3px] border-black">
                             <div className="flex items-center gap-2">
-                              <div className={`w-7 h-7 flex items-center justify-center ${step.color} border-[3px] border-black`}>
+                              <div className={`w-7 h-7 flex items-center justify-center ${step.color} border-[3px] border-black rounded-lg`}>
                                 <Icon className="w-3.5 h-3.5 text-black" />
                               </div>
                               <p className="text-[11px] font-black text-black font-[Outfit]">{step.title}</p>
@@ -373,7 +373,7 @@ export function HowItWorksTimeline() {
                                 <button
                                   key={s.number}
                                   onClick={(e) => { e.stopPropagation(); setActiveStep(s.number) }}
-                                  className={`transition-all duration-200 border-2 border-black ${s.number === activeStep ? "w-4 h-2 bg-black" : "w-2 h-2 bg-white"}`}
+                                  className={`transition-all duration-200 border-2 border-black rounded-full ${s.number === activeStep ? "w-4 h-2 bg-black" : "w-2 h-2 bg-white"}`}
                                 />
                               ))}
                             </div>
@@ -412,12 +412,12 @@ export function HowItWorksTimeline() {
         {/* ── RIGHT: Preview Panel (desktop only) ──────────────────────────────── */}
         <div className="relative lg:sticky lg:top-28 hidden lg:block">
           <div
-            className="relative overflow-hidden border-[3px] border-black bg-white shadow-[6px_6px_0_#000]"
+            className="relative overflow-hidden border-[3px] border-black bg-white shadow-[6px_6px_0_#000] rounded-3xl"
             style={{ minHeight: "420px" }}
           >
             {/* Panel header */}
             <div className="flex items-center gap-3 px-5 py-4 border-b-[3px] border-black">
-              <div className={`w-9 h-9 flex items-center justify-center ${active.color} border-[3px] border-black shadow-[2px_2px_0_#000]`}>
+              <div className={`w-9 h-9 flex items-center justify-center ${active.color} border-[3px] border-black shadow-[2px_2px_0_#000] rounded-xl`}>
                 <ActiveIcon className="w-4 h-4 text-black" />
               </div>
               <div>
@@ -428,9 +428,9 @@ export function HowItWorksTimeline() {
               <div className="ml-auto flex items-center gap-1.5">
                 {steps.map((s) => (
                   <button
-                    key={s.number}
-                    onClick={() => setActiveStep(s.number)}
-                    className={`transition-all duration-200 border-2 border-black ${s.number === activeStep ? "w-5 h-2 bg-black" : "w-2 h-2 bg-white hover:bg-black/20"}`}
+                     key={s.number}
+                     onClick={() => setActiveStep(s.number)}
+                     className={`transition-all duration-200 border-2 border-black rounded-full ${s.number === activeStep ? "w-5 h-2 bg-black" : "w-2 h-2 bg-white hover:bg-black/20"}`}
                   />
                 ))}
               </div>
@@ -459,7 +459,7 @@ export function HowItWorksTimeline() {
                   if (idx > 0) setActiveStep(steps[idx - 1].number)
                 }}
                 disabled={activeStep === "01"}
-                className="text-xs text-black font-bold hover:text-[#FF00FF] disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center gap-1 px-3 py-1.5 border-[3px] border-black hover:bg-[#FFFF00] disabled:hover:bg-transparent"
+                className="text-xs text-black font-bold hover:text-[#FF00FF] disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center gap-1 px-3 py-1.5 border-[3px] border-black rounded-xl hover:bg-[#FFFF00] disabled:hover:bg-transparent"
               >
                 <ArrowRight className="w-3 h-3 rotate-180" />
                 Sebelumnya
@@ -470,7 +470,7 @@ export function HowItWorksTimeline() {
                   if (idx < steps.length - 1) setActiveStep(steps[idx + 1].number)
                 }}
                 disabled={activeStep === steps[steps.length - 1].number}
-                className="text-xs text-black font-bold hover:text-[#FF00FF] disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center gap-1 px-3 py-1.5 border-[3px] border-black hover:bg-[#FFFF00] disabled:hover:bg-transparent"
+                className="text-xs text-black font-bold hover:text-[#FF00FF] disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center gap-1 px-3 py-1.5 border-[3px] border-black rounded-xl hover:bg-[#FFFF00] disabled:hover:bg-transparent"
               >
                 Selanjutnya
                 <ArrowRight className="w-3 h-3" />

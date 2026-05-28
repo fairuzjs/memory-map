@@ -25,12 +25,12 @@ const fadeUp: Variants = {
 }
 
 const perks = [
-    { icon: Globe, title: "Tandai di mana saja di Bumi", desc: "Simpan kenangan pada peta dunia interaktif dengan koordinat yang tepat.", color: "bg-[#FFFF00]" },
-    { icon: BookOpen, title: "Jurnal yang kaya", desc: "Lampirkan foto, cerita, dan perasaan di setiap lokasi.", color: "bg-[#00FFFF]" },
-    { icon: Lock, title: "Privasi secara bawaan", desc: "Kenangan Anda dienkripsi dan hanya dapat dilihat oleh Anda.", color: "bg-[#00FF00]" },
+    { icon: Globe, title: "Tandai di mana saja di Bumi", desc: "Simpan kenangan pada peta dunia interaktif dengan koordinat yang tepat.", color: "bg-[#fef08a]" },
+    { icon: BookOpen, title: "Jurnal yang kaya", desc: "Lampirkan foto, cerita, dan perasaan di setiap lokasi.", color: "bg-[#67e8f9]" },
+    { icon: Lock, title: "Privasi secara bawaan", desc: "Kenangan Anda dienkripsi dan hanya dapat dilihat oleh Anda.", color: "bg-[#86efac]" },
 ]
 
-const inputCls = "h-12 w-full border-[3px] border-black bg-white text-black text-sm placeholder:text-black/30 focus:bg-[#FFFF00]/10 focus:border-black focus:ring-0 transition-all px-4 outline-none font-medium"
+const inputCls = "h-12 w-full border-[3px] border-black bg-white text-black text-sm placeholder:text-black/30 focus:bg-[#FFFF00]/10 focus:border-black focus:ring-0 transition-all px-4 outline-none font-medium rounded-xl"
 
 export default function RegisterPage() {
     const router = useRouter()
@@ -156,25 +156,25 @@ export default function RegisterPage() {
             <div className="hidden lg:flex lg:w-[46%] relative flex-col justify-between p-16 border-r-[4px] border-black bg-white">
                 <motion.div custom={0} variants={fadeUp} initial="hidden" animate="show" className="flex items-center gap-3">
                     <div className="relative w-10 h-10">
-                        <div className="absolute inset-0 bg-[#FFFF00] border-[3px] border-black shadow-[3px_3px_0_#000]" />
+                        <div className="absolute inset-0 bg-[#FFFF00] border-[3px] border-black shadow-[3px_3px_0_#000] rounded-xl" />
                         <div className="relative w-10 h-10 flex items-center justify-center">
                             <MapPin className="w-5 h-5 text-black" />
                         </div>
                     </div>
                     <span className="font-black text-[22px] font-[Outfit] text-black tracking-tight">
-                        Memory<span className="text-[#FF00FF]">Map</span>
+                        Memory<span className="text-[#d946ef]">Map</span>
                     </span>
                 </motion.div>
 
                 <div className="space-y-8">
                     <motion.div custom={1} variants={fadeUp} initial="hidden" animate="show">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 text-xs font-bold text-black bg-[#00FF00] border-[3px] border-black shadow-[3px_3px_0_#000] mb-6">
-                            <span className="w-2 h-2 bg-black" />
+                        <div className="inline-flex items-center gap-2 px-4 py-2 text-xs font-bold text-black bg-[#86efac] border-[3px] border-black shadow-[3px_3px_0_#000] mb-6 rounded-xl">
+                            <span className="w-2 h-2 bg-black rounded-full" />
                             Gratis selamanya · Tanpa kartu kredit
                         </div>
                         <h1 className="font-[Outfit] font-black text-black leading-[1.08]" style={{ fontSize: "clamp(2.2rem, 3.5vw, 3.2rem)" }}>
                             Bergabung Untuk<br />
-                            <span className="inline-block bg-[#FFFF00] px-3 -rotate-1 border-[3px] border-black shadow-[3px_3px_0_#000] mt-2">
+                            <span className="inline-block bg-[#FFFF00] px-3 -rotate-1 border-[3px] border-black shadow-[3px_3px_0_#000] mt-2 rounded-xl">
                                 Menyematkan Kenangan Anda.
                             </span>
                         </h1>
@@ -188,7 +188,7 @@ export default function RegisterPage() {
                     <motion.div custom={3} variants={fadeUp} initial="hidden" animate="show" className="space-y-3">
                         {perks.map(({ icon: Icon, title, desc, color }) => (
                             <div key={title} className="flex items-start gap-4">
-                                <div className={`w-8 h-8 flex items-center justify-center shrink-0 mt-0.5 border-[3px] border-black ${color} shadow-[2px_2px_0_#000]`}>
+                                <div className={`w-8 h-8 flex items-center justify-center shrink-0 mt-0.5 border-[3px] border-black ${color} shadow-[2px_2px_0_#000] rounded-lg`}>
                                     <Icon className="w-3.5 h-3.5 text-black" />
                                 </div>
                                 <div className="flex-1">
@@ -198,23 +198,7 @@ export default function RegisterPage() {
                             </div>
                         ))}
                     </motion.div>
-
-                    <motion.div custom={4} variants={fadeUp} initial="hidden" animate="show" className="flex items-center gap-3 pt-2">
-                        <div className="flex -space-x-2">
-                            {["alice", "bob", "carol", "dave", "eve"].map(seed => (
-                                <img key={seed} src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`}
-                                    className="w-7 h-7 border-[3px] border-black bg-[#FFFF00]" alt="" />
-                            ))}
-                        </div>
-                        <p className="text-black/40 text-xs font-medium">
-                            <span className="text-black font-black">12.000+</span> penjelajah di seluruh dunia
-                        </p>
-                    </motion.div>
                 </div>
-
-                <motion.p custom={5} variants={fadeUp} initial="hidden" animate="show" className="text-black/30 text-xs font-bold">
-                    © {new Date().getFullYear()} MemoryMap Inc.
-                </motion.p>
             </div>
 
             {/* ── Right Panel — Form ──────────────────────────────────── */}
@@ -232,13 +216,13 @@ export default function RegisterPage() {
                     <motion.div custom={0.5} variants={fadeUp} initial="hidden" animate="show"
                         className="flex lg:hidden items-center gap-3 mb-10">
                         <div className="relative w-9 h-9">
-                            <div className="absolute inset-0 bg-[#FFFF00] border-[3px] border-black shadow-[2px_2px_0_#000]" />
+                            <div className="absolute inset-0 bg-[#FFFF00] border-[3px] border-black shadow-[2px_2px_0_#000] rounded-xl" />
                             <div className="relative w-9 h-9 flex items-center justify-center">
                                 <MapPin className="w-4 h-4 text-black" />
                             </div>
                         </div>
                         <span className="font-black text-xl font-[Outfit] text-black tracking-tight">
-                            Memory<span className="text-[#FF00FF]">Map</span>
+                            Memory<span className="text-[#d946ef]">Map</span>
                         </span>
                     </motion.div>
 
@@ -247,9 +231,6 @@ export default function RegisterPage() {
                             <h2 className="font-[Outfit] font-black text-3xl text-black tracking-tight mb-1.5">
                                 Buat akun
                             </h2>
-                            <p className="text-black/50 text-sm font-medium">
-                                Gratis selamanya. Tanpa kartu kredit.
-                            </p>
                         </motion.div>
 
                         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -279,8 +260,8 @@ export default function RegisterPage() {
                                         { ok: /\d/.test(passwordValue), label: "Minimal 1 angka" },
                                     ].map(r => (
                                         <div key={r.label} className="flex items-center gap-2 text-xs">
-                                            {r.ok ? <Check className="w-3.5 h-3.5 text-[#00FF00]" /> : <X className="w-3.5 h-3.5 text-black/20" />}
-                                            <span className={r.ok ? "text-[#00AA00] font-bold" : "text-black/40 font-medium"}>{r.label}</span>
+                                            {r.ok ? <Check className="w-3.5 h-3.5 text-[#22c55e]" /> : <X className="w-3.5 h-3.5 text-black/20" />}
+                                            <span className={r.ok ? "text-green-600 font-bold" : "text-black/40 font-medium"}>{r.label}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -301,9 +282,9 @@ export default function RegisterPage() {
                             <motion.div custom={5} variants={fadeUp} initial="hidden" animate="show">
                                 <p className="text-xs text-black/40 leading-relaxed font-medium">
                                     Dengan membuat akun, Anda menyetujui{" "}
-                                    <button type="button" onClick={() => setModalType("terms")} className="text-[#FF00FF] hover:text-black transition-colors font-black">Syarat Layanan</button>
+                                    <button type="button" onClick={() => setModalType("terms")} className="text-[#d946ef] hover:text-black transition-colors font-black">Syarat Layanan</button>
                                     {" "}dan{" "}
-                                    <button type="button" onClick={() => setModalType("privacy")} className="text-[#FF00FF] hover:text-black transition-colors font-black">Kebijakan Privasi</button> kami.
+                                    <button type="button" onClick={() => setModalType("privacy")} className="text-[#d946ef] hover:text-black transition-colors font-black">Kebijakan Privasi</button> kami.
                                 </p>
                             </motion.div>
 
@@ -311,7 +292,7 @@ export default function RegisterPage() {
 
                             <motion.div custom={7} variants={fadeUp} initial="hidden" animate="show">
                                 <button type="submit" disabled={isLoading || cooldown > 0}
-                                    className="group w-full h-12 text-sm font-black text-black bg-[#FFFF00] border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide">
+                                    className="group w-full h-12 text-sm font-black text-black bg-[#FFFF00] border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide rounded-xl">
                                     <span className="flex items-center justify-center gap-2">
                                         {isLoading ? (
                                             <><Loader2 className="animate-spin w-4 h-4" /> Mengirim kode...</>
@@ -328,7 +309,7 @@ export default function RegisterPage() {
                         <motion.p custom={8} variants={fadeUp} initial="hidden" animate="show"
                             className="mt-6 text-center text-sm text-black/40 font-medium">
                             Sudah punya akun?{" "}
-                            <Link href="/login" className="text-[#FF00FF] hover:text-black font-black transition-colors">
+                            <Link href="/login" className="text-[#d946ef] hover:text-black font-black transition-colors">
                                 Masuk →
                             </Link>
                         </motion.p>
@@ -348,11 +329,11 @@ export default function RegisterPage() {
                             animate={{ opacity: 1, scale: 1, y: 0, rotate: 0 }}
                             exit={{ opacity: 0, scale: 0.9, y: 20 }}
                             transition={{ type: "spring", damping: 20, stiffness: 400 }}
-                            className="relative w-full max-w-[440px] bg-white border-[4px] border-black shadow-[8px_8px_0_#000] p-8 overflow-hidden"
+                            className="relative w-full max-w-[440px] bg-white border-[4px] border-black shadow-[8px_8px_0_#000] p-8 overflow-hidden rounded-3xl"
                         >
                             {/* Header */}
                             <div className="relative z-10 text-center mb-8">
-                                <div className="w-16 h-16 flex items-center justify-center mb-6 mx-auto bg-[#00FFFF] border-[3px] border-black shadow-[3px_3px_0_#000]">
+                                <div className="w-16 h-16 flex items-center justify-center mb-6 mx-auto bg-[#67e8f9] border-[3px] border-black shadow-[3px_3px_0_#000] rounded-2xl">
                                     <Mail className="w-7 h-7 text-black" />
                                 </div>
                                 <h2 className="text-2xl font-black text-black font-[Outfit] tracking-tight mb-2">
@@ -360,7 +341,7 @@ export default function RegisterPage() {
                                 </h2>
                                 <p className="text-black/50 text-sm leading-relaxed font-medium">
                                     Kami mengirimkan kode 6 digit ke<br />
-                                    <strong className="text-[#FF00FF] font-black">{submittedEmail}</strong>
+                                    <strong className="text-[#d946ef] font-black">{submittedEmail}</strong>
                                 </p>
                             </div>
 
@@ -375,7 +356,7 @@ export default function RegisterPage() {
                                         value={digit}
                                         onChange={e => handleOtpInput(i, e.target.value)}
                                         onKeyDown={e => handleOtpKey(i, e)}
-                                        className={`w-12 h-16 text-center text-2xl font-black text-black transition-all focus:outline-none border-[3px] border-black ${digit ? "bg-[#FFFF00] shadow-[3px_3px_0_#000]" : "bg-[#FFFDF0]"}`}
+                                        className={`w-12 h-16 text-center text-2xl font-black text-black transition-all focus:outline-none border-[3px] border-black rounded-xl ${digit ? "bg-[#FFFF00] shadow-[3px_3px_0_#000]" : "bg-[#FFFDF0]"}`}
                                     />
                                 ))}
                             </div>
@@ -383,14 +364,14 @@ export default function RegisterPage() {
                             {/* Progress dots */}
                             <div className="flex items-center justify-center gap-1.5 mb-8">
                                 {otp.map((d, i) => (
-                                    <div key={i} className={`w-2 h-2 border-2 border-black transition-all duration-300 ${d ? "bg-[#00FF00] shadow-[1px_1px_0_#000]" : "bg-white"}`} />
+                                    <div key={i} className={`w-2 h-2 border-2 border-black transition-all duration-300 rounded-full ${d ? "bg-[#86efac] shadow-[1px_1px_0_#000]" : "bg-white"}`} />
                                 ))}
                             </div>
 
                             {/* Action Buttons */}
                             <div className="space-y-4 relative z-10">
                                 <button onClick={handleVerify} disabled={verifying || otp.join("").length < 6}
-                                    className="w-full h-12 text-sm font-black text-black bg-[#FFFF00] border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all uppercase">
+                                    className="w-full h-12 text-sm font-black text-black bg-[#FFFF00] border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all uppercase rounded-xl">
                                     {verifying
                                         ? <><Loader2 className="w-4 h-4 animate-spin" /> Memverifikasi...</>
                                         : <><ShieldCheck className="w-4 h-4" /> Konfirmasi & Buat Akun</>
@@ -399,7 +380,7 @@ export default function RegisterPage() {
 
                                 <div className="text-center">
                                     <button onClick={handleResend} disabled={cooldown > 0 || resending}
-                                        className="inline-flex items-center gap-1.5 text-xs font-black text-[#FF00FF] hover:text-black transition-colors disabled:opacity-40">
+                                        className="inline-flex items-center gap-1.5 text-xs font-black text-[#d946ef] hover:text-black transition-colors disabled:opacity-40">
                                         {resending
                                             ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Mengirim...</>
                                             : cooldown > 0
@@ -416,7 +397,7 @@ export default function RegisterPage() {
                             </div>
 
                             {/* Security note */}
-                            <div className="mt-6 flex items-start gap-2.5 px-4 py-3 text-[10px] text-black/40 leading-relaxed bg-[#FFFDF0] border-[3px] border-black font-medium">
+                            <div className="mt-6 flex items-start gap-2.5 px-4 py-3 text-[10px] text-black/40 leading-relaxed bg-[#FFFDF0] border-[3px] border-black font-medium rounded-xl">
                                 <ShieldCheck className="w-3 h-3 shrink-0 mt-0.5 text-black/30" />
                                 <span>Akun langsung terverifikasi setelah kode valid. Keamanan Anda adalah prioritas kami.</span>
                             </div>

@@ -123,12 +123,14 @@ export default function MemoryDetailPage() {
 
     if (loading) {
         return (
-            <div className="flex-1 flex flex-col items-center justify-center min-h-[60vh] bg-[#E5E5E5]">
-                <div className="flex flex-col items-center gap-4 border-[4px] border-black bg-white p-8 shadow-[8px_8px_0_#000]">
-                    <Loader2 className="w-12 h-12 text-black animate-spin" />
-                    <p className="text-[14px] font-black uppercase text-black">
+            <div className="flex-1 flex flex-col items-center justify-center min-h-[60vh] bg-white relative">
+                <div className="flex flex-col items-center gap-4 border-[3px] border-black bg-white p-8 shadow-[6px_6px_0_#000] rounded-3xl">
+                    <div className="w-16 h-16 border-[3px] border-black bg-[#00FFFF] shadow-[4px_4px_0_#000] flex items-center justify-center rounded-2xl">
+                        <Loader2 className="w-8 h-8 text-black animate-spin" />
+                    </div>
+                    <span className="text-[14px] font-black uppercase text-black bg-[#FFFF00] border-[2.5px] border-black px-4 py-2 rounded-xl shadow-[3px_3px_0_#000]">
                         Memuat Kenangan...
-                    </p>
+                    </span>
                 </div>
             </div>
         )
@@ -167,7 +169,7 @@ export default function MemoryDetailPage() {
             />
 
             {/* ─── HERO ──────────────────────────── */}
-            <div className={`relative w-full overflow-hidden border-b-[4px] border-black transition-all duration-500 z-10 ${heroPhoto ? "h-[70vh] min-h-[420px] max-h-[680px]" : "py-24 sm:py-32 min-h-[45vh] flex flex-col justify-center"}`}>
+            <div className={`relative w-full overflow-hidden border-b-[3px] border-black transition-all duration-500 z-10 ${heroPhoto ? "h-[70vh] min-h-[420px] max-h-[680px]" : "py-24 sm:py-32 min-h-[45vh] flex flex-col justify-center"}`}>
                 
                 {/* Background rendering */}
                 {heroPhoto ? (
@@ -189,8 +191,8 @@ export default function MemoryDetailPage() {
                     <div className={`absolute inset-0 overflow-hidden pointer-events-none ${emotionConfig.bg}`}>
                         <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.1)_2px,transparent_2px),linear-gradient(90deg,rgba(0,0,0,0.1)_2px,transparent_2px)] bg-[size:32px_32px]" />
                         {/* Decorative solid shapes */}
-                        <div className="absolute top-1/4 right-1/4 w-32 h-32 border-[4px] border-black rounded-full bg-white/20 transform rotate-12" />
-                        <div className="absolute bottom-1/4 left-1/4 w-24 h-24 border-[4px] border-black bg-black/10 transform -rotate-6" />
+                        <div className="absolute top-1/4 right-1/4 w-32 h-32 border-[3px] border-black rounded-3xl bg-white/20 transform rotate-12" />
+                        <div className="absolute bottom-1/4 left-1/4 w-24 h-24 border-[3px] border-black rounded-3xl bg-black/10 transform -rotate-6" />
                     </div>
                 )}
 
@@ -208,7 +210,7 @@ export default function MemoryDetailPage() {
                 <div className="absolute top-0 left-0 right-0 px-4 md:px-8 py-6 flex items-center justify-between z-20">
                     <button
                         onClick={() => router.push("/map")}
-                        className="flex items-center gap-2 text-black bg-white border-[3px] border-black px-4 py-2 font-black uppercase shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all"
+                        className="flex items-center gap-2 text-black bg-white border-[3px] border-black px-4 py-2 font-black uppercase rounded-xl shadow-[4px_4px_0_#000] hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#000] active:translate-y-px active:shadow-none transition-all"
                     >
                         <ArrowLeft className="w-4 h-4" />
                         Kembali
@@ -219,19 +221,19 @@ export default function MemoryDetailPage() {
                             <>
                                 <button
                                     onClick={() => setShowStickerPanel(true)}
-                                    className="flex items-center gap-2 bg-[#FFFF00] text-black border-[3px] border-black px-4 py-2 font-black uppercase shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all"
+                                    className="flex items-center gap-2 bg-[#FFFF00] text-black border-[3px] border-black px-4 py-2 font-black uppercase rounded-xl shadow-[4px_4px_0_#000] hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#000] active:translate-y-px active:shadow-none transition-all"
                                     title="Tambah Stiker"
                                 >
                                     <Sticker className="w-4 h-4" />
                                     <span className="hidden sm:inline">Stiker</span>
                                     {placements.length > 0 && (
-                                        <span className="w-5 h-5 bg-white border-[2px] border-black text-[10px] flex items-center justify-center">
+                                        <span className="w-5 h-5 bg-white border-[2px] border-black text-[10px] flex items-center justify-center rounded-lg">
                                             {placements.length}
                                         </span>
                                     )}
                                 </button>
                                 <Link href={`/memories/${id}/edit`}>
-                                    <button className="flex items-center gap-2 bg-[#00FF00] text-black border-[3px] border-black px-4 py-2 font-black uppercase shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all">
+                                    <button className="flex items-center gap-2 bg-[#00FF00] text-black border-[3px] border-black px-4 py-2 font-black uppercase rounded-xl shadow-[4px_4px_0_#000] hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#000] active:translate-y-px active:shadow-none transition-all">
                                         <Edit className="w-4 h-4" />
                                         <span className="hidden sm:inline">Edit</span>
                                     </button>
@@ -239,7 +241,7 @@ export default function MemoryDetailPage() {
                                 <button
                                     onClick={handleDelete}
                                     disabled={isDeleting}
-                                    className="flex items-center gap-2 bg-[#FF3300] text-white border-[3px] border-black px-4 py-2 font-black uppercase shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all disabled:opacity-50"
+                                    className="flex items-center gap-2 bg-[#FF3300] text-white border-[3px] border-black px-4 py-2 font-black uppercase rounded-xl shadow-[4px_4px_0_#000] hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#000] active:translate-y-px active:shadow-none transition-all disabled:opacity-50"
                                 >
                                     <Trash2 className="w-4 h-4" />
                                     <span className="hidden sm:inline">{isDeleting ? "Hapus..." : "Hapus"}</span>
@@ -256,7 +258,7 @@ export default function MemoryDetailPage() {
                 <div className={`z-10 px-5 md:px-12 pb-10 w-full ${heroPhoto ? "absolute bottom-0 left-0 max-w-2xl" : "relative max-w-4xl mx-auto flex flex-col items-center text-center pt-16"}`}>
                     {/* Badges */}
                     <div className={`flex items-center gap-3 mb-6 ${heroPhoto ? "" : "justify-center"}`}>
-                        <span className={`inline-flex items-center gap-2 text-[12px] font-black uppercase tracking-wider px-3 py-1 border-[3px] border-black shadow-[2px_2px_0_#000] ${memory.isPublic
+                        <span className={`inline-flex items-center gap-2 text-[12px] font-black uppercase tracking-wider px-3 py-1 border-[2.5px] border-black rounded-xl shadow-[2px_2px_0_#000] ${memory.isPublic
                             ? "bg-[#00FF00] text-black"
                             : "bg-[#E5E5E5] text-black"
                             }`}>
@@ -264,7 +266,7 @@ export default function MemoryDetailPage() {
                             {memory.isPublic ? "Publik" : "Privat"}
                         </span>
                         {allPhotos.length > 0 && (
-                            <span className="inline-flex items-center gap-2 text-[12px] font-black uppercase tracking-wider px-3 py-1 border-[3px] border-black bg-[#00FFFF] text-black shadow-[2px_2px_0_#000]">
+                            <span className="inline-flex items-center gap-2 text-[12px] font-black uppercase tracking-wider px-3 py-1 border-[2.5px] border-black bg-[#00FFFF] text-black rounded-xl shadow-[2px_2px_0_#000]">
                                 <Images className="w-4 h-4" />
                                 {allPhotos.length} Foto
                             </span>
@@ -272,12 +274,12 @@ export default function MemoryDetailPage() {
                     </div>
 
                     {/* Title */}
-                    <h1 className={`font-black uppercase tracking-tight mb-6 p-2 ${heroPhoto ? "text-4xl sm:text-5xl md:text-6xl text-white drop-shadow-[0_4px_0_rgba(0,0,0,1)]" : `text-5xl sm:text-6xl md:text-7xl bg-white text-black border-[4px] border-black shadow-[8px_8px_0_#000] inline-block transform ${memory.title.length > 20 ? "" : "-rotate-1"}`}`}>
+                    <h1 className={`font-black uppercase tracking-tight mb-6 p-2 ${heroPhoto ? "text-4xl sm:text-5xl md:text-6xl text-white drop-shadow-[0_4px_0_rgba(0,0,0,1)]" : `text-5xl sm:text-6xl md:text-7xl bg-white text-black border-[3.5px] border-black rounded-3xl shadow-[8px_8px_0_#000] inline-block transform ${memory.title.length > 20 ? "" : "-rotate-1"}`}`}>
                         {memory.title}
                     </h1>
 
                     {/* Meta */}
-                    <div className={`flex flex-wrap items-center gap-4 text-[14px] font-black uppercase ${heroPhoto ? "text-white" : "text-black bg-white p-2 border-[3px] border-black shadow-[4px_4px_0_#000] justify-center inline-flex"}`}>
+                    <div className={`flex flex-wrap items-center gap-4 text-[14px] font-black uppercase ${heroPhoto ? "text-white" : "text-black bg-white p-2.5 border-[2.5px] border-black rounded-xl shadow-[3px_3px_0_#000] justify-center inline-flex"}`}>
                         <span className="flex items-center gap-2">
                             <Calendar className={`w-4 h-4 ${heroPhoto ? "text-[#00FFFF]" : "text-black"}`} />
                             {formattedDate}
@@ -303,7 +305,7 @@ export default function MemoryDetailPage() {
                     <main className="flex-1 min-w-0">
 
                         {/* Author & Collaborators Strip */}
-                        <div className="flex flex-wrap items-center gap-x-6 gap-y-4 mb-10 bg-[#E5E5E5] p-4 border-[4px] border-black shadow-[6px_6px_0_#000]">
+                        <div className="flex flex-wrap items-center gap-x-6 gap-y-4 mb-10 bg-neutral-100 p-4 border-[3px] border-black rounded-2xl shadow-[4px_4px_0_#000]">
                             <Link
                                 href={`/profile/${memory.user.id}`}
                                 className="flex items-center gap-4 group shrink-0"
@@ -312,9 +314,9 @@ export default function MemoryDetailPage() {
                                     <img
                                         src={memory.user.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${memory.user.id}`}
                                         alt={memory.user.name}
-                                        className="w-12 h-12 border-[3px] border-black object-cover bg-white shadow-[2px_2px_0_#000]"
+                                        className="w-12 h-12 border-[3px] border-black object-cover bg-white shadow-[2px_2px_0_#000] rounded-xl"
                                     />
-                                    <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#00FF00] border-[2px] border-black" />
+                                    <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#00FF00] border-[2px] border-black rounded-full" />
                                 </div>
                                 <div className="flex flex-col">
                                     <p className="text-[16px] font-black uppercase text-black flex items-center gap-2">
@@ -331,7 +333,7 @@ export default function MemoryDetailPage() {
                                 <>
                                     <div className="w-[4px] h-10 bg-black hidden sm:block mx-2" />
                                     <div className="flex items-center gap-3">
-                                        <p className="text-[12px] font-black text-black bg-white px-2 border-[2px] border-black tracking-widest uppercase shrink-0">
+                                        <p className="text-[12px] font-black text-black bg-white px-2 border-[2px] border-black rounded-lg tracking-widest uppercase shrink-0">
                                             Bersama
                                         </p>
                                         <div className="flex -space-x-3">
@@ -345,7 +347,7 @@ export default function MemoryDetailPage() {
                                                     <img
                                                         src={collab.user.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${collab.user.id}`}
                                                         alt={collab.user.name}
-                                                        className="w-10 h-10 border-[3px] border-black object-cover bg-white shadow-[2px_2px_0_#000]"
+                                                        className="w-10 h-10 border-[3px] border-black object-cover bg-white shadow-[2px_2px_0_#000] rounded-xl"
                                                     />
                                                 </Link>
                                             ))}
@@ -356,7 +358,7 @@ export default function MemoryDetailPage() {
                         </div>
 
                         {/* Story / Prose */}
-                        <div className="bg-white border-[4px] border-black p-6 sm:p-8 shadow-[8px_8px_0_#000] text-black font-bold text-[16px] leading-[1.8] mb-12 space-y-6">
+                        <div className="bg-white border-[3px] border-black p-6 sm:p-8 shadow-[6px_6px_0_#000] rounded-3xl text-black font-bold text-[16px] leading-[1.8] mb-12 space-y-6">
                             {memory.story.split("\n").map((para: string, i: number) => (
                                 para.trim() ? <p key={i}>{para}</p> : <br key={i} />
                             ))}
@@ -364,7 +366,7 @@ export default function MemoryDetailPage() {
 
                         {/* Music Player — MOBILE ONLY (above gallery) */}
                         {(memory.audioUrl || memory.spotifyTrackId) && isMobile && (
-                            <div className="mb-12 lg:hidden border-[4px] border-black shadow-[6px_6px_0_#000] bg-[#FF00FF]">
+                            <div className="mb-12 lg:hidden border-[3px] border-black shadow-[4px_4px_0_#000] bg-[#FF00FF] rounded-2xl overflow-hidden">
                                 {memory.spotifyTrackId ? (
                                     <iframe
                                         style={{ borderRadius: '0' }}
@@ -391,7 +393,7 @@ export default function MemoryDetailPage() {
                         {/* Photo Gallery — only secondary photos */}
                         {galleryPhotos.length > 0 && (
                             <div className="mb-16">
-                                <h3 className="inline-block px-3 py-1 bg-[#00FFFF] border-[3px] border-black text-[16px] font-black uppercase shadow-[4px_4px_0_#000] mb-6">
+                                <h3 className="inline-block px-3 py-1 bg-[#00FFFF] border-[3px] border-black text-[16px] font-black uppercase rounded-xl shadow-[4px_4px_0_#000] mb-6">
                                     Galeri Foto
                                 </h3>
                                 <div className={`grid gap-4 ${galleryPhotos.length === 1 ? "grid-cols-1" :
@@ -403,7 +405,7 @@ export default function MemoryDetailPage() {
                                         <button
                                             key={photo.id}
                                             onClick={() => setLightbox(photo.url)}
-                                            className={`group relative overflow-hidden border-[4px] border-black bg-white shadow-[6px_6px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0_#000] transition-all ${idx === 0 && galleryPhotos.length >= 4 ? "col-span-2 row-span-2 aspect-square" : "aspect-square"
+                                            className={`group relative overflow-hidden border-[3px] border-black bg-white shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] rounded-2xl transition-all ${idx === 0 && galleryPhotos.length >= 4 ? "col-span-2 row-span-2 aspect-square" : "aspect-square"
                                                 }`}
                                         >
                                             <img
@@ -418,16 +420,16 @@ export default function MemoryDetailPage() {
                         )}
 
                         {/* Reactions */}
-                        <div className="mb-12 bg-white border-[4px] border-black p-6 sm:p-8 shadow-[8px_8px_0_#000]">
-                            <h3 className="inline-block px-3 py-1 bg-[#FFFF00] border-[3px] border-black text-[16px] font-black uppercase shadow-[4px_4px_0_#000] mb-6">
+                        <div className="mb-12 bg-white border-[3px] border-black p-6 sm:p-8 rounded-3xl shadow-[6px_6px_0_#000]">
+                            <h3 className="inline-block px-3 py-1 bg-[#FFFF00] border-[3px] border-black text-[16px] font-black uppercase rounded-xl shadow-[4px_4px_0_#000] mb-6">
                                 Reaksi
                             </h3>
                             <Reactions memoryId={memory.id} initialReactions={memory.reactions || []} />
                         </div>
 
                         {/* Comments */}
-                        <div className="bg-white border-[4px] border-black p-6 sm:p-8 shadow-[8px_8px_0_#000] mb-12">
-                            <h3 className="inline-block px-3 py-1 bg-[#00FF00] border-[3px] border-black text-[16px] font-black uppercase shadow-[4px_4px_0_#000] mb-6">
+                        <div className="bg-white border-[3px] border-black p-6 sm:p-8 rounded-3xl shadow-[6px_6px_0_#000] mb-12">
+                            <h3 className="inline-block px-3 py-1 bg-[#00FF00] border-[3px] border-black text-[16px] font-black uppercase rounded-xl shadow-[4px_4px_0_#000] mb-6">
                                 Komentar
                             </h3>
                             <Comments memoryId={memory.id} initialComments={memory.comments || []} />
@@ -440,8 +442,8 @@ export default function MemoryDetailPage() {
 
                             {/* Music Player — DESKTOP ONLY (sidebar) */}
                             {(memory.audioUrl || memory.spotifyTrackId) && !isMobile && (
-                                <div className="hidden lg:block relative bg-[#FF00FF] border-[4px] border-black shadow-[8px_8px_0_#000]">
-                                    <div className="p-3 border-b-[4px] border-black bg-white">
+                                <div className="hidden lg:block relative bg-[#FF00FF] border-[3px] border-black rounded-2xl shadow-[6px_6px_0_#000] overflow-hidden">
+                                    <div className="p-3 border-b-[3px] border-black bg-white">
                                         <p className="text-[12px] font-black text-black uppercase tracking-wider">Soundtrack</p>
                                     </div>
                                     {memory.spotifyTrackId ? (
@@ -470,13 +472,13 @@ export default function MemoryDetailPage() {
                             )}
 
                             {/* Memory Info Card */}
-                            <div className="bg-[#E5E5E5] border-[4px] border-black p-6 shadow-[8px_8px_0_#000]">
-                                <h3 className="inline-block px-3 py-1 bg-white border-[3px] border-black text-[14px] font-black uppercase shadow-[4px_4px_0_#000] mb-6">
+                            <div className="bg-[#E5E5E5] border-[3px] border-black p-6 rounded-3xl shadow-[6px_6px_0_#000]">
+                                <h3 className="inline-block px-3 py-1 bg-white border-[3px] border-black text-[14px] font-black uppercase rounded-xl shadow-[4px_4px_0_#000] mb-6">
                                     Detail Kenangan
                                </h3>
                                 <ul className="space-y-5">
                                     <li className="flex items-start gap-4">
-                                        <div className="w-10 h-10 border-[3px] border-black bg-[#00FFFF] flex items-center justify-center shrink-0 shadow-[2px_2px_0_#000]">
+                                        <div className="w-10 h-10 border-[3px] border-black bg-[#00FFFF] flex items-center justify-center shrink-0 rounded-xl shadow-[2px_2px_0_#000]">
                                             <Calendar className="w-5 h-5 text-black" />
                                         </div>
                                         <div>
@@ -486,7 +488,7 @@ export default function MemoryDetailPage() {
                                     </li>
                                     {memory.locationName && (
                                         <li className="flex items-start gap-4">
-                                            <div className="w-10 h-10 border-[3px] border-black bg-[#FFFF00] flex items-center justify-center shrink-0 shadow-[2px_2px_0_#000]">
+                                            <div className="w-10 h-10 border-[3px] border-black bg-[#FFFF00] flex items-center justify-center shrink-0 rounded-xl shadow-[2px_2px_0_#000]">
                                                 <MapPin className="w-5 h-5 text-black" />
                                             </div>
                                             <div>
@@ -496,7 +498,7 @@ export default function MemoryDetailPage() {
                                         </li>
                                     )}
                                     <li className="flex items-start gap-4">
-                                        <div className={`w-10 h-10 border-[3px] border-black flex items-center justify-center shrink-0 shadow-[2px_2px_0_#000] ${memory.isPublic ? "bg-[#00FF00]" : "bg-neutral-400"}`}>
+                                        <div className={`w-10 h-10 border-[3px] border-black flex items-center justify-center shrink-0 rounded-xl shadow-[2px_2px_0_#000] ${memory.isPublic ? "bg-[#00FF00]" : "bg-neutral-400"}`}>
                                             {memory.isPublic
                                                 ? <Globe className="w-5 h-5 text-black" />
                                                 : <Lock className="w-5 h-5 text-black" />
@@ -509,7 +511,7 @@ export default function MemoryDetailPage() {
                                     </li>
                                     {memory.photos?.length > 0 && (
                                         <li className="flex items-start gap-4">
-                                            <div className="w-10 h-10 border-[3px] border-black bg-[#FF00FF] flex items-center justify-center shrink-0 shadow-[2px_2px_0_#000]">
+                                            <div className="w-10 h-10 border-[3px] border-black bg-[#FF00FF] flex items-center justify-center shrink-0 rounded-xl shadow-[2px_2px_0_#000]">
                                                 <Images className="w-5 h-5 text-white" />
                                             </div>
                                             <div>
@@ -523,8 +525,8 @@ export default function MemoryDetailPage() {
 
                             {/* Map Preview */}
                             {memory.latitude && memory.longitude && (
-                                <div className="bg-white border-[4px] border-black shadow-[8px_8px_0_#000] overflow-hidden">
-                                    <div className="p-3 border-b-[4px] border-black bg-[#FFFF00]">
+                                <div className="bg-white border-[3px] border-black shadow-[6px_6px_0_#000] rounded-3xl overflow-hidden">
+                                    <div className="p-3 border-b-[3px] border-black bg-[#FFFF00]">
                                         <p className="text-[14px] font-black uppercase text-black">Lokasi pada Peta</p>
                                     </div>
                                     <iframe
@@ -545,18 +547,18 @@ export default function MemoryDetailPage() {
             {/* ─── LIGHTBOX ─────────────────────────────────────── */}
             {lightbox && (
                 <div
-                    className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 sm:p-8 cursor-zoom-out"
+                    className="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4 sm:p-8 cursor-zoom-out"
                     onClick={() => setLightbox(null)}
                 >
                     <div className="relative max-w-5xl max-h-full" onClick={e => e.stopPropagation()}>
                         <img
                             src={lightbox}
                             alt=""
-                            className="max-w-full max-h-[90vh] object-contain border-[6px] border-black shadow-[12px_12px_0_#fff]"
+                            className="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-[0_0_24px_rgba(0,0,0,0.5)] overflow-hidden"
                         />
                         <button
                             onClick={() => setLightbox(null)}
-                            className="absolute -top-4 -right-4 w-12 h-12 bg-[#FF3300] border-[4px] border-black shadow-[4px_4px_0_#fff] flex items-center justify-center text-white hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#fff] transition-all text-xl font-black"
+                            className="absolute -top-3 -right-3 w-10 h-10 bg-black text-white hover:bg-neutral-800 flex items-center justify-center rounded-full transition-all text-lg font-black shadow-lg"
                         >
                             ×
                         </button>

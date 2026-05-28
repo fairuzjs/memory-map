@@ -6,7 +6,10 @@ import { Prisma } from "@prisma/client"
 import { getCachedPublicMemories } from "@/lib/services/memory-service"
 import { revalidateTag } from "next/cache"
 import { CACHE_TAGS } from "@/lib/cache"
-import { isPremiumActive, getUserLimits } from "@/lib/premium-config"
+import { getUserLimits } from "@/lib/premium-config"
+import { getPremiumStatus } from "@/lib/premium-status"
+import { checkAndCleanupPremium } from "@/lib/premium-enforcement"
+import { getSpotifyAccess } from "@/lib/spotify-access"
 
 export async function GET(req: Request) {
     try {
@@ -195,7 +198,7 @@ export async function POST(req: Request) {
         // Blokir user yang belum verifikasi email
         const currentUser = await prisma.user.findUnique({
             where: { id: session.user.id },
-            select: { isEmailVerified: true, premiumExpiresAt: true }
+            select: { id: true, isEmailVerified: true, isPremium: true, premiumExpiresAt: true, inventories: { include: { item: { select: { type: true, value: true } } } } }
         })
         if (!currentUser || currentUser.isEmailVerified === false) {
             return NextResponse.json(
@@ -204,8 +207,12 @@ export async function POST(req: Request) {
             )
         }
 
+        // Lazy cleanup
+        await checkAndCleanupPremium(currentUser)
+
         // ── Determine premium limits ──
-        const userIsPremium = isPremiumActive(currentUser.premiumExpiresAt)
+        const pStatus = getPremiumStatus(currentUser)
+        const userIsPremium = pStatus.isActive
         const limits = getUserLimits(userIsPremium)
 
         const body = await req.json()
@@ -235,20 +242,13 @@ export async function POST(req: Request) {
         }
 
         // ── Premium feature gate: Spotify integration ──
-        // Premium users get auto-unlock, free users need shop item
-        if (data.spotifyTrackId && !userIsPremium) {
-            const hasSpotifyPremium = await prisma.userInventory.findFirst({
-                where: {
-                    userId: session.user.id,
-                    item: { type: "PREMIUM_FEATURE", value: "spotify_integration" },
-                },
-            })
-            if (!hasSpotifyPremium) {
-                return NextResponse.json(
-                    { error: "Fitur Spotify adalah fitur premium. Silakan beli di Memory Shop atau upgrade ke Premium!" },
-                    { status: 403 }
-                )
-            }
+        const spotifyAccess = getSpotifyAccess(currentUser, currentUser.inventories)
+        
+        if (data.spotifyTrackId && !spotifyAccess.canAttachNewTrack) {
+            return NextResponse.json(
+                { error: "Fitur Spotify adalah fitur premium. Silakan beli di Memory Shop atau upgrade ke Premium!" },
+                { status: 403 }
+            )
         }
 
         // Buat memory dalam transaction sekaligus dengan collaborators + notifikasi
@@ -278,6 +278,7 @@ export async function POST(req: Request) {
                     } : {}),
                     // Spotify integration
                     spotifyTrackId: data.spotifyTrackId || null,
+                    spotifyAccessSource: data.spotifyTrackId ? spotifyAccess.source : null,
                     // Premium map marker
                     markerStyle: data.markerStyle || null,
                     // Cover image

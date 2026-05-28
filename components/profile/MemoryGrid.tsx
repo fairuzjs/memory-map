@@ -21,17 +21,17 @@ export function MemoryGridCell({ memory, onClick, profileId }: { memory: any; on
             whileHover={{ scale: 1.02 }}
             transition={{ type: "spring", stiffness: 320, damping: 24 }}
             onClick={onClick}
-            className="relative aspect-square overflow-hidden cursor-pointer group bg-white border-[3px] border-black shadow-[4px_4px_0_#000] hover:shadow-[6px_6px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
+            className="relative aspect-square overflow-hidden cursor-pointer group bg-white border-[3px] border-black shadow-[4px_4px_0_#000] rounded-2xl hover:shadow-[6px_6px_0_#000] hover:-translate-y-0.5 active:translate-y-px active:shadow-none transition-all"
         >
             {photo ? (
                 <img src={photo} alt={memory.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
             ) : (
-                <div className="absolute inset-0 flex flex-col items-center justify-center p-3 sm:p-4 text-center bg-[#E5E5E5]"
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-3 sm:p-4 text-center bg-neutral-50"
                     style={{
-                        backgroundImage: "linear-gradient(#D5D5D5 2px, transparent 2px), linear-gradient(90deg, #D5D5D5 2px, transparent 2px)",
-                        backgroundSize: "16px 16px",
+                        backgroundImage: "linear-gradient(#E8E8E8 1.5px, transparent 1.5px), linear-gradient(90deg, #E8E8E8 1.5px, transparent 1.5px)",
+                        backgroundSize: "14px 14px",
                     }}>
-                    <div className="w-8 h-8 flex items-center justify-center mb-2 sm:mb-3 bg-white border-[2px] border-black shadow-[2px_2px_0_#000]">
+                    <div className="w-8 h-8 flex items-center justify-center mb-2 sm:mb-3 bg-white border-[2px] border-black shadow-[2px_2px_0_#000] rounded-lg">
                         <Heart className="w-4 h-4" style={{ fill: emotionColor, stroke: emotionColor }} />
                     </div>
                     <p className="text-black text-xs sm:text-sm font-black leading-normal line-clamp-3 relative z-10 uppercase">
@@ -45,25 +45,25 @@ export function MemoryGridCell({ memory, onClick, profileId }: { memory: any; on
 
             <div className="absolute top-2 left-2 flex items-center gap-1.5 z-20">
                 {hasAudio && (
-                    <div className={`flex items-center justify-center w-6 h-6 border-[2px] border-black shadow-[1px_1px_0_#000] ${memory.spotifyTrackId ? "bg-[#00FF00]" : "bg-[#FF00FF]"}`} title="Mempunyai musik">
+                    <div className={`flex items-center justify-center w-6 h-6 border-[2px] border-black shadow-[1px_1px_0_#000] rounded-lg ${memory.spotifyTrackId ? "bg-[#86efac]" : "bg-[#f5d0fe]"}`} title="Mempunyai musik">
                         <Music className="w-3 h-3 text-black" />
                     </div>
                 )}
                 {isCollab && (
-                    <div className="flex items-center gap-1 px-1.5 py-0.5 bg-[#00FFFF] border-[2px] border-black shadow-[1px_1px_0_#000]" title="Kolaborasi">
+                    <div className="flex items-center gap-1 px-1.5 py-0.5 bg-[#67e8f9] border-[2px] border-black shadow-[1px_1px_0_#000] rounded-lg" title="Kolaborasi">
                         <Users className="w-2.5 h-2.5 text-black" />
                         <span className="text-[9px] font-black text-black tracking-wide uppercase">Collab</span>
                     </div>
                 )}
             </div>
 
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-200 bg-black/60">
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-200 bg-black/60 backdrop-blur-[1px]">
                 <div className="flex items-center gap-5">
                     <div className="flex items-center gap-1.5 text-white">
                         <Heart 
-                            className={`w-5 h-5 transition-colors ${memory.isLikedByMe ? "text-[#FF00FF] fill-[#FF00FF]" : "fill-white"}`} 
+                            className={`w-5 h-5 transition-colors ${memory.isLikedByMe ? "text-[#f5d0fe] fill-[#f5d0fe]" : "fill-white"}`} 
                         />
-                        <span className={`text-sm font-black transition-colors ${memory.isLikedByMe ? "text-[#FF00FF]" : "text-white"}`}>
+                        <span className={`text-sm font-black transition-colors ${memory.isLikedByMe ? "text-[#f5d0fe]" : "text-white"}`}>
                             {memory._count?.reactions ?? 0}
                         </span>
                     </div>
@@ -72,19 +72,19 @@ export function MemoryGridCell({ memory, onClick, profileId }: { memory: any; on
                         <span className="text-sm font-black">{memory._count?.comments ?? 0}</span>
                     </div>
                 </div>
-                <div className="px-2.5 py-1 text-[10px] font-black uppercase bg-white border-[2px] border-black text-black shadow-[2px_2px_0_#000]">
+                <div className="px-2.5 py-1 text-[10px] font-black uppercase bg-white border-[2px] border-black text-black shadow-[2px_2px_0_#000] rounded-lg">
                     {EMOTION_LABEL[memory.emotion] ?? memory.emotion}
                 </div>
             </div>
 
             <div className="absolute top-2 right-2 flex items-center gap-1.5 z-20">
                 {memory.isPinned && (
-                    <div className="flex items-center justify-center w-6 h-6 bg-[#FFFF00] border-[2px] border-black shadow-[1px_1px_0_#000]" title="Disematkan">
+                    <div className="flex items-center justify-center w-6 h-6 bg-[#fef08a] border-[2px] border-black shadow-[1px_1px_0_#000] rounded-lg" title="Disematkan">
                         <Pin className="w-3 h-3 text-black fill-black" />
                     </div>
                 )}
                 {memory.photos?.length > 1 && (
-                    <div className="flex items-center gap-0.5 px-1.5 py-0.5 bg-white border-[2px] border-black shadow-[1px_1px_0_#000]">
+                    <div className="flex items-center gap-0.5 px-1.5 py-0.5 bg-white border-[2px] border-black shadow-[1px_1px_0_#000] rounded-lg">
                         <ImageIcon className="w-2.5 h-2.5 text-black" />
                         <span className="text-[9px] font-black text-black">{memory.photos.length}</span>
                     </div>
@@ -108,7 +108,7 @@ export function MemoryGrid({ memories, isOwner, profileId, onReact, onPin }: { m
         >
             <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 flex items-center justify-center bg-[#FFFF00] border-[3px] border-black shadow-[2px_2px_0_#000]">
+                    <div className="w-9 h-9 flex items-center justify-center bg-[#fef08a] border-[2.5px] border-black shadow-[2.5px_2.5px_0_#000] rounded-xl">
                         <ImageIcon className="w-4 h-4 text-black" />
                     </div>
                     <div>
@@ -120,7 +120,7 @@ export function MemoryGrid({ memories, isOwner, profileId, onReact, onPin }: { m
                 </div>
                 {isOwner && (
                     <Link href="/memories/create"
-                        className="flex items-center gap-1.5 px-4 py-2.5 text-xs font-black uppercase text-black bg-[#00FF00] border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all">
+                        className="flex items-center gap-1.5 px-4 py-2.5 text-xs font-black uppercase text-black bg-[#86efac] border-[2.5px] border-black shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] active:translate-y-px active:shadow-none transition-all">
                         <Plus className="w-3.5 h-3.5" />
                         Tambah
                     </Link>

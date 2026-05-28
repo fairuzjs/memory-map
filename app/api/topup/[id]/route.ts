@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
+import { adminOrderActionSchema } from "@/lib/validations"
+import { createAdminAuditLog } from "@/lib/audit"
 
 export async function PATCH(
     req: Request,
@@ -13,14 +15,20 @@ export async function PATCH(
         }
 
         const { id } = await params
-        const { status, note } = await req.json()
+        const body = await req.json()
         const isAdmin = session.user.role === "ADMIN"
+
+        let status = body.status
+        let note = body.note
 
         // Admin bisa COMPLETED atau CANCELLED, user hanya bisa CANCELLED (batalkan sendiri)
         if (isAdmin) {
-            if (!["COMPLETED", "CANCELLED"].includes(status)) {
-                return NextResponse.json({ error: "Status tidak valid" }, { status: 400 })
+            const parsed = adminOrderActionSchema.safeParse(body)
+            if (!parsed.success) {
+                return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 })
             }
+            status = parsed.data.status
+            note = parsed.data.note
         } else {
             if (status !== "CANCELLED") {
                 return NextResponse.json({ error: "User hanya bisa membatalkan pesanan" }, { status: 403 })
@@ -52,6 +60,17 @@ export async function PATCH(
                 user: { select: { id: true, name: true, email: true, points: true } },
             },
         })
+
+        // Record audit trail
+        if (isAdmin) {
+            await createAdminAuditLog(
+                session.user.id,
+                status === "COMPLETED" ? "APPROVE_TOPUP" : "REJECT_TOPUP",
+                "TOPUP_ORDER",
+                id,
+                { amount: order.amount, userId: order.userId, note }
+            )
+        }
 
         return NextResponse.json(result)
     } catch (error) {
@@ -94,3 +113,4 @@ export async function GET(
         return NextResponse.json({ error: "Server error" }, { status: 500 })
     }
 }
+

@@ -264,7 +264,7 @@ export default function UserProfilePage() {
             {/* ─────────────── PROFILE CARD ─────────────── */}
             <motion.div
                 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-                className="overflow-hidden mb-8 relative w-full bg-[#0a0a10] border-[4px] border-black shadow-[8px_8px_0_#000]"
+                className="overflow-hidden mb-8 relative w-full bg-[#0a0a10] border-[3px] border-black shadow-[6px_6px_0_#000] rounded-2xl"
             >
                 {/* Banner Section — PRESERVED for equipped banners */}
                 <div className="relative h-32 sm:h-40 overflow-hidden">
@@ -359,26 +359,31 @@ export default function UserProfilePage() {
                         <motion.img
                             initial={{ scale: 0.8 }} animate={{ scale: 1 }} exit={{ scale: 0.8 }}
                             src={user.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`}
-                            className="w-64 h-64 sm:w-80 sm:h-80 rounded-full object-cover mb-12 border-[4px] border-black shadow-[8px_8px_0_#000]"
+                            className="w-64 h-64 sm:w-80 sm:h-80 rounded-full object-cover mb-12 border-[3px] border-black shadow-[6px_6px_0_#000]"
                         />
-                        <div className="flex flex-wrap justify-center gap-4" onClick={e => e.stopPropagation()}>
+                        <div className="flex flex-wrap justify-center gap-4 animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
                             {isOwner ? (
-                                <button onClick={() => { setIsPhotoModalOpen(false); setIsEditOpen(true) }} className="flex items-center gap-2 px-6 py-3 bg-[#FFFF00] border-[3px] border-black text-black font-black uppercase text-sm shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all">
+                                <button onClick={() => { setIsPhotoModalOpen(false); setIsEditOpen(true) }} className="flex items-center gap-2 px-6 py-3 bg-[#FFFF00] border-[2.5px] border-black text-black font-black uppercase text-sm shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none transition-all">
                                     <Camera className="w-4 h-4" />
                                     <span>Ubah Foto</span>
                                 </button>
                             ) : (
-                                <button onClick={() => { handleFollow() }} className={`flex items-center gap-2 px-6 py-3 border-[3px] border-black font-black uppercase text-sm shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all ${user.isFollowing ? 'bg-white text-black' : 'bg-[#FF00FF] text-white'}`}>
+                                <button onClick={() => { handleFollow() }} className={`flex items-center gap-2 px-6 py-3 border-[2.5px] border-black font-black uppercase text-sm shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none transition-all ${user.isFollowing ? 'bg-white text-black' : 'bg-[#FF00FF] text-white'}`}>
                                     {user.isFollowing ? <UserCheck className="w-5 h-5" /> : <UserPlus className="w-5 h-5" />}
                                     <span>{user.isFollowing ? "Mengikuti" : "Ikuti"}</span>
                                 </button>
                             )}
-                            <button onClick={copyProfileLink} className="flex items-center gap-2 px-6 py-3 bg-white border-[3px] border-black text-black font-black uppercase text-sm shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all">
+                            <button onClick={copyProfileLink} className="flex items-center gap-2 px-6 py-3 bg-white border-[2.5px] border-black text-black font-black uppercase text-sm shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none transition-all">
                                 <LinkIcon className="w-4 h-4" />
-                                <span>Salin Tautan</span>
+                                    <span>Salin Tautan</span>
                             </button>
                         </div>
-                        <button className="absolute top-6 right-6 p-2 w-10 h-10 flex items-center justify-center bg-white border-[3px] border-black text-black shadow-[2px_2px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all" onClick={() => setIsPhotoModalOpen(false)}><X className="w-5 h-5" /></button>
+                        <button
+                            className="absolute top-6 right-6 flex items-center justify-center p-2 w-10 h-10 bg-white border-[2.5px] border-black text-black shadow-[2.5px_2.5px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[3.5px_3.5px_0_#000] active:translate-y-px active:shadow-none transition-all"
+                            onClick={() => setIsPhotoModalOpen(false)}
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
                     </motion.div>
                 )}
             </AnimatePresence>

@@ -66,7 +66,18 @@ export async function GET(req: Request) {
             : { userId: session.user.id, ...(status ? { status } : {}) }
 
         if (search) {
-            where.id = { contains: search }
+            where.OR = [
+                { id: { contains: search, mode: "insensitive" } },
+                {
+                    user: {
+                        OR: [
+                            { name: { contains: search, mode: "insensitive" } },
+                            { email: { contains: search, mode: "insensitive" } },
+                            { username: { contains: search, mode: "insensitive" } },
+                        ]
+                    }
+                }
+            ]
         }
 
         const [orders, total] = await Promise.all([

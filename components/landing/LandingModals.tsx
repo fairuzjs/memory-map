@@ -32,6 +32,11 @@ function AnimatedCounter({ value, suffix = "" }: { value: number; suffix?: strin
   return <>{formatted}{suffix}</>
 }
 
+// ─── Shared text line helper ──────────────────────────────────────────────────
+function DotPoint() {
+  return <div className="w-3 h-3 bg-black mt-1.5 shrink-0 rounded-full" />
+}
+
 // ─── Shared Modal Wrapper ──────────────────────────────────────────────────────
 function ModalWrapper({
   onClose,
@@ -56,7 +61,7 @@ function ModalWrapper({
         animate={{ opacity: 1, scale: 1, y: 0, rotate: 0 }}
         exit={{ opacity: 0, scale: 0.9, y: 20 }}
         transition={{ type: "spring", stiffness: 400, damping: 20 }}
-        className={`relative w-full ${maxWidth} max-h-[90vh] overflow-hidden border-[4px] border-black shadow-[12px_12px_0_#000] bg-white flex flex-col`}
+        className={`relative w-full ${maxWidth} max-h-[90vh] overflow-hidden border-[4px] border-black shadow-[12px_12px_0_#000] bg-white flex flex-col rounded-3xl`}
       >
         {children}
       </motion.div>
@@ -73,7 +78,7 @@ function ModalHeader({ title, onClose, icon }: { title: string; onClose: () => v
       </div>
       <button
         onClick={onClose}
-        className="w-10 h-10 bg-[#FF00FF] text-white border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all flex items-center justify-center shrink-0 ml-4"
+        className="w-10 h-10 bg-[#FF00FF] text-white border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all flex items-center justify-center shrink-0 ml-4 rounded-xl"
       >
         <X className="w-5 h-5" />
       </button>
@@ -96,16 +101,16 @@ function ChangelogModal({ onClose }: { onClose: () => void }) {
         title="Status & Changelog"
         onClose={onClose}
         icon={
-          <div className="w-12 h-12 bg-[#00FF00] border-[3px] border-black shadow-[4px_4px_0_#000] flex items-center justify-center">
+          <div className="w-12 h-12 bg-[#00FF00] border-[3px] border-black shadow-[4px_4px_0_#000] flex items-center justify-center rounded-xl">
             <Activity className="w-6 h-6 text-black" />
           </div>
         }
       />
       <div className="p-6 sm:p-8 overflow-y-auto custom-scrollbar bg-white">
         {/* System Status */}
-        <div className="border-[4px] border-black bg-[#E5E5E5] p-5 mb-8 shadow-[6px_6px_0_#000]">
+        <div className="border-[4px] border-black bg-[#E5E5E5] p-5 mb-8 shadow-[6px_6px_0_#000] rounded-2xl">
           <div className="flex items-start gap-4">
-            <div className="w-12 h-12 bg-[#00FF00] flex items-center justify-center shrink-0 border-[3px] border-black shadow-[2px_2px_0_#000]">
+            <div className="w-12 h-12 bg-[#00FF00] flex items-center justify-center shrink-0 border-[3px] border-black shadow-[2px_2px_0_#000] rounded-xl">
               <Shield className="w-6 h-6 text-black" />
             </div>
             <div>
@@ -122,7 +127,7 @@ function ChangelogModal({ onClose }: { onClose: () => void }) {
           {metrics.map((metric, i) => {
             const Icon = metric.icon
             return (
-              <div key={i} className={`p-4 border-[3px] border-black shadow-[4px_4px_0_#000] text-center flex flex-col items-center justify-center ${metric.bg}`}>
+              <div key={i} className={`p-4 border-[3px] border-black shadow-[4px_4px_0_#000] text-center flex flex-col items-center justify-center ${metric.bg} rounded-xl`}>
                 <div className="w-8 h-8 flex items-center justify-center mb-2">
                   <Icon className={`w-6 h-6 ${metric.text || "text-black"}`} />
                 </div>
@@ -138,21 +143,21 @@ function ChangelogModal({ onClose }: { onClose: () => void }) {
         {/* Changelog */}
         <div className="border-t-[4px] border-black pt-8">
           <div className="flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 bg-[#FF3300] border-[3px] border-black shadow-[4px_4px_0_#000] flex items-center justify-center">
+            <div className="w-10 h-10 bg-[#FF3300] border-[3px] border-black shadow-[4px_4px_0_#000] flex items-center justify-center rounded-xl">
               <GitBranch className="w-5 h-5 text-white" />
             </div>
             <h4 className="text-black font-black text-[20px] uppercase">Changelog Terbaru</h4>
-            <span className="ml-auto px-3 py-1 bg-[#00FF00] border-[3px] border-black shadow-[2px_2px_0_#000] text-black text-[12px] font-black uppercase tracking-wider transform rotate-2">
+            <span className="ml-auto px-3 py-1 bg-[#00FF00] border-[3px] border-black shadow-[2px_2px_0_#000] text-black text-[12px] font-black uppercase tracking-wider transform rotate-2 rounded-xl">
               Live
             </span>
           </div>
 
           <div className="space-y-6">
             {/* V2.4 */}
-            <div className="border-[4px] border-black bg-white shadow-[6px_6px_0_#000] p-5">
+            <div className="border-[4px] border-black bg-white shadow-[6px_6px_0_#000] p-5 rounded-2xl">
               <div className="flex items-center gap-3 mb-4 flex-wrap">
-                <span className="px-3 py-1 bg-[#FFD700] text-black text-[10px] font-black border-[2px] border-black shadow-[2px_2px_0_#000] uppercase tracking-wider">Terbaru</span>
-                <span className="px-3 py-1 bg-[#E5E5E5] text-black text-[10px] font-black border-[2px] border-black uppercase tracking-wider">v2.4</span>
+                <span className="px-3 py-1 bg-[#FFD700] text-black text-[10px] font-black border-[2px] border-black shadow-[2px_2px_0_#000] uppercase tracking-wider rounded-xl">Terbaru</span>
+                <span className="px-3 py-1 bg-[#E5E5E5] text-black text-[10px] font-black border-[2px] border-black uppercase tracking-wider rounded-xl">v2.4</span>
                 <span className="text-[12px] font-bold text-black/60 ml-auto">Mei 2026</span>
               </div>
               <h5 className="text-black font-black text-[18px] uppercase mb-4 underline decoration-[#FFD700] decoration-4 underline-offset-4">Akun Premium</h5>
@@ -164,11 +169,11 @@ function ChangelogModal({ onClose }: { onClose: () => void }) {
                   { text: "Custom Map Markers premium dengan 5 desain unik untuk menandai kenangan.", tag: "Fitur Baru", bg: "bg-[#FFFF00]" },
                   { text: "Diskon 10% untuk semua pembelian di shop dan bonus 250 Memory Point saat upgrade.", tag: "Benefit", bg: "bg-[#00FFFF]" },
                 ].map((item, i) => (
-                  <div key={i} className="flex items-start gap-3 bg-neutral-100 p-3 border-[2px] border-black">
-                    <div className="w-3 h-3 bg-black mt-1.5 shrink-0" />
+                  <div key={i} className="flex items-start gap-3 bg-neutral-100 p-3 border-[2px] border-black rounded-xl">
+                    <DotPoint />
                     <div className="flex-1">
                       <span className="text-[14px] font-bold text-black/80">{item.text}</span>
-                      <span className={`ml-2 px-2 py-0.5 text-[9px] font-black text-black border-[2px] border-black uppercase tracking-wider ${item.bg}`}>
+                      <span className={`ml-2 px-2 py-0.5 text-[9px] font-black text-black border-[2px] border-black uppercase tracking-wider rounded-lg ${item.bg}`}>
                         {item.tag}
                       </span>
                     </div>
@@ -178,9 +183,9 @@ function ChangelogModal({ onClose }: { onClose: () => void }) {
             </div>
 
             {/* V2.3 */}
-            <div className="border-[4px] border-black bg-white shadow-[6px_6px_0_#000] p-5">
+            <div className="border-[4px] border-black bg-white shadow-[6px_6px_0_#000] p-5 rounded-2xl">
               <div className="flex items-center gap-3 mb-4 flex-wrap">
-                <span className="px-3 py-1 bg-[#E5E5E5] text-black text-[10px] font-black border-[2px] border-black uppercase tracking-wider">v2.3</span>
+                <span className="px-3 py-1 bg-[#E5E5E5] text-black text-[10px] font-black border-[2px] border-black uppercase tracking-wider rounded-xl">v2.3</span>
                 <span className="text-[12px] font-bold text-black/60 ml-auto">April 2026</span>
               </div>
               <h5 className="text-black font-black text-[18px] uppercase mb-4 underline decoration-[#00FF00] decoration-4 underline-offset-4">Spotify Music Integration</h5>
@@ -190,11 +195,11 @@ function ChangelogModal({ onClose }: { onClose: () => void }) {
                   { text: "Lampirkan lagu Spotify ke setiap kenangan untuk menciptakan soundtrack memorimu.", tag: "Fitur Baru", bg: "bg-[#FFFF00]" },
                   { text: "Pemutar Spotify Embed terintegrasi pada detail kenangan dan peta interaktif.", tag: "Fitur Baru", bg: "bg-[#FFFF00]" },
                 ].map((item, i) => (
-                  <div key={i} className="flex items-start gap-3 bg-neutral-100 p-3 border-[2px] border-black">
-                    <div className="w-3 h-3 bg-black mt-1.5 shrink-0" />
+                  <div key={i} className="flex items-start gap-3 bg-neutral-100 p-3 border-[2px] border-black rounded-xl">
+                    <DotPoint />
                     <div className="flex-1">
                       <span className="text-[14px] font-bold text-black/80">{item.text}</span>
-                      <span className={`ml-2 px-2 py-0.5 text-[9px] font-black text-black border-[2px] border-black uppercase tracking-wider ${item.bg}`}>
+                      <span className={`ml-2 px-2 py-0.5 text-[9px] font-black text-black border-[2px] border-black uppercase tracking-wider rounded-lg ${item.bg}`}>
                         {item.tag}
                       </span>
                     </div>
@@ -204,13 +209,13 @@ function ChangelogModal({ onClose }: { onClose: () => void }) {
             </div>
 
             {/* V2.2 */}
-            <div className="border-[4px] border-black bg-white shadow-[6px_6px_0_#000] p-5">
+            <div className="border-[4px] border-black bg-white shadow-[6px_6px_0_#000] p-5 rounded-2xl">
               <div className="flex items-center gap-3 mb-4 flex-wrap">
-                <span className="px-3 py-1 bg-[#E5E5E5] text-black text-[10px] font-black border-[2px] border-black uppercase tracking-wider">v2.2</span>
+                <span className="px-3 py-1 bg-[#E5E5E5] text-black text-[10px] font-black border-[2px] border-black uppercase tracking-wider rounded-xl">v2.2</span>
                 <span className="text-[12px] font-bold text-black/60 ml-auto">April 2026</span>
               </div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 bg-[#FFFF00] border-[2px] border-black flex items-center justify-center shadow-[2px_2px_0_#000]">
+                <div className="w-8 h-8 bg-[#FFFF00] border-[2px] border-black flex items-center justify-center shadow-[2px_2px_0_#000] rounded-xl">
                   <Star className="w-4 h-4 text-black" />
                 </div>
                 <h5 className="text-black font-black text-[18px] uppercase">Sistem Memory Point</h5>
@@ -220,8 +225,8 @@ function ChangelogModal({ onClose }: { onClose: () => void }) {
                   "Integrasi fitur Exchange Memory Point untuk menukar poin dengan item eksklusif.",
                   "Peluncuran fitur Topup Memory Point secara manual dengan konfirmasi admin.",
                 ].map((text, i) => (
-                  <div key={i} className="flex items-start gap-3 bg-neutral-100 p-3 border-[2px] border-black">
-                    <div className="w-3 h-3 bg-black mt-1.5 shrink-0" />
+                  <div key={i} className="flex items-start gap-3 bg-neutral-100 p-3 border-[2px] border-black rounded-xl">
+                    <DotPoint />
                     <span className="text-[14px] font-bold text-black/80">{text}</span>
                   </div>
                 ))}
@@ -229,13 +234,13 @@ function ChangelogModal({ onClose }: { onClose: () => void }) {
             </div>
 
             {/* V2.1 */}
-            <div className="border-[4px] border-black bg-white shadow-[6px_6px_0_#000] p-5">
+            <div className="border-[4px] border-black bg-white shadow-[6px_6px_0_#000] p-5 rounded-2xl">
               <div className="flex items-center gap-3 mb-4 flex-wrap">
-                <span className="px-3 py-1 bg-[#E5E5E5] text-black text-[10px] font-black border-[2px] border-black uppercase tracking-wider">v2.1</span>
+                <span className="px-3 py-1 bg-[#E5E5E5] text-black text-[10px] font-black border-[2px] border-black uppercase tracking-wider rounded-xl">v2.1</span>
                 <span className="text-[12px] font-bold text-black/60 ml-auto">Maret 2026</span>
               </div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 bg-[#00FFFF] border-[2px] border-black flex items-center justify-center shadow-[2px_2px_0_#000]">
+                <div className="w-8 h-8 bg-[#00FFFF] border-[2px] border-black flex items-center justify-center shadow-[2px_2px_0_#000] rounded-xl">
                   <Users className="w-4 h-4 text-black" />
                 </div>
                 <h5 className="text-black font-black text-[18px] uppercase">Fitur Komunitas</h5>
@@ -246,8 +251,8 @@ function ChangelogModal({ onClose }: { onClose: () => void }) {
                   { text: "Optimasi kecepatan rendering peta interaktif hingga 30%." },
                   { text: "Perbaikan bug minor terkait sinkronisasi data profil." },
                 ].map((item, i) => (
-                  <div key={i} className="flex items-start gap-3 bg-neutral-100 p-3 border-[2px] border-black">
-                    <div className="w-3 h-3 bg-black mt-1.5 shrink-0" />
+                  <div key={i} className="flex items-start gap-3 bg-neutral-100 p-3 border-[2px] border-black rounded-xl">
+                    <DotPoint />
                     <span className="text-[14px] font-bold text-black/80">{item.text}</span>
                   </div>
                 ))}
@@ -256,7 +261,7 @@ function ChangelogModal({ onClose }: { onClose: () => void }) {
           </div>
         </div>
 
-        <div className="mt-10 p-5 border-[4px] border-black bg-[#FFFF00] text-center shadow-[6px_6px_0_#000]">
+        <div className="mt-10 p-5 border-[4px] border-black bg-[#FFFF00] text-center shadow-[6px_6px_0_#000] rounded-2xl">
           <p className="text-[16px] font-black text-black uppercase mb-2">Ada kendala atau saran?</p>
           <p className="text-[12px] font-bold text-black/80">Hubungi tim dukungan kami melalui halaman Kontak untuk melaporkan masalah atau memberikan masukan.</p>
         </div>
@@ -273,15 +278,15 @@ function ContactModal({ onClose }: { onClose: () => void }) {
         title="Hubungi Kami"
         onClose={onClose}
         icon={
-          <div className="w-12 h-12 bg-[#00FFFF] border-[3px] border-black shadow-[4px_4px_0_#000] flex items-center justify-center">
+          <div className="w-12 h-12 bg-[#00FFFF] border-[3px] border-black shadow-[4px_4px_0_#000] flex items-center justify-center rounded-xl">
             <Headphones className="w-6 h-6 text-black" />
           </div>
         }
       />
       <div className="p-6 sm:p-8 overflow-y-auto custom-scrollbar bg-white">
-        <div className="border-[4px] border-black bg-[#E5E5E5] p-5 mb-8 shadow-[6px_6px_0_#000]">
+        <div className="border-[4px] border-black bg-[#E5E5E5] p-5 mb-8 shadow-[6px_6px_0_#000] rounded-xl">
           <div className="flex items-start gap-4">
-            <div className="w-12 h-12 bg-[#FF00FF] flex items-center justify-center shrink-0 border-[3px] border-black shadow-[2px_2px_0_#000]">
+            <div className="w-12 h-12 bg-[#FF00FF] flex items-center justify-center shrink-0 border-[3px] border-black shadow-[2px_2px_0_#000] rounded-xl">
               <MessageCircle className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -294,30 +299,30 @@ function ContactModal({ onClose }: { onClose: () => void }) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
-          <a href="mailto:support@memorymap.app" className="group p-5 border-[4px] border-black bg-white shadow-[6px_6px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0_#000] transition-all hover:bg-[#FFFF00]">
+          <a href="mailto:support@memorymap.app" className="group p-5 border-[4px] border-black bg-white shadow-[6px_6px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0_#000] transition-all hover:bg-[#FFFF00] rounded-2xl">
             <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-[#00FFFF] border-[3px] border-black shadow-[2px_2px_0_#000] flex items-center justify-center shrink-0">
+              <div className="w-12 h-12 bg-[#00FFFF] border-[3px] border-black shadow-[2px_2px_0_#000] flex items-center justify-center shrink-0 rounded-xl">
                 <Mail className="w-6 h-6 text-black" />
               </div>
               <div>
                 <h4 className="text-black font-black text-[16px] uppercase mb-1">Email Dukungan</h4>
                 <p className="text-[14px] font-bold text-black/80">support@memorymap.app</p>
-                <div className="flex items-center gap-2 mt-3 bg-white border-[2px] border-black px-2 py-1 inline-flex">
+                <div className="flex items-center gap-2 mt-3 bg-white border-[2px] border-black px-2 py-1 inline-flex rounded-xl">
                   <Clock className="w-3 h-3 text-black" />
                   <span className="text-[10px] font-black text-black uppercase">Balasan 1x24 jam</span>
                 </div>
               </div>
             </div>
           </a>
-          <a href="https://wa.me/6285883917835" target="_blank" rel="noopener noreferrer" className="group p-5 border-[4px] border-black bg-white shadow-[6px_6px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0_#000] transition-all hover:bg-[#00FF00]">
+          <a href="https://wa.me/6285883917835" target="_blank" rel="noopener noreferrer" className="group p-5 border-[4px] border-black bg-white shadow-[6px_6px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0_#000] transition-all hover:bg-[#00FF00] rounded-2xl">
             <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-white border-[3px] border-black shadow-[2px_2px_0_#000] flex items-center justify-center shrink-0">
+              <div className="w-12 h-12 bg-white border-[3px] border-black shadow-[2px_2px_0_#000] flex items-center justify-center shrink-0 rounded-xl">
                 <Phone className="w-6 h-6 text-black" />
               </div>
               <div>
                 <h4 className="text-black font-black text-[16px] uppercase mb-1">WhatsApp</h4>
                 <p className="text-[14px] font-bold text-black/80">+62 858 8391 7835</p>
-                <div className="flex items-center gap-2 mt-3 bg-white border-[2px] border-black px-2 py-1 inline-flex">
+                <div className="flex items-center gap-2 mt-3 bg-white border-[2px] border-black px-2 py-1 inline-flex rounded-xl">
                   <Clock className="w-3 h-3 text-black" />
                   <span className="text-[10px] font-black text-black uppercase">Sen-Jum, 09:00 - 17:00</span>
                 </div>
@@ -328,7 +333,7 @@ function ContactModal({ onClose }: { onClose: () => void }) {
 
         <div className="border-t-[4px] border-black pt-8">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-[#FF3300] border-[3px] border-black flex items-center justify-center shadow-[2px_2px_0_#000]">
+            <div className="w-10 h-10 bg-[#FF3300] border-[3px] border-black flex items-center justify-center shadow-[2px_2px_0_#000] rounded-xl">
               <Share2 className="w-5 h-5 text-white" />
             </div>
             <h4 className="text-black font-black text-[18px] uppercase">Media Sosial</h4>
@@ -341,8 +346,8 @@ function ContactModal({ onClose }: { onClose: () => void }) {
             ].map((social, i) => {
               const Icon = social.icon
               return (
-                <a key={i} href="#" className="flex flex-col items-center gap-3 p-5 border-[4px] border-black bg-white shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all group">
-                  <div className={`w-12 h-12 border-[3px] border-black shadow-[2px_2px_0_#000] flex items-center justify-center ${social.bg}`}>
+                <a key={i} href="#" className="flex flex-col items-center gap-3 p-5 border-[4px] border-black bg-white shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all group rounded-2xl">
+                  <div className={`w-12 h-12 border-[3px] border-black shadow-[2px_2px_0_#000] flex items-center justify-center rounded-xl ${social.bg}`}>
                     <Icon className={`w-6 h-6 ${social.text || "text-black"}`} />
                   </div>
                   <div className="text-center">
@@ -367,13 +372,13 @@ function MobileAppModal({ onClose }: { onClose: () => void }) {
         title="Aplikasi Mobile"
         onClose={onClose}
         icon={
-          <div className="w-12 h-12 bg-[#FFFF00] border-[3px] border-black shadow-[4px_4px_0_#000] flex items-center justify-center">
+          <div className="w-12 h-12 bg-[#FFFF00] border-[3px] border-black shadow-[4px_4px_0_#000] flex items-center justify-center rounded-xl">
             <Smartphone className="w-6 h-6 text-black" />
           </div>
         }
       />
       <div className="p-6 sm:p-8 overflow-y-auto custom-scrollbar bg-white">
-        <div className="border-[4px] border-black bg-[#E5E5E5] p-5 mb-10 shadow-[6px_6px_0_#000]">
+        <div className="border-[4px] border-black bg-[#E5E5E5] p-5 mb-10 shadow-[6px_6px_0_#000] rounded-xl">
           <h4 className="text-black font-black text-[16px] uppercase mb-2">Sedang Dalam Tahap Pengembangan</h4>
           <p className="text-black/80 font-bold text-[12px] leading-relaxed">
             Aplikasi mobile MemoryMap saat ini sedang dalam proses pengembangan aktif oleh tim kami. Kami akan menghadirkan pengalaman terbaik dalam mengabadikan kenangan langsung dari genggaman tangan Anda.
@@ -387,8 +392,8 @@ function MobileAppModal({ onClose }: { onClose: () => void }) {
               {/* Notch */}
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[120px] h-[30px] bg-black rounded-b-[1rem] z-20" />
               {/* Screen */}
-              <div className="relative w-full h-full bg-black">
-                <img src="/mobile-preview.png" alt="MemoryMap Mobile Preview" className="w-full h-full object-cover opacity-90" />
+              <div className="relative w-full h-full bg-black rounded-[2rem] overflow-hidden">
+                <img src="/mobile-preview.png" alt="MemoryMap Mobile Preview" className="w-full h-full object-cover opacity-90 rounded-[2rem]" />
               </div>
             </div>
           </div>
@@ -397,9 +402,9 @@ function MobileAppModal({ onClose }: { onClose: () => void }) {
           <div className="space-y-8">
             <div>
               <h4 className="text-[32px] font-black text-black uppercase leading-none mb-4">
-                Kenangan di <span className="bg-[#FF00FF] text-white px-2 border-[4px] border-black shadow-[4px_4px_0_#000] inline-block mt-2 transform -rotate-2">Genggamanmu</span>
+                Kenangan di <span className="bg-[#FF00FF] text-white px-2 border-[4px] border-black shadow-[4px_4px_0_#000] inline-block mt-2 transform -rotate-2 rounded-xl">Genggamanmu</span>
               </h4>
-              <p className="text-[14px] font-bold text-black/80 leading-relaxed bg-[#00FFFF] p-3 border-[3px] border-black shadow-[4px_4px_0_#000]">
+              <p className="text-[14px] font-bold text-black/80 leading-relaxed bg-[#00FFFF] p-3 border-[3px] border-black shadow-[4px_4px_0_#000] rounded-xl">
                 Nikmati semua fitur MemoryMap langsung dari smartphone. Tandai kenangan di mana pun, kapan pun, bahkan saat offline.
               </p>
             </div>
@@ -413,8 +418,8 @@ function MobileAppModal({ onClose }: { onClose: () => void }) {
               ].map((feature, i) => {
                 const Icon = feature.icon
                 return (
-                  <div key={i} className="flex items-center gap-4 p-3 border-[3px] border-black bg-white shadow-[4px_4px_0_#000]">
-                    <div className={`w-10 h-10 border-[2px] border-black flex items-center justify-center shrink-0 ${feature.bg}`}>
+                  <div key={i} className="flex items-center gap-4 p-3 border-[3px] border-black bg-white shadow-[4px_4px_0_#000] rounded-xl">
+                    <div className={`w-10 h-10 border-[2px] border-black flex items-center justify-center shrink-0 ${feature.bg} rounded-xl`}>
                       <Icon className={`w-5 h-5 ${feature.iconText || "text-black"}`} />
                     </div>
                     <span className="text-[14px] font-black text-black uppercase">{feature.text}</span>
@@ -423,17 +428,17 @@ function MobileAppModal({ onClose }: { onClose: () => void }) {
               })}
             </div>
 
-            <div className="p-5 border-[4px] border-black bg-[#E5E5E5] shadow-[6px_6px_0_#000]">
+            <div className="p-5 border-[4px] border-black bg-[#E5E5E5] shadow-[6px_6px_0_#000] rounded-2xl">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-[12px] font-black text-black uppercase tracking-wider">Progress Pengembangan</span>
-                <span className="text-[14px] font-black text-black bg-[#00FF00] border-[2px] border-black px-2 shadow-[2px_2px_0_#000]">20%</span>
+                <span className="text-[14px] font-black text-black bg-[#00FF00] border-[2px] border-black px-2 shadow-[2px_2px_0_#000] rounded-xl">20%</span>
               </div>
-              <div className="w-full h-4 border-[2px] border-black bg-white">
+              <div className="w-full h-4 border-[2px] border-black bg-white rounded-full overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: "20%" }}
                   transition={{ duration: 1.5, ease: "easeOut", delay: 0.3 }}
-                  className="h-full bg-[#FF00FF] border-r-[2px] border-black"
+                  className="h-full bg-[#FF00FF] rounded-full"
                 />
               </div>
               <p className="text-[10px] font-black text-black/60 uppercase mt-3 text-right">Estimasi rilis: Q4 2026</p>
@@ -442,11 +447,11 @@ function MobileAppModal({ onClose }: { onClose: () => void }) {
         </div>
 
         <div className="border-t-[4px] border-black pt-8 text-center">
-          <p className="text-[16px] font-black text-black uppercase mb-6 bg-[#FFFF00] inline-block px-4 py-2 border-[3px] border-black shadow-[4px_4px_0_#000] transform rotate-1">
+          <p className="text-[16px] font-black text-black uppercase mb-6 bg-[#FFFF00] inline-block px-4 py-2 border-[3px] border-black shadow-[4px_4px_0_#000] transform rotate-1 rounded-xl">
             Segera tersedia di platform favoritmu
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-5">
-            <button className="w-full sm:w-auto flex items-center gap-4 px-8 py-4 border-[4px] border-black bg-white shadow-[6px_6px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0_#000] transition-all hover:bg-[#E5E5E5]">
+            <button className="w-full sm:w-auto flex items-center gap-4 px-8 py-4 border-[4px] border-black bg-white shadow-[6px_6px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0_#000] transition-all hover:bg-[#E5E5E5] rounded-2xl">
               <svg className="w-8 h-8 shrink-0" viewBox="0 0 512 512" fill="none">
                 <path d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.2 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z" fill="currentColor"/>
               </svg>
@@ -455,7 +460,7 @@ function MobileAppModal({ onClose }: { onClose: () => void }) {
                 <p className="text-[18px] font-black text-black uppercase leading-tight mt-0.5">Google Play</p>
               </div>
             </button>
-            <button className="w-full sm:w-auto flex items-center gap-4 px-8 py-4 border-[4px] border-black bg-white shadow-[6px_6px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0_#000] transition-all hover:bg-[#E5E5E5]">
+            <button className="w-full sm:w-auto flex items-center gap-4 px-8 py-4 border-[4px] border-black bg-white shadow-[6px_6px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0_#000] transition-all hover:bg-[#E5E5E5] rounded-2xl">
               <svg className="w-8 h-8 shrink-0 text-black" viewBox="0 0 384 512" fill="currentColor">
                 <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-27.1-46.8-42.3-83.6-45.8-35.3-3.5-73.8 20.6-88 20.6-15.2 0-48-19.4-73.4-19.4C76.4 140.5 0 186 0 273.5c0 26.2 4.8 53.3 14.4 81.2 12.8 36.9 59 127.2 107.2 125.7 25-0.6 42.7-18 75.3-18s46.3 18 77.8 17.4c49.1-0.8 89.7-82.3 101.9-119.3-65.2-30.7-96.9-90.4-97-91.8zM257.2 76.3c27.1-32.7 24.4-62.6 23.6-73.3-23.6 1.5-51 15.8-66.9 34.3-17.4 19.8-27.6 44.4-25.4 71.1 25.6 1.8 51.7-12.3 68.7-32.1z"/>
               </svg>

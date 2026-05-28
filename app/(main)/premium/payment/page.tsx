@@ -31,22 +31,22 @@ const STATUS_CONFIG = {
         icon: Clock,
         label: "Menunggu Verifikasi",
         description: "Pembayaran sedang menunggu konfirmasi admin",
-        bg: "#FFFF00",
+        bg: "#fef08a",
         text: "#000",
     },
     COMPLETED: {
         icon: CheckCircle2,
         label: "Premium Aktif!",
         description: "Pembayaran berhasil. Akun kamu sudah menjadi Premium.",
-        bg: "#00FF00",
+        bg: "#86efac",
         text: "#000",
     },
     CANCELLED: {
         icon: XCircle,
         label: "Dibatalkan",
         description: "Order ini telah dibatalkan.",
-        bg: "#FF6B6B",
-        text: "#000",
+        bg: "#ffe4e6",
+        text: "#be123c",
     },
 }
 
@@ -215,7 +215,7 @@ export default function PremiumPaymentPage() {
             <div className="flex-1 flex items-center justify-center min-h-[50vh]">
                 <div className="flex flex-col items-center gap-4">
                     <Loader2 className="w-10 h-10 animate-spin text-black" />
-                    <span className="text-black font-black uppercase tracking-widest text-sm bg-[#FFD700] border-[3px] border-black px-4 py-1.5 shadow-[3px_3px_0_#000]">Memuat Pesanan...</span>
+                    <span className="text-black font-black uppercase tracking-widest text-sm bg-[#fef08a] border-[2.5px] border-black px-4 py-1.5 shadow-[3px_3px_0_#000] rounded-xl">Memuat Pesanan...</span>
                 </div>
             </div>
         )
@@ -228,12 +228,19 @@ export default function PremiumPaymentPage() {
     const hasProof = !!order.proofImage
 
     return (
-        <div className="min-h-screen w-full" style={{ fontFamily: "Outfit, sans-serif" }}>
-            <div className="max-w-lg mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        <div className="min-h-screen w-full relative z-10" style={{ fontFamily: "Outfit, sans-serif" }}>
+            {/* Grid Pattern Background */}
+            <div className="absolute inset-0 pointer-events-none z-0"
+                style={{
+                    backgroundImage: "linear-gradient(#00000010 1px, transparent 1px), linear-gradient(90deg, #00000010 1px, transparent 1px)",
+                    backgroundSize: "40px 40px"
+                }}
+            />
+            <div className="max-w-lg mx-auto px-4 sm:px-6 py-8 sm:py-12 relative z-10">
                 {/* Back */}
                 <Link
                     href="/premium"
-                    className="inline-flex items-center gap-2 text-[13px] font-black uppercase tracking-wider mb-6 px-4 py-2 bg-white border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0_#000] transition-all"
+                    className="inline-flex items-center gap-2 text-[13px] font-black uppercase tracking-wider mb-6 px-4 py-2 bg-white border-[2.5px] border-black shadow-[2.5px_2.5px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-0 active:translate-y-0 active:shadow-none rounded-xl transition-all"
                 >
                     <ArrowLeft className="w-4 h-4" />
                     Kembali
@@ -243,23 +250,23 @@ export default function PremiumPaymentPage() {
                 <motion.div
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mb-6 p-4 flex items-center gap-3 border-[3px] border-black shadow-[4px_4px_0_#000]"
+                    className="mb-6 p-4 flex items-center gap-3 border-[2.5px] border-black shadow-[3px_3px_0_#000] rounded-2xl text-black"
                     style={{ background: statusCfg.bg }}
                 >
-                    <div className="w-10 h-10 bg-white border-[2px] border-black flex items-center justify-center shrink-0 shadow-[2px_2px_0_#000]">
+                    <div className="w-10 h-10 bg-white border-[2px] border-black flex items-center justify-center shrink-0 shadow-[2px_2px_0_#000] rounded-xl">
                         <StatusIcon className="w-5 h-5 text-black" />
                     </div>
                     <div className="flex-1">
-                        <p className="text-sm font-black text-black uppercase tracking-wider">{statusCfg.label}</p>
-                        <p className="text-[11px] font-bold text-black/60 mt-0.5">{statusCfg.description}</p>
+                        <p className="text-sm font-black uppercase tracking-wider" style={{ color: statusCfg.text }}>{statusCfg.label}</p>
+                        <p className="text-[11px] font-bold mt-0.5 opacity-70" style={{ color: statusCfg.text }}>{statusCfg.description}</p>
                         {order.note && (
-                            <p className="text-[10px] font-bold text-black/50 mt-1">Catatan: {order.note}</p>
+                            <p className="text-[10px] font-bold mt-1 opacity-60">Catatan: {order.note}</p>
                         )}
                     </div>
                     {order.status === "PENDING" && (
                         <button
                             onClick={() => fetchOrder(true)}
-                            className="shrink-0 w-9 h-9 bg-white border-[2px] border-black flex items-center justify-center shadow-[2px_2px_0_#000] hover:bg-[#00FFFF] transition-colors"
+                            className="shrink-0 w-9 h-9 bg-white border-[2px] border-black flex items-center justify-center shadow-[2px_2px_0_#000] hover:bg-[#f5d0fe] rounded-xl transition-all"
                             title="Refresh status"
                         >
                             <RefreshCw className={`w-4 h-4 text-black ${refreshing ? "animate-spin" : ""}`} />
@@ -272,12 +279,12 @@ export default function PremiumPaymentPage() {
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.05 }}
-                    className="mb-6 bg-white border-[3px] border-black shadow-[4px_4px_0_#000] overflow-hidden"
+                    className="mb-6 bg-[#FFFDF0] border-[2.5px] border-black shadow-[3.5px_3.5px_0_#000] rounded-3xl overflow-hidden flex flex-col"
                 >
-                    <div className="px-5 py-3 bg-black">
-                        <p className="text-[11px] font-black tracking-widest text-white uppercase">Rincian Order</p>
+                    <div className="px-5 py-3 border-b-[2.5px] border-black bg-[#F5F2EB] rounded-t-[21px]">
+                        <p className="text-[11px] font-black tracking-widest text-black uppercase">Rincian Order</p>
                     </div>
-                    <div className="p-5 space-y-3 border-b-[3px] border-black">
+                    <div className="p-5 space-y-3 border-b-[2.5px] border-black">
                         <div className="flex justify-between items-center">
                             <span className="text-sm font-bold text-black/60">Paket</span>
                             <div className="flex items-center gap-1.5">
@@ -287,7 +294,7 @@ export default function PremiumPaymentPage() {
                         </div>
                         <div className="flex justify-between items-center">
                             <span className="text-sm font-bold text-black/60">Total Bayar</span>
-                            <span className="text-base font-black px-2 py-0.5 bg-[#FFD700] border-[2px] border-black shadow-[2px_2px_0_#000]">{formatRupiah(order.price)}</span>
+                            <span className="text-sm font-black px-2.5 py-0.5 bg-[#fef08a] border-[2px] border-black shadow-[2px_2px_0_#000] rounded-xl">{formatRupiah(order.price)}</span>
                         </div>
                         <div className="flex justify-between items-center">
                             <span className="text-sm font-bold text-black/60">Waktu Order</span>
@@ -297,14 +304,14 @@ export default function PremiumPaymentPage() {
                         </div>
                     </div>
                     {/* Order ID */}
-                    <div className="px-5 py-3 flex items-center justify-between gap-2 bg-neutral-50">
+                    <div className="px-5 py-3 flex items-center justify-between gap-2 bg-white">
                         <div>
                             <p className="text-[10px] font-black text-black/40 uppercase tracking-widest">ID Order</p>
                             <p className="text-xs font-mono font-bold text-black/70 mt-0.5 break-all">{order.id}</p>
                         </div>
                         <button
                             onClick={copyOrderId}
-                            className="shrink-0 w-9 h-9 bg-white border-[2px] border-black flex items-center justify-center shadow-[2px_2px_0_#000] hover:bg-[#00FFFF] transition-colors"
+                            className="shrink-0 w-9 h-9 bg-white border-[2px] border-black flex items-center justify-center shadow-[2px_2px_0_#000] hover:bg-[#fef08a] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] active:translate-x-0 active:translate-y-0 active:shadow-none rounded-xl transition-all"
                         >
                             <Copy className="w-4 h-4 text-black" />
                         </button>
@@ -319,26 +326,26 @@ export default function PremiumPaymentPage() {
                             initial={{ opacity: 0, y: 12 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 }}
-                            className="mb-6 bg-white border-[3px] border-black shadow-[4px_4px_0_#000] overflow-hidden"
+                            className="mb-6 bg-[#FFFDF0] border-[2.5px] border-black shadow-[3.5px_3.5px_0_#000] rounded-3xl overflow-hidden"
                         >
-                            <div className="px-5 py-3 bg-black flex items-center gap-2">
-                                <Smartphone className="w-4 h-4 text-white" />
-                                <p className="text-[11px] font-black tracking-widest text-white uppercase">Bayar via QRIS</p>
+                            <div className="px-5 py-3 border-b-[2.5px] border-black bg-[#F5F2EB] flex items-center gap-2">
+                                <Smartphone className="w-4 h-4 text-black" />
+                                <p className="text-[11px] font-black tracking-widest text-black uppercase">Bayar via QRIS</p>
                             </div>
 
                             <div className="p-5">
                                 {/* QRIS Image */}
                                 <div className="flex justify-center mb-4">
-                                    <div className="p-3 inline-block w-full max-w-xs bg-white border-[3px] border-black shadow-[3px_3px_0_#000]">
+                                    <div className="p-3 inline-block w-full max-w-xs bg-white border-[2.5px] border-black shadow-[3px_3px_0_#000] rounded-2xl">
                                         <img
                                             src="/qris.jpeg"
                                             alt="QRIS Payment Code"
-                                            className="w-full h-auto object-contain"
+                                            className="w-full h-auto object-contain border-[1.5px] border-black rounded-lg"
                                             onError={(e) => {
                                                 const target = e.currentTarget
                                                 target.style.display = "none"
                                                 target.parentElement!.innerHTML = `
-                                                    <div style="width:100%;padding:40px 0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#000;background:#f5f5f5;border:2px solid #000">
+                                                    <div style="width:100%;padding:40px 0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#000;background:#F5F2EB;border:2px solid #000;border-radius:16px;">
                                                         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
                                                         <p style="font-size:12px;font-weight:900">QRIS akan ditampilkan disini</p>
                                                     </div>
@@ -349,10 +356,10 @@ export default function PremiumPaymentPage() {
                                 </div>
 
                                 {/* Transfer amount */}
-                                <div className="p-3 text-center mb-4 bg-[#FFD700] border-[3px] border-black shadow-[3px_3px_0_#000]">
+                                <div className="p-3 text-center mb-4 bg-[#fef08a] border-[2.5px] border-black shadow-[3px_3px_0_#000] rounded-2xl">
                                     <p className="text-[11px] font-bold text-black/60 mb-1">Transfer tepat sebesar</p>
-                                    <p className="text-2xl font-black text-black">{formatRupiah(order.price)}</p>
-                                    <p className="text-[10px] font-bold text-black/50 mt-1">
+                                    <p className="text-2xl font-black text-rose-600 bg-white border-[2px] border-black inline-block px-3 py-0.5 rounded-xl shadow-[1.5px_1.5px_0_#000]">{formatRupiah(order.price)}</p>
+                                    <p className="text-[10px] font-bold text-black/50 mt-2">
                                         Scan QRIS di atas menggunakan aplikasi mobile banking / e-wallet kamu
                                     </p>
                                 </div>
@@ -366,7 +373,7 @@ export default function PremiumPaymentPage() {
                                         "Admin akan memverifikasi pembayaran kamu",
                                     ].map((step, i) => (
                                         <div key={i} className="flex items-start gap-3">
-                                            <span className="w-6 h-6 text-[10px] font-black flex items-center justify-center shrink-0 bg-black text-white border-[2px] border-black">
+                                            <span className="w-6 h-6 text-[10px] font-black flex items-center justify-center shrink-0 bg-white text-black border-[2px] border-black shadow-[1px_1px_0_#000] rounded-lg mt-0.5">
                                                 {i + 1}
                                             </span>
                                             <p className="text-xs font-bold text-black/60 leading-relaxed pt-1">{step}</p>
@@ -381,21 +388,21 @@ export default function PremiumPaymentPage() {
                             initial={{ opacity: 0, y: 12 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.15 }}
-                            className="mb-6 bg-white border-[3px] border-black shadow-[4px_4px_0_#000] overflow-hidden"
+                            className="mb-6 bg-[#FFFDF0] border-[2.5px] border-black shadow-[3.5px_3.5px_0_#000] rounded-3xl overflow-hidden"
                         >
-                            <div className="px-5 py-3 bg-black flex items-center justify-between">
+                            <div className="px-5 py-3 border-b-[2.5px] border-black bg-[#F5F2EB] flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     {hasProof
-                                        ? <CheckCircle2 className="w-4 h-4 text-[#00FF00]" />
-                                        : <Upload className="w-4 h-4 text-[#FFD700]" />
+                                        ? <CheckCircle2 className="w-4 h-4 text-[#86efac]" />
+                                        : <Upload className="w-4 h-4 text-[#fef08a]" />
                                     }
-                                    <p className="text-[11px] font-black tracking-widest text-white uppercase">Bukti Transfer</p>
+                                    <p className="text-[11px] font-black tracking-widest text-black uppercase">Bukti Transfer</p>
                                 </div>
 
                                 {hasProof && (
                                     <button
                                         onClick={() => setShowProofModal(true)}
-                                        className="flex items-center gap-1.5 px-3 py-1 text-[10px] font-black uppercase bg-[#00FF00] border-[2px] border-white/20 text-black"
+                                        className="flex items-center gap-1.5 px-3 py-1 text-[10px] font-black uppercase bg-[#86efac] border-[2px] border-black text-black rounded-lg shadow-[1.5px_1.5px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[2.5px_2.5px_0_#000] active:translate-x-0 active:translate-y-0 active:shadow-none transition-all"
                                     >
                                         <Eye className="w-3 h-3" />
                                         Lihat
@@ -409,9 +416,9 @@ export default function PremiumPaymentPage() {
                                         {!proofPreview ? (
                                             <button
                                                 onClick={() => fileInputRef.current?.click()}
-                                                className="w-full flex flex-col items-center justify-center gap-3 py-8 transition-all group bg-neutral-50 border-[3px] border-dashed border-black/30 hover:border-black hover:bg-[#FFD700]/10"
+                                                className="w-full flex flex-col items-center justify-center gap-3 py-8 transition-all group bg-[#F5F2EB] border-[2.5px] border-dashed border-black/30 hover:border-black hover:bg-[#f5d0fe]/10 rounded-2xl"
                                             >
-                                                <div className="w-12 h-12 flex items-center justify-center bg-[#FFD700] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                                                <div className="w-12 h-12 flex items-center justify-center bg-[#fef08a] border-[2px] border-black shadow-[2px_2px_0_#000] rounded-xl">
                                                     <ImageIcon className="w-6 h-6 text-black" />
                                                 </div>
                                                 <div className="text-center">
@@ -425,16 +432,16 @@ export default function PremiumPaymentPage() {
                                             </button>
                                         ) : (
                                             <div className="space-y-3">
-                                                <div className="relative overflow-hidden border-[3px] border-black shadow-[3px_3px_0_#000]">
+                                                <div className="relative overflow-hidden border-[2.5px] border-black shadow-[3px_3px_0_#000] rounded-2xl">
                                                     <img
                                                         src={proofPreview}
                                                         alt="Preview bukti transfer"
-                                                        className="w-full max-h-64 object-contain"
+                                                        className="w-full max-h-64 object-contain rounded-xl"
                                                         style={{ background: "#f5f5f5" }}
                                                     />
                                                     <button
                                                         onClick={removeSelectedFile}
-                                                        className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center bg-white border-[2px] border-black shadow-[2px_2px_0_#000]"
+                                                        className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center bg-white border-[2px] border-black shadow-[1.5px_1.5px_0_#000] rounded-lg transition-all hover:scale-105 active:scale-95"
                                                     >
                                                         <X className="w-3.5 h-3.5 text-black" />
                                                     </button>
@@ -443,14 +450,14 @@ export default function PremiumPaymentPage() {
                                                 <div className="flex gap-2">
                                                     <button
                                                         onClick={() => fileInputRef.current?.click()}
-                                                        className="flex-1 py-2.5 text-xs font-black uppercase bg-white border-[3px] border-black shadow-[2px_2px_0_#000] hover:bg-neutral-100 transition-all"
+                                                        className="flex-1 py-2.5 text-xs font-black uppercase bg-white border-[2px] border-black shadow-[2px_2px_0_#000] hover:bg-neutral-100 hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] active:translate-x-0 active:translate-y-0 active:shadow-none rounded-xl transition-all"
                                                     >
                                                         Ganti Gambar
                                                     </button>
                                                     <button
                                                         onClick={handleUploadProof}
                                                         disabled={uploading}
-                                                        className="flex-1 py-2.5 text-xs font-black uppercase flex items-center justify-center gap-2 bg-[#FFD700] border-[3px] border-black shadow-[2px_2px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] transition-all disabled:opacity-40"
+                                                        className="flex-1 py-2.5 text-xs font-black uppercase flex items-center justify-center gap-2 bg-[#fef08a] border-[2px] border-black shadow-[2px_2px_0_#000] hover:bg-[#86efac] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] active:translate-x-0 active:translate-y-0 active:shadow-none rounded-xl transition-all disabled:opacity-40"
                                                     >
                                                         {uploading
                                                             ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Mengunggah...</>
@@ -470,11 +477,11 @@ export default function PremiumPaymentPage() {
                                         />
                                     </div>
                                 ) : (
-                                    <div className="flex items-center gap-3 p-3 bg-[#00FF00]/10 border-[2px] border-black">
+                                    <div className="flex items-center gap-3 p-3 bg-[#86efac]/10 border-[2px] border-black rounded-2xl shadow-[2px_2px_0_#000]">
                                         <img
                                             src={order.proofImage!}
                                             alt="Bukti transfer"
-                                            className="w-14 h-14 object-cover shrink-0 border-[2px] border-black"
+                                            className="w-14 h-14 object-cover shrink-0 border-[2px] border-black rounded-xl"
                                         />
                                         <div className="flex-1 min-w-0">
                                             <p className="text-sm font-black text-black">Bukti sudah diterima</p>
@@ -492,14 +499,14 @@ export default function PremiumPaymentPage() {
                             transition={{ delay: 0.2 }}
                             className="space-y-4"
                         >
-                            <div className="flex items-start gap-2 p-3 bg-[#FFFF00]/20 border-[2px] border-black">
+                            <div className="flex items-start gap-2 p-3 bg-[#f5d0fe] border-[2px] border-black rounded-2xl text-black shadow-[2.5px_2.5px_0_#000]">
                                 <ShieldAlert className="w-4 h-4 shrink-0 mt-0.5 text-black" />
-                                <p className="text-[11px] font-bold text-black/70">Simpan ID Order kamu sebagai bukti pembayaran. Premium akan aktif dalam 1×24 jam setelah pembayaran terverifikasi.</p>
+                                <p className="text-[11px] font-bold text-black">Simpan ID Order kamu sebagai bukti pembayaran. Premium akan aktif dalam 1×24 jam setelah pembayaran terverifikasi.</p>
                             </div>
 
                             <button
                                 onClick={() => setShowCancelModal(true)}
-                                className="w-full py-3 text-sm font-black uppercase flex items-center justify-center gap-2 bg-white border-[3px] border-black shadow-[3px_3px_0_#000] hover:bg-[#FF6B6B] hover:text-white transition-all"
+                                className="w-full py-3 text-sm font-black uppercase flex items-center justify-center gap-2 bg-white border-[2.5px] border-black shadow-[3px_3px_0_#000] hover:bg-rose-100 hover:text-rose-600 hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-0 active:translate-y-0 active:shadow-none rounded-xl transition-all"
                             >
                                 <Trash2 className="w-4 h-4" />
                                 Batalkan Pesanan
@@ -513,7 +520,7 @@ export default function PremiumPaymentPage() {
                     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
                         <Link
                             href="/premium"
-                            className="w-full py-4 font-black text-sm uppercase flex items-center justify-center gap-2 bg-[#FFD700] border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all"
+                            className="w-full py-4 font-black text-sm uppercase flex items-center justify-center gap-2 bg-[#fef08a] border-[2.5px] border-black shadow-[4px_4px_0_#000] hover:bg-[#86efac] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[5.5px_5.5px_0_#000] active:translate-x-0 active:translate-y-0 active:shadow-none rounded-xl transition-all"
                         >
                             <Crown className="w-4 h-4" />
                             Cek Status Premium
@@ -526,7 +533,7 @@ export default function PremiumPaymentPage() {
                     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
                         <Link
                             href="/premium"
-                            className="w-full py-4 font-black text-sm uppercase flex items-center justify-center gap-2 bg-white border-[3px] border-black shadow-[3px_3px_0_#000] hover:bg-neutral-100 transition-all"
+                            className="w-full py-4 font-black text-sm uppercase flex items-center justify-center gap-2 bg-white border-[2.5px] border-black shadow-[4px_4px_0_#000] hover:bg-[#fef08a] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[5.5px_5.5px_0_#000] active:translate-x-0 active:translate-y-0 active:shadow-none rounded-xl transition-all"
                         >
                             <ArrowLeft className="w-4 h-4" />
                             Buat Pesanan Baru
@@ -551,7 +558,7 @@ export default function PremiumPaymentPage() {
                             exit={{ scale: 0.9, y: 20 }}
                             transition={{ type: "spring", bounce: 0.3, duration: 0.4 }}
                             onClick={e => e.stopPropagation()}
-                            className="w-full max-w-sm bg-[#FFFDF0] border-[4px] border-black shadow-[8px_8px_0_#000] overflow-hidden"
+                            className="w-full max-w-sm bg-[#FFFDF0] border-[3px] border-black shadow-[8px_8px_0_#000] rounded-3xl overflow-hidden"
                         >
                             <div className="p-6 text-center">
                                 <div className="w-14 h-14 flex items-center justify-center mx-auto mb-4 bg-[#FF6B6B] border-[3px] border-black shadow-[3px_3px_0_#000]">
@@ -561,21 +568,21 @@ export default function PremiumPaymentPage() {
                                 <p className="text-sm font-bold text-black/60 leading-relaxed mb-1">
                                     Pesanan untuk <span className="font-black text-black">Premium {order?.durationDays} Hari</span> akan dibatalkan.
                                 </p>
-                                <p className="text-xs font-bold text-black/40 mb-6">
+                                <p className="text-xs font-bold text-black/40 mb-6 bg-white p-2.5 border-[2px] border-dashed border-black/25 rounded-xl">
                                     Jika kamu sudah melakukan transfer, hubungi admin untuk pengembalian dana.
                                 </p>
                                 <div className="flex gap-3">
                                     <button
                                         onClick={() => setShowCancelModal(false)}
                                         disabled={cancelling}
-                                        className="flex-1 py-3 text-sm font-black uppercase bg-white border-[3px] border-black shadow-[3px_3px_0_#000] hover:bg-neutral-100 transition-all disabled:opacity-40"
+                                        className="flex-1 py-3 text-sm font-black uppercase bg-white border-[2.5px] border-black shadow-[3px_3px_0_#000] hover:bg-neutral-100 hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4.5px_4.5px_0_#000] active:translate-x-0 active:translate-y-0 active:shadow-none rounded-xl transition-all disabled:opacity-40"
                                     >
                                         Kembali
                                     </button>
                                     <button
                                         onClick={handleCancel}
                                         disabled={cancelling}
-                                        className="flex-1 py-3 text-sm font-black uppercase flex items-center justify-center gap-2 bg-[#FF6B6B] text-white border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] transition-all disabled:opacity-40"
+                                        className="flex-1 py-3 text-sm font-black uppercase flex items-center justify-center gap-2 bg-rose-600 text-white border-[2.5px] border-black shadow-[3px_3px_0_#000] hover:bg-rose-700 hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4.5px_4.5px_0_#000] active:translate-x-0 active:translate-y-0 active:shadow-none rounded-xl transition-all disabled:opacity-40"
                                     >
                                         {cancelling
                                             ? <Loader2 className="w-4 h-4 animate-spin" />
@@ -604,22 +611,22 @@ export default function PremiumPaymentPage() {
                             animate={{ scale: 1 }}
                             exit={{ scale: 0.9 }}
                             onClick={e => e.stopPropagation()}
-                            className="relative max-w-lg w-full bg-white border-[4px] border-black shadow-[8px_8px_0_#000] overflow-hidden"
+                            className="relative max-w-lg w-full bg-[#FFFDF0] border-[3px] border-black shadow-[8px_8px_0_#000] rounded-3xl overflow-hidden"
                         >
-                            <div className="px-4 py-3 bg-black flex items-center justify-between">
-                                <p className="text-[11px] font-black tracking-widest text-white uppercase">Bukti Transfer</p>
+                            <div className="px-4 py-3 border-b-[2.5px] border-black bg-[#F5F2EB] flex items-center justify-between">
+                                <p className="text-[11px] font-black tracking-widest text-black uppercase">Bukti Transfer</p>
                                 <button
                                     onClick={() => setShowProofModal(false)}
-                                    className="w-7 h-7 bg-white border-[2px] border-white/20 flex items-center justify-center hover:bg-[#FF6B6B] transition-colors"
+                                    className="w-7 h-7 bg-white border-[2px] border-black flex items-center justify-center hover:bg-rose-600 shadow-[1.5px_1.5px_0_#000] hover:text-white rounded-lg transition-colors"
                                 >
-                                    <X className="w-4 h-4 text-black" />
+                                    <X className="w-4 h-4" />
                                 </button>
                             </div>
-                            <div className="p-3">
+                            <div className="p-3 bg-white">
                                 <img
                                     src={order.proofImage}
                                     alt="Bukti transfer"
-                                    className="w-full h-auto border-[2px] border-black"
+                                    className="w-full h-auto border-[2px] border-black rounded-2xl shadow-[3px_3px_0_#000]"
                                 />
                             </div>
                         </motion.div>
@@ -643,23 +650,23 @@ export default function PremiumPaymentPage() {
                             exit={{ scale: 0.8, y: 40, opacity: 0 }}
                             transition={{ type: "spring", bounce: 0.35, duration: 0.6 }}
                             onClick={e => e.stopPropagation()}
-                            className="w-full max-w-sm bg-[#FFFDF0] border-[4px] border-black shadow-[12px_12px_0_#000] overflow-hidden"
+                            className="w-full max-w-sm bg-[#FFFDF0] border-[3px] border-black shadow-[12px_12px_0_#000] rounded-3xl overflow-hidden"
                         >
                             {/* Header */}
-                            <div className="bg-[#FFD700] border-b-[4px] border-black p-5 text-center relative overflow-hidden">
+                            <div className="bg-[#fef08a] border-b-[3px] border-black p-5 text-center relative overflow-hidden rounded-t-[21px]">
                                 {/* Grid pattern */}
-                                <div className="absolute inset-0" style={{
+                                <div className="absolute inset-0 pointer-events-none" style={{
                                     backgroundImage: "linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px)",
                                     backgroundSize: "20px 20px",
                                 }} />
                                 {/* Decorative shapes */}
-                                <div className="absolute top-2 left-3 w-5 h-5 rotate-12" style={{ background: "#fff5cc", border: "2px solid #000", boxShadow: "2px 2px 0 #000" }} />
-                                <div className="absolute top-3 right-4 w-4 h-4 rotate-45" style={{ background: "#b8860b", border: "2px solid #000", boxShadow: "2px 2px 0 #000" }} />
-                                <div className="absolute bottom-2 left-6 w-3 h-3 -rotate-6" style={{ background: "#fff5cc", border: "2px solid #000" }} />
-                                <div className="absolute bottom-3 right-6 w-3 h-3 rotate-12" style={{ background: "#ffd700", border: "2px solid #000" }} />
+                                <div className="absolute top-2 left-3 w-5 h-5 rotate-12" style={{ background: "#fff5cc", border: "2px solid #000", boxShadow: "2px 2px 0 #000", borderRadius: "8px" }} />
+                                <div className="absolute top-3 right-4 w-4 h-4 rotate-45" style={{ background: "#b8860b", border: "2px solid #000", boxShadow: "2px 2px 0 #000", borderRadius: "6px" }} />
+                                <div className="absolute bottom-2 left-6 w-3 h-3 -rotate-6" style={{ background: "#fff5cc", border: "2px solid #000", borderRadius: "4px" }} />
+                                <div className="absolute bottom-3 right-6 w-3 h-3 rotate-12" style={{ background: "#ffd700", border: "2px solid #000", borderRadius: "4px" }} />
 
                                 <div className="relative z-10">
-                                    <div className="w-16 h-16 mx-auto mb-3 flex items-center justify-center bg-white border-[3px] border-black shadow-[4px_4px_0_#000]">
+                                    <div className="w-16 h-16 mx-auto mb-3 flex items-center justify-center bg-white border-[2.5px] border-black shadow-[3.5px_3.5px_0_#000] rounded-2xl">
                                         <Crown className="w-8 h-8 text-black" />
                                     </div>
                                     <h2 className="text-xl font-black text-black uppercase tracking-wider">
@@ -672,15 +679,15 @@ export default function PremiumPaymentPage() {
                             </div>
 
                             {/* Body — claimed items */}
-                            <div className="p-5">
+                            <div className="p-5 bg-white">
                                 <p className="text-[11px] font-black text-black/50 uppercase tracking-widest mb-4 text-center">
                                     {claimed ? "Item Diklaim" : "Hadiah Eksklusif Menunggu"}
                                 </p>
 
                                 <div className="space-y-3">
                                     {/* Mahkota Royale frame */}
-                                    <div className={`flex items-center gap-3 p-3 bg-white border-[3px] border-black shadow-[3px_3px_0_#000] transition-all ${claimed ? "opacity-100" : "opacity-70"}`}>
-                                        <div className="w-12 h-12 shrink-0 flex items-center justify-center">
+                                    <div className={`flex items-center gap-3 p-3 bg-[#FFFDF0] border-[2.5px] border-black shadow-[3px_3px_0_#000] rounded-2xl transition-all ${claimed ? "opacity-100" : "opacity-70"}`}>
+                                        <div className="w-12 h-12 shrink-0 flex items-center justify-center bg-white border-[2px] border-black rounded-xl">
                                             <div className="relative w-10 h-10">
                                                 <div className="absolute -inset-0.5 rounded-full p-[2px]" style={{ background: "conic-gradient(from 0deg, #ffd700, #ffb800, #fff5cc, #ffd700, #b8860b, #ffd700, #fff5cc, #ffb800, #ffd700)" }}>
                                                     <div className="w-full h-full rounded-full" style={{ background: "#0a0a10" }} />
@@ -692,40 +699,40 @@ export default function PremiumPaymentPage() {
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2 mb-0.5">
-                                                <span className="text-[9px] font-black uppercase px-1.5 py-0.5 border-[2px] border-black" style={{ background: "#FFFF00" }}>Bingkai</span>
-                                                <span className="text-[9px] font-black uppercase px-1.5 py-0.5 border-[2px] border-black text-black" style={{ background: "#FFD700", boxShadow: "1px 1px 0 #000" }}>👑 Premium</span>
+                                                <span className="text-[9px] font-black uppercase px-1.5 py-0.5 border-[1.5px] border-black rounded-md" style={{ background: "#fef08a" }}>Bingkai</span>
+                                                <span className="text-[9px] font-black uppercase px-1.5 py-0.5 border-[1.5px] border-black text-black rounded-md" style={{ background: "#ffd700", boxShadow: "1px 1px 0 #000" }}>👑 Premium</span>
                                             </div>
                                             <p className="text-[13px] font-black text-black">Mahkota Royale</p>
                                             <p className="text-[10px] text-black/50 font-bold">Bingkai emas eksklusif premium</p>
                                         </div>
                                         {claimed ? (
-                                            <CheckCircle2 className="w-5 h-5 text-[#00CC00] shrink-0" />
+                                            <CheckCircle2 className="w-5 h-5 text-[#86efac] shrink-0" />
                                         ) : (
                                             <Gift className="w-5 h-5 text-[#ffd700] shrink-0" />
                                         )}
                                     </div>
 
                                     {/* Langit Kerajaan banner */}
-                                    <div className={`flex items-center gap-3 p-3 bg-white border-[3px] border-black shadow-[3px_3px_0_#000] transition-all ${claimed ? "opacity-100" : "opacity-70"}`}>
-                                        <div className="w-12 h-12 shrink-0 rounded-lg overflow-hidden relative" style={{ background: "linear-gradient(135deg, #1a1508, #2a2010)" }}>
+                                    <div className={`flex items-center gap-3 p-3 bg-[#FFFDF0] border-[2.5px] border-black shadow-[3px_3px_0_#000] rounded-2xl transition-all ${claimed ? "opacity-100" : "opacity-70"}`}>
+                                        <div className="w-12 h-12 shrink-0 rounded-xl overflow-hidden relative border-[2px] border-black shadow-[1.5px_1.5px_0_#000]" style={{ background: "linear-gradient(135deg, #1a1508, #2a2010)" }}>
                                             <div className="absolute inset-0" style={{
                                                 backgroundImage: "linear-gradient(rgba(255,215,0,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,215,0,0.1) 1px, transparent 1px)",
                                                 backgroundSize: "8px 8px",
                                             }} />
-                                            <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center" style={{ background: "#ffd700", border: "1.5px solid #000", boxShadow: "1px 1px 0 #000" }}>
+                                            <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-lg" style={{ background: "#ffd700", border: "1.5px solid #000", boxShadow: "1px 1px 0 #000" }}>
                                                 <span className="text-[8px] select-none">👑</span>
                                             </div>
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2 mb-0.5">
-                                                <span className="text-[9px] font-black uppercase px-1.5 py-0.5 border-[2px] border-black text-white" style={{ background: "#FF00FF" }}>Banner</span>
-                                                <span className="text-[9px] font-black uppercase px-1.5 py-0.5 border-[2px] border-black text-black" style={{ background: "#FFD700", boxShadow: "1px 1px 0 #000" }}>👑 Premium</span>
+                                                <span className="text-[9px] font-black uppercase px-1.5 py-0.5 border-[1.5px] border-black text-white rounded-md" style={{ background: "#FF00FF" }}>Banner</span>
+                                                <span className="text-[9px] font-black uppercase px-1.5 py-0.5 border-[1.5px] border-black text-black rounded-md" style={{ background: "#ffd700", boxShadow: "1px 1px 0 #000" }}>👑 Premium</span>
                                             </div>
                                             <p className="text-[13px] font-black text-black">Langit Kerajaan</p>
                                             <p className="text-[10px] text-black/50 font-bold">Banner neubrutalism emas eksklusif</p>
                                         </div>
                                         {claimed ? (
-                                            <CheckCircle2 className="w-5 h-5 text-[#00CC00] shrink-0" />
+                                            <CheckCircle2 className="w-5 h-5 text-[#86efac] shrink-0" />
                                         ) : (
                                             <Gift className="w-5 h-5 text-[#ffd700] shrink-0" />
                                         )}
@@ -735,7 +742,7 @@ export default function PremiumPaymentPage() {
                                 {/* Action buttons */}
                                 {!claimed ? (
                                     <>
-                                        <div className="mt-4 p-3 bg-[#FFD700]/10 border-[2px] border-black text-center">
+                                        <div className="mt-4 p-3 bg-[#fef08a]/10 border-[2px] border-black text-center rounded-xl">
                                             <p className="text-[11px] font-bold text-black/70">
                                                 Tekan tombol di bawah untuk <span className="font-black text-black">mengklaim hadiah</span> ke inventorimu.
                                             </p>
@@ -743,7 +750,7 @@ export default function PremiumPaymentPage() {
                                         <button
                                             onClick={handleClaimItems}
                                             disabled={claiming}
-                                            className="w-full mt-4 py-3.5 flex items-center justify-center gap-2 bg-[#FFD700] border-[3px] border-black text-[14px] font-black uppercase text-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all disabled:opacity-50"
+                                            className="w-full mt-4 py-3.5 flex items-center justify-center gap-2 bg-[#fef08a] border-[2.5px] border-black text-[14px] font-black uppercase text-black shadow-[4px_4px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[5.5px_5.5px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none rounded-xl transition-all disabled:opacity-50"
                                         >
                                             {claiming ? (
                                                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -757,7 +764,7 @@ export default function PremiumPaymentPage() {
                                     </>
                                 ) : (
                                     <>
-                                        <div className="mt-4 p-3 bg-[#00FF00]/20 border-[2px] border-black text-center">
+                                        <div className="mt-4 p-3 bg-[#86efac]/20 border-[2px] border-black text-center rounded-xl">
                                             <p className="text-[11px] font-bold text-black/70">
                                                 ✅ Item sudah masuk ke <span className="font-black text-black">Inventori</span>. Pasang lewat halaman inventori!
                                             </p>
@@ -765,14 +772,14 @@ export default function PremiumPaymentPage() {
                                         <div className="flex gap-3 mt-4">
                                             <button
                                                 onClick={() => setShowClaimPopup(false)}
-                                                className="flex-1 py-3 bg-white border-[3px] border-black text-[13px] font-black uppercase text-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] transition-all"
+                                                className="flex-1 py-3 bg-white border-[2.5px] border-black text-[13px] font-black uppercase text-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4.5px_4.5px_0_#000] active:translate-x-0 active:translate-y-0 active:shadow-none rounded-xl transition-all"
                                             >
                                                 Tutup
                                             </button>
                                             <Link
                                                 href="/inventory"
                                                 onClick={() => setShowClaimPopup(false)}
-                                                className="flex-1 py-3 flex items-center justify-center gap-2 bg-[#FFD700] border-[3px] border-black text-[13px] font-black uppercase text-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] transition-all"
+                                                className="flex-1 py-3 flex items-center justify-center gap-2 bg-[#fef08a] border-[2.5px] border-black text-[13px] font-black uppercase text-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4.5px_4.5px_0_#000] active:translate-x-0 active:translate-y-0 active:shadow-none rounded-xl transition-all"
                                             >
                                                 <Sparkles className="w-4 h-4" />
                                                 Inventori
@@ -788,4 +795,3 @@ export default function PremiumPaymentPage() {
         </div>
     )
 }
-

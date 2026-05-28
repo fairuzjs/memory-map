@@ -94,9 +94,9 @@ function SearchControl({ mapRef }: { mapRef: React.RefObject<MapRef | null> }) {
 
     return (
         <div ref={wrapperRef} className="absolute top-4 left-4 z-[1000] w-[calc(100%-140px)] sm:w-72 md:w-96">
-            <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Search className="h-5 w-5 text-neutral-500" />
+            <div className="relative flex items-center bg-white border-[2.5px] border-black shadow-[4px_4px_0_#000] rounded-2xl overflow-hidden focus-within:bg-[#FFFDF0] transition-all">
+                <div className="pl-3.5 flex items-center pointer-events-none">
+                    <Search className="h-5 w-5 text-black" />
                 </div>
                 <input
                     type="text"
@@ -104,38 +104,38 @@ function SearchControl({ mapRef }: { mapRef: React.RefObject<MapRef | null> }) {
                     onChange={handleInput}
                     onFocus={() => { if (query) setShowResults(true) }}
                     placeholder="Cari lokasi..."
-                    className="block w-full pl-10 pr-3 py-3 border border-neutral-300 rounded-xl leading-5 bg-white text-neutral-900 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-lg text-sm transition-all"
+                    className="block w-full pl-3 pr-8 py-3 bg-transparent text-black placeholder-neutral-500 font-bold focus:outline-none text-sm transition-all"
                 />
                 {query && !isSearching && (
                     <button
                         type="button"
                         onClick={() => { setQuery(""); setResults([]); setShowResults(false) }}
-                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-400 hover:text-neutral-600 transition-colors"
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-500 hover:text-black transition-colors"
                     >
                         <X className="h-4 w-4" />
                     </button>
                 )}
                 {isSearching && (
                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                        <Loader2 className="h-4 w-4 text-indigo-500 animate-spin" />
+                        <Loader2 className="h-4 w-4 text-black animate-spin" />
                     </div>
                 )}
             </div>
 
             {showResults && results.length > 0 && (
-                <div className="absolute mt-2 w-full bg-white rounded-xl shadow-2xl border border-neutral-200 overflow-hidden max-h-64 overflow-y-auto">
+                <div className="absolute mt-2 w-full bg-[#FFFDF0] rounded-2xl shadow-[5px_5px_0_#000] border-[2.5px] border-black overflow-hidden max-h-64 overflow-y-auto">
                     {results.map((res: any, i: number) => (
                         <button
                             key={i}
                             type="button"
                             onClick={() => handleSelect(res)}
-                            className="w-full text-left px-4 py-3 hover:bg-neutral-50 border-b border-neutral-100 last:border-0 transition-colors flex items-start gap-3"
+                            className="w-full text-left px-4 py-3 hover:bg-[#fef08a]/35 border-b-[2px] border-black/10 last:border-0 transition-colors flex items-start gap-3"
                         >
-                            <MapPin className="w-4 h-4 text-neutral-400 mt-0.5 shrink-0" />
+                            <MapPin className="w-4 h-4 text-black mt-0.5 shrink-0" />
                             <div className="flex items-center w-full min-w-0">
                                 <div className="flex flex-col min-w-0 flex-1">
-                                    <span className="text-sm font-medium text-neutral-900 truncate">{res.display_name.split(',')[0]}</span>
-                                    <span className="text-xs text-neutral-500 truncate">{res.display_name}</span>
+                                    <span className="text-sm font-black text-black truncate">{res.display_name.split(',')[0]}</span>
+                                    <span className="text-xs text-black/70 font-semibold truncate">{res.display_name}</span>
                                 </div>
                             </div>
                         </button>
@@ -196,43 +196,39 @@ function StyleSwitcher({ current, onChange }: { current: string; onChange: (styl
 
     return (
         <div className="absolute top-4 right-4 z-[1000] flex flex-col items-end gap-2">
+            {/* Toggle Button */}
+            <button
+                onClick={() => setOpen(o => !o)}
+                className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-black uppercase border-[2.5px] border-black shadow-[3px_3px_0_#000] transition-all duration-200 bg-[#FFFDF0] text-black hover:bg-[#fef08a] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-0 active:translate-y-0 active:shadow-none"
+                title="Ubah gaya peta"
+            >
+                <Layers className="w-4 h-4 text-black shrink-0" />
+                <span>{currentStyle.label}</span>
+            </button>
+
             {/* Expanded options */}
             {open && (
-                <div className="flex flex-col gap-1.5 mb-1">
+                <div className="bg-white border-[2.5px] border-black shadow-[4px_4px_0_#000] rounded-2xl p-2 flex flex-col gap-1.5 min-w-[140px]">
+                    <div className="text-[9px] font-black text-black/45 uppercase px-1 tracking-wider">Pilih Gaya Peta</div>
                     {MAP_STYLES.map(s => (
                         <button
                             key={s.id}
                             onClick={() => { onChange(s.style); setOpen(false) }}
-                            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold backdrop-blur-md transition-all duration-200 shadow-lg border ${
+                            className={`flex items-center justify-between w-full gap-2 px-2.5 py-1.5 rounded-lg text-xs font-black uppercase border-[2px] transition-all duration-150 ${
                                 current === s.style
-                                    ? "bg-white/20 border-white/30 text-white scale-105"
-                                    : "bg-neutral-900/80 border-neutral-700/50 text-neutral-300 hover:bg-neutral-800/90 hover:text-white hover:scale-105"
+                                    ? "bg-[#fef08a] border-black shadow-[2px_2px_0_#000]"
+                                    : "bg-white border-black/10 hover:border-black hover:bg-[#F5F2EB] shadow-none"
                             }`}
                             title={s.label}
                         >
-                            <span
-                                className="w-4 h-4 rounded-full border-2 border-white/30 shrink-0"
-                                style={{ backgroundColor: s.preview, boxShadow: current === s.style ? `0 0 8px ${s.accent}` : "none" }}
-                            />
-                            <span className="text-xs">{s.label}</span>
+                            <span className="flex items-center gap-2">
+                                <span className="text-sm shrink-0">{s.emoji}</span>
+                                <span>{s.label}</span>
+                            </span>
                         </button>
                     ))}
                 </div>
             )}
-
-            {/* Toggle Button */}
-            <button
-                onClick={() => setOpen(o => !o)}
-                className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-bold backdrop-blur-md transition-all duration-200 shadow-xl border ${
-                    open
-                        ? "bg-indigo-600/90 border-indigo-400/50 text-white"
-                        : "bg-neutral-900/85 border-neutral-700/50 text-neutral-200 hover:bg-neutral-800 hover:text-white"
-                }`}
-                title="Change map style"
-            >
-                <Layers className="w-4 h-4" />
-                <span className="text-xs">{currentStyle.label}</span>
-            </button>
         </div>
     )
 }
@@ -399,8 +395,15 @@ export default function MapView({ memories }: MapViewProps) {
 
                     if (isCluster) {
                         let size = "w-10 h-10"
-                        if (pointCount >= 10) size = "w-12 h-12"
-                        if (pointCount >= 100) size = "w-14 h-14"
+                        let bgColor = "bg-[#86efac]"
+                        
+                        if (pointCount >= 10 && pointCount < 100) {
+                            size = "w-12 h-12"
+                            bgColor = "bg-[#fef08a]"
+                        } else if (pointCount >= 100) {
+                            size = "w-14 h-14"
+                            bgColor = "bg-[#f5d0fe]"
+                        }
 
                         return (
                             <Marker
@@ -409,7 +412,7 @@ export default function MapView({ memories }: MapViewProps) {
                                 latitude={latitude}
                             >
                                 <div
-                                    className={`${size} rounded-full flex items-center justify-center relative p-[2px] shadow-2xl transition-all duration-300 transform hover:scale-110 cursor-pointer`}
+                                    className={`${size} ${bgColor} rounded-full border-[3px] border-black shadow-[4px_4px_0_#000] flex items-center justify-center relative transition-all duration-300 transform hover:scale-110 cursor-pointer`}
                                     onClick={(e) => {
                                         e.stopPropagation()
                                         const expansionZoom = Math.min(
@@ -423,12 +426,9 @@ export default function MapView({ memories }: MapViewProps) {
                                         })
                                     }}
                                 >
-                                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600 rounded-full animate-pulse opacity-80"></div>
-                                    <div className="absolute inset-[3px] bg-neutral-900 rounded-full z-10"></div>
-                                    <div className="relative z-20 text-white font-black text-sm font-[Outfit] tracking-tighter">
+                                    <div className="text-black font-black text-sm font-[Outfit] tracking-tighter">
                                         {pointCount}
                                     </div>
-                                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-white rounded-full z-30 ring-2 ring-indigo-500 animate-bounce"></div>
                                 </div>
                             </Marker>
                         )
@@ -446,7 +446,7 @@ export default function MapView({ memories }: MapViewProps) {
                             anchor="bottom"
                         >
                             <div
-                                className="cursor-pointer transition-transform hover:scale-110 active:scale-95 relative"
+                                className="cursor-pointer transition-transform hover:scale-110 active:scale-95 relative animate-none"
                                 onClick={(e) => {
                                     e.stopPropagation()
                                     setSelectedMemory(memory)
@@ -462,12 +462,12 @@ export default function MapView({ memories }: MapViewProps) {
                                         style={getPremiumMarkerStyle(memory.markerStyle)}
                                     />
                                 ) : (
-                                    <>
-                                        <div style={{ backgroundColor: color }} className="w-8 h-8 rounded-full border-3 border-white flex items-center justify-center shadow-lg">
+                                    <div className="relative flex flex-col items-center group">
+                                        <div style={{ backgroundColor: color }} className="w-9 h-9 rounded-full border-[2.5px] border-black flex items-center justify-center shadow-[2.5px_2.5px_0_#000] z-10 transition-transform duration-200 group-hover:-translate-y-0.5">
                                             <span className="text-base">{iconChar}</span>
                                         </div>
-                                        <div style={{ borderTopColor: color }} className="w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[10px] mx-auto -mt-0.5"></div>
-                                    </>
+                                        <div style={{ backgroundColor: color }} className="w-3.5 h-3.5 border-r-[2.5px] border-b-[2.5px] border-black rotate-45 -mt-[9px] z-0 shadow-[1.5px_1.5px_0_#000] transition-transform duration-200 group-hover:-translate-y-0.5" />
+                                    </div>
                                 )}
                             </div>
                         </Marker>

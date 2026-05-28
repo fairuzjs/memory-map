@@ -96,25 +96,25 @@ export function PhotoUploader({ photos, onChange, isPublic, maxPhotos = 3 }: Pho
             {photos.length > 0 && (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                     {photos.map((photo, i) => (
-                        <div key={i} className="relative group aspect-square rounded-xl overflow-hidden border border-neutral-700">
+                        <div key={i} className="relative group aspect-square rounded-2xl overflow-hidden border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all bg-white">
                             {/* Fallback to path if url/previewUrl isn't available, but typically previewUrl is always there for new uploads */}
                             <img
                                 src={photo.previewUrl || photo.url || ""}
                                 alt={`Memory ${i}`}
-                                className={`w-full h-full object-cover ${!photo.path && photo.previewUrl ? 'opacity-50 grayscale' : ''}`}
+                                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                             />
                             {/* Show loading spinner over image if it hasn't finished uploading yet */}
                             {!photo.path && photo.previewUrl && (
-                                <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                                    <Loader2 className="w-6 h-6 text-white animate-spin drop-shadow-md" />
+                                <div className="absolute inset-0 flex items-center justify-center bg-white/60">
+                                    <Loader2 className="w-8 h-8 text-[#00FF00] animate-spin drop-shadow-md" />
                                 </div>
                             )}
                             <button
                                 type="button"
                                 onClick={() => removePhoto(i)}
-                                className="absolute top-2 right-2 p-1.5 bg-black/50 hover:bg-red-500/80 rounded-full text-white backdrop-blur-sm transition-colors opacity-0 group-hover:opacity-100"
+                                className="absolute top-2 right-2 p-1.5 bg-red-500 border-[2px] border-black text-white hover:bg-black hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 shadow-[2px_2px_0_#000] rounded-lg"
                             >
-                                <X className="w-4 h-4" />
+                                <X className="w-3.5 h-3.5 stroke-[3]" />
                             </button>
                         </div>
                     ))}
@@ -126,18 +126,21 @@ export function PhotoUploader({ photos, onChange, isPublic, maxPhotos = 3 }: Pho
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isUploading}
-                    className="w-full flex flex-col items-center justify-center p-8 border-2 border-dashed border-neutral-700 rounded-xl bg-neutral-900/50 hover:bg-neutral-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full flex flex-col items-center justify-center p-8 border-[3px] border-dashed border-black rounded-2xl bg-white shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] hover:bg-[#00FF00]/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed select-none group"
                 >
                     {isUploading ? (
-                        <Loader2 className="w-8 h-8 text-neutral-400 animate-spin mb-2" />
+                        <Loader2 className="w-10 h-10 text-black animate-spin mb-3" />
                     ) : (
-                        <ImagePlus className="w-8 h-8 text-neutral-400 mb-2" />
+                        <div className="relative mb-3">
+                            <div className="absolute inset-0 bg-[#00FF00]/20 rounded-full blur-xl scale-150 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <ImagePlus className="w-10 h-10 text-black relative group-hover:scale-110 transition-transform duration-250" />
+                        </div>
                     )}
-                    <span className="text-sm font-medium text-neutral-300">
-                        {isUploading ? "Uploading..." : "Click to select photos"}
+                    <span className="text-[15px] font-black uppercase text-black tracking-wide">
+                        {isUploading ? "MENGUPLOAD..." : "PILIH FOTO UNTUK DIUPLOAD"}
                     </span>
-                    <span className="text-xs text-neutral-500 mt-1">
-                        {photos.length}/{maxPhotos} foto, ukuran max 5MB per foto
+                    <span className="text-[11px] font-bold text-black/60 uppercase mt-2">
+                        {photos.length}/{maxPhotos} FOTO • MAKS 5MB PER FOTO
                     </span>
                 </button>
             )}

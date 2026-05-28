@@ -2,7 +2,10 @@ import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { memorySchema } from "@/lib/validations"
-import { isPremiumActive, getUserLimits } from "@/lib/premium-config"
+import { getUserLimits } from "@/lib/premium-config"
+import { getPremiumStatus } from "@/lib/premium-status"
+import { checkAndCleanupPremium } from "@/lib/premium-enforcement"
+import { getSpotifyAccess } from "@/lib/spotify-access"
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
@@ -90,16 +93,25 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
 
-        const memory = await prisma.memory.findUnique({ where: { id } })
+        const memory = await prisma.memory.findUnique({ 
+            where: { id },
+            include: { photos: true, collaborators: true }
+        })
         if (!memory) return NextResponse.json({ error: "Not found" }, { status: 404 })
         if (memory.userId !== session.user.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
 
         // ── Determine premium limits ──
         const currentUser = await prisma.user.findUnique({
             where: { id: session.user.id },
-            select: { premiumExpiresAt: true }
+            select: { id: true, isPremium: true, premiumExpiresAt: true, inventories: { include: { item: { select: { type: true, value: true } } } } }
         })
-        const userIsPremium = isPremiumActive(currentUser?.premiumExpiresAt ?? null)
+        
+        if (currentUser) {
+            await checkAndCleanupPremium(currentUser)
+        }
+        
+        const pStatus = getPremiumStatus(currentUser)
+        const userIsPremium = pStatus.isActive
         const limits = getUserLimits(userIsPremium)
 
         const body = await req.json()
@@ -108,38 +120,63 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
         const { photos, tags, date, collaborators, audio, markerStyle, coverImage, coverPositionX, coverPositionY, coverScale, coverRotation, ...data } = result.data
 
-        // ── Enforce dynamic photo limit ──
+        // ── Enforce dynamic photo limit (Smart Validation) ──
         if (photos && photos.length > limits.maxPhotos) {
-            return NextResponse.json(
-                { error: `Maksimal ${limits.maxPhotos} foto diperbolehkan. ${!userIsPremium ? "Upgrade ke Premium untuk upload hingga 10 foto!" : ""}` },
-                { status: 400 }
-            )
+            const existingPhotoUrls = memory.photos.map((p: any) => p.url);
+            const isSubset = photos.every((url: string) => existingPhotoUrls.includes(url));
+            const isNotIncreasing = photos.length <= memory.photos.length;
+
+            if (!isSubset || !isNotIncreasing) {
+                return NextResponse.json(
+                    { error: `Maksimal ${limits.maxPhotos} foto diperbolehkan. ${!userIsPremium ? "Upgrade ke Premium untuk upload hingga 10 foto!" : ""}` },
+                    { status: 400 }
+                )
+            }
         }
 
-        // ── Enforce dynamic collaborator limit ──
+        // ── Enforce dynamic collaborator limit (Smart Validation) ──
         const requestedCollabs = [...new Set(collaborators || [])].filter((uid: any) => uid !== session.user.id)
         if (requestedCollabs.length > limits.maxCollaborators) {
-            return NextResponse.json(
-                { error: `Maksimal ${limits.maxCollaborators} kolaborator diperbolehkan. ${!userIsPremium ? "Upgrade ke Premium untuk mengundang hingga 10 orang!" : ""}` },
-                { status: 400 }
-            )
+            const existingCollabIds = memory.collaborators.map((c: any) => c.userId);
+            const isSubset = requestedCollabs.every((uid: any) => existingCollabIds.includes(uid));
+            const isNotIncreasing = requestedCollabs.length <= memory.collaborators.length;
+
+            if (!isSubset || !isNotIncreasing) {
+                return NextResponse.json(
+                    { error: `Maksimal ${limits.maxCollaborators} kolaborator diperbolehkan. ${!userIsPremium ? "Upgrade ke Premium untuk mengundang hingga 10 orang!" : ""}` },
+                    { status: 400 }
+                )
+            }
         }
 
-        // ── Premium feature gate: Spotify integration ──
-        // Premium users get auto-unlock, free users need shop item
-        if (data.spotifyTrackId && !userIsPremium) {
-            const hasSpotifyPremium = await prisma.userInventory.findFirst({
-                where: {
-                    userId: session.user.id,
-                    item: { type: "PREMIUM_FEATURE", value: "spotify_integration" },
-                },
-            })
-            if (!hasSpotifyPremium) {
+        // ── Premium feature gate: Map Marker (Smart Validation) ──
+        if (markerStyle && markerStyle !== "default") {
+            if (!userIsPremium && markerStyle !== memory.markerStyle) {
                 return NextResponse.json(
-                    { error: "Fitur Spotify adalah fitur premium. Silakan beli di Memory Shop atau upgrade ke Premium!" },
+                    { error: "Gagal menyimpan: Custom Map Marker terkunci. Aktifkan kembali Premium untuk memilih marker ini!" },
                     { status: 403 }
                 )
             }
+        }
+
+        // ── Premium feature gate: Spotify integration ──
+        let newSpotifyAccessSource = memory.spotifyAccessSource;
+        if (data.spotifyTrackId !== undefined) {
+            if (data.spotifyTrackId === null) {
+                // User removing spotify track
+                newSpotifyAccessSource = null;
+            } else if (data.spotifyTrackId !== memory.spotifyTrackId) {
+                // User adding a new track or changing existing track
+                const spotifyAccess = getSpotifyAccess(currentUser, currentUser?.inventories || []);
+                if (!spotifyAccess.canEditTrack) {
+                    return NextResponse.json(
+                        { error: "Fitur Spotify adalah fitur premium. Silakan beli di Memory Shop atau upgrade ke Premium!" },
+                        { status: 403 }
+                    )
+                }
+                newSpotifyAccessSource = spotifyAccess.source;
+            }
+            // Jika data.spotifyTrackId === memory.spotifyTrackId, biarkan source seperti semula
         }
 
         const updated = await prisma.$transaction(async (tx) => {
@@ -168,7 +205,8 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
                     audioFileName: audio?.fileName ?? null,
                     
                     // Spotify integration
-                    spotifyTrackId: data.spotifyTrackId ?? null,
+                    spotifyTrackId: data.spotifyTrackId !== undefined ? data.spotifyTrackId : memory.spotifyTrackId,
+                    spotifyAccessSource: newSpotifyAccessSource,
                     // Premium map marker
                     markerStyle: markerStyle ?? null,
                     // Cover image

@@ -31,7 +31,7 @@ export default function MapPage() {
     }, [])
 
     return (
-        <div className="flex flex-col h-[calc(100vh-64px)] w-full relative bg-white">
+        <div className="h-[calc(100vh-92px)] w-full flex flex-col p-4 sm:p-6 lg:p-8 gap-4 bg-[#FFFDF0] overflow-hidden relative">
             {/* Grid Pattern Background */}
             <div className="absolute inset-0 pointer-events-none z-0"
                 style={{
@@ -40,28 +40,30 @@ export default function MapPage() {
                 }}
             />
 
-            <div className="px-4 sm:px-6 lg:px-8 py-4 bg-[#FFFF00] border-b-[4px] border-black shadow-[0_4px_0_#000] z-20 flex justify-between items-center">
+            {/* Redesigned Premium Header Card */}
+            <div className="relative bg-[#fef08a] border-[3px] border-black shadow-[4px_4px_0_#000] rounded-2xl p-4 z-20 flex justify-between items-center shrink-0">
                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-white border-[3px] border-black flex items-center justify-center shadow-[2px_2px_0_#000]">
+                    <div className="w-12 h-12 bg-white border-[3px] border-black flex items-center justify-center shadow-[2px_2px_0_#000] rounded-xl shrink-0">
                         <Globe className="w-6 h-6 text-black" />
                     </div>
                     <div>
-                        <h1 className="text-[20px] font-black uppercase text-black">Global Memories</h1>
-                        <p className="text-[12px] font-bold text-black/80 mt-0.5 uppercase">
+                        <h1 className="text-[18px] sm:text-[22px] font-black uppercase text-black leading-none">Global Memories</h1>
+                        <p className="text-[11px] sm:text-[12px] font-bold text-black/80 mt-1.5 uppercase tracking-wide">
                             Jelajahi kenangan publik dari {session?.user?.name || "komunitas"}.
                         </p>
                     </div>
                 </div>
             </div>
 
-            <div className="flex-1 relative p-4 sm:p-6 z-10 flex flex-col">
+            {/* Map Container */}
+            <div className="flex-1 w-full relative z-10 flex flex-col min-h-0">
                 {loading ? (
-                    <div className="flex-1 w-full bg-[#E5E5E5] border-[4px] border-black shadow-[8px_8px_0_#000] flex flex-col items-center justify-center gap-4">
+                    <div className="flex-1 w-full bg-[#fafaf9] border-[3px] border-black shadow-[6px_6px_0_#000] flex flex-col items-center justify-center gap-4 rounded-3xl">
                         <Loader2 className="w-12 h-12 text-black animate-spin" />
                         <p className="text-[14px] font-black uppercase text-black">Memuat Kenangan...</p>
                     </div>
                 ) : (
-                    <div className="flex-1 w-full border-[4px] border-black shadow-[8px_8px_0_#000] overflow-hidden bg-white">
+                    <div className="flex-1 w-full border-[3px] border-black shadow-[6px_6px_0_#000] overflow-hidden bg-white rounded-3xl relative">
                         <MapView memories={memories} />
                     </div>
                 )}
@@ -69,3 +71,4 @@ export default function MapPage() {
         </div>
     )
 }
+

@@ -32,7 +32,7 @@ export function GuideSelectionPopup({ isOpen, onClose, onSelectGuide }: GuideSel
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.97 }}
                         transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                        className="fixed z-[9001] bg-[#FFFDF0] border-[4px] border-black shadow-[8px_8px_0_#000] flex flex-col"
+                        className="fixed z-[9001] bg-[#FFFDF0] border-[3px] border-black shadow-[8px_8px_0_#000] rounded-3xl overflow-hidden flex flex-col"
                         style={{
                             /* Use inset + margin:auto for perfect centering that framer-motion can't break */
                             inset: 0,
@@ -46,9 +46,9 @@ export function GuideSelectionPopup({ isOpen, onClose, onSelectGuide }: GuideSel
                         }}
                     >
                         {/* Header — sticky */}
-                        <div className="flex items-center justify-between px-5 py-4 border-b-[4px] border-black bg-[#FFFF00] shrink-0">
+                        <div className="flex items-center justify-between px-5 py-4 border-b-[3px] border-black bg-[#fef08a] rounded-t-[21px] shrink-0">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-white border-[3px] border-black shadow-[3px_3px_0_#000] flex items-center justify-center">
+                                <div className="w-10 h-10 bg-white border-[2.5px] border-black shadow-[2.5px_2.5px_0_#000] rounded-xl flex items-center justify-center">
                                     <span className="text-lg">📖</span>
                                 </div>
                                 <div>
@@ -65,7 +65,7 @@ export function GuideSelectionPopup({ isOpen, onClose, onSelectGuide }: GuideSel
                             </div>
                             <button
                                 onClick={onClose}
-                                className="w-10 h-10 flex items-center justify-center bg-white border-[3px] border-black shadow-[3px_3px_0_#000] hover:bg-black hover:text-white hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0_#000] active:translate-x-0 active:translate-y-0 active:shadow-none transition-all"
+                                className="w-10 h-10 flex items-center justify-center bg-white border-[2.5px] border-black shadow-[2.5px_2.5px_0_#000] hover:bg-[#f5d0fe] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3.5px_3.5px_0_#000] active:translate-x-0 active:translate-y-0 active:shadow-none rounded-xl transition-all"
                             >
                                 <X className="w-5 h-5" />
                             </button>
@@ -73,7 +73,7 @@ export function GuideSelectionPopup({ isOpen, onClose, onSelectGuide }: GuideSel
 
                         {/* Guide List — only this scrolls */}
                         <div
-                            className="overflow-y-auto flex-1 p-4 space-y-2"
+                            className="overflow-y-auto flex-1 p-5 space-y-3"
                             style={{ scrollbarGutter: "stable", overscrollBehavior: "contain" }}
                         >
                             {GUIDE_DEFINITIONS.map((guide, index) => {
@@ -86,10 +86,10 @@ export function GuideSelectionPopup({ isOpen, onClose, onSelectGuide }: GuideSel
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: index * 0.04, duration: 0.25 }}
                                         onClick={() => onSelectGuide(guide)}
-                                        className="w-full text-left flex items-start gap-3 p-3 border-[3px] border-black bg-white shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] active:translate-x-0 active:translate-y-0 active:shadow-none transition-all group"
+                                        className="w-full text-left flex items-start gap-3.5 p-3.5 border-[2.5px] border-black bg-white shadow-[4px_4px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[5.5px_5.5px_0_#000] active:translate-x-0 active:translate-y-0 active:shadow-none rounded-2xl transition-all group"
                                     >
                                         <div
-                                            className="w-10 h-10 shrink-0 flex items-center justify-center border-[3px] border-black shadow-[2px_2px_0_#000] group-hover:rotate-[-3deg] transition-transform"
+                                            className="w-10 h-10 shrink-0 flex items-center justify-center border-[2.5px] border-black shadow-[2px_2px_0_#000] rounded-xl group-hover:rotate-[-3deg] transition-transform"
                                             style={{ backgroundColor: accent }}
                                         >
                                             <Icon className="w-5 h-5 text-black" />
@@ -105,7 +105,7 @@ export function GuideSelectionPopup({ isOpen, onClose, onSelectGuide }: GuideSel
                                                 {guide.description}
                                             </p>
                                         </div>
-                                        <div className="shrink-0 self-center w-7 h-7 flex items-center justify-center border-[2px] border-black bg-[#FFFDF0] group-hover:bg-[#00FF00] transition-colors">
+                                        <div className="shrink-0 self-center w-8 h-8 flex items-center justify-center border-[2px] border-black bg-[#FFFDF0] group-hover:bg-[#86efac] rounded-xl transition-all shadow-[1.5px_1.5px_0_#000] group-hover:translate-x-[-0.5px] group-hover:translate-y-[-0.5px] group-hover:shadow-[2.5px_2.5px_0_#000] active:translate-x-0 active:translate-y-0 active:shadow-none">
                                             <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                                                 <path d="M4 2L8 6L4 10" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square" />
                                             </svg>
@@ -116,7 +116,7 @@ export function GuideSelectionPopup({ isOpen, onClose, onSelectGuide }: GuideSel
                         </div>
 
                         {/* Footer — sticky */}
-                        <div className="shrink-0 px-5 py-3 border-t-[3px] border-black bg-[#FFFDF0]">
+                        <div className="shrink-0 px-5 py-3 border-t-[2.5px] border-black bg-[#FFFDF0] rounded-b-[21px]">
                             <p className="text-[10px] font-bold text-black/40 uppercase tracking-widest text-center">
                                 Tekan ESC atau klik di luar untuk menutup
                             </p>

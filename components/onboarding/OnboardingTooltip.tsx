@@ -183,18 +183,18 @@ export function OnboardingTooltip({
                 }}
             >
                 <div
-                    className="bg-white border-[3px] border-black shadow-[4px_4px_0_#000] overflow-hidden flex flex-col"
+                    className="bg-[#FFFDF0] border-[2.5px] border-black shadow-[4px_4px_0_#000] rounded-2xl overflow-hidden flex flex-col"
                     style={{
                         paddingBottom: "env(safe-area-inset-bottom, 0px)",
                     }}
                 >
                     {/* ── Header ─────────────────────────────────────── */}
                     <div
-                        className="flex items-center justify-between px-3 py-2 border-b-[2.5px] border-black shrink-0"
+                        className="flex items-center justify-between px-3 py-2 border-b-[2.5px] border-black shrink-0 rounded-t-[14px]"
                         style={{ backgroundColor: step.accentColor }}
                     >
                         <div className="flex items-center gap-2 min-w-0">
-                            <div className="w-6 h-6 shrink-0 bg-white border-[2px] border-black shadow-[1px_1px_0_#000] flex items-center justify-center">
+                            <div className="w-6 h-6 shrink-0 bg-white border-[2px] border-black shadow-[1px_1px_0_#000] rounded-lg flex items-center justify-center">
                                 <Icon className="w-3 h-3 text-black" />
                             </div>
                             <span className="text-[10px] font-black text-black uppercase tracking-widest truncate">
@@ -203,7 +203,7 @@ export function OnboardingTooltip({
                         </div>
                         <button
                             onClick={onSkip}
-                            className="p-1 shrink-0 bg-white border-[2px] border-black hover:bg-black hover:text-white transition-all text-xs font-black"
+                            className="p-1 shrink-0 bg-white border-[2px] border-black hover:bg-rose-100 hover:text-rose-600 rounded-lg shadow-[1.5px_1.5px_0_#000] hover:translate-x-[-0.5px] hover:translate-y-[-0.5px] hover:shadow-[2.5px_2.5px_0_#000] active:translate-x-0 active:translate-y-0 active:shadow-none transition-all text-xs font-black"
                             title="Lewati Tutorial"
                             style={{ minWidth: 22, minHeight: 22, display: "flex", alignItems: "center", justifyContent: "center" }}
                         >
@@ -224,34 +224,34 @@ export function OnboardingTooltip({
                         </p>
 
                         {/* Checklist Indicators */}
-                        <div className="bg-neutral-50 border-[2.5px] border-black p-2.5 mb-3 flex flex-col gap-1.5 shadow-[2px_2px_0_#000]">
+                        <div className="bg-[#FFFDF0] border-[2px] border-black p-2.5 mb-3 flex flex-col gap-1.5 shadow-[2.5px_2.5px_0_#000] rounded-2xl">
                             <div className="flex items-center gap-2">
-                                <span className="text-[#00FF00] font-black text-sm select-none">✓</span>
+                                <span className="text-[#86efac] font-black text-sm select-none">✓</span>
                                 <span className="text-xs font-black text-black uppercase tracking-wide">Geser foto</span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <span className="text-[#00FF00] font-black text-sm select-none">✓</span>
+                                <span className="text-[#86efac] font-black text-sm select-none">✓</span>
                                 <span className="text-xs font-black text-black uppercase tracking-wide">Zoom</span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <span className="text-[#00FF00] font-black text-sm select-none">✓</span>
+                                <span className="text-[#86efac] font-black text-sm select-none">✓</span>
                                 <span className="text-xs font-black text-black uppercase tracking-wide">Rotate</span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <span className="text-[#00FF00] font-black text-sm select-none">✓</span>
+                                <span className="text-[#86efac] font-black text-sm select-none">✓</span>
                                 <span className="text-xs font-black text-black uppercase tracking-wide">Simpan Cover</span>
                             </div>
                         </div>
 
                         {/* Progress Bar */}
-                        <div className="flex items-center gap-1 mb-3">
+                        <div className="flex items-center gap-1.5 mb-3">
                             {Array.from({ length: totalSteps }).map((_, i) => (
                                 <div
                                     key={i}
-                                    className="h-[3px] flex-1 transition-all duration-300"
+                                    className="h-[6px] rounded-full flex-1 transition-all duration-300"
                                     style={{
                                         backgroundColor: i <= currentIndex ? step.accentColor : "#E5E5E5",
-                                        border: i <= currentIndex ? "1px solid #000" : "1px solid #CCC",
+                                        border: "1.5px solid #000",
                                     }}
                                 />
                             ))}
@@ -262,7 +262,7 @@ export function OnboardingTooltip({
                             {!isFirst && (
                                 <button
                                     onClick={onBack}
-                                    className="flex-1 flex items-center justify-center gap-1 py-2 text-[10px] font-black text-black uppercase bg-white border-[2.5px] border-black shadow-[2px_2px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] active:translate-x-0 active:translate-y-0 active:shadow-none transition-all"
+                                    className="flex-1 flex items-center justify-center gap-1 py-2 text-[10px] font-black text-black uppercase bg-white border-[2px] border-black shadow-[2px_2px_0_#000] hover:translate-x-[-0.5px] hover:translate-y-[-0.5px] hover:shadow-[3px_3px_0_#000] active:translate-x-0 active:translate-y-0 active:shadow-none rounded-xl transition-all"
                                     style={{ minHeight: 36 }}
                                 >
                                     <ChevronLeft className="w-3 h-3" />
@@ -271,7 +271,7 @@ export function OnboardingTooltip({
                             )}
                             <button
                                 onClick={onSkip}
-                                className="flex-1 py-2 text-[10px] font-black text-black/50 uppercase bg-white border-[2.5px] border-black/20 hover:border-black hover:text-black transition-all"
+                                className="flex-1 py-2 text-[10px] font-black text-black/50 uppercase bg-white border-[2px] border-black/20 hover:border-black hover:text-black rounded-xl transition-all"
                                 style={{ minHeight: 36 }}
                             >
                                 Lewati
@@ -301,7 +301,7 @@ export function OnboardingTooltip({
             }}
         >
             <div
-                className="bg-white border-[4px] border-black shadow-[6px_6px_0_#000] overflow-hidden flex flex-col"
+                className="bg-[#FFFDF0] border-[3px] border-black shadow-[5px_5px_0_#000] rounded-3xl overflow-hidden flex flex-col"
                 style={{
                     maxHeight: "80vh",
                     paddingBottom: "env(safe-area-inset-bottom, 0px)",
@@ -309,11 +309,11 @@ export function OnboardingTooltip({
             >
                 {/* ── Header ─────────────────────────────────────── */}
                 <div
-                    className="flex items-center justify-between px-4 py-3 border-b-[3px] border-black shrink-0"
+                    className="flex items-center justify-between px-4 py-3 border-b-[2.5px] border-black shrink-0 rounded-t-[21px]"
                     style={{ backgroundColor: step.accentColor }}
                 >
                     <div className="flex items-center gap-2 min-w-0">
-                        <div className="w-8 h-8 shrink-0 bg-white border-[3px] border-black shadow-[2px_2px_0_#000] flex items-center justify-center">
+                        <div className="w-8 h-8 shrink-0 bg-white border-[2.5px] border-black shadow-[2px_2px_0_#000] rounded-xl flex items-center justify-center">
                             <Icon className="w-4 h-4 text-black" />
                         </div>
                         <span className="text-[11px] font-black text-black uppercase tracking-widest truncate">
@@ -322,7 +322,7 @@ export function OnboardingTooltip({
                     </div>
                     <button
                         onClick={onSkip}
-                        className="p-1.5 shrink-0 bg-white border-[2px] border-black hover:bg-black hover:text-white transition-all"
+                        className="p-1.5 shrink-0 bg-white border-[2px] border-black hover:bg-rose-100 hover:text-rose-600 rounded-xl shadow-[2px_2px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] active:translate-x-0 active:translate-y-0 active:shadow-none transition-all"
                         title="Lewati Tutorial"
                         style={{ minWidth: 28, minHeight: 28 }}
                     >
@@ -331,9 +331,9 @@ export function OnboardingTooltip({
                 </div>
 
                 {/* ── Body (scrollable) ──────────────────────────── */}
-                <div className="px-4 py-4 overflow-y-auto flex-1">
+                <div className="px-4 py-4 overflow-y-auto flex-1 bg-white rounded-b-[21px]">
                     <h3
-                        className="text-base sm:text-lg font-black text-black mb-2 leading-tight"
+                        className="text-base sm:text-lg font-black text-black mb-2 leading-tight uppercase"
                         style={{ fontFamily: "'Outfit', sans-serif" }}
                     >
                         {step.title}
@@ -344,7 +344,7 @@ export function OnboardingTooltip({
 
                     {/* ── Action step hint ────────────────────────── */}
                     {isAction && (
-                        <div className="flex items-center gap-2 px-3 py-2 mb-4 bg-[#FFFF00]/20 border-[2px] border-[#FFFF00] border-dashed">
+                        <div className="flex items-center gap-2 px-3 py-2 mb-4 bg-[#fef08a]/20 border-[2px] border-[#fef08a] border-dashed rounded-xl">
                             <MousePointerClick className="w-4 h-4 text-black shrink-0" />
                             <span className="text-xs font-bold text-black uppercase tracking-wide">
                                 {step.actionHint || "Klik area yang disorot untuk melanjutkan"}
@@ -353,14 +353,14 @@ export function OnboardingTooltip({
                     )}
 
                     {/* ── Progress bar ────────────────────────────── */}
-                    <div className="flex items-center gap-1 mb-4">
+                    <div className="flex items-center gap-1.5 mb-4">
                         {Array.from({ length: totalSteps }).map((_, i) => (
                             <div
                                 key={i}
-                                className="h-[4px] flex-1 transition-all duration-300"
+                                className="h-[6px] rounded-full flex-1 transition-all duration-300"
                                 style={{
                                     backgroundColor: i <= currentIndex ? step.accentColor : "#E5E5E5",
-                                    border: i <= currentIndex ? "1.5px solid #000" : "1.5px solid #CCC",
+                                    border: "1.5px solid #000",
                                 }}
                             />
                         ))}
@@ -372,7 +372,7 @@ export function OnboardingTooltip({
                         {!isFirst ? (
                             <button
                                 onClick={onBack}
-                                className="flex items-center justify-center gap-1.5 px-4 text-xs font-black text-black uppercase bg-white border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-0 active:translate-y-0 active:shadow-none transition-all"
+                                className="flex items-center justify-center gap-1.5 px-4 text-xs font-black text-black uppercase bg-white border-[2.5px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-0 active:translate-y-0 active:shadow-none transition-all rounded-xl"
                                 style={{ minHeight: 44 }}
                             >
                                 <ChevronLeft className="w-3.5 h-3.5" />
@@ -381,7 +381,7 @@ export function OnboardingTooltip({
                         ) : step.showSkip ? (
                             <button
                                 onClick={onSkip}
-                                className="flex items-center justify-center gap-1.5 px-4 text-xs font-black text-black/50 uppercase bg-white border-[3px] border-black/20 hover:border-black hover:text-black transition-all"
+                                className="flex items-center justify-center gap-1.5 px-4 text-xs font-black text-black/50 uppercase bg-white border-[2.5px] border-black/20 hover:border-black hover:text-black transition-all rounded-xl"
                                 style={{ minHeight: 44 }}
                             >
                                 Lewati
@@ -392,7 +392,7 @@ export function OnboardingTooltip({
                         {!isAction && (
                             <button
                                 onClick={isLast ? onFinish : onNext}
-                                className="flex-1 flex items-center justify-center gap-1.5 px-4 text-xs font-black text-black uppercase border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0_#000] active:translate-x-0 active:translate-y-0 active:shadow-none transition-all"
+                                className="flex-1 flex items-center justify-center gap-1.5 px-4 text-xs font-black text-black uppercase border-[2.5px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4.5px_4.5px_0_#000] active:translate-x-0 active:translate-y-0 active:shadow-none rounded-xl transition-all"
                                 style={{ backgroundColor: step.accentColor, minHeight: 44 }}
                             >
                                 {isLast ? (

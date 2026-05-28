@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
 import { checkRateLimit, rateLimitResponse, RATE_LIMITS } from "@/lib/rate-limit"
 import { isPremiumActive, getUserLimits } from "@/lib/premium-config"
+import { checkAndCleanupPremium } from "@/lib/premium-enforcement"
 
 // ── Tier Configuration ──────────────────────────────────────────
 // Drop rates must sum to 100
@@ -88,6 +89,8 @@ export async function POST(req: Request) {
     const user = await prisma.user.findUnique({
         where: { id: userId },
         select: {
+            id: true,
+            isPremium: true,
             points: true,
             premiumExpiresAt: true,
             freeGachaPullsUsed: true,
@@ -98,6 +101,8 @@ export async function POST(req: Request) {
     if (!user) {
         return NextResponse.json({ error: "User not found" }, { status: 404 })
     }
+
+    checkAndCleanupPremium(user).catch(console.error);
 
     // ── Premium checks ──
     const userIsPremium = isPremiumActive(user.premiumExpiresAt)

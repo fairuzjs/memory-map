@@ -28,7 +28,7 @@ export function LandingHero() {
         >
           {/* Pill badge */}
           <motion.div variants={fadeUp} className="mb-8 mt-6 md:mt-0">
-            <div className="inline-flex items-center gap-2.5 px-5 py-2.5 text-sm font-bold text-black bg-[#00FFFF] border-[3px] border-black shadow-[3px_3px_0_#000]">
+            <div className="inline-flex items-center gap-2.5 px-5 py-2.5 text-sm font-bold text-black bg-[#00FFFF] border-[3px] border-black shadow-[3px_3px_0_#000] rounded-xl">
               <span className="relative flex h-3 w-3">
                 <span className="inline-flex rounded-full h-3 w-3 bg-[#00FF00] border-2 border-black"></span>
               </span>
@@ -43,7 +43,7 @@ export function LandingHero() {
           >
             Tandai{" "}
             <span
-              className="relative inline-block bg-[#FFFF00] px-3 -rotate-1 border-[3px] border-black shadow-[3px_3px_0_#000]"
+              className="relative inline-block bg-[#FFFF00] px-3 -rotate-1 border-[3px] border-black shadow-[3px_3px_0_#000] rounded-xl"
             >
               Momenmu
             </span>
@@ -61,7 +61,7 @@ export function LandingHero() {
             {session?.user ? (
               <Link
                 href="/dashboard"
-                className="group flex flex-1 sm:flex-none items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base font-black text-black bg-[#FFFF00] border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all uppercase tracking-wide"
+                className="group flex flex-1 sm:flex-none items-center justify-center gap-2.5 px-6 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base font-black text-black bg-[#FFFF00] border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all uppercase tracking-wide rounded-xl"
               >
                 Kembali ke Dashboard
               </Link>
@@ -69,13 +69,13 @@ export function LandingHero() {
               <>
                 <Link
                   href="/register"
-                  className="group relative flex flex-1 sm:flex-none items-center justify-center gap-2 px-4 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base font-black text-black bg-[#FFFF00] border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all uppercase tracking-wide"
+                  className="group relative flex flex-1 sm:flex-none items-center justify-center gap-2 px-4 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base font-black text-black bg-[#FFFF00] border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all uppercase tracking-wide rounded-xl"
                 >
                   Mulai Sekarang
                 </Link>
                 <Link
                   href="/login"
-                  className="flex flex-1 sm:flex-none items-center justify-center gap-2 px-4 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base font-bold text-black bg-white border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] hover:bg-[#00FFFF] transition-all"
+                  className="flex flex-1 sm:flex-none items-center justify-center gap-2 px-4 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base font-bold text-black bg-white border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] hover:bg-[#00FFFF] transition-all rounded-xl"
                 >
                   Masuk ke Akun
                 </Link>
@@ -90,7 +90,7 @@ export function LandingHero() {
                 <img
                   key={seed}
                   src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`}
-                  className="w-8 h-8 border-[3px] border-black bg-[#FFFF00]"
+                  className="w-8 h-8 border-[3px] border-black bg-[#FFFF00] rounded-full"
                   alt={`User avatar ${seed}`}
                 />
               ))}

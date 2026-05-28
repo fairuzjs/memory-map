@@ -25,25 +25,25 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
 
     const SidebarContent = () => (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full bg-[#FFFDF0]">
             {/* Logo */}
-            <div className="px-5 py-5 border-b border-white/[0.06]">
+            <div className="px-5 py-5 border-b-[3px] border-black">
                 <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center shadow-lg shadow-indigo-900/40">
-                        <Shield className="w-4 h-4 text-white" />
+                    <div className="w-9 h-9 rounded-xl bg-cyan-300 flex items-center justify-center border-[2px] border-black shadow-[3px_3px_0_#000]">
+                        <Shield className="w-4 h-4 text-black" />
                     </div>
                     <div>
-                        <span className="font-[Outfit] font-bold text-base tracking-tight text-white">
-                            Admin<span className="text-indigo-400">Panel</span>
+                        <span className="font-[Outfit] font-black text-base tracking-tight text-black">
+                            ADMIN<span className="text-cyan-600">PANEL</span>
                         </span>
-                        <p className="text-[10px] text-neutral-500 tracking-widest uppercase mt-0.5">MemoryMap</p>
+                        <p className="text-[10px] text-black font-bold tracking-widest uppercase mt-0.5">MemoryMap</p>
                     </div>
                 </div>
             </div>
 
             {/* Nav */}
-            <nav className="flex-1 px-3 py-4 space-y-0.5">
-                <p className="text-[10px] font-semibold tracking-widest text-neutral-600 uppercase px-3 mb-2">Menu</p>
+            <nav className="flex-1 px-4 py-6 space-y-2">
+                <p className="text-[10px] font-black tracking-widest text-black uppercase px-2 mb-3">Menu</p>
                 {navItems.map((item) => {
                     const isActive = pathname === item.href
                     const Icon = item.icon
@@ -52,46 +52,43 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                             key={item.href}
                             href={item.href}
                             onClick={() => setSidebarOpen(false)}
-                            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group relative ${
+                            className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold transition-all duration-200 border-[2px] ${
                                 isActive
-                                    ? "bg-indigo-500/15 text-indigo-300"
-                                    : "text-neutral-500 hover:text-neutral-200 hover:bg-white/[0.04]"
+                                    ? "bg-yellow-300 border-black shadow-[4px_4px_0_#000] text-black translate-x-1"
+                                    : "bg-white border-transparent text-neutral-800 hover:border-black hover:shadow-[4px_4px_0_#000] hover:bg-cyan-100 hover:-translate-y-0.5"
                             }`}
                         >
-                            {isActive && (
-                                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-indigo-400 rounded-full" />
-                            )}
-                            <Icon className={`w-4 h-4 shrink-0 transition-colors ${isActive ? "text-indigo-400" : "text-neutral-600 group-hover:text-neutral-400"}`} />
-                            {item.label}
+                            <Icon className={`w-5 h-5 shrink-0 ${isActive ? "text-black" : "text-black"}`} />
+                            <span className="uppercase tracking-wide">{item.label}</span>
                         </Link>
                     )
                 })}
             </nav>
 
             {/* Footer */}
-            <div className="px-3 pb-4 border-t border-white/[0.06] pt-4 space-y-0.5">
+            <div className="px-4 pb-6 border-t-[3px] border-black pt-6 space-y-3">
                 <Link
                     href="/dashboard"
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-neutral-500 hover:text-neutral-200 hover:bg-white/[0.04] transition-all duration-200 group"
+                    className="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold text-black border-[2px] border-black bg-white shadow-[4px_4px_0_#000] hover:-translate-y-1 hover:shadow-[6px_6px_0_#000] hover:bg-yellow-100 transition-all duration-200"
                 >
-                    <ArrowLeft className="w-4 h-4 text-neutral-600 group-hover:text-neutral-400 transition-colors" />
-                    Kembali ke Aplikasi
+                    <ArrowLeft className="w-5 h-5" />
+                    <span className="uppercase tracking-wide">Aplikasi</span>
                 </Link>
                 <button
                     onClick={() => signOut({ callbackUrl: '/admin/login' })}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-neutral-500 hover:text-rose-300 hover:bg-rose-500/10 transition-all duration-200 w-full text-left group"
+                    className="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold text-black border-[2px] border-black bg-rose-400 shadow-[4px_4px_0_#000] hover:-translate-y-1 hover:shadow-[6px_6px_0_#000] hover:bg-rose-500 transition-all duration-200 w-full text-left"
                 >
-                    <LogOut className="w-4 h-4 text-neutral-600 group-hover:text-rose-400 transition-colors" />
-                    Sign Out Admin
+                    <LogOut className="w-5 h-5" />
+                    <span className="uppercase tracking-wide">Sign Out</span>
                 </button>
             </div>
         </div>
     )
 
     return (
-        <div className="min-h-screen bg-neutral-950 text-white flex">
+        <div className="min-h-screen bg-[#FFFDF0] text-black flex font-[Outfit]">
             {/* Desktop Sidebar */}
-            <aside className="hidden lg:flex w-60 border-r border-white/[0.05] bg-neutral-900/40 shrink-0 flex-col sticky top-0 h-screen">
+            <aside className="hidden lg:flex w-64 border-r-[3px] border-black bg-[#FFFDF0] shrink-0 flex-col sticky top-0 h-screen z-20 shadow-[4px_0_0_rgba(0,0,0,0.05)]">
                 <SidebarContent />
             </aside>
 
@@ -104,45 +101,39 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             )}
 
             {/* Mobile Sidebar Drawer */}
-            <aside className={`fixed left-0 top-0 h-full w-60 border-r border-white/[0.05] bg-neutral-900 z-50 lg:hidden transition-transform duration-300 ease-in-out ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
-                <div className="absolute top-4 right-4">
+            <aside className={`fixed left-0 top-0 h-full w-64 border-r-[3px] border-black bg-[#FFFDF0] z-50 lg:hidden transition-transform duration-300 ease-in-out shadow-[8px_0_0_#000] ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
+                <div className="absolute top-4 right-4 z-50">
                     <button
                         onClick={() => setSidebarOpen(false)}
-                        className="p-1.5 rounded-lg text-neutral-500 hover:text-white hover:bg-white/[0.06] transition-colors"
+                        className="p-1.5 rounded-xl border-[2px] border-black bg-rose-400 shadow-[2px_2px_0_#000] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#000] text-black transition-all"
                     >
-                        <X className="w-4 h-4" />
+                        <X className="w-5 h-5 font-black" />
                     </button>
                 </div>
                 <SidebarContent />
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 min-w-0 max-h-screen overflow-y-auto relative">
-                {/* Ambient background */}
-                <div className="fixed inset-0 pointer-events-none -z-10">
-                    <div className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-900/10 rounded-full blur-3xl" />
-                    <div className="absolute bottom-1/3 right-1/4 w-64 h-64 bg-violet-900/8 rounded-full blur-3xl" />
-                </div>
-
+            <main className="flex-1 min-w-0 max-h-screen overflow-y-auto relative bg-[#FFFDF0]">
                 {/* Mobile topbar */}
-                <div className="lg:hidden sticky top-0 z-30 bg-neutral-950/80 backdrop-blur-md border-b border-white/[0.05] px-4 py-3 flex items-center gap-3">
+                <div className="lg:hidden sticky top-0 z-30 bg-[#FFFDF0] border-b-[3px] border-black px-4 py-3 flex items-center gap-3 shadow-[0_4px_0_rgba(0,0,0,0.1)]">
                     <button
                         onClick={() => setSidebarOpen(true)}
-                        className="p-2 rounded-lg text-neutral-400 hover:text-white hover:bg-white/[0.06] transition-colors"
+                        className="p-2 rounded-xl border-[2px] border-black bg-cyan-300 shadow-[2px_2px_0_#000] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#000] text-black transition-all"
                     >
-                        <Menu className="w-5 h-5" />
+                        <Menu className="w-5 h-5 font-black" />
                     </button>
                     <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center">
-                            <Shield className="w-3 h-3 text-white" />
+                        <div className="w-7 h-7 rounded-xl bg-cyan-300 border-[2px] border-black shadow-[2px_2px_0_#000] flex items-center justify-center">
+                            <Shield className="w-3 h-3 text-black" />
                         </div>
-                        <span className="font-[Outfit] font-bold text-sm text-white">
-                            Admin<span className="text-indigo-400">Panel</span>
+                        <span className="font-[Outfit] font-black text-sm text-black tracking-tight">
+                            ADMIN<span className="text-cyan-600">PANEL</span>
                         </span>
                     </div>
                 </div>
 
-                <div className="p-6 lg:p-8 max-w-6xl">
+                <div className="p-6 lg:p-8 max-w-6xl mx-auto">
                     {children}
                 </div>
             </main>

@@ -15,7 +15,7 @@ const CoverEditor = dynamic(() => import("@/components/memories/CoverEditor").th
     ssr: false,
     loading: () => (
         <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/70">
-            <div className="bg-white border-[4px] border-black shadow-[8px_8px_0_#000] p-6 text-center font-black uppercase text-sm tracking-wider">
+            <div className="bg-white border-[3px] border-black shadow-[6px_6px_0_#000] p-6 text-center font-black uppercase text-sm tracking-wider rounded-2xl">
                 Memuat Editor...
             </div>
         </div>
@@ -63,10 +63,10 @@ export function EditorStepMedia({
     return (
         <div className="space-y-6">
             {/* Cover Image */}
-            <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000]">
+            <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[5px_5px_0_#000] rounded-3xl">
                 <div className="flex items-center justify-between mb-5">
                     <div className="flex items-center gap-3">
-                        <div className="p-2.5 bg-[#FFFF00] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                        <div className="p-2.5 bg-[#FFFF00] border-[2px] border-black shadow-[2px_2px_0_#000] rounded-xl">
                             <Crop className="w-5 h-5 text-black" />
                         </div>
                         <div>
@@ -77,7 +77,7 @@ export function EditorStepMedia({
                     <button
                         type="button"
                         onClick={() => setShowCoverEditor(true)}
-                        className="flex items-center gap-2 px-4 py-2 text-xs font-black uppercase text-black border-[3px] border-black bg-[#00FFFF] shadow-[3px_3px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0_#000] transition-all"
+                        className="flex items-center gap-2 px-4 py-2 text-xs font-black uppercase text-black border-[3px] border-black bg-[#00FFFF] shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] active:translate-y-px active:shadow-none transition-all"
                     >
                         <Crop className="w-4 h-4" />
                         {watchCoverImage ? "Edit Cover" : "Atur Cover"}
@@ -85,7 +85,7 @@ export function EditorStepMedia({
                 </div>
 
                 {/* Cover Preview */}
-                <div className="relative w-full border-[3px] border-black overflow-hidden bg-[#E5E5E5] shadow-[3px_3px_0_#000]" style={{ aspectRatio: "16/9" }}>
+                <div className="relative w-full border-[3px] border-black overflow-hidden bg-[#E5E5E5] shadow-[3px_3px_0_#000] rounded-2xl" style={{ aspectRatio: "16/9" }}>
                     {watchCoverImage ? (
                         <img
                             src={watchCoverImage}
@@ -100,7 +100,7 @@ export function EditorStepMedia({
                                 backgroundSize: "24px 24px",
                             }}
                         >
-                            <div className="w-14 h-14 bg-white border-[3px] border-black shadow-[3px_3px_0_#000] flex items-center justify-center">
+                            <div className="w-14 h-14 bg-white border-[3px] border-black shadow-[3px_3px_0_#000] flex items-center justify-center rounded-xl">
                                 <ImageIcon className="w-7 h-7 text-black/40" />
                             </div>
                             <p className="text-[11px] font-black text-black/40 uppercase tracking-wider text-center px-4">
@@ -144,9 +144,9 @@ export function EditorStepMedia({
             {/* Photos & Music in 2-column grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Photos */}
-                <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000]">
+                <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[5px_5px_0_#000] rounded-3xl">
                     <div className="flex items-center gap-3 mb-6">
-                        <div className="p-2.5 bg-[#00FF00] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                        <div className="p-2.5 bg-[#00FF00] border-[2px] border-black shadow-[2px_2px_0_#000] rounded-xl">
                             <ImagePlus className="w-5 h-5 text-black" />
                         </div>
                         <div>
@@ -169,10 +169,10 @@ export function EditorStepMedia({
                 </div>
 
                 {/* Music */}
-                <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000] flex flex-col h-full">
+                <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[5px_5px_0_#000] flex flex-col h-full rounded-3xl">
                     <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center gap-3">
-                            <div className="p-2.5 bg-[#FF00FF] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                            <div className="p-2.5 bg-[#FF00FF] border-[2px] border-black shadow-[2px_2px_0_#000] rounded-xl">
                                 <Music className="w-5 h-5 text-white" />
                             </div>
                             <div>
@@ -184,7 +184,7 @@ export function EditorStepMedia({
                     
                     {/* Music Source Tabs */}
                     <div className="flex-1 flex flex-col gap-4">
-                        <div className="flex border-[3px] border-black overflow-hidden">
+                        <div className="flex border-[3px] border-black overflow-hidden rounded-xl bg-white">
                             <button
                                 type="button"
                                 onClick={() => setMusicTab("upload")}
@@ -212,7 +212,7 @@ export function EditorStepMedia({
                             </button>
                         </div>
 
-                        <div className="flex-1 bg-[#E5E5E5] border-[3px] border-black p-4">
+                        <div className="flex-1 bg-[#FFFDF0] border-[3px] border-black p-4 rounded-xl shadow-[2.5px_2.5px_0_#000]">
                             {musicTab === "upload" ? (
                                 <Controller
                                     control={control}
@@ -246,6 +246,39 @@ export function EditorStepMedia({
                                         />
                                     )}
                                 />
+                            ) : watch("spotifyTrackId") ? (
+                                <div className="space-y-4">
+                                    <div className="p-3 bg-white border-[2px] border-black text-xs font-bold text-neutral-600 shadow-[2px_2px_0_#000] rounded-xl">
+                                        Lagu lama tetap tampil. Untuk mengganti lagu, aktifkan Premium atau beli unlock Spotify di Shop.
+                                    </div>
+                                    <iframe
+                                        src={`https://open.spotify.com/embed/track/${watch("spotifyTrackId")}?utm_source=generator&theme=0`}
+                                        width="100%"
+                                        height="152"
+                                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                                        loading="lazy"
+                                        className="border-[3px] border-black shadow-[4px_4px_0_#000] rounded-xl"
+                                    ></iframe>
+                                    <div className="flex gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => setValue("spotifyTrackId", null)}
+                                            className="px-4 py-2 bg-[#FF0000] text-white text-xs font-black uppercase border-[2px] border-black shadow-[2px_2px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#000] active:translate-y-px active:shadow-none transition-all"
+                                        >
+                                            Hapus Lagu
+                                        </button>
+                                        <div className="flex-1">
+                                            <PremiumLockedState
+                                                featureName="Ganti Lagu Spotify"
+                                                price={500}
+                                                userPoints={premiumPoints}
+                                                onUnlocked={() => {
+                                                    setHasSpotifyPremium(true)
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
                             ) : (
                                 <PremiumLockedState
                                     featureName="Integrasi Spotify"
@@ -262,9 +295,9 @@ export function EditorStepMedia({
             </div>
 
             {/* Collaborators */}
-            <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000] relative z-20">
+            <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[5px_5px_0_#000] relative z-20 rounded-3xl">
                 <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2.5 bg-[#00FFFF] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                    <div className="p-2.5 bg-[#00FFFF] border-[2px] border-black shadow-[2px_2px_0_#000] rounded-xl">
                         <Users className="w-5 h-5 text-black" />
                     </div>
                     <div>
@@ -291,10 +324,10 @@ export function EditorStepMedia({
             </div>
 
             {/* Settings */}
-            <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000] relative z-10">
+            <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[5px_5px_0_#000] relative z-10 rounded-3xl">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="p-2.5 bg-[#FFFF00] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                        <div className="p-2.5 bg-[#FFFF00] border-[2px] border-black shadow-[2px_2px_0_#000] rounded-xl">
                             <Globe className="w-5 h-5 text-black" />
                         </div>
                         <div>
@@ -304,7 +337,7 @@ export function EditorStepMedia({
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" {...register("isPublic")} className="sr-only peer" />
-                        <div className="w-14 h-8 bg-[#E5E5E5] border-[3px] border-black peer-focus:outline-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[1px] after:left-[2px] after:bg-white after:border-[2px] after:border-black after:h-6 after:w-6 after:transition-all peer-checked:bg-[#00FF00]"></div>
+                        <div className="w-14 h-8 bg-[#E5E5E5] border-[3px] border-black rounded-full peer-focus:outline-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[1px] after:left-[2px] after:bg-white after:border-[2px] after:border-black after:h-6 after:w-6 after:rounded-full after:transition-all peer-checked:bg-[#00FF00]"></div>
                     </label>
                 </div>
             </div>

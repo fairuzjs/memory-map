@@ -112,7 +112,7 @@ const ICON_OPTIONS: Array<{ id: string; Icon: LucideIcon }> = [
 ]
 
 // ── Accent colors ──────────────────────────────────────────
-const STAT_COLORS = ["#00DDEB", "#FF6B9D", "#06D6A0", "#FFD166"]
+const STAT_COLORS = ["#67e8f9", "#f5d0fe", "#86efac", "#fef08a"]
 const ROTATIONS = ["scrap-rotate-1", "scrap-rotate-2", "scrap-rotate-3", "scrap-rotate-4"]
 
 function normalizeIconId(icon?: string | null) {
@@ -239,7 +239,7 @@ export default function AlbumDetailPage() {
             <div className="flex items-center justify-between">
                 <Link
                     href="/albums"
-                    className="inline-flex items-center gap-2 border-[3px] border-black bg-white px-4 py-2 text-xs font-black uppercase text-black shadow-[3px_3px_0_#000] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:bg-[#FFFF00]"
+                    className="inline-flex items-center gap-2 border-[2.5px] border-black bg-white px-4 py-2 text-xs font-black uppercase text-black shadow-[3px_3px_0_#000] rounded-xl transition-all hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] hover:bg-[#fef08a] active:translate-y-px active:shadow-none"
                 >
                     <ArrowLeft className="h-4 w-4" />
                     Kembali
@@ -250,35 +250,35 @@ export default function AlbumDetailPage() {
                 HERO — Album Detail (Polaroid Frame)
                 ══════════════════════════════════════════════════ */}
             <section className="grid gap-6 lg:grid-cols-[1fr_340px]">
-                <div className="relative overflow-hidden border-[4px] border-black bg-white shadow-[9px_9px_0_#000]">
+                <div className="relative overflow-hidden border-[3px] border-black bg-white rounded-2xl shadow-[6px_6px_0_#000]">
                     {/* Cover area with double border (polaroid feel) */}
-                    <div className="relative overflow-hidden border-b-[4px] border-black">
-                        <div className="m-2 border-[3px] border-black bg-white p-1.5">
-                            <div className="relative h-[320px] overflow-hidden bg-[#E5E5E5] sm:h-[360px]">
+                    <div className="relative overflow-hidden border-b-[2.5px] border-black bg-white">
+                        <div className="m-3 border-[2.5px] border-black bg-white p-1.5 rounded-xl overflow-hidden">
+                            <div className="relative h-[320px] overflow-hidden bg-neutral-100 rounded-lg sm:h-[360px]">
                                 {album.coverImage ? (
                                     <img src={album.coverImage} alt={album.name} className="h-full w-full object-cover" />
                                 ) : (
                                     <div className="h-full w-full bg-[linear-gradient(135deg,#00FFFF55,#FFFF0066_50%,#FF00FF55)]" />
                                 )}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
 
                                 {/* Album badge */}
-                                <div className="absolute left-4 top-4 rotate-[-5deg] border-[3px] border-black bg-[#FFFF00] px-4 py-1.5 text-[10px] font-black uppercase text-black shadow-[3px_3px_0_#000]">
+                                <div className="absolute left-4 top-4 rotate-[-5deg] border-[2px] border-black bg-[#fef08a] px-3.5 py-1 text-[10px] font-black uppercase text-black shadow-[2px_2px_0_#000] rounded-lg">
                                     Album
                                 </div>
 
                                 {/* Album info overlay */}
                                 <div className="absolute bottom-4 left-4 right-4 flex items-end gap-4">
                                     <div
-                                        className="flex h-16 w-16 shrink-0 items-center justify-center border-[4px] border-black bg-[#FFFF00] text-black shadow-[4px_4px_0_#FF00FF] sm:h-20 sm:w-20"
+                                        className="flex h-16 w-16 shrink-0 items-center justify-center border-[2.5px] border-black bg-[#fef08a] text-black shadow-[3px_3px_0_#f5d0fe] rounded-2xl sm:h-20 sm:w-20"
                                     >
                                         <AlbumGlyph icon={album.icon} className="h-8 w-8 sm:h-10 sm:w-10" />
                                     </div>
                                     <div className="min-w-0">
-                                        <h1 className="text-2xl font-black uppercase leading-none text-white drop-shadow-[3px_3px_0_rgba(0,0,0,.85)] sm:text-4xl lg:text-5xl">
+                                        <h1 className="text-2xl font-black uppercase leading-none text-white drop-shadow-[2.5px_2.5px_0_rgba(0,0,0,0.95)] sm:text-4xl lg:text-5xl">
                                             {album.name}
                                         </h1>
-                                        <p className="mt-2 max-w-2xl text-xs font-bold leading-6 text-white/85 drop-shadow-[2px_2px_0_rgba(0,0,0,.7)] sm:text-sm">
+                                        <p className="mt-2.5 max-w-2xl text-xs font-bold leading-relaxed text-white drop-shadow-[1.5px_1.5px_0_rgba(0,0,0,0.8)] sm:text-sm">
                                             {album.description || "Album ini belum memiliki deskripsi. Isi dengan cerita yang ingin kamu simpan rapi."}
                                         </p>
                                     </div>
@@ -286,8 +286,8 @@ export default function AlbumDetailPage() {
                             </div>
                         </div>
                         {/* Handwritten caption under polaroid frame */}
-                        <div className="px-4 py-2 text-center">
-                            <span className="font-caveat text-sm text-black/40">
+                        <div className="px-4 py-2.5 text-center border-t-[2.5px] border-black bg-[#fafaf9]">
+                            <span className="font-caveat text-sm font-bold text-black/50">
                                 {album.memories.length > 0
                                     ? `${album.memories.length} kenangan tersimpan`
                                     : "Mulai isi chapter ini..."
@@ -297,17 +297,17 @@ export default function AlbumDetailPage() {
                     </div>
 
                     {/* Stats row — scrapbook mini cards */}
-                    <div className="grid grid-cols-2 sm:grid-cols-4">
+                    <div className="grid grid-cols-2 divide-x-[2.5px] divide-y-[2.5px] sm:divide-y-0 sm:grid-cols-4 divide-black bg-white">
                         {statItems.map((stat, i) => (
                             <div
                                 key={stat.label}
-                                className="border-r-[3px] border-black p-3.5 last:border-r-0 sm:p-4"
-                                style={{ borderTopColor: stat.color, borderTopWidth: "4px" }}
+                                className="p-3.5 sm:p-4 transition-all duration-200 hover:bg-neutral-50/50"
+                                style={{ borderTop: `4px solid ${stat.color}` }}
                             >
-                                <span className="block text-[10px] font-black uppercase text-black/50">
+                                <span className="block text-[10px] font-black uppercase text-black/50 tracking-wider">
                                     {stat.label}
                                 </span>
-                                <strong className={`mt-1 block font-black uppercase leading-tight text-black ${typeof stat.value === "string" ? "text-[11px]" : "text-2xl sm:text-3xl"}`}>
+                                <strong className={`mt-1 block font-black uppercase leading-none text-black ${typeof stat.value === "string" ? "text-[11px] sm:text-xs" : "text-2xl sm:text-3xl"}`}>
                                     {stat.value}
                                 </strong>
                             </div>
@@ -316,27 +316,27 @@ export default function AlbumDetailPage() {
                 </div>
 
                 {/* ── Aside: Album Summary ────────────────────── */}
-                <aside className="space-y-5 border-[4px] border-black bg-[#FFFDF0] p-5 shadow-[8px_8px_0_#000]">
+                <aside className="relative space-y-5 border-[3px] border-black bg-white p-5 rounded-2xl shadow-[6px_6px_0_#000] overflow-hidden">
                     <div className="dot-paper-light pointer-events-none absolute inset-0 opacity-20" />
 
-                    <div className="relative flex items-center gap-2 border-b-[3px] border-black pb-3">
+                    <div className="relative flex items-center gap-2 border-b-[2.5px] border-black pb-3">
                         <Route className="h-5 w-5 text-black" />
-                        <h2 className="text-sm font-black uppercase text-black">Ringkasan Album</h2>
+                        <h2 className="text-sm font-black uppercase text-black tracking-wider">Ringkasan Album</h2>
                     </div>
 
                     {/* Mini map preview */}
-                    <div className="relative h-36 overflow-hidden border-[3px] border-black bg-[#DFF7E8]">
+                    <div className="relative h-36 overflow-hidden border-[2.5px] border-black bg-[#DFF7E8] rounded-xl shadow-[2px_2px_0_#000]">
                         <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)", backgroundSize: "34px 34px" }} />
                         {album.memories.slice(0, 5).map((memory, index) => (
                             <div
                                 key={memory.id}
-                                className="absolute flex h-8 w-8 items-center justify-center border-[3px] border-black bg-[#FFFF00] shadow-[2px_2px_0_#000]"
+                                className="absolute flex h-8 w-8 items-center justify-center border-[2px] border-black bg-[#fef08a] rounded-lg shadow-[2px_2px_0_#000]"
                                 style={{
                                     left: `${14 + (index * 17) % 70}%`,
                                     top: `${18 + (index * 23) % 56}%`,
                                 }}
                             >
-                                <MapPin className="h-4 w-4 text-black" />
+                                <MapPin className="h-3.5 w-3.5 text-black" />
                             </div>
                         ))}
                         {album.memories.length === 0 && (
@@ -348,27 +348,29 @@ export default function AlbumDetailPage() {
 
                     {/* Recent photos */}
                     <div className="relative">
-                        <h3 className="mb-3 text-xs font-black uppercase text-black">Memory Terbaru</h3>
+                        <h3 className="mb-3 text-xs font-black uppercase text-black tracking-wider">Memory Terbaru</h3>
                         {recentPhotos.length > 0 ? (
-                            <div className="grid grid-cols-3 gap-2">
+                            <div className="grid grid-cols-3 gap-3">
                                 {recentPhotos.map((memory, i) => (
                                     <Link
                                         key={memory.id}
                                         href={`/memories/${memory.id}`}
-                                        className={`aspect-square overflow-hidden border-[3px] border-black bg-white shadow-[2px_2px_0_#000] transition-transform hover:scale-105 ${ROTATIONS[i % ROTATIONS.length]}`}
+                                        className={`aspect-[4/5] flex flex-col p-1 pb-2 border-[2px] border-black bg-white shadow-[2.5px_2.5px_0_#000] rounded-lg transition-all hover:scale-105 hover:-translate-y-0.5 hover:shadow-[3.5px_3.5px_0_#000] active:scale-95 duration-200 ${ROTATIONS[i % ROTATIONS.length]}`}
                                     >
-                                        <MemoryCover memory={memory} />
+                                        <div className="flex-1 overflow-hidden border-[1.5px] border-black bg-[#E5E5E5] rounded-md">
+                                            <MemoryCover memory={memory} className="h-full w-full object-cover" />
+                                        </div>
                                     </Link>
                                 ))}
                             </div>
                         ) : (
-                            <div className="flex h-28 items-center justify-center border-[3px] border-dashed border-black bg-white text-xs font-black uppercase text-black/50">
+                            <div className="flex h-28 items-center justify-center border-[2.5px] border-dashed border-black bg-neutral-50 rounded-xl text-xs font-black uppercase text-black/45">
                                 Belum ada foto
                             </div>
                         )}
                     </div>
 
-                    <Link href="#album-content" className="relative flex items-center justify-center gap-2 border-[3px] border-black bg-[#FFFF00] px-4 py-3 text-xs font-black uppercase text-black shadow-[4px_4px_0_#000] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#000]">
+                    <Link href="#album-content" className="relative flex items-center justify-center gap-2 border-[2.5px] border-black bg-[#fef08a] rounded-xl px-4 py-3 text-xs font-black uppercase text-black shadow-[3px_3px_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none">
                         Lihat Semua Memory <ArrowRight className="h-4 w-4" />
                     </Link>
                 </aside>
@@ -378,23 +380,28 @@ export default function AlbumDetailPage() {
                 CONTENT — Memories in this album
                 ══════════════════════════════════════════════════ */}
             <section id="album-content" className="space-y-5">
-                <div className="flex flex-col gap-4 border-b-[4px] border-black pb-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-col gap-4 border-b-[3px] border-black pb-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h2 className="text-xl font-black uppercase text-black">Isi Album</h2>
+                        <h2 className="text-xl font-black uppercase text-black tracking-wider">Isi Album</h2>
                         <p className="text-xs font-bold text-black/55">Pilih cara terbaik untuk membaca kenanganmu.</p>
                     </div>
-                    <div className="flex w-fit border-[3px] border-black bg-white shadow-[3px_3px_0_#000]">
+                    <div className="flex w-fit border-[2.5px] border-black bg-white rounded-xl overflow-hidden shadow-[3px_3px_0_#000]">
                         {[
                             ["grid", Grid3X3, "Grid"],
                             ["timeline", Calendar, "Timeline"],
                             ["map", Map, "Map"],
                         ].map(([mode, Icon, label]) => {
                             const LucideIcon = Icon as typeof Grid3X3
+                            const isActive = viewMode === mode
                             return (
                                 <button
                                     key={mode as string}
                                     onClick={() => setViewMode(mode as ViewMode)}
-                                    className={`flex items-center gap-1.5 border-r-[2px] border-black px-3.5 py-2 text-xs font-black uppercase last:border-r-0 ${viewMode === mode ? "bg-[#00DDEB]" : "bg-white hover:bg-[#FFFF00]"}`}
+                                    className={`flex items-center gap-1.5 border-r-[2.5px] border-black px-4 py-2.5 text-xs font-black uppercase last:border-r-0 transition-all ${
+                                        isActive 
+                                            ? "bg-[#67e8f9] text-black" 
+                                            : "bg-white text-black hover:bg-[#fef08a]"
+                                    }`}
                                 >
                                     <LucideIcon className="h-4 w-4" />
                                     <span className="hidden sm:inline">{label as string}</span>
@@ -405,12 +412,12 @@ export default function AlbumDetailPage() {
                 </div>
 
                 {album.memories.length === 0 ? (
-                    <div className="border-[4px] border-black bg-white p-12 text-center shadow-[7px_7px_0_#000]">
+                    <div className="border-[3px] border-black bg-white p-12 text-center rounded-2xl shadow-[6px_6px_0_#000]">
                         <ImageIcon className="mx-auto mb-4 h-12 w-12 text-black" />
-                        <h3 className="mb-2 text-lg font-black uppercase text-black">Album ini masih kosong</h3>
+                        <h3 className="mb-2 text-lg font-black uppercase text-black tracking-wider">Album ini masih kosong</h3>
                         <p className="mb-4 text-xs font-bold text-black/55">Tambahkan memory dari halaman album untuk mulai mengisi koleksi ini.</p>
                         <p className="mx-auto mb-6 font-caveat text-base text-black/40">Mulai isi chapter ini dengan kenanganmu</p>
-                        <Link href="/albums" className="inline-flex border-[3px] border-black bg-[#00FF00] px-5 py-3 text-xs font-black uppercase text-black shadow-[3px_3px_0_#000]">
+                        <Link href="/albums" className="inline-flex border-[2.5px] border-black bg-[#86efac] rounded-xl px-5 py-3 text-xs font-black uppercase text-black shadow-[3px_3px_0_#000] hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none transition-all">
                             Kelola Memory
                         </Link>
                     </div>
@@ -438,51 +445,57 @@ export default function AlbumDetailPage() {
                                 exit={{ opacity: 0, y: 8 }}
                                 className="mx-auto max-w-4xl space-y-8"
                             >
-                                {chronologicalGroups.map(([month, memories], groupIndex) => (
-                                    <div key={month} className="relative border-l-[4px] border-black pl-7">
-                                        <div
-                                            className="absolute -left-[12px] top-2 h-5 w-5 border-[3px] border-black"
-                                            style={{ backgroundColor: STAT_COLORS[groupIndex % STAT_COLORS.length] }}
-                                        />
-                                        <h3
-                                            className="mb-4 w-fit border-[3px] border-black px-4 py-2 text-xs font-black uppercase text-black shadow-[3px_3px_0_#000]"
-                                            style={{ backgroundColor: STAT_COLORS[groupIndex % STAT_COLORS.length] }}
-                                        >
-                                            {month}
-                                        </h3>
-                                        <div className="space-y-4">
-                                            {memories.map(memory => {
-                                                return (
-                                                    <Link
-                                                        key={memory.id}
-                                                        href={`/memories/${memory.id}`}
-                                                        className="group flex flex-col gap-4 border-[3px] border-black bg-white p-4 shadow-[5px_5px_0_#000] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[7px_7px_0_#000] sm:flex-row"
-                                                    >
-                                                        <div className="aspect-video w-full shrink-0 overflow-hidden border-[3px] border-black bg-[#E5E5E5] sm:w-44">
-                                                            <MemoryCover memory={memory} className="transition-transform duration-500 group-hover:scale-105" />
-                                                        </div>
-                                                        <div className="min-w-0 flex-1">
-                                                            <div className="mb-2 flex flex-wrap items-center gap-2">
-                                                                <span className="border-2 border-black bg-[#00FFFF] px-2 py-0.5 text-[10px] font-black uppercase text-black">{memory.emotion}</span>
-                                                                {memory.locationName && (
-                                                                    <span className="flex items-center gap-1 text-[10px] font-bold uppercase text-black/55">
-                                                                        <MapPin className="h-3 w-3" /> {memory.locationName}
-                                                                    </span>
-                                                                )}
+                                {chronologicalGroups.map(([month, memories], groupIndex) => {
+                                    const activeColor = STAT_COLORS[groupIndex % STAT_COLORS.length]
+                                    return (
+                                        <div key={month} className="relative border-l-[3px] border-black pl-8 ml-3 sm:ml-4 pb-6 last:pb-0">
+                                            {/* Connecting dot */}
+                                            <div
+                                                className="absolute -left-[9.5px] top-2 h-[16px] w-[16px] rounded-full border-[2.5px] border-black shadow-[1.5px_1.5px_0_#000]"
+                                                style={{ backgroundColor: activeColor }}
+                                            />
+                                            <h3
+                                                className="mb-6 w-fit border-[2.5px] border-black px-4.5 py-2 text-xs font-black uppercase text-black rounded-xl shadow-[3px_3px_0_#000]"
+                                                style={{ backgroundColor: activeColor }}
+                                            >
+                                                {month}
+                                            </h3>
+                                            <div className="space-y-5">
+                                                {memories.map(memory => {
+                                                    return (
+                                                        <Link
+                                                            key={memory.id}
+                                                            href={`/memories/${memory.id}`}
+                                                            className="group flex flex-col gap-4 border-[3px] border-black bg-white p-4 rounded-2xl shadow-[5px_5px_0_#000] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[7px_7px_0_#000] active:translate-y-px active:shadow-none sm:flex-row"
+                                                        >
+                                                            {/* Photo container in timeline item */}
+                                                            <div className="aspect-video w-full shrink-0 overflow-hidden border-[2.5px] border-black bg-neutral-100 rounded-xl sm:w-44">
+                                                                <MemoryCover memory={memory} className="transition-transform duration-500 group-hover:scale-105" />
                                                             </div>
-                                                            <h4 className="line-clamp-1 text-lg font-black uppercase text-black group-hover:text-[#FF00FF]">{memory.title}</h4>
-                                                            <p className="mt-2 line-clamp-2 text-xs font-medium leading-relaxed text-black/60">{memory.story}</p>
-                                                            <span className="mt-3 flex items-center gap-1 text-[10px] font-black uppercase text-black/45">
-                                                                <Clock className="h-3.5 w-3.5" /> {formatDate(new Date(memory.date))}
-                                                            </span>
-                                                        </div>
-                                                        <ArrowRight className="hidden h-5 w-5 self-center transition-transform group-hover:translate-x-1 sm:block" />
-                                                    </Link>
-                                                )
-                                            })}
+                                                            <div className="min-w-0 flex-1">
+                                                                <div className="mb-2 flex flex-wrap items-center gap-2">
+                                                                    {/* Emotion tag badge */}
+                                                                    <span className="border-[2px] border-black bg-[#67e8f9] px-2 py-0.5 text-[10px] font-black uppercase text-black rounded-lg shadow-[1px_1px_0_#000]">{memory.emotion}</span>
+                                                                    {memory.locationName && (
+                                                                        <span className="flex items-center gap-1 text-[10px] font-bold uppercase text-black/55">
+                                                                            <MapPin className="h-3 w-3" /> {memory.locationName}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                                <h4 className="line-clamp-1 text-lg font-black uppercase text-black group-hover:text-[#c084fc] transition-colors">{memory.title}</h4>
+                                                                <p className="mt-2 line-clamp-2 text-xs font-medium leading-relaxed text-black/60">{memory.story}</p>
+                                                                <span className="mt-3 flex items-center gap-1 text-[10px] font-black uppercase text-black/45">
+                                                                    <Clock className="h-3.5 w-3.5" /> {formatDate(new Date(memory.date))}
+                                                                </span>
+                                                            </div>
+                                                            <ArrowRight className="hidden h-5 w-5 self-center transition-transform group-hover:translate-x-1 sm:block text-black" />
+                                                        </Link>
+                                                    )
+                                                })}
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    )
+                                })}
                             </motion.div>
                         )}
 
@@ -492,7 +505,7 @@ export default function AlbumDetailPage() {
                                 initial={{ opacity: 0, y: 8 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: 8 }}
-                                className="h-[540px] overflow-hidden border-[4px] border-black shadow-[8px_8px_0_#000]"
+                                className="h-[540px] overflow-hidden border-[3px] border-black rounded-2xl shadow-[6px_6px_0_#000]"
                             >
                                 <MapView memories={album.memories} />
                             </motion.div>

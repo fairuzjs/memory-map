@@ -40,22 +40,22 @@ export function LandingMapPreview({ memories, loading }: LandingMapPreviewProps)
       >
         {/* The Neubrutalism Map Container */}
         <div 
-          className="relative w-full border-[4px] border-black shadow-[8px_8px_0_#000] overflow-hidden bg-[#0A0A10]" 
+          className="relative w-full border-[4px] border-black shadow-[8px_8px_0_#000] overflow-hidden bg-[#0A0A10] rounded-3xl" 
           style={{ height: "calc(100vh - 400px)", minHeight: "500px", maxHeight: "800px" }}
         >
           
           {/* Live badge - neubrutalism */}
           <div className="absolute top-4 left-4 z-20 pointer-events-none hidden md:block">
-            <div className="px-4 py-2 bg-[#00FF00] border-[3px] border-black shadow-[3px_3px_0_#000] text-xs font-black text-black flex items-center gap-2 uppercase tracking-wider">
-              <span className="w-2.5 h-2.5 bg-black" />
+            <div className="px-4 py-2 bg-[#00FF00] border-[3px] border-black shadow-[3px_3px_0_#000] text-xs font-black text-black flex items-center gap-2 uppercase tracking-wider rounded-xl">
+              <span className="w-2.5 h-2.5 bg-black rounded-full" />
               Live Memory Engine
             </div>
           </div>
-
+ 
           {/* Stats floating on map */}
           <div className="absolute bottom-4 right-4 lg:bottom-8 lg:right-8 z-20 flex flex-col gap-3 pointer-events-none">
-            <div className="flex items-center gap-3 px-4 py-3 text-sm font-bold bg-white border-[3px] border-black shadow-[4px_4px_0_#000]">
-              <div className="p-2 bg-[#00FFFF] border-[3px] border-black text-black">
+            <div className="flex items-center gap-3 px-4 py-3 text-sm font-bold bg-white border-[3px] border-black shadow-[4px_4px_0_#000] rounded-2xl">
+              <div className="p-2 bg-[#00FFFF] border-[3px] border-black text-black rounded-xl">
                 <Globe className="w-4 h-4" />
               </div>
               <div className="flex flex-col">
@@ -64,13 +64,13 @@ export function LandingMapPreview({ memories, loading }: LandingMapPreviewProps)
               </div>
             </div>
           </div>
-
+ 
           {/* Social proof mockup */}
           <div className="absolute bottom-4 left-4 lg:bottom-8 lg:left-8 z-20 pointer-events-none max-w-[220px] hidden sm:block">
-             <div className="p-4 bg-[#FF00FF] border-[3px] border-black shadow-[4px_4px_0_#000]">
+             <div className="p-4 bg-[#FF00FF] border-[3px] border-black shadow-[4px_4px_0_#000] rounded-2xl">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 shadow-lg shrink-0 bg-[#FFFF00] border-[3px] border-black flex items-center justify-center overflow-hidden">
-                     <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=explorer1" className="w-full h-full" alt="" />
+                  <div className="w-10 h-10 shadow-lg shrink-0 bg-[#FFFF00] border-[3px] border-black flex items-center justify-center overflow-hidden rounded-xl">
+                     <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=explorer1" className="w-full h-full object-cover" alt="" />
                   </div>
                   <div>
                     <p className="text-xs text-white font-black">Fairuzz</p>

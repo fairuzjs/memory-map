@@ -38,7 +38,7 @@ export function LandingStatsStrip() {
             <motion.div
               key={i}
               variants={fadeUp}
-              className={`flex flex-col items-center justify-center py-8 px-4 text-center ${stat.bg} border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all`}
+              className={`flex flex-col items-center justify-center py-8 px-4 text-center ${stat.bg} border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all rounded-2xl`}
             >
               <span className="text-3xl md:text-4xl font-black font-[Outfit] text-black mb-1">
                 {stat.value}

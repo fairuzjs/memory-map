@@ -29,12 +29,12 @@ export function LandingCTABanner() {
         variants={stagger}
         className="max-w-4xl mx-auto"
       >
-        <motion.div variants={fadeUp} className="relative bg-[#FFFF00] border-[4px] border-black shadow-[8px_8px_0_#000]">
+        <motion.div variants={fadeUp} className="relative bg-[#FFFF00] border-[4px] border-black shadow-[8px_8px_0_#000] rounded-3xl">
           {/* Content */}
           <div className="relative px-8 py-16 md:px-16 md:py-20 text-center">
             {/* Badge */}
             <motion.div variants={fadeUp} className="inline-flex items-center gap-2 mb-8">
-              <div className="w-8 h-8 bg-black border-[3px] border-black flex items-center justify-center">
+              <div className="w-8 h-8 bg-black border-[3px] border-black flex items-center justify-center rounded-xl">
                 <MapPin className="w-4 h-4 text-[#FFFF00]" />
               </div>
               <span className="text-sm font-black text-black uppercase tracking-wider">Mulai perjalananmu</span>
@@ -44,7 +44,7 @@ export function LandingCTABanner() {
             <motion.h2 variants={fadeUp} className="text-4xl md:text-[56px] font-black font-[Outfit] text-black leading-[1.1] mb-5 tracking-tight">
               Kenanganmu layak punya
               <br />
-              <span className="inline-block bg-[#FF00FF] text-white px-4 py-1 -rotate-1 border-[3px] border-black shadow-[3px_3px_0_#000] mt-2">
+              <span className="inline-block bg-[#FF00FF] text-white px-4 py-1 -rotate-1 border-[3px] border-black shadow-[3px_3px_0_#000] mt-2 rounded-xl">
                 tempat yang indah.
               </span>
             </motion.h2>
@@ -59,7 +59,7 @@ export function LandingCTABanner() {
               {session?.user ? (
                 <Link
                   href="/dashboard"
-                  className="group flex flex-1 sm:flex-none items-center justify-center gap-2.5 px-6 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base font-black text-[#FFFF00] bg-black border-[3px] border-black shadow-[4px_4px_0_rgba(0,0,0,0.3)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_rgba(0,0,0,0.3)] transition-all uppercase tracking-wide"
+                  className="group flex flex-1 sm:flex-none items-center justify-center gap-2.5 px-6 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base font-black text-[#FFFF00] bg-black border-[3px] border-black shadow-[4px_4px_0_rgba(0,0,0,0.3)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_rgba(0,0,0,0.3)] transition-all uppercase tracking-wide rounded-xl"
                 >
                   Buka Dashboard
                 </Link>
@@ -67,13 +67,13 @@ export function LandingCTABanner() {
                 <>
                   <Link
                     href="/register"
-                    className="group flex flex-1 sm:flex-none items-center justify-center gap-2.5 px-4 sm:px-8 py-3.5 sm:py-4 text-[13px] sm:text-base font-black text-[#FFFF00] bg-black border-[3px] border-black shadow-[4px_4px_0_rgba(0,0,0,0.3)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_rgba(0,0,0,0.3)] transition-all text-center leading-tight uppercase tracking-wide"
+                    className="group flex flex-1 sm:flex-none items-center justify-center gap-2.5 px-4 sm:px-8 py-3.5 sm:py-4 text-[13px] sm:text-base font-black text-[#FFFF00] bg-black border-[3px] border-black shadow-[4px_4px_0_rgba(0,0,0,0.3)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_rgba(0,0,0,0.3)] transition-all text-center leading-tight uppercase tracking-wide rounded-xl"
                   >
                     Buat Akun Gratis
                   </Link>
                   <Link
                     href="/login"
-                    className="flex flex-1 sm:flex-none items-center justify-center gap-2 px-4 sm:px-7 py-3.5 sm:py-4 text-[13px] sm:text-base font-bold text-black bg-white border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] hover:bg-[#00FFFF] transition-all text-center leading-tight"
+                    className="flex flex-1 sm:flex-none items-center justify-center gap-2 px-4 sm:px-7 py-3.5 sm:py-4 text-[13px] sm:text-base font-bold text-black bg-white border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] hover:bg-[#00FFFF] transition-all text-center leading-tight rounded-xl"
                   >
                     Sudah punya akun
                   </Link>

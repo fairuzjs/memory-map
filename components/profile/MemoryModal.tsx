@@ -42,38 +42,38 @@ export function MemoryModal({ memory, onClose, onReact, isOwner, onPin }: Memory
                 initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.92, opacity: 0 }}
                 transition={{ type: "spring", stiffness: 350, damping: 26 }}
                 onClick={e => e.stopPropagation()}
-                className="relative flex flex-col sm:flex-row w-full max-w-3xl max-h-[90vh] overflow-hidden bg-white border-[4px] border-black shadow-[12px_12px_0_#000]"
+                className="relative flex flex-col sm:flex-row w-full max-w-3xl max-h-[90vh] overflow-hidden bg-white border-[3px] border-black shadow-[10px_10px_0_#000] rounded-2xl"
             >
                 {/* Close */}
                 <motion.button 
                     whileHover={{ scale: 1.08 }} 
                     whileTap={{ scale: 0.92 }}
                     onClick={onClose}
-                    className="absolute top-3 right-3 z-30 w-8 h-8 flex items-center justify-center bg-white border-[2px] border-black text-black shadow-[2px_2px_0_#000]"
+                    className="absolute top-3 right-3 z-30 w-8 h-8 flex items-center justify-center bg-white border-[2px] border-black text-black shadow-[2px_2px_0_#000] rounded-xl hover:-translate-y-0.5 active:translate-y-px transition-all"
                 >
                     <X className="w-4 h-4" />
                 </motion.button>
 
                 {/* Left: Photo / Visual */}
-                <div className="relative sm:w-[55%] aspect-[4/5] sm:aspect-square bg-[#E5E5E5] flex-shrink-0 border-b-[4px] sm:border-b-0 sm:border-r-[4px] border-black">
+                <div className="relative sm:w-[55%] aspect-[4/5] sm:aspect-square bg-neutral-50 flex-shrink-0 border-b-[3px] sm:border-b-0 sm:border-r-[3px] border-black overflow-hidden">
                     {photos.length > 0 ? (
                         <>
                             <img src={photos[photoIdx].url} alt="" className="absolute inset-0 w-full h-full object-cover" />
                             {/* Photo navigation */}
                             {photos.length > 1 && (
                                 <>
-                                    <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5">
+                                    <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 z-10">
                                         {photos.map((_: any, i: number) => (
                                             <button key={i} onClick={() => setPhotoIdx(i)}
-                                                className="w-2.5 h-2.5 border-[2px] border-black transition-all"
-                                                style={{ background: i === photoIdx ? "#FFFF00" : "#fff" }} />
+                                                className="w-2.5 h-2.5 border-[2px] border-black transition-all rounded-full shadow-[1px_1px_0_#000]"
+                                                style={{ background: i === photoIdx ? "#fef08a" : "#fff" }} />
                                         ))}
                                     </div>
                                     <motion.button 
                                         whileHover={photoIdx === 0 ? {} : { scale: 1.1 }}
                                         whileTap={photoIdx === 0 ? {} : { scale: 0.9 }}
                                         onClick={() => setPhotoIdx(p => Math.max(0, p - 1))}
-                                        className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white border-[2px] border-black flex items-center justify-center text-black shadow-[2px_2px_0_#000] disabled:opacity-0"
+                                        className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white border-[2px] border-black flex items-center justify-center text-black shadow-[2px_2px_0_#000] rounded-xl hover:-translate-y-0.5 active:translate-y-px transition-all disabled:opacity-0 z-10"
                                         disabled={photoIdx === 0}
                                     >
                                         <ChevronLeft className="w-4 h-4" />
@@ -82,7 +82,7 @@ export function MemoryModal({ memory, onClose, onReact, isOwner, onPin }: Memory
                                         whileHover={photoIdx === photos.length - 1 ? {} : { scale: 1.1 }}
                                         whileTap={photoIdx === photos.length - 1 ? {} : { scale: 0.9 }}
                                         onClick={() => setPhotoIdx(p => Math.min(photos.length - 1, p + 1))}
-                                        className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white border-[2px] border-black flex items-center justify-center text-black shadow-[2px_2px_0_#000] disabled:opacity-0"
+                                        className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white border-[2px] border-black flex items-center justify-center text-black shadow-[2px_2px_0_#000] rounded-xl hover:-translate-y-0.5 active:translate-y-px transition-all disabled:opacity-0 z-10"
                                         disabled={photoIdx === photos.length - 1}
                                     >
                                         <ChevronRight className="w-4 h-4" />
@@ -91,9 +91,9 @@ export function MemoryModal({ memory, onClose, onReact, isOwner, onPin }: Memory
                             )}
                         </>
                     ) : (
-                        <div className="absolute inset-0 flex items-center justify-center bg-[#E5E5E5]"
+                        <div className="absolute inset-0 flex items-center justify-center bg-neutral-50"
                             style={{
-                                backgroundImage: "linear-gradient(#D5D5D5 2px, transparent 2px), linear-gradient(90deg, #D5D5D5 2px, transparent 2px)",
+                                backgroundImage: "linear-gradient(#E8E8E8 2px, transparent 2px), linear-gradient(90deg, #E8E8E8 2px, transparent 2px)",
                                 backgroundSize: "24px 24px",
                             }}>
                             <div className="text-6xl select-none font-black text-black/10">✦</div>
@@ -104,11 +104,11 @@ export function MemoryModal({ memory, onClose, onReact, isOwner, onPin }: Memory
                 {/* Right: Info */}
                 <div className="flex flex-col flex-1 overflow-y-auto">
                     {/* Header */}
-                    <div className="pl-5 pr-5 sm:pr-14 pt-5 pb-4 border-b-[3px] border-dashed border-black">
+                    <div className="pl-5 pr-5 sm:pr-14 pt-5 pb-4 border-b-[2.5px] border-dashed border-black">
                         {/* Emotion badge and Pin button */}
                         <div className="flex items-center justify-between mb-3">
                             <div className="flex items-center gap-2">
-                                <span className="text-[10px] font-black uppercase tracking-widest px-2.5 py-1 bg-white border-[2px] border-black shadow-[2px_2px_0_#000]"
+                                <span className="text-[10px] font-black uppercase tracking-widest px-2.5 py-1 bg-white border-[2px] border-black shadow-[2px_2px_0_#000] rounded-lg"
                                     style={{ color: emotionColor }}>
                                     {EMOTION_LABEL[memory.emotion] ?? memory.emotion}
                                 </span>
@@ -119,7 +119,7 @@ export function MemoryModal({ memory, onClose, onReact, isOwner, onPin }: Memory
                             {isOwner && onPin && (
                                 <button
                                     onClick={onPin}
-                                    className={`flex items-center justify-center w-8 h-8 border-[2px] border-black transition-all shadow-[2px_2px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none ${memory.isPinned ? "bg-[#FFFF00] text-black" : "bg-white text-black"}`}
+                                    className={`flex items-center justify-center w-8 h-8 border-[2px] border-black transition-all shadow-[2px_2px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#000] active:translate-y-px active:shadow-none ${memory.isPinned ? "bg-[#fef08a] text-black" : "bg-white text-black"}`}
                                     title={memory.isPinned ? "Batal Sematkan" : "Sematkan Kenangan"}
                                 >
                                     <Pin className={`w-4 h-4 ${memory.isPinned ? "fill-black" : ""}`} />
@@ -137,7 +137,7 @@ export function MemoryModal({ memory, onClose, onReact, isOwner, onPin }: Memory
                                 </div>
                                 <Link 
                                     href={`/map?lat=${memory.latitude}&lng=${memory.longitude}&memoryId=${memory.id}`}
-                                    className="text-[10px] font-black uppercase text-black bg-[#00FFFF] border-[2px] border-black px-2 py-0.5 shadow-[1px_1px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[2px_2px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all"
+                                    className="text-[10px] font-black uppercase text-black bg-[#67e8f9] border-[2px] border-black px-2 py-0.5 rounded-lg shadow-[1.5px_1.5px_0_#000] hover:-translate-y-0.5 hover:shadow-[2.5px_2.5px_0_#000] active:translate-y-px active:shadow-none transition-all"
                                 >
                                     Lihat di Peta
                                 </Link>
@@ -153,16 +153,16 @@ export function MemoryModal({ memory, onClose, onReact, isOwner, onPin }: Memory
                     </div>
 
                     {/* Footer: reactions + link */}
-                    <div className="px-5 py-4 flex items-center justify-between border-t-[3px] border-dashed border-black">
+                    <div className="px-5 py-4 flex items-center justify-between border-t-[2.5px] border-dashed border-black">
                         <div className="flex items-center gap-4">
                             <button 
                                 onClick={(e) => { e.stopPropagation(); onReact?.(); }}
                                 className="flex items-center gap-1.5 transition-all active:scale-95 hover:opacity-80"
                             >
                                 <Heart 
-                                    className={`w-4 h-4 transition-colors ${memory.isLikedByMe ? "text-[#FF00FF] fill-[#FF00FF]" : "text-black"}`} 
+                                    className={`w-4 h-4 transition-colors ${memory.isLikedByMe ? "text-[#f5d0fe] fill-[#f5d0fe]" : "text-black"}`} 
                                 />
-                                <span className={`text-sm font-black transition-colors ${memory.isLikedByMe ? "text-[#FF00FF]" : "text-black"}`}>
+                                <span className={`text-sm font-black transition-colors ${memory.isLikedByMe ? "text-[#f5d0fe]" : "text-black"}`}>
                                     {memory._count?.reactions ?? 0}
                                 </span>
                             </button>
@@ -172,7 +172,7 @@ export function MemoryModal({ memory, onClose, onReact, isOwner, onPin }: Memory
                             </div>
                         </div>
                         <Link href={`/memories/${memory.id}`}
-                            className="flex items-center gap-1.5 text-xs font-black uppercase px-3 py-1.5 bg-[#FFFF00] border-[2px] border-black text-black shadow-[2px_2px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all">
+                            className="flex items-center gap-1.5 text-xs font-black uppercase px-3 py-1.5 bg-[#fef08a] border-[2px] border-black text-black shadow-[2.5px_2.5px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[3.5px_3.5px_0_#000] active:translate-y-px active:shadow-none transition-all">
                             Lihat Detail
                             <ChevronRight className="w-3.5 h-3.5" />
                         </Link>

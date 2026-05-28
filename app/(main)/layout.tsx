@@ -7,7 +7,7 @@ export default function MainLayout({
     children: React.ReactNode
 }) {
     return (
-        <div className="min-h-screen bg-[#FFFDF0] text-black flex flex-col pt-[72px] selection:bg-[#FFFF00] selection:text-black">
+        <div className="min-h-screen bg-[#FFFDF0] text-black flex flex-col pt-[92px] selection:bg-[#FFFF00] selection:text-black">
             {/* ── Neubrutalism Background ───────────────────────────────── */}
             <div className="fixed inset-0 z-0 pointer-events-none">
                 <div className="absolute inset-0 opacity-[0.04]" style={{

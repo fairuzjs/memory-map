@@ -58,6 +58,7 @@ model User {
   verificationCodes VerificationCode[]
   premiumOrders     PremiumOrder[]
   albums            Album[]
+  auditLogs         AdminAuditLog[]
 }
 
 model Notification {
@@ -136,7 +137,8 @@ model Memory {
   audioFileName  String? // Nama file asli untuk display
 
   // Spotify integration
-  spotifyTrackId String? // Spotify Track ID
+  spotifyTrackId      String? // Spotify Track ID
+  spotifyAccessSource SpotifyAccessSource? // Sumber akses saat dipasang
 
   // Premium map marker
   markerStyle String? // Premium marker style ID (e.g. "royal-gold")
@@ -164,6 +166,12 @@ enum Emotion {
   GRATEFUL
   ROMANTIC
   ADVENTUROUS
+}
+
+enum SpotifyAccessSource {
+  PREMIUM
+  SHOP_PERMANENT
+  BOTH
 }
 
 model Photo {
@@ -502,4 +510,20 @@ model AlbumMemory {
   @@index([albumId])
   @@index([memoryId])
   @@map("album_memories")
+}
+
+model AdminAuditLog {
+  id         String   @id @default(cuid())
+  adminId    String
+  action     String
+  targetType String
+  targetId   String?
+  metadata   String?  @db.Text
+  createdAt  DateTime @default(now())
+
+  admin      User     @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([adminId])
+  @@index([action])
+  @@index([createdAt])
 }

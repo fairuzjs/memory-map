@@ -62,12 +62,12 @@ const TYPE_ICONS: Record<ItemType, React.FC<any>> = {
 }
 
 const TYPE_COLORS: Record<ItemType, { bg: string; text: string }> = {
-    AVATAR_FRAME:       { bg: "#FFFF00", text: "#000" }, // Yellow
-    PROFILE_BANNER:     { bg: "#FF00FF", text: "#FFF" }, // Pink
-    MEMORY_CARD_THEME:  { bg: "#00FFFF", text: "#000" }, // Cyan
-    USERNAME_DECORATION:{ bg: "#FF9900", text: "#000" }, // Orange
-    MEMORY_STICKER:     { bg: "#00FF00", text: "#000" }, // Green
-    PREMIUM_FEATURE:    { bg: "#1DB954", text: "#FFF" }, // Spotify Green
+    AVATAR_FRAME:       { bg: "#fef08a", text: "#000" }, // Soft Yellow
+    PROFILE_BANNER:     { bg: "#f5d0fe", text: "#000" }, // Soft Fuchsia
+    MEMORY_CARD_THEME:  { bg: "#67e8f9", text: "#000" }, // Soft Cyan
+    USERNAME_DECORATION:{ bg: "#fcd34d", text: "#000" }, // Soft Amber
+    MEMORY_STICKER:     { bg: "#86efac", text: "#000" }, // Soft Green
+    PREMIUM_FEATURE:    { bg: "#1db954", text: "#fff" }, // Spotify Green
 }
 
 const ALL_TYPES: ItemType[] = [
@@ -91,12 +91,12 @@ const TIER_CONFIG: Record<TierName, {
     bg: string
     text: string
 }> = {
-    BASIC:   { label: "Basic",   icon: "◆", bg: "#E5E5E5", text: "#000" },
-    ELITE:   { label: "Elite",   icon: "◈", bg: "#00FFFF", text: "#000" },
-    EPIC:    { label: "Epic",    icon: "✦", bg: "#FF00FF", text: "#FFF" },
-    LEGEND:  { label: "Legend",  icon: "★", bg: "#FFFF00", text: "#000" },
-    SPECIAL: { label: "Special", icon: "✧", bg: "#00FF00", text: "#000" },
-    PREMIUM: { label: "Premium", icon: "👑", bg: "#FFD700", text: "#000" },
+    BASIC:   { label: "Basic",   icon: "◆", bg: "#e5e5e5", text: "#000" },
+    ELITE:   { label: "Elite",   icon: "◈", bg: "#67e8f9", text: "#000" },
+    EPIC:    { label: "Epic",    icon: "✦", bg: "#f5d0fe", text: "#000" },
+    LEGEND:  { label: "Legend",  icon: "★", bg: "#fef08a", text: "#000" },
+    SPECIAL: { label: "Special", icon: "✧", bg: "#86efac", text: "#000" },
+    PREMIUM: { label: "Premium", icon: "👑", bg: "#fcd34d", text: "#000" },
 }
 
 const SPECIAL_ITEM_NAMES = new Set(["Cuddlysun", "Shape Coquette", "Grape Blossom", "Soft Bubble Tea"])
@@ -117,7 +117,7 @@ function TierBadge({ price, size = "sm", name }: { price: number; size?: "sm" | 
 
     return (
         <span
-            className="inline-flex items-center gap-1 font-black uppercase tracking-wider border-[2px] border-black"
+            className="inline-flex items-center gap-1 font-black uppercase tracking-wider border-[2px] border-black rounded-[6px]"
             style={{
                 fontSize: size === "md" ? "11px" : "10px",
                 padding: size === "md" ? "3px 8px" : "2px 6px",
@@ -170,6 +170,8 @@ function getBannerClass(name?: string) {
     return ""
 }
 
+// ─── Previews ─────────────────────────────────────────────────────────────────
+
 function getCardThemeClass(name?: string) {
     if (!name) return ""
     const n = name.toLowerCase()
@@ -180,8 +182,6 @@ function getCardThemeClass(name?: string) {
     if (n.includes("eter")) return "anim-card-eter"
     return ""
 }
-
-// ─── Previews ─────────────────────────────────────────────────────────────────
 
 function CardThemePreview({ value, name }: { value: string; name?: string }) {
     let theme: any = null
@@ -369,12 +369,12 @@ function PremiumFeaturePreview({ item }: { item: InventoryItem["item"] }) {
 
 function SectionDivider({ label, count, color }: { label: string; count: number; color: string }) {
     return (
-        <div className="flex items-center gap-3 w-full col-span-full mt-4 mb-2">
-            <span className="text-[14px] font-black uppercase tracking-[0.1em] shrink-0 px-3 py-1 border-[3px] border-black bg-white shadow-[2px_2px_0_#000]">
+        <div className="flex items-center gap-3 w-full col-span-full mt-4 mb-2 font-[Outfit]">
+            <span className="text-[12px] font-black uppercase tracking-[0.1em] shrink-0 px-3 py-1 border-[2.5px] border-black bg-white shadow-[2px_2px_0_#000] rounded-xl">
                 {label}
             </span>
-            <div className="flex-1 h-[4px] bg-black" />
-            <span className="text-[12px] font-black px-3 py-1 shrink-0 border-[3px] border-black bg-[#00FFFF] shadow-[2px_2px_0_#000]">
+            <div className="flex-1 h-[2.5px] bg-black" />
+            <span className="text-[10px] font-black px-3 py-1 shrink-0 border-[2.5px] border-black bg-yellow-300 shadow-[2px_2px_0_#000] rounded-xl">
                 {count} ITEM
             </span>
         </div>
@@ -405,22 +405,22 @@ function InventoryCard({
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="relative flex flex-col bg-white border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all group overflow-hidden"
+            className="relative flex flex-col bg-white border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[6px_6px_0_#000] transition-all group overflow-hidden rounded-2xl"
         >
             {/* Equipped badge */}
             {isEquipped && (
-                <div className="absolute top-2 right-2 z-10 flex items-center gap-1 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider bg-[#00FF00] border-[2px] border-black shadow-[2px_2px_0_#000]">
-                    <CheckCircle2 className="w-3 h-3" />
+                <div className="absolute top-2 right-2 z-10 flex items-center gap-1 px-1.5 py-0.5 text-[8px] sm:text-[9px] font-black uppercase tracking-wider bg-green-300 border-[2px] border-black shadow-[2px_2px_0_#000] rounded-lg">
+                    <CheckCircle2 className="w-2.5 h-2.5" />
                     DIPAKAI
                 </div>
             )}
 
             {/* Preview area */}
             <div
-                className="p-3 cursor-pointer h-32 flex items-center justify-center border-b-[3px] border-black bg-neutral-100"
+                className="p-2 sm:p-3 cursor-pointer h-24 sm:h-32 flex items-center justify-center border-b-[3px] border-black bg-neutral-100 rounded-t-[13px]"
                 onClick={() => onPreview(entry)}
             >
-                <div className="w-full h-full flex items-center justify-center relative">
+                <div className="w-full h-full flex items-center justify-center relative scale-90 sm:scale-100">
                     {item.type === "AVATAR_FRAME"        && <FramePreview value={item.value} name={item.name} />}
                     {item.type === "PROFILE_BANNER"      && <BannerPreview value={item.value} name={item.name} />}
                     {item.type === "MEMORY_CARD_THEME"   && <CardThemePreview value={item.value} name={item.name} />}
@@ -431,11 +431,11 @@ function InventoryCard({
             </div>
 
             {/* Info */}
-            <div className="p-3 flex flex-col gap-3 flex-1 bg-white">
-                <div>
-                    <div className="flex items-center gap-2 mb-2 flex-wrap">
+            <div className="p-2.5 sm:p-3 flex flex-col gap-2 sm:gap-3 flex-1 bg-white min-w-0">
+                <div className="min-w-0">
+                    <div className="flex items-center gap-1 sm:gap-2 mb-1.5 flex-wrap">
                         <span
-                            className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[9px] font-black uppercase border-[2px] border-black"
+                            className="inline-flex items-center gap-0.5 sm:gap-1 px-1.5 py-0.5 text-[8px] sm:text-[9px] font-black uppercase border-[2px] border-black rounded-lg shrink-0"
                             style={{ background: colorInfo.bg, color: colorInfo.text }}
                         >
                             {(() => {
@@ -446,41 +446,41 @@ function InventoryCard({
                         </span>
                         <TierBadge price={item.price} size="sm" name={item.name} />
                     </div>
-                    <p className="text-[13px] font-black text-black leading-tight line-clamp-1">{item.name}</p>
-                    <p className="text-[10px] font-bold text-black/60 mt-1 leading-snug line-clamp-2">{item.description}</p>
+                    <p className="text-[12px] sm:text-[13px] font-black text-black leading-tight line-clamp-1 font-[Outfit] truncate">{item.name}</p>
+                    <p className="text-[9px] sm:text-[10px] font-bold text-black/60 mt-1 leading-snug line-clamp-2 min-h-[28px]">{item.description}</p>
                 </div>
 
                 {/* Actions */}
-                <div className="flex gap-2 mt-auto pt-2 border-t-[3px] border-black">
+                <div className="flex gap-1.5 sm:gap-2 mt-auto pt-2 border-t-[2px] border-black">
                     <button
                         onClick={() => onPreview(entry)}
-                        className="w-10 h-10 flex items-center justify-center shrink-0 bg-white border-[3px] border-black shadow-[2px_2px_0_#000] hover:bg-[#FFFF00] transition-colors"
+                        className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center shrink-0 bg-white border-[2px] sm:border-[2.5px] border-black shadow-[2px_2px_0_#000] hover:bg-yellow-300 transition-all rounded-xl active:translate-y-px"
                         title="Lihat preview"
                     >
-                        <Eye className="w-5 h-5 text-black" />
+                        <Eye className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-black" />
                     </button>
 
-                    <div className="flex-1">
+                    <div className="flex-1 font-[Outfit] min-w-0">
                         {isNonEquip ? (
-                            <div className="w-full h-10 flex items-center justify-center gap-1.5 bg-[#00FF00] border-[3px] border-black text-[12px] font-black uppercase shadow-[2px_2px_0_#000]">
-                                <CheckCircle2 className="w-4 h-4" />
-                                Dimiliki
+                            <div className="w-full h-8 sm:h-10 flex items-center justify-center gap-1 bg-green-300 border-[2px] sm:border-[2.5px] border-black text-[10px] sm:text-[12px] font-black uppercase shadow-[2px_2px_0_#000] rounded-xl">
+                                <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                                <span className="truncate">Dimiliki</span>
                             </div>
                         ) : (
                             <button
                                 onClick={() => onEquip(inventoryId, item.id)}
                                 disabled={isEquipping}
-                                className={`w-full h-10 flex items-center justify-center gap-1.5 border-[3px] border-black text-[12px] font-black uppercase transition-all disabled:opacity-50 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[4px_4px_0_#000] ${
+                                className={`w-full h-8 sm:h-10 flex items-center justify-center gap-1 border-[2px] sm:border-[2.5px] border-black text-[10px] sm:text-[12px] font-black uppercase rounded-xl transition-all disabled:opacity-50 hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] active:translate-y-px ${
                                     isEquipped 
-                                    ? "bg-[#FF00FF] text-white shadow-[2px_2px_0_#000]" 
-                                    : "bg-white text-black shadow-[2px_2px_0_#000] hover:bg-[#FFFF00]"
+                                    ? "bg-fuchsia-400 text-black shadow-[2px_2px_0_#000]" 
+                                    : "bg-white text-black shadow-[2px_2px_0_#000] hover:bg-yellow-300"
                                 }`}
                             >
                                 {isEquipping
-                                    ? <Loader2 className="w-4 h-4 animate-spin" />
+                                    ? <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" />
                                     : isEquipped
-                                        ? <><CheckCircle2 className="w-4 h-4" /> Dipakai</>
-                                        : <><Sparkles className="w-4 h-4" /> Pakai</>
+                                        ? <><CheckCircle2 className="w-3.5 h-3.5 shrink-0" /> <span className="truncate">Pakai</span></>
+                                        : <><Sparkles className="w-3.5 h-3.5 shrink-0" /> <span className="truncate">Pakai</span></>
                                 }
                             </button>
                         )}
@@ -498,11 +498,13 @@ function PreviewModal({
     onClose,
     onEquip,
     equipping,
+    session,
 }: {
     entry: InventoryItem
     onClose: () => void
     onEquip: (inventoryId: string, itemId: string) => void
     equipping: string | null
+    session: any
 }) {
     const { item, isEquipped, id: inventoryId } = entry
     const colorInfo = TYPE_COLORS[item.type]
@@ -523,36 +525,36 @@ function PreviewModal({
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
                 transition={{ ease: "backOut", duration: 0.3 }}
-                className="w-full max-w-sm bg-[#FFFDF0] border-[4px] border-black shadow-[12px_12px_0_#000] flex flex-col"
+                className="w-full max-w-sm bg-[#FFFDF0] border-[3px] border-black shadow-[8px_8px_0_#000] rounded-2xl flex flex-col overflow-hidden"
                 onClick={e => e.stopPropagation()}
             >
                 {/* Header */}
-                <div className="flex items-center justify-between px-5 py-4 border-b-[4px] border-black bg-white">
+                <div className="flex items-center justify-between px-5 py-4 border-b-[3px] border-black bg-white">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 border-[3px] border-black flex items-center justify-center shadow-[2px_2px_0_#000]"
+                        <div className="w-10 h-10 border-[2.5px] border-black flex items-center justify-center shadow-[2px_2px_0_#000] rounded-xl"
                             style={{ background: colorInfo.bg }}>
                             <TypeIcon className="w-5 h-5" style={{ color: colorInfo.text }} />
                         </div>
                         <div>
-                            <div className="flex items-center gap-2 mb-1">
-                                <p className="text-[10px] font-black uppercase tracking-wider bg-black text-white px-1.5 py-0.5">
+                            <div className="flex items-center gap-2 mb-1 flex-wrap">
+                                <p className="text-[10px] font-black uppercase tracking-wider bg-black text-white px-1.5 py-0.5 rounded-md">
                                     {TYPE_LABELS[item.type]}
                                 </p>
                                 <TierBadge price={item.price} size="md" name={item.name} />
                             </div>
-                            <p className="text-[16px] font-black text-black leading-tight uppercase">{item.name}</p>
+                            <p className="text-[16px] font-black text-black leading-tight uppercase font-[Outfit]">{item.name}</p>
                         </div>
                     </div>
                     <button
                         onClick={onClose}
-                        className="w-8 h-8 bg-white border-[3px] border-black flex items-center justify-center hover:bg-[#FF00FF] hover:text-white transition-colors shadow-[2px_2px_0_#000]"
+                        className="w-8 h-8 bg-white border-[2.5px] border-black flex items-center justify-center hover:bg-rose-400 hover:text-black transition-colors shadow-[2px_2px_0_#000] rounded-lg"
                     >
                         <X className="w-5 h-5" />
                     </button>
                 </div>
 
                 {/* Preview */}
-                <div className="p-5 border-b-[4px] border-black bg-neutral-100 flex items-center justify-center overflow-hidden min-h-[160px]">
+                <div className="p-5 border-b-[3px] border-black bg-neutral-100 flex items-center justify-center overflow-hidden min-h-[160px]">
                     {item.type === "AVATAR_FRAME" && (() => {
                         const fc = getFrameClass(item.name)
                         return (
@@ -564,9 +566,13 @@ function PreviewModal({
                                 <div className={`absolute -inset-1 rounded-full p-[2px] ${fc}`} style={{ background: item.value }}>
                                     <div className="w-full h-full rounded-full" style={{ background: "rgba(14,14,24,1)" }} />
                                 </div>
-                                <div className="w-16 h-16 rounded-full relative z-10 flex items-center justify-center overflow-hidden"
+                                <div className="w-16 h-16 rounded-full relative z-10 flex items-center justify-center overflow-hidden border-2 border-black"
                                     style={{ background: "rgba(255,255,255,0.05)" }}>
-                                    <User className="w-8 h-8 text-neutral-600" />
+                                    {session?.user?.image ? (
+                                        <img src={session.user.image} alt="Avatar" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <User className="w-8 h-8 text-neutral-600" />
+                                    )}
                                 </div>
                             </div>
                         )
@@ -576,7 +582,7 @@ function PreviewModal({
                     {item.type === "USERNAME_DECORATION" && (
                         <div className="text-center z-10 w-full">
                             <span className={`text-3xl font-black ${getDecorationClass(item.name)} tracking-tight`} style={(() => { try { return JSON.parse(item.value) } catch { return {} } })()}>
-                                {"Username"}
+                                {session?.user?.name || "Username"}
                             </span>
                         </div>
                     )}
@@ -612,14 +618,14 @@ function PreviewModal({
                 </div>
 
                 {/* Description */}
-                <div className="p-5 bg-white">
+                <div className="p-5 bg-white font-[Outfit]">
                     <p className="text-[13px] font-bold text-black/70 leading-relaxed">{item.description}</p>
                 </div>
 
                 {/* Action */}
-                <div className="p-5 pt-0 bg-white">
+                <div className="p-5 pt-0 bg-white font-[Outfit]">
                     {isNonEquip ? (
-                        <div className="w-full flex items-center justify-center gap-2 py-3 bg-[#00FF00] border-[4px] border-black text-[14px] font-black uppercase shadow-[4px_4px_0_#000]">
+                        <div className="w-full flex items-center justify-center gap-2 py-3 bg-green-300 border-[2.5px] border-black text-[14px] font-black uppercase shadow-[3px_3px_0_#000] rounded-xl">
                             <CheckCircle2 className="w-5 h-5" />
                             {item.type === "PREMIUM_FEATURE" ? "Fitur Premium Aktif" : "Sudah Dimiliki"}
                         </div>
@@ -627,10 +633,10 @@ function PreviewModal({
                         <button
                             onClick={() => onEquip(inventoryId, item.id)}
                             disabled={isEquipping}
-                            className={`w-full flex items-center justify-center gap-2 py-3 border-[4px] border-black text-[14px] font-black uppercase shadow-[4px_4px_0_#000] transition-all disabled:opacity-50 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] ${
+                            className={`w-full flex items-center justify-center gap-2 py-3 border-[2.5px] border-black text-[14px] font-black uppercase shadow-[3px_3px_0_#000] rounded-xl transition-all disabled:opacity-50 hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-y-px ${
                                 isEquipped
-                                ? "bg-[#FF00FF] text-white"
-                                : "bg-[#FFFF00] text-black hover:bg-[#00FFFF]"
+                                ? "bg-fuchsia-400 text-black shadow-[3px_3px_0_#000]"
+                                : "bg-yellow-300 text-black hover:bg-cyan-300"
                             }`}
                         >
                             {isEquipping
@@ -722,10 +728,10 @@ export default function InventoryPage() {
 
     if (loading) {
         return (
-            <div className="flex-1 flex items-center justify-center min-h-[50vh]">
+            <div className="flex-1 flex items-center justify-center min-h-[50vh] font-[Outfit]">
                 <div className="flex flex-col items-center gap-4">
                     <Loader2 className="w-10 h-10 animate-spin text-black" />
-                    <span className="text-black font-black uppercase tracking-widest text-sm bg-[#00FFFF] border-[2px] border-black px-4 py-1 shadow-[2px_2px_0_#000]">Memuat Inventori...</span>
+                    <span className="text-black font-black uppercase tracking-widest text-xs bg-yellow-300 border-[2px] border-black px-4 py-1.5 shadow-[2px_2px_0_#000] rounded-xl">Memuat Inventori...</span>
                 </div>
             </div>
         )
@@ -741,25 +747,25 @@ export default function InventoryPage() {
                 transition={{ duration: 0.5, ease: "easeOut" }}
                 className="mb-8"
             >
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                    <div className="flex items-center gap-4 bg-white border-[4px] border-black p-4 shadow-[8px_8px_0_#000] flex-1">
-                        <div className="w-14 h-14 bg-[#00FFFF] border-[3px] border-black flex items-center justify-center shrink-0 shadow-[4px_4px_0_#000]">
-                            <Package className="w-7 h-7 text-black" />
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6">
+                    <div className="flex items-center gap-4 bg-white border-[3px] border-black p-4 sm:p-5 shadow-[6px_6px_0_#000] rounded-2xl flex-1">
+                        <div className="w-12 h-12 sm:w-14 sm:h-14 bg-cyan-300 border-[2.5px] border-black flex items-center justify-center shrink-0 shadow-[3px_3px_0_#000] rounded-xl">
+                            <Package className="w-6 h-6 sm:w-7 sm:h-7 text-black" />
                         </div>
                         <div>
                             <div className="flex items-center gap-3 mb-1">
-                                <h1 className="text-2xl sm:text-3xl font-black text-black uppercase tracking-widest leading-none">Inventori</h1>
+                                <h1 className="text-2xl sm:text-3xl font-[Outfit] font-black text-black uppercase tracking-widest leading-none">Inventori</h1>
                             </div>
-                            <p className="text-[13px] font-bold text-black/60 uppercase">
+                            <p className="text-[11px] font-black text-black/60 uppercase">
                                 Koleksi dekorasi profil kamu
                             </p>
                         </div>
                     </div>
 
-                    <div className="flex flex-row md:flex-col items-center md:items-end gap-3 justify-between">
+                    <div className="flex flex-row md:flex-col items-center md:items-end gap-3 justify-between w-full md:w-auto">
                         <Link
                             href="/shop"
-                            className="flex items-center gap-2 px-5 py-3 bg-[#FFFF00] border-[4px] border-black text-[14px] font-black uppercase shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all shrink-0"
+                            className="flex items-center justify-center gap-2 w-full md:w-auto px-5 py-3 sm:py-3.5 bg-yellow-300 border-[3px] border-black text-[12px] sm:text-[13px] font-[Outfit] font-black uppercase shadow-[4px_4px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#000] transition-all shrink-0 active:translate-y-px"
                         >
                             <ShoppingBag className="w-5 h-5" />
                             Ke Memory Shop
@@ -769,32 +775,32 @@ export default function InventoryPage() {
                 </div>
 
                 {/* Stat pills */}
-                <div className="flex items-center gap-3 mt-6 flex-wrap">
-                    <span className="inline-flex items-center gap-2 px-4 py-2 bg-white border-[3px] border-black text-[12px] font-black uppercase shadow-[2px_2px_0_#000]">
-                        <span className="w-2.5 h-2.5 bg-[#00FFFF] border-[2px] border-black block" />
+                <div className="flex items-center gap-2 mt-4 sm:mt-6 flex-wrap">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-1.5 bg-white border-[2px] border-black text-[9px] sm:text-[10px] font-black uppercase shadow-[2px_2px_0_#000] rounded-xl shrink-0">
+                        <span className="w-2.5 h-2.5 bg-cyan-300 border-[1.5px] border-black rounded-full block" />
                         {inventory.length} Item Dimiliki
                     </span>
-                    <span className="inline-flex items-center gap-2 px-4 py-2 bg-white border-[3px] border-black text-[12px] font-black uppercase shadow-[2px_2px_0_#000]">
-                        <span className="w-2.5 h-2.5 bg-[#00FF00] border-[2px] border-black block" />
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-1.5 bg-white border-[2px] border-black text-[9px] sm:text-[10px] font-black uppercase shadow-[2px_2px_0_#000] rounded-xl shrink-0">
+                        <span className="w-2.5 h-2.5 bg-green-300 border-[1.5px] border-black rounded-full block" />
                         {equippedCount} Sedang Dipakai
                     </span>
                 </div>
             </motion.div>
 
             {/* ── Filter Tabs ── */}
-            <div className="mb-8 overflow-x-auto pb-4 custom-scrollbar">
-                <div className="flex items-center gap-3 min-w-max">
+            <div className="mb-6 sm:mb-8 overflow-x-auto pb-3 custom-scrollbar">
+                <div className="flex items-center gap-2 sm:gap-3 min-w-max">
                     <button
                         onClick={() => setActiveType("ALL")}
-                        className={`flex items-center gap-2 px-5 py-3 border-[3px] border-black text-[12px] font-black uppercase transition-all shadow-[4px_4px_0_#000] ${
+                        className={`flex items-center gap-1.5 sm:gap-2 px-3.5 py-2.5 sm:px-5 sm:py-3 border-[2px] sm:border-[2.5px] border-black text-[10px] sm:text-[12px] font-black uppercase transition-all shadow-[2px_2px_0_#000] sm:shadow-[3px_3px_0_#000] rounded-xl active:translate-y-px ${
                             activeType === "ALL" 
-                            ? "bg-[#00FFFF] text-black translate-x-[-2px] translate-y-[-2px] shadow-[6px_6px_0_#000]" 
-                            : "bg-white text-black hover:bg-neutral-100"
+                            ? "bg-cyan-300 text-black translate-x-[-1px] translate-y-[-1px] shadow-[3px_3px_0_#000] sm:shadow-[4px_4px_0_#000]" 
+                            : "bg-white text-black hover:bg-neutral-50"
                         }`}
                     >
                         <Package className="w-4 h-4" />
                         Semua
-                        <span className="ml-1 px-2 py-0.5 bg-black text-white text-[10px]">{inventory.length}</span>
+                        <span className="ml-1 px-1.5 py-0.5 bg-black text-white text-[9px] rounded-md">{inventory.length}</span>
                     </button>
 
                     {ALL_TYPES.map(type => {
@@ -806,15 +812,15 @@ export default function InventoryPage() {
                             <button
                                 key={type}
                                 onClick={() => setActiveType(type)}
-                                className={`flex items-center gap-2 px-5 py-3 border-[3px] border-black text-[12px] font-black uppercase transition-all shadow-[4px_4px_0_#000] ${
+                                className={`flex items-center gap-1.5 sm:gap-2 px-3.5 py-2.5 sm:px-5 sm:py-3 border-[2px] sm:border-[2.5px] border-black text-[10px] sm:text-[12px] font-black uppercase transition-all shadow-[2px_2px_0_#000] sm:shadow-[3px_3px_0_#000] rounded-xl active:translate-y-px ${
                                     isActive 
-                                    ? "bg-[#00FFFF] text-black translate-x-[-2px] translate-y-[-2px] shadow-[6px_6px_0_#000]" 
-                                    : "bg-white text-black hover:bg-neutral-100"
+                                    ? "bg-yellow-300 text-black translate-x-[-1px] translate-y-[-1px] shadow-[3px_3px_0_#000] sm:shadow-[4px_4px_0_#000]" 
+                                    : "bg-white text-black hover:bg-neutral-50"
                                 }`}
                             >
                                 <Icon className="w-4 h-4" />
                                 {TYPE_LABELS[type]}
-                                <span className="ml-1 px-2 py-0.5 bg-black text-white text-[10px]">{count}</span>
+                                <span className="ml-1 px-1.5 py-0.5 bg-black text-white text-[9px] rounded-md">{count}</span>
                             </button>
                         )
                     })}
@@ -823,17 +829,17 @@ export default function InventoryPage() {
 
             {/* ── Content ── */}
             {inventory.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-24 text-center bg-white border-[4px] border-black shadow-[8px_8px_0_#000]">
-                    <div className="w-20 h-20 bg-[#E5E5E5] border-[4px] border-black flex items-center justify-center mb-6 shadow-[4px_4px_0_#000]">
-                        <Package className="w-10 h-10 text-black" />
+                <div className="flex flex-col items-center justify-center py-24 text-center bg-white border-[3px] border-black shadow-[6px_6px_0_#000] rounded-2xl font-[Outfit]">
+                    <div className="w-16 h-16 bg-neutral-200 border-[2.5px] border-black flex items-center justify-center mb-6 shadow-[3px_3px_0_#000] rounded-xl">
+                        <Package className="w-8 h-8 text-black" />
                     </div>
-                    <p className="text-[20px] font-black text-black uppercase tracking-wider mb-2">Inventori Kosong</p>
-                    <p className="text-[14px] font-bold text-black/60 max-w-sm mb-6 uppercase">
+                    <p className="text-[18px] font-black text-black uppercase tracking-wider mb-2">Inventori Kosong</p>
+                    <p className="text-[12px] font-bold text-black/60 max-w-sm mb-6 uppercase">
                         Beli dekorasi dari Memory Shop menggunakan poin streak kamu.
                     </p>
                     <Link
                         href="/shop"
-                        className="px-6 py-3 bg-[#FFFF00] border-[3px] border-black text-[14px] font-black uppercase shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all flex items-center gap-2"
+                        className="px-6 py-3 bg-yellow-300 border-[2.5px] border-black text-[13px] font-black uppercase shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] transition-all active:translate-y-px flex items-center gap-2"
                     >
                         <ShoppingBag className="w-5 h-5" />
                         Buka Memory Shop
@@ -843,12 +849,12 @@ export default function InventoryPage() {
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="flex flex-col items-center justify-center py-16 text-center bg-white border-[4px] border-black shadow-[8px_8px_0_#000]"
+                    className="flex flex-col items-center justify-center py-16 text-center bg-white border-[3px] border-black shadow-[6px_6px_0_#000] rounded-2xl font-[Outfit]"
                 >
-                    <p className="text-[14px] font-black text-black uppercase mb-4">Belum ada item {TYPE_LABELS[activeType as ItemType]} di inventori.</p>
+                    <p className="text-[12px] font-black text-black uppercase mb-4 tracking-wider">Belum ada item {TYPE_LABELS[activeType as ItemType]} di inventori.</p>
                     <button
                         onClick={() => setActiveType("ALL")}
-                        className="px-4 py-2 bg-[#00FFFF] border-[2px] border-black text-[12px] font-black uppercase shadow-[2px_2px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[4px_4px_0_#000] transition-all"
+                        className="px-5 py-2.5 bg-cyan-300 border-[2.5px] border-black text-[11px] font-black uppercase shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] transition-all active:translate-y-px"
                     >
                         Lihat semua
                     </button>
@@ -857,9 +863,9 @@ export default function InventoryPage() {
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                     {/* Sedang Dipakai Section */}
                     {equippedItems.length > 0 && (
-                        <div className="mb-12">
+                        <div className="mb-8 sm:mb-12">
                             <SectionDivider label="Sedang Dipakai" count={equippedItems.length} color="#000" />
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
+                            <div className="grid grid-cols-1 min-[340px]:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mt-6">
                                 <AnimatePresence mode="popLayout">
                                     {equippedItems.map(entry => (
                                         <InventoryCard
@@ -877,9 +883,9 @@ export default function InventoryPage() {
 
                     {/* Koleksi Lainnya Section */}
                     {collectionItems.length > 0 && (
-                        <div className="mb-8">
+                        <div className="mb-6 sm:mb-8">
                             <SectionDivider label="Koleksi Lainnya" count={collectionItems.length} color="#000" />
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
+                            <div className="grid grid-cols-1 min-[340px]:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mt-6">
                                 <AnimatePresence mode="popLayout">
                                     {collectionItems.map(entry => (
                                         <InventoryCard
@@ -905,6 +911,7 @@ export default function InventoryPage() {
                         onClose={() => setPreviewEntry(null)}
                         onEquip={handleEquip}
                         equipping={equipping}
+                        session={session}
                     />
                 )}
             </AnimatePresence>

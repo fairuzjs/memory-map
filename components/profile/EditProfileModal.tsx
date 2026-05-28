@@ -146,7 +146,7 @@ export function EditProfileModal({ isOpen, onClose, user, onSave }: EditProfileM
         }
     }
 
-    const inputClass = "w-full bg-[#E5E5E5] border-[3px] border-black px-4 py-3 text-sm text-black font-bold focus:outline-none focus:bg-[#FFFF00] transition-all placeholder:text-neutral-400"
+    const inputClass = "w-full bg-neutral-50 border-[2.5px] border-black px-4 py-3 text-sm text-black font-bold focus:outline-none focus:bg-[#fef08a] rounded-xl shadow-[2px_2px_0_#000] focus:shadow-[4px_4px_0_#000] transition-all placeholder:text-neutral-400"
 
     return (
         <>
@@ -159,21 +159,21 @@ export function EditProfileModal({ isOpen, onClose, user, onSave }: EditProfileM
                     >
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            className="w-full max-w-md bg-white border-[4px] border-black overflow-hidden relative shadow-[8px_8px_0_#000]"
+                            className="w-full max-w-md bg-white border-[3px] border-black overflow-hidden relative shadow-[8px_8px_0_#000] rounded-2xl"
                         >
                             <div className="flex items-center justify-between px-7 pt-6 pb-2">
                                 <h2 className="text-xl font-black text-black uppercase">Edit Profil</h2>
-                                <button onClick={onClose} className="w-8 h-8 flex items-center justify-center text-black bg-white border-[2px] border-black shadow-[2px_2px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all">
+                                <button onClick={onClose} className="w-8 h-8 flex items-center justify-center text-black bg-white border-[2px] border-black shadow-[2px_2px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[3.5px_3.5px_0_#000] active:translate-y-px active:shadow-none transition-all">
                                     <X className="w-4 h-4" />
                                 </button>
                             </div>
 
-                            <div className="flex border-b-[3px] border-black">
+                            <div className="flex border-b-[3px] border-black bg-neutral-100">
                                 {["profil", "badge"].map((tab) => (
                                     <button
                                         key={tab}
                                         onClick={() => setEditModalTab(tab as any)}
-                                        className={`flex-1 py-3 text-sm font-black uppercase transition-all ${editModalTab === tab ? "text-black bg-[#FFFF00]" : "text-neutral-400 hover:text-black hover:bg-[#E5E5E5]"}`}
+                                        className={`flex-1 py-3 text-sm font-black uppercase transition-all ${editModalTab === tab ? "text-black bg-[#fef08a]" : "text-neutral-400 hover:text-black hover:bg-neutral-50"}`}
                                     >
                                         {tab}
                                     </button>
@@ -185,7 +185,7 @@ export function EditProfileModal({ isOpen, onClose, user, onSave }: EditProfileM
                                     <>
                                         <div className="flex flex-col items-center gap-3">
                                             <div className="relative group">
-                                                <img src={previewImage || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`} alt="Avatar" className="relative w-24 h-24 rounded-full object-cover z-10 border-[4px] border-black shadow-[4px_4px_0_#000]" />
+                                                <img src={previewImage || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`} alt="Avatar" className="relative w-24 h-24 rounded-full object-cover z-10 border-[3px] border-black shadow-[4px_4px_0_#000]" />
                                                 <button onClick={() => avatarInputRef.current?.click()} className="absolute inset-0 z-20 rounded-full bg-black/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center">
                                                     <Camera className="w-6 h-6 text-white" />
                                                 </button>
@@ -213,11 +213,11 @@ export function EditProfileModal({ isOpen, onClose, user, onSave }: EditProfileM
                                             </div>
                                             <div className="space-y-3">
                                                 <label className="text-[10px] font-black text-black uppercase tracking-widest mb-1.5 block">Media Sosial (Opsional)</label>
-                                                <div className="flex items-center gap-3 bg-[#E5E5E5] border-[3px] border-black px-3 py-1">
+                                                <div className="flex items-center gap-3 bg-neutral-50 border-[2.5px] border-black px-3 py-1 rounded-xl shadow-[2px_2px_0_#000] focus-within:shadow-[3.5px_3.5px_0_#000] focus-within:bg-[#fef08a] transition-all">
                                                     <Instagram className="w-4 h-4 text-black" />
                                                     <input type="text" value={insta} onChange={(e) => setInsta(e.target.value)} placeholder="https://instagram.com/..." className="flex-1 bg-transparent py-2 text-xs text-black font-bold focus:outline-none placeholder:text-neutral-400" />
                                                 </div>
-                                                <div className="flex items-center gap-3 bg-[#E5E5E5] border-[3px] border-black px-3 py-1">
+                                                <div className="flex items-center gap-3 bg-neutral-50 border-[2.5px] border-black px-3 py-1 rounded-xl shadow-[2px_2px_0_#000] focus-within:shadow-[3.5px_3.5px_0_#000] focus-within:bg-[#fef08a] transition-all">
                                                     <TikTokIcon className="w-4 h-4 text-black" />
                                                     <input type="text" value={tiktok} onChange={(e) => setTiktok(e.target.value)} placeholder="https://tiktok.com/@..." className="flex-1 bg-transparent py-2 text-xs text-black font-bold focus:outline-none placeholder:text-neutral-400" />
                                                 </div>
@@ -226,7 +226,7 @@ export function EditProfileModal({ isOpen, onClose, user, onSave }: EditProfileM
                                     </>
                                 ) : (
                                     <div className="grid grid-cols-2 gap-3">
-                                        <button onClick={() => setEditPinnedBadge(null)} className={`p-4 border-[3px] border-black transition-all text-center shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none ${editPinnedBadge === null ? 'bg-[#FFFF00]' : 'bg-[#E5E5E5]'}`}>
+                                        <button onClick={() => setEditPinnedBadge(null)} className={`p-4 border-[2.5px] border-black transition-all text-center rounded-xl shadow-[3px_3px_0_#000] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] active:translate-y-px active:shadow-none ${editPinnedBadge === null ? 'bg-[#fef08a]' : 'bg-neutral-50'}`}>
                                             <span className="text-xs font-black text-black block uppercase">Sembunyikan</span>
                                         </button>
                                         {[7, 30, 60, 90].map((m) => {
@@ -241,7 +241,7 @@ export function EditProfileModal({ isOpen, onClose, user, onSave }: EditProfileM
                                                         if (isUnlocked) setEditPinnedBadge(m)
                                                         else toast.error(`Capai streak ${m} hari untuk membuka badge ini`)
                                                     }} 
-                                                    className={`p-4 border-[3px] border-black transition-all flex flex-col items-center gap-2 relative shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none ${active ? 'bg-[#FFFF00]' : 'bg-[#E5E5E5]'} ${!isUnlocked ? 'opacity-40 grayscale cursor-not-allowed' : ''}`}
+                                                    className={`p-4 border-[2.5px] border-black transition-all flex flex-col items-center gap-2 rounded-xl relative shadow-[3px_3px_0_#000] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] active:translate-y-px active:shadow-none ${active ? 'bg-[#fef08a]' : 'bg-neutral-50'} ${!isUnlocked ? 'opacity-40 grayscale cursor-not-allowed' : ''}`}
                                                 >
                                                     <Icon className={`w-6 h-6 ${cfg.iconClassProfile}`} />
                                                     <span className="text-[10px] font-black text-black uppercase tracking-wider">{cfg.name}</span>
@@ -259,7 +259,7 @@ export function EditProfileModal({ isOpen, onClose, user, onSave }: EditProfileM
                                 <button
                                     onClick={handleSaveInternal}
                                     disabled={isSaving || isUploadingPhoto}
-                                    className="w-full py-4 bg-[#00FF00] border-[3px] border-black text-black font-black uppercase text-sm shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all disabled:opacity-50"
+                                    className="w-full py-4 bg-[#86efac] border-[2.5px] border-black text-black font-black uppercase text-sm shadow-[4px_4px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[5.5px_5.5px_0_#000] active:translate-y-px active:shadow-none transition-all disabled:opacity-50"
                                 >
                                     {isSaving ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Simpan Perubahan"}
                                 </button>
@@ -276,13 +276,13 @@ export function EditProfileModal({ isOpen, onClose, user, onSave }: EditProfileM
                         className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90"
                     >
                         <motion.div
-                            initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
-                            className="w-full max-w-lg bg-white border-[4px] border-black shadow-[8px_8px_0_#000] overflow-hidden"
-                        >
-                            {/* Modal header */}
-                            <div className="px-6 pt-6 pb-4 border-b-[3px] border-black">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-9 h-9 flex items-center justify-center bg-[#00FFFF] border-[3px] border-black shadow-[2px_2px_0_#000]">
+                                    initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
+                                    className="w-full max-w-lg bg-white border-[3px] border-black shadow-[8px_8px_0_#000] overflow-hidden rounded-2xl"
+                                >
+                                    {/* Modal header */}
+                                    <div className="px-6 pt-6 pb-4 border-b-[3px] border-black">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-9 h-9 flex items-center justify-center bg-[#67e8f9] border-[2.5px] border-black shadow-[2px_2px_0_#000] rounded-xl">
                                         <Camera className="w-4 h-4 text-black" />
                                     </div>
                                     <div>
@@ -312,23 +312,23 @@ export function EditProfileModal({ isOpen, onClose, user, onSave }: EditProfileM
                                     <div>
                                         <div className="flex items-center justify-between mb-2">
                                             <label className="text-xs font-black text-black uppercase tracking-wider">Zoom</label>
-                                            <span className="text-xs text-black font-black font-mono bg-[#FFFF00] border-[2px] border-black px-2 py-0.5">{zoom.toFixed(1)}×</span>
+                                            <span className="text-xs text-black font-black font-mono bg-[#fef08a] border-[2px] border-black px-2 py-0.5 rounded-lg shadow-[1.5px_1.5px_0_#000]">{zoom.toFixed(1)}×</span>
                                         </div>
                                         <input
                                             type="range" min={1} max={3} step={0.1} value={zoom}
                                             onChange={(e) => setZoom(Number(e.target.value))}
-                                            className="w-full h-2 appearance-none accent-black cursor-pointer bg-[#E5E5E5] border-[2px] border-black"
+                                            className="w-full h-2 appearance-none accent-black cursor-pointer bg-[#E5E5E5] border-[2px] border-black rounded-lg"
                                         />
                                     </div>
                                     <div>
                                         <div className="flex items-center justify-between mb-2">
                                             <label className="text-xs font-black text-black uppercase tracking-wider">Rotasi</label>
-                                            <span className="text-xs text-black font-black font-mono bg-[#00FFFF] border-[2px] border-black px-2 py-0.5">{rotation}°</span>
+                                            <span className="text-xs text-black font-black font-mono bg-[#67e8f9] border-[2px] border-black px-2 py-0.5 rounded-lg shadow-[1.5px_1.5px_0_#000]">{rotation}°</span>
                                         </div>
                                         <input
                                             type="range" min={0} max={360} step={1} value={rotation}
                                             onChange={(e) => setRotation(Number(e.target.value))}
-                                            className="w-full h-2 appearance-none accent-black cursor-pointer bg-[#E5E5E5] border-[2px] border-black"
+                                            className="w-full h-2 appearance-none accent-black cursor-pointer bg-[#E5E5E5] border-[2px] border-black rounded-lg"
                                         />
                                     </div>
                                 </div>
@@ -336,13 +336,13 @@ export function EditProfileModal({ isOpen, onClose, user, onSave }: EditProfileM
                                 <div className="flex gap-3 pt-1">
                                     <button
                                         onClick={() => setIsCropping(false)}
-                                        className="flex-1 py-2.5 text-sm font-black text-black uppercase bg-white border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all"
+                                        className="flex-1 py-2.5 text-sm font-black text-black uppercase bg-white border-[2.5px] border-black shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] active:translate-y-px active:shadow-none transition-all"
                                     >
                                         Batal
                                     </button>
                                     <button
                                         onClick={saveCrop}
-                                        className="flex-1 py-2.5 text-sm font-black text-black uppercase flex items-center justify-center gap-2 bg-[#00FF00] border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all"
+                                        className="flex-1 py-2.5 text-sm font-black text-black uppercase flex items-center justify-center gap-2 bg-[#86efac] border-[2.5px] border-black shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] active:translate-y-px active:shadow-none transition-all"
                                     >
                                         <Check className="w-4 h-4" /> Simpan
                                     </button>

@@ -136,7 +136,7 @@ export function Comments({ memoryId, initialComments }: { memoryId: string, init
         <div className="w-full">
             {totalCount > 0 && (
                 <div className="mb-6 flex items-center justify-between">
-                    <p className="text-[12px] font-black text-black bg-[#E5E5E5] px-2 py-1 border-[2px] border-black shadow-[2px_2px_0_#000] uppercase tracking-wider">
+                    <p className="text-[12px] font-black text-black bg-[#E5E5E5] px-2 py-1 border-[2px] border-black shadow-[2px_2px_0_#000] uppercase tracking-wider rounded-lg">
                         {totalCount} Total Komentar
                     </p>
                     {totalCount > 3 && (
@@ -147,28 +147,28 @@ export function Comments({ memoryId, initialComments }: { memoryId: string, init
 
             {/* ── Comment Form: locked if unverified ── */}
             {!session?.user ? (
-                <div className="mb-8 flex items-center gap-4 p-5 bg-[#E5E5E5] border-[4px] border-black shadow-[6px_6px_0_#000]">
-                    <div className="w-10 h-10 bg-white border-[2px] border-black flex items-center justify-center shrink-0 shadow-[2px_2px_0_#000]">
+                <div className="mb-8 flex items-center gap-4 p-5 bg-[#E5E5E5] border-[3px] border-black shadow-[4px_4px_0_#000] rounded-2xl">
+                    <div className="w-10 h-10 bg-white border-[2px] border-black flex items-center justify-center shrink-0 shadow-[2px_2px_0_#000] rounded-lg">
                         <Lock className="w-5 h-5 text-black" />
                     </div>
                     <p className="text-[14px] font-bold text-black">
-                        <Link href="/login" className="bg-[#FFFF00] text-black font-black uppercase px-2 py-0.5 border border-black shadow-[2px_2px_0_#000] mr-2 hover:bg-[#00FF00] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] transition-all">Masuk</Link> untuk meninggalkan komentar.
+                        <Link href="/login" className="bg-[#FFFF00] text-black font-black uppercase px-2 py-0.5 border border-black shadow-[2px_2px_0_#000] mr-2 hover:bg-[#00FF00] hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#000] transition-all rounded-md">Masuk</Link> untuk meninggalkan komentar.
                     </p>
                 </div>
             ) : (session?.user as any)?.isEmailVerified === false ? (
-                <div className="mb-8 bg-[#E5E5E5] border-[4px] border-black shadow-[6px_6px_0_#000] overflow-hidden">
+                <div className="mb-8 bg-[#E5E5E5] border-[3px] border-black shadow-[4px_4px_0_#000] rounded-2xl overflow-hidden">
                     {/* Fake blurred textarea */}
                     <div className="relative">
                         <textarea
                             readOnly
-                            placeholder="Tulis komentar..."
+                             placeholder="Tulis komentar..."
                             className="w-full bg-white p-4 text-[14px] font-bold resize-none h-[80px] text-transparent cursor-not-allowed select-none outline-none"
                             style={{ filter: "blur(4px)", userSelect: "none" }}
                         />
                         {/* Lock overlay */}
                         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/60 backdrop-blur-sm">
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 bg-[#FFFF00] border-[2px] border-black flex items-center justify-center shadow-[2px_2px_0_#000]">
+                                <div className="w-8 h-8 bg-[#FFFF00] border-[2px] border-black flex items-center justify-center shadow-[2px_2px_0_#000] rounded-lg">
                                     <ShieldAlert className="w-4 h-4 text-black" />
                                 </div>
                                 <p className="text-[14px] font-black uppercase text-white drop-shadow-[2px_2px_0_#000]">Email belum diverifikasi</p>
@@ -176,11 +176,11 @@ export function Comments({ memoryId, initialComments }: { memoryId: string, init
                         </div>
                     </div>
                     {/* CTA footer */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white border-t-[4px] border-black gap-3">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white border-t-[3px] border-black gap-3">
                         <p className="text-[12px] font-bold text-black/80">Diperlukan untuk menggunakan fitur komentar</p>
                         <Link
                             href="/settings?tab=security"
-                            className="flex items-center gap-2 px-4 py-2 bg-[#FF00FF] border-[3px] border-black text-white text-[12px] font-black uppercase shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all"
+                            className="flex items-center gap-2 px-4 py-2 bg-[#FF00FF] border-[3px] border-black text-white text-[12px] font-black uppercase shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] active:translate-y-px active:shadow-none transition-all"
                         >
                             Verifikasi Sekarang <ArrowRight className="w-4 h-4" />
                         </Link>
@@ -188,17 +188,17 @@ export function Comments({ memoryId, initialComments }: { memoryId: string, init
                 </div>
             ) : (
                 <form onSubmit={(e) => handleSubmit(e)} className="mb-10 flex gap-4">
-                    <img src={session?.user?.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${session?.user?.name || 'guest'}`} className="w-12 h-12 border-[3px] border-black bg-white object-cover shadow-[2px_2px_0_#000] shrink-0" alt="" />
+                    <img src={session?.user?.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${session?.user?.name || 'guest'}`} className="w-12 h-12 border-[3px] border-black bg-white object-cover shadow-[2px_2px_0_#000] shrink-0 rounded-xl" alt="" />
                     <div className="flex-1">
                         <textarea
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
                             placeholder="Tulis pendapatmu..."
-                            className="w-full bg-white border-[4px] border-black shadow-[6px_6px_0_#000] focus:shadow-[8px_8px_0_#000] focus:translate-x-[-2px] focus:translate-y-[-2px] p-4 text-[14px] font-bold text-black placeholder:text-black/50 outline-none resize-none min-h-[100px] transition-all"
+                            className="w-full bg-white border-[3px] border-black shadow-[4px_4px_0_#000] focus:shadow-[6px_6px_0_#000] focus:-translate-y-0.5 p-4 text-[14px] font-bold text-black placeholder:text-black/50 outline-none resize-none min-h-[100px] transition-all rounded-2xl"
                             disabled={submitting}
                         />
                         <div className="mt-4 flex justify-end">
-                            <button type="submit" disabled={submitting || !content.trim()} className="bg-[#00FF00] border-[3px] border-black text-black px-6 py-2.5 text-[14px] font-black uppercase shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                            <button type="submit" disabled={submitting || !content.trim()} className="bg-[#00FF00] border-[3px] border-black text-black px-6 py-2.5 text-[14px] font-black uppercase shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] active:translate-y-px active:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed">
                                 {submitting ? "Memposting..." : "Post Komentar"}
                             </button>
                         </div>
@@ -222,12 +222,12 @@ export function Comments({ memoryId, initialComments }: { memoryId: string, init
                             <Link href={`/profile/${comment.user.id}`} className="shrink-0 pt-1">
                                 <img
                                     src={comment.user.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${comment.user.name}`}
-                                    className="w-10 h-10 border-[3px] border-black bg-white object-cover shadow-[2px_2px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] transition-all"
+                                    className="w-10 h-10 border-[3px] border-black bg-white object-cover shadow-[2px_2px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#000] transition-all"
                                     alt={comment.user.name}
                                 />
                             </Link>
                             <div className="flex-1 min-w-0">
-                                <div className={`bg-white border-[3px] border-black shadow-[4px_4px_0_#000] p-4 relative ${comment.isOptimistic ? "opacity-50 grayscale-[0.5]" : ""}`}>
+                                <div className={`bg-white border-[3px] border-black shadow-[4px_4px_0_#000] p-4 relative rounded-2xl ${comment.isOptimistic ? "opacity-50 grayscale-[0.5]" : ""}`}>
                                     <div className="flex justify-between items-start mb-2 gap-4 flex-wrap">
                                         <div className="flex items-center gap-2">
                                             <Link
@@ -240,7 +240,7 @@ export function Comments({ memoryId, initialComments }: { memoryId: string, init
                                             {isPremiumActive(comment.user.premiumExpiresAt) && <PremiumBadge size="sm" />}
                                         </div>
                                         <div className="flex items-center gap-2 shrink-0">
-                                            {comment.isOptimistic && <span className="text-[10px] uppercase font-black bg-[#FFFF00] border border-black px-1 shadow-[1px_1px_0_#000] animate-pulse">Mengirim...</span>}
+                                            {comment.isOptimistic && <span className="text-[10px] uppercase font-black bg-[#FFFF00] border border-black px-1.5 py-0.5 rounded-md shadow-[1px_1px_0_#000] animate-pulse">Mengirim...</span>}
                                             <span className="text-[10px] font-bold text-black/60 uppercase">{formatDate(comment.createdAt)}</span>
                                         </div>
                                     </div>
@@ -256,17 +256,17 @@ export function Comments({ memoryId, initialComments }: { memoryId: string, init
 
                                 {replyTo === comment.id && (
                                     <form onSubmit={(e) => handleSubmit(e, comment.id)} className="mt-4 flex gap-3">
-                                        <img src={session?.user?.image || `https://api.dicebear.com/7.x/avataaars/svg`} className="w-8 h-8 border-[2px] border-black bg-white shadow-[2px_2px_0_#000] shrink-0" alt="" />
+                                        <img src={session?.user?.image || `https://api.dicebear.com/7.x/avataaars/svg`} className="w-8 h-8 border-[2px] border-black bg-white shadow-[2px_2px_0_#000] shrink-0 rounded-xl" alt="" />
                                         <div className="flex-1 flex flex-col sm:flex-row gap-3">
                                             <input
                                                 type="text"
                                                 autoFocus
                                                 value={replyContent}
                                                 onChange={(e) => setReplyContent(e.target.value)}
-                                                className="flex-1 bg-white border-[3px] border-black shadow-[4px_4px_0_#000] px-3 py-2 text-[14px] font-bold text-black placeholder:text-black/50 outline-none focus:translate-x-[-2px] focus:translate-y-[-2px] focus:shadow-[6px_6px_0_#000] transition-all"
+                                                className="flex-1 bg-white border-[2.5px] border-black shadow-[2.5px_2.5px_0_#000] px-3 py-2 text-[14px] font-bold text-black placeholder:text-black/50 outline-none focus:-translate-y-0.5 focus:shadow-[4px_4px_0_#000] transition-all rounded-xl"
                                                 placeholder="Tulis balasan..."
                                             />
-                                            <button type="submit" disabled={submitting || !replyContent.trim()} className="bg-[#00FFFF] border-[3px] border-black text-black px-4 py-2 text-[12px] font-black uppercase shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all disabled:opacity-50 shrink-0">
+                                            <button type="submit" disabled={submitting || !replyContent.trim()} className="bg-[#00FFFF] border-[3px] border-black text-black px-4 py-2 text-[12px] font-black uppercase shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] active:translate-y-px active:shadow-none transition-all disabled:opacity-50 shrink-0">
                                                 Balas
                                             </button>
                                         </div>
@@ -275,19 +275,19 @@ export function Comments({ memoryId, initialComments }: { memoryId: string, init
 
                                 {/* Replies */}
                                 {comment.replies?.length > 0 && (
-                                    <div className="mt-4 space-y-4 border-l-[4px] border-black pl-4 ml-2">
+                                    <div className="mt-4 space-y-4 border-l-[3px] border-black pl-4 ml-2">
                                         {comment.replies.map((reply: any) => (
                                             <div key={reply.id} className="flex gap-3">
                                                 {/* Reply author avatar */}
                                                 <Link href={`/profile/${reply.user.id}`} className="shrink-0 pt-1">
                                                     <img
                                                         src={reply.user.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${reply.user.name}`}
-                                                        className="w-8 h-8 border-[2px] border-black bg-white object-cover shadow-[2px_2px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] transition-all"
+                                                        className="w-8 h-8 border-[2px] border-black bg-white object-cover shadow-[2px_2px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#000] transition-all"
                                                         alt={reply.user.name}
                                                     />
                                                 </Link>
                                                 <div className={`flex-1 min-w-0 ${reply.isOptimistic ? "opacity-50" : ""}`}>
-                                                    <div className="bg-[#E5E5E5] border-[3px] border-black shadow-[4px_4px_0_#000] px-4 py-3">
+                                                    <div className="bg-[#E5E5E5] border-[2px] border-black shadow-[3px_3px_0_#000] px-4 py-3 rounded-xl">
                                                         <div className="flex items-center gap-2 mb-1 flex-wrap">
                                                             <Link
                                                                 href={`/profile/${reply.user.id}`}

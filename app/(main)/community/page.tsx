@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
     Globe, Loader2, MapPin, Image as ImageIcon,
-    BookOpen, Search, X, Users, UserRound, ChevronRight,
+    Search, X, Users, UserRound, ChevronRight,
     Clock, TrendingUp
 } from "lucide-react"
 import Link from "next/link"
@@ -27,23 +27,24 @@ const EMOTIONS = [
     { value: "ADVENTUROUS", emoji: "🏕️", label: "Adventurous" },
 ]
 
+const EMOTION_COLORS: Record<string, string> = {
+    ALL: "bg-[#bae6fd]",          // Soft Sky Blue
+    HAPPY: "bg-[#fef08a]",        // Soft Yellow
+    SAD: "bg-[#bfdbfe]",          // Soft Blue
+    NOSTALGIC: "bg-[#fed7aa]",    // Soft Orange/Peach
+    EXCITED: "bg-[#fca5a5]",      // Soft Red
+    PEACEFUL: "bg-[#86efac]",     // Soft Green
+    GRATEFUL: "bg-[#f5d0fe]",     // Soft Fuchsia/Purple
+    ROMANTIC: "bg-[#fbcfe8]",     // Soft Pink
+    ADVENTUROUS: "bg-[#99f6e4]",   // Soft Teal
+}
+
 const SORT_OPTIONS: { value: Sort; label: string; icon: React.ReactNode }[] = [
     { value: "latest",  label: "Terbaru",    icon: <Clock       className="w-4 h-4" /> },
     { value: "popular", label: "Terpopuler", icon: <TrendingUp  className="w-4 h-4" /> },
 ]
 
 const PAGE_LIMIT = 12
-
-// ─── Animations ───────────────────────────────────────────────────────────────
-
-const fadeUp = {
-    hidden: { opacity: 0, y: 12 },
-    show:   { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 300, damping: 26 } },
-}
-const stagger = {
-    hidden: {},
-    show:   { transition: { staggerChildren: 0.055 } },
-}
 
 // ─── User Card ────────────────────────────────────────────────────────────────
 
@@ -57,20 +58,20 @@ function UserCard({ user, index }: { user: any; index: number }) {
         >
             <Link
                 href={`/profile/${user.id}`}
-                className="group flex items-center gap-4 p-4 bg-white border-[3px] border-black shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] hover:bg-[#00FFFF] transition-all duration-150"
+                className="group flex items-center gap-4 rounded-2xl border-[3px] border-black bg-white p-4 shadow-[4px_4px_0_#000] transition-all duration-200 hover:-translate-y-1 hover:shadow-[6px_6px_0_#000] hover:bg-[#fef08a] active:translate-y-0 active:shadow-none"
             >
                 <div className="relative shrink-0">
                     <img src={avatar} alt={user.name}
-                        className="w-12 h-12 border-[2px] border-black object-cover bg-neutral-200 shadow-[2px_2px_0_#000]"
+                        className="h-12 w-12 rounded-xl border-[3px] border-black object-cover bg-neutral-200"
                     />
                 </div>
                 <div className="flex-1 min-w-0">
-                    <p className="text-[14px] font-black text-black uppercase tracking-wide truncate">
+                    <p className="truncate text-[15px] font-black text-black">
                         {user.name}
                     </p>
                 </div>
-                <div className="w-8 h-8 border-[2px] border-black bg-white flex items-center justify-center shadow-[2px_2px_0_#000] group-hover:bg-[#FFFF00] transition-colors">
-                    <ChevronRight className="w-5 h-5 text-black font-black" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl border-[3px] border-black bg-white transition-colors group-hover:bg-black group-hover:text-[#67e8f9]">
+                    <ChevronRight className="w-5 h-5 font-black" />
                 </div>
             </Link>
         </motion.div>
@@ -125,7 +126,7 @@ function ExplorersTab() {
                     onChange={handleChange}
                     placeholder="Cari nama explorer…"
                     autoFocus
-                    className="w-full py-4 pl-12 pr-12 text-[14px] font-black text-black uppercase placeholder:text-black/50 focus:outline-none bg-white border-[4px] border-black shadow-[6px_6px_0_#000] focus:translate-x-[-2px] focus:translate-y-[-2px] focus:shadow-[8px_8px_0_#000] transition-all"
+                    className="w-full rounded-2xl border-[3px] border-black bg-white py-4 pl-12 pr-12 text-[15px] font-black text-black placeholder:text-black/40 focus:outline-none focus:ring-0 shadow-[4px_4px_0_#000] transition-shadow focus:shadow-[6px_6px_0_#000]"
                 />
                 <AnimatePresence>
                     {query && (
@@ -133,9 +134,9 @@ function ExplorersTab() {
                             initial={{ opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.7 }} transition={{ duration: 0.12 }}
                             onClick={clearSearch}
-                            className="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 bg-[#FF3300] border-[2px] border-black flex items-center justify-center hover:bg-rose-600 shadow-[2px_2px_0_#000]"
+                            className="absolute right-4 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-xl border-[3px] border-black bg-[#f5d0fe] transition-all hover:bg-black hover:text-[#f5d0fe] hover:-translate-y-[60%] shadow-[2px_2px_0_#000] active:translate-y-[-50%] active:shadow-none"
                         >
-                            <X className="w-4 h-4 text-white" />
+                            <X className="w-5 h-5 font-black text-black group-hover:text-white" />
                         </motion.button>
                     )}
                 </AnimatePresence>
@@ -145,39 +146,39 @@ function ExplorersTab() {
             <AnimatePresence mode="wait">
                 {loading && (
                     <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="flex items-center justify-center gap-3 py-16 bg-white border-[4px] border-black shadow-[6px_6px_0_#000]"
+                        className="flex items-center justify-center gap-3 rounded-2xl border-[3px] border-black bg-white py-16 shadow-[4px_4px_0_#000]"
                     >
                         <Loader2 className="w-6 h-6 text-black animate-spin" />
-                        <span className="text-[14px] font-black uppercase text-black">Mencari…</span>
+                        <span className="text-[15px] font-black uppercase text-black">Mencari…</span>
                     </motion.div>
                 )}
                 {!loading && !searched && (
                     <motion.div key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="flex flex-col items-center justify-center py-20 text-center bg-white border-[4px] border-black shadow-[6px_6px_0_#000]"
+                        className="flex flex-col items-center justify-center rounded-2xl border-[3px] border-black bg-white py-20 text-center shadow-[4px_4px_0_#000]"
                     >
-                        <div className="w-16 h-16 bg-[#00FFFF] border-[3px] border-black flex items-center justify-center mb-4 shadow-[4px_4px_0_#000]">
-                            <Users className="w-8 h-8 text-black" />
+                        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl border-[3px] border-black bg-[#67e8f9] shadow-[4px_4px_0_#000]">
+                            <Users className="w-7 h-7 text-black" />
                         </div>
-                        <p className="text-[16px] font-black uppercase text-black mb-1">Temukan sesama explorer</p>
-                        <p className="text-[12px] font-bold text-black/60 uppercase">Ketik minimal 2 karakter untuk mencari</p>
+                        <p className="mb-1 text-[18px] font-black uppercase text-black">Temukan sesama explorer</p>
+                        <p className="text-[14px] font-bold text-black/60">Ketik minimal 2 karakter untuk mencari</p>
                     </motion.div>
                 )}
                 {!loading && searched && results.length === 0 && (
                     <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="flex flex-col items-center justify-center py-20 text-center bg-white border-[4px] border-black shadow-[6px_6px_0_#000]"
+                        className="flex flex-col items-center justify-center rounded-2xl border-[3px] border-black bg-white py-20 text-center shadow-[4px_4px_0_#000]"
                     >
-                        <div className="w-16 h-16 bg-[#FF3300] border-[3px] border-black flex items-center justify-center mb-4 shadow-[4px_4px_0_#000]">
-                            <UserRound className="w-8 h-8 text-white" />
+                        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl border-[3px] border-black bg-[#fca5a5] shadow-[4px_4px_0_#000]">
+                            <UserRound className="w-7 h-7 text-black" />
                         </div>
-                        <p className="text-[16px] font-black uppercase text-black mb-1">Tidak ada hasil</p>
-                        <p className="text-[12px] font-bold text-black/60 uppercase">
-                            Kata kunci <span className="text-black bg-[#FFFF00] px-1 border border-black">{query}</span> tidak ditemukan
+                        <p className="mb-1 text-[18px] font-black uppercase text-black">Tidak ada hasil</p>
+                        <p className="text-[14px] font-bold text-black/60">
+                            Kata kunci <span className="rounded-md border-[2px] border-black bg-[#fef08a] px-1.5 py-0.5 text-black shadow-[2px_2px_0_#000] mx-1">{query}</span> tidak ditemukan
                         </p>
                     </motion.div>
                 )}
                 {!loading && searched && results.length > 0 && (
                     <motion.div key="results" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                        <p className="text-[12px] font-black text-black mb-4 uppercase tracking-widest bg-[#00FF00] inline-block px-3 py-1 border-[2px] border-black shadow-[2px_2px_0_#000]">
+                        <p className="mb-4 inline-block rounded-xl border-[3px] border-black bg-[#86efac] px-4 py-1.5 text-[13px] font-black uppercase text-black shadow-[2px_2px_0_#000]">
                             {results.length} ditemukan
                         </p>
                         <div className="space-y-3">
@@ -196,14 +197,14 @@ function SectionHeader({ icon, iconBg, title, count }: {
     icon: React.ReactNode; iconBg: string; title: string; count: number
 }) {
     return (
-        <div className="flex items-center gap-3 mb-4">
-            <div className={`w-10 h-10 border-[3px] border-black flex items-center justify-center shadow-[2px_2px_0_#000] ${iconBg}`}>
+        <div className="mb-4 flex items-center gap-3">
+            <div className={`flex h-10 w-10 items-center justify-center rounded-xl border-[3px] border-black shadow-[2px_2px_0_#000] ${iconBg}`}>
                 {icon}
             </div>
-            <span className="text-[16px] font-black text-black uppercase tracking-wider bg-white border-[2px] border-black px-3 py-1 shadow-[2px_2px_0_#000]">
+            <span className="text-[20px] font-black uppercase tracking-tight text-black">
                 {title}
             </span>
-            <span className="text-[12px] font-black bg-[#FFFF00] border-[2px] border-black px-2 py-0.5 shadow-[2px_2px_0_#000]">
+            <span className="rounded-xl border-[3px] border-black bg-white px-2.5 py-1 text-[13px] font-black text-black shadow-[2px_2px_0_#000]">
                 {count}
             </span>
         </div>
@@ -230,6 +231,25 @@ function parseTheme(rawValue: string | null | undefined): CardTheme | null {
     try { return JSON.parse(rawValue) } catch { return null }
 }
 
+function isDarkTheme(theme: CardTheme | null) {
+    if (!theme) return false
+    const bg = theme.background.toLowerCase()
+    return (
+        bg.includes("#0a") ||
+        bg.includes("#1a") ||
+        bg.includes("#03") ||
+        bg.includes("#05") ||
+        bg.includes("#12") ||
+        bg.includes("#15") ||
+        bg.includes("rgba(10,10,20") ||
+        bg.includes("rgba(5,5,15") ||
+        theme.titleColor.toLowerCase().startsWith("#d") ||
+        theme.titleColor.toLowerCase().startsWith("#e") ||
+        theme.titleColor.toLowerCase().startsWith("#f") ||
+        theme.titleColor.toLowerCase().startsWith("#9")
+    )
+}
+
 function InstaMemoryCard({ memory }: { memory: any }) {
     // Parse equipped card theme from user inventories
     const rawThemeValue = memory.user?.inventories?.[0]?.item?.value ?? null
@@ -240,11 +260,11 @@ function InstaMemoryCard({ memory }: { memory: any }) {
     return (
         <Link 
             href={`/memories/${memory.id}`} 
-            className="group relative flex flex-col overflow-hidden transition-all duration-300 hover:translate-x-[-2px] hover:translate-y-[-2px]"
+            className="group relative flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-1"
             style={{
                 background: theme?.background ?? "white",
-                border: theme?.border ?? "4px solid #000",
-                borderRadius: theme?.radius ?? "0px",
+                border: theme?.border ?? "3px solid #000",
+                borderRadius: theme?.radius ?? "1rem",
                 boxShadow: theme?.shadow ?? "4px 4px 0 #000",
             }}
         >
@@ -252,9 +272,9 @@ function InstaMemoryCard({ memory }: { memory: any }) {
             <div 
                 className="relative aspect-square overflow-hidden flex items-center justify-center"
                 style={{
-                    borderBottom: theme?.border ?? "4px solid #000",
-                    background: theme ? "transparent" : "#E5E5E5",
-                    borderRadius: theme ? `${theme.radius} ${theme.radius} 0 0` : "0px",
+                    borderBottom: theme?.border ?? "3px solid #000",
+                    background: theme ? "transparent" : "#FFFDF0",
+                    borderRadius: theme ? `${theme.radius} ${theme.radius} 0 0` : "13px 13px 0 0",
                 }}
             >
                 {coverUrl ? (
@@ -266,7 +286,7 @@ function InstaMemoryCard({ memory }: { memory: any }) {
                 ) : (
                     <div className="p-4 w-full h-full flex flex-col justify-center text-center">
                          <p 
-                            className="text-[12px] sm:text-[14px] font-black uppercase line-clamp-4"
+                            className="line-clamp-4 text-[12px] font-extrabold sm:text-[14px]"
                             style={{ color: theme?.storyColor ?? "#000" }}
                          >
                              {memory.story || memory.title}
@@ -276,29 +296,28 @@ function InstaMemoryCard({ memory }: { memory: any }) {
                 
                 {/* Visual Indicators */}
                 {(memory.audioUrl || memory.spotifyTrackId) && (
-                    <div className="absolute top-2 left-2 z-10 w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center bg-[#00FFFF] border-[2px] sm:border-[3px] border-black shadow-[2px_2px_0_#000]">
-                        <span className="text-[10px] sm:text-[12px]">🎵</span>
+                    <div className="absolute left-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-xl border-[3px] border-black bg-[#67e8f9] shadow-[2px_2px_0_#000] sm:h-8 sm:w-8">
+                        <span className="text-[12px] sm:text-[14px]">🎵</span>
                     </div>
                 )}
                 {memory.isCollaboration && (
-                    <div className="absolute top-2 right-2 z-10 w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center bg-[#FF00FF] border-[2px] sm:border-[3px] border-black shadow-[2px_2px_0_#000]">
-                        <span className="text-[10px] sm:text-[12px]">👥</span>
+                    <div className="absolute right-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-xl border-[3px] border-black bg-[#f5d0fe] shadow-[2px_2px_0_#000] sm:h-8 sm:w-8">
+                        <span className="text-[12px] sm:text-[14px]">👥</span>
                     </div>
                 )}
             </div>
 
             {/* Username Footer */}
             <div 
-                className={`p-2 sm:p-3 flex items-center gap-2 transition-colors ${!theme ? "bg-[#FFFF00] group-hover:bg-[#00FF00]" : ""}`}
+                className={`flex items-center gap-2 p-2 transition-colors sm:p-3 ${!theme ? "bg-white group-hover:bg-[#fef08a]" : ""}`}
             >
                 <img
                     src={memory.user.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${memory.user.id}`}
                     alt={memory.user.name}
-                    className="w-5 h-5 sm:w-6 sm:h-6 border-[2px] border-black object-cover shrink-0 bg-white"
+                    className="h-6 w-6 shrink-0 rounded-lg border-[2px] border-black object-cover bg-white sm:h-7 sm:w-7"
                 />
                 <span 
-                    className="text-[10px] sm:text-[13px] font-black uppercase truncate"
-                    style={{ color: theme?.footerTextColor ?? "#000" }}
+                    className={`truncate text-[10px] font-extrabold sm:text-[13px] ${theme ? (isDarkTheme(theme) ? "text-white" : "text-black") : "text-black"}`}
                 >
                     {memory.user.name}
                 </span>
@@ -363,26 +382,27 @@ function MemoriesFeedTab() {
         setSort(val)
     }
 
-    const withPhotos = memories.filter(m => m.photos?.length > 0)
-    const textOnly   = memories.filter(m => !m.photos?.length)
-
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
 
             {/* ── Compact Filter Bar ────────────────────────────────── */}
-            <div className="space-y-2 mb-4">
+            <div className="sticky top-[88px] z-20 mb-4 space-y-3 rounded-2xl border-[3px] border-black bg-[#FFFDF0] p-4 shadow-[4px_4px_0_#000] sm:static sm:bg-transparent sm:p-0 sm:shadow-none sm:border-none sm:space-y-4">
                 {/* Row 1: Sort + Count badge */}
                 <div className="flex items-center gap-2">
                     {SORT_OPTIONS.map(opt => {
                         const active = sort === opt.value
+                        // Custom active colors for sort options to increase variety:
+                        // Terbaru: soft green (#86efac)
+                        // Terpopuler: soft yellow (#fef08a)
+                        const activeBg = opt.value === "latest" ? "bg-[#86efac]" : "bg-[#fef08a]"
                         return (
                             <button
                                 key={opt.value}
                                 onClick={() => handleSortChange(opt.value)}
-                                className={`flex items-center gap-1.5 px-3 py-1.5 border-[2px] border-black text-[11px] font-black uppercase transition-all whitespace-nowrap ${
+                                className={`flex min-h-10 items-center gap-2 rounded-xl border-[3px] border-black px-4 py-2 text-[13px] font-black uppercase transition-all whitespace-nowrap shadow-[2px_2px_0_#000] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] active:translate-y-0 active:shadow-none ${
                                     active
-                                        ? "bg-[#00FF00] shadow-[2px_2px_0_#000]"
-                                        : "bg-white shadow-[2px_2px_0_#000] hover:bg-neutral-100"
+                                        ? `${activeBg} text-black`
+                                        : "bg-white text-black hover:bg-neutral-50"
                                 }`}
                             >
                                 {opt.icon}
@@ -391,78 +411,75 @@ function MemoriesFeedTab() {
                         )
                     })}
                     {!loading && total > 0 && (
-                        <div className="ml-auto px-3 py-1.5 bg-[#FF00FF] border-[2px] border-black text-[11px] font-black text-white uppercase shadow-[2px_2px_0_#000] tabular-nums whitespace-nowrap">
+                        <div className="ml-auto rounded-xl border-[3px] border-black bg-[#f5d0fe] px-3 py-2 text-[12px] font-black text-black tabular-nums whitespace-nowrap shadow-[2px_2px_0_#000]">
                             {memories.length}/{total}
                         </div>
                     )}
                 </div>
                 {/* Row 2: Emotion chips — single scrollable row, emoji-only on mobile */}
-                <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide pb-1">
+                <div className="scrollbar-none flex items-center gap-2 overflow-x-auto pb-2">
                     {EMOTIONS.map(em => {
                         const active = selectedEmotion === em.value
+                        const activeBg = EMOTION_COLORS[em.value] || "bg-[#fef08a]"
                         return (
                             <button
                                 key={em.value}
                                 onClick={() => handleEmotionChange(em.value)}
-                                className={`shrink-0 flex items-center gap-1 px-2 py-1.5 border-[2px] border-black text-[11px] font-black uppercase transition-all whitespace-nowrap ${
+                                className={`flex min-h-10 items-center gap-2 rounded-xl border-[3px] border-black px-4 py-2 text-[13px] font-black uppercase transition-all whitespace-nowrap shadow-[2px_2px_0_#000] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] active:translate-y-0 active:shadow-none ${
                                     active
-                                        ? "bg-[#FFFF00] shadow-[2px_2px_0_#000]"
-                                        : "bg-white shadow-[2px_2px_0_#000] hover:bg-neutral-100"
+                                        ? `${activeBg} text-black`
+                                        : "bg-white text-black hover:bg-neutral-50"
                                 }`}
                             >
-                                <span className="text-[13px] leading-none">{em.emoji}</span>
-                                <span className="hidden sm:inline text-[11px]">{em.label}</span>
+                                <span className="text-[16px]">{em.emoji}</span>
+                                <span className="hidden sm:inline">{em.label}</span>
                             </button>
                         )
                     })}
                 </div>
             </div>
 
-            {/* Feed */}
             <AnimatePresence mode="wait">
                 {loading ? (
                     <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="flex flex-col items-center justify-center py-20 gap-4 bg-white border-[4px] border-black shadow-[8px_8px_0_#000]"
+                        className="flex flex-col items-center justify-center gap-4 rounded-2xl border-[3px] border-black bg-white py-20 shadow-[4px_4px_0_#000]"
                     >
                         <Loader2 className="w-10 h-10 text-black animate-spin" />
-                        <p className="text-[14px] font-black uppercase text-black">Memuat Kenangan…</p>
+                        <p className="text-[15px] font-black uppercase text-black">Memuat Kenangan…</p>
                     </motion.div>
-
                 ) : memories.length === 0 ? (
                     <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="flex flex-col items-center justify-center py-20 text-center bg-white border-[4px] border-black shadow-[8px_8px_0_#000]"
+                        className="flex flex-col items-center justify-center rounded-2xl border-[3px] border-black bg-white py-20 text-center shadow-[4px_4px_0_#000]"
                     >
-                        <div className="w-16 h-16 bg-[#FFFF00] border-[3px] border-black flex items-center justify-center mb-4 shadow-[4px_4px_0_#000]">
+                        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl border-[3px] border-black bg-[#fef08a] shadow-[4px_4px_0_#000]">
                             <MapPin className="w-8 h-8 text-black" />
                         </div>
-                        <p className="text-[16px] font-black uppercase text-black mb-2">Belum ada kenangan</p>
-                        <p className="text-[12px] font-bold text-black/60 uppercase max-w-sm leading-relaxed mb-6">
+                        <p className="mb-2 text-[18px] font-black uppercase text-black">Belum ada kenangan</p>
+                        <p className="mb-6 max-w-sm text-[14px] font-bold leading-relaxed text-black/60">
                             {selectedEmotion === "ALL"
                                 ? "Jadilah yang pertama berbagi kenangan ke komunitas!"
                                 : `Belum ada kenangan dengan emosi "${selectedEmotion.toLowerCase()}".`}
                         </p>
                         {selectedEmotion !== "ALL" && (
                             <button onClick={() => handleEmotionChange("ALL")}
-                                className="px-6 py-2 bg-[#00FF00] border-[3px] border-black text-[14px] font-black uppercase shadow-[4px_4px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000] transition-all">
+                                className="rounded-xl border-[3px] border-black bg-[#86efac] px-6 py-3 text-[14px] font-black uppercase text-black shadow-[4px_4px_0_#000] transition-all hover:-translate-y-1 hover:shadow-[6px_6px_0_#000] active:translate-y-0 active:shadow-none">
                                 Lihat Semua
                             </button>
                         )}
                     </motion.div>
-
                 ) : (
                     <motion.div key="feed" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="space-y-12"
+                        className="space-y-6"
                     >
-                        {/* Unified Feed (Images & Text merged like Instagram profile) */}
+                        <SectionHeader
+                            icon={<ImageIcon className="w-5 h-5 text-black" />}
+                            iconBg="bg-[#86efac]"
+                            title="Semua Kenangan"
+                            count={total}
+                        />
+
                         <section className="space-y-4">
-                            <SectionHeader
-                                icon={<ImageIcon className="w-5 h-5 text-black" />}
-                                iconBg="bg-[#00FFFF]"
-                                title="Semua Kenangan" count={total}
-                            />
-                            <div
-                                className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6"
-                            >
+                            <div className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
                                 {memories.map((m, i) => (
                                     <motion.div 
                                         key={m.id} 
@@ -476,26 +493,24 @@ function MemoriesFeedTab() {
                             </div>
                         </section>
 
-                        {/* Load More button */}
                         {hasMore && (
                             <div className="flex justify-center pt-6">
                                 <button
                                     onClick={loadMore}
                                     disabled={loadingMore}
-                                    className="flex items-center gap-3 px-8 py-4 bg-white border-[4px] border-black text-[14px] font-black uppercase shadow-[6px_6px_0_#000] hover:bg-[#FFFF00] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0_#000] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="flex min-h-12 items-center gap-3 rounded-xl border-[3px] border-black bg-[#fef08a] px-8 py-3 text-[15px] font-black uppercase text-black shadow-[4px_4px_0_#000] transition-all hover:-translate-y-1 hover:shadow-[6px_6px_0_#000] active:translate-y-0 active:shadow-none disabled:cursor-not-allowed disabled:opacity-50"
                                 >
                                     {loadingMore
                                         ? <><Loader2 className="w-5 h-5 animate-spin" /> Memuat…</>
-                                        : <>Muat Lebih Banyak <span className="text-black bg-white px-2 border-[2px] border-black shadow-[2px_2px_0_#000]">({total - memories.length} tersisa)</span></>
+                                        : <>Muat Lebih Banyak <span className="rounded-md border-[2px] border-black bg-black px-2 py-0.5 text-white">({total - memories.length} tersisa)</span></>
                                     }
                                 </button>
                             </div>
                         )}
 
-                        {/* End of feed indicator */}
-                        {!hasMore && memories.length > 0 && memories.length >= PAGE_LIMIT && (
+                        {!hasMore && memories.length > 0 && (
                             <div className="flex justify-center pt-6">
-                                <p className="text-[12px] font-black text-black uppercase bg-[#00FF00] inline-block px-4 py-2 border-[3px] border-black shadow-[4px_4px_0_#000]">
+                                <p className="inline-block rounded-xl border-[3px] border-black bg-[#86efac] px-5 py-3 text-[13px] font-black uppercase text-black shadow-[4px_4px_0_#000]">
                                     Semua {total} kenangan telah ditampilkan
                                 </p>
                             </div>
@@ -506,8 +521,6 @@ function MemoriesFeedTab() {
         </motion.div>
     )
 }
-
-// ─── URL Builder Helper ───────────────────────────────────────────────────────
 
 function buildUrl(emotion: string, sort: Sort, page: number) {
     const params = new URLSearchParams({
@@ -520,72 +533,55 @@ function buildUrl(emotion: string, sort: Sort, page: number) {
     return `/api/memories?${params.toString()}`
 }
 
-// ─── Main Page ────────────────────────────────────────────────────────────────
-
 export default function CommunityPage() {
     const [activeTab, setActiveTab] = useState<Tab>("memories")
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full relative">
-
-            {/* Background Grid Pattern */}
-            <div className="absolute inset-0 pointer-events-none z-0"
-                style={{
-                    backgroundImage: "linear-gradient(#00000010 1px, transparent 1px), linear-gradient(90deg, #00000010 1px, transparent 1px)",
-                    backgroundSize: "40px 40px"
-                }}
-            />
-
-            <div className="relative z-10">
-                {/* ── Page Header ───────────────────────────────────────────────── */}
+        <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+            <div className="relative">
                 <motion.div
-                    initial={{ opacity: 0, y: 10 }}
+                    initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.35, ease: "easeOut" }}
-                    className="mb-4"
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                    className="mb-8"
                 >
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#00FFFF] border-[3px] sm:border-[4px] border-black flex items-center justify-center shadow-[3px_3px_0_#000] sm:shadow-[4px_4px_0_#000] shrink-0">
-                            <Globe className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
-                        </div>
-                        <h1 className="text-[22px] sm:text-[40px] font-black text-black uppercase tracking-tight bg-white px-2 sm:px-3 py-1 border-[3px] sm:border-[4px] border-black shadow-[3px_3px_0_#000] sm:shadow-[6px_6px_0_#000] inline-block">
-                            Community
-                        </h1>
-                        <div className="ml-auto inline-flex items-center gap-1.5 px-2 sm:px-4 py-1.5 sm:py-2 bg-[#00FF00] border-[2px] sm:border-[3px] border-black shadow-[2px_2px_0_#000] sm:shadow-[4px_4px_0_#000] shrink-0">
-                            <span className="relative flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-white border border-black" />
-                            </span>
-                            <span className="text-[10px] sm:text-[12px] font-black text-black uppercase tracking-widest">Live</span>
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white border-[3px] border-black p-4 sm:p-5 shadow-[6px_6px_0_#000] rounded-2xl">
+                        <div className="flex items-center gap-4 flex-1">
+                            <div className="w-12 h-12 sm:w-14 sm:h-14 bg-[#67e8f9] border-[2.5px] border-black flex items-center justify-center shrink-0 shadow-[3px_3px_0_#000] rounded-xl">
+                                <Globe className="h-6 w-6 sm:h-7 sm:w-7 text-black" />
+                            </div>
+                            <div>
+                                <div className="flex items-center gap-3 mb-1">
+                                    <h1 className="text-2xl sm:text-3xl font-[Outfit] font-black text-black uppercase tracking-widest leading-none">COMMUNITY</h1>
+                                </div>
+                                <p className="text-[13px] sm:text-[14px] font-bold text-black/60 leading-relaxed mt-1">
+                                    Jelajahi kenangan publik dan temukan explorer dari seluruh dunia.
+                                </p>
+                            </div>
                         </div>
                     </div>
-                    {/* Description — hidden on mobile */}
-                    <p className="hidden sm:inline-block text-[14px] font-bold text-black/80 uppercase bg-[#FFFF00] p-3 border-[3px] border-black shadow-[4px_4px_0_#000] max-w-xl mt-4">
-                        Jelajahi kenangan publik dan temukan explorer dari seluruh dunia.
-                    </p>
                 </motion.div>
 
-                {/* ── Tab Switcher (compact, full-width on mobile) ──────── */}
                 <motion.div
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: 0.1 }}
-                    className="mb-4"
+                    className="mb-6"
                 >
-                    <div className="flex items-center gap-0 border-[3px] sm:border-[4px] border-black shadow-[4px_4px_0_#000] bg-white overflow-hidden w-full sm:w-auto sm:inline-flex">
+                    <div className="flex w-full items-center gap-2 rounded-2xl border-[3px] border-black bg-white p-2 shadow-[4px_4px_0_#000] sm:inline-flex sm:w-auto">
                         {([
-                            { id: "memories"  as Tab, label: "Memories",  icon: <Globe className="w-4 h-4" /> },
-                            { id: "explorers" as Tab, label: "Explorers", icon: <Users className="w-4 h-4" /> },
-                        ] as const).map((tab, idx) => {
+                            { id: "memories"  as Tab, label: "Memories",  icon: <Globe className="w-5 h-5" />, activeBg: "bg-[#fef08a]" },
+                            { id: "explorers" as Tab, label: "Explorers", icon: <Users className="w-5 h-5" />, activeBg: "bg-[#f5d0fe]" },
+                        ] as const).map((tab) => {
                             const active = activeTab === tab.id
                             return (
                                 <button
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id)}
-                                    className={`flex-1 sm:flex-none flex items-center justify-center sm:justify-start gap-2 px-4 sm:px-6 py-2.5 sm:py-3 text-[13px] sm:text-[14px] font-black uppercase transition-all ${
-                                        idx > 0 ? "border-l-[3px] sm:border-l-[4px] border-black" : ""
-                                    } ${
-                                        active ? "bg-[#FF00FF] text-white" : "bg-[#E5E5E5] text-black hover:bg-[#FFFF00]"
+                                    className={`flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-[14px] font-black uppercase transition-all sm:flex-none sm:justify-start sm:px-6 sm:text-[15px] border-[2px] border-transparent ${
+                                        active
+                                            ? `${tab.activeBg} text-black border-black shadow-[2.5px_2.5px_0_#000]`
+                                            : "bg-transparent text-black hover:bg-[#F5F2EB] hover:border-black/20"
                                     }`}
                                 >
                                     <span>{tab.icon}</span>

@@ -79,11 +79,15 @@ export default function EditMemoryPage() {
                 const statusRes = await fetch("/api/premium/status")
                 if (statusRes.ok) {
                     const status = await statusRes.json()
-                    if (status.isPremium) {
+                    
+                    if (status.spotifyAccess) {
+                        setHasSpotifyPremium(status.spotifyAccess.canEditTrack)
+                    }
+
+                    if (status.activePremium) {
                         setMaxPhotos(status.limits.maxPhotos)
                         setMaxCollaborators(status.limits.maxCollaborators)
                         setIsPremium(true)
-                        setHasSpotifyPremium(true)
                     }
                 }
             } catch {}

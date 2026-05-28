@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma"
 import { revalidateTag } from "next/cache"
 import { CACHE_TAGS } from "@/lib/cache"
 import { isPremiumActive, getUserLimits } from "@/lib/premium-config"
+import { checkAndCleanupPremium } from "@/lib/premium-enforcement"
 
 const MILESTONES = [7, 30, 60, 90]
 
@@ -55,11 +56,17 @@ export async function POST(req: Request) {
     const currentUser = await prisma.user.findUnique({
         where: { id: userId },
         select: {
+            id: true,
+            isPremium: true,
             premiumExpiresAt: true,
             streakFreezesUsed: true,
             streakFreezesResetAt: true,
         },
     })
+
+    if (currentUser) {
+        checkAndCleanupPremium(currentUser).catch(console.error);
+    }
 
     const userIsPremium = isPremiumActive(currentUser?.premiumExpiresAt ?? null)
     const limits = getUserLimits(userIsPremium)

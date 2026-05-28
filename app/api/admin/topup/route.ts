@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
+import { adminTopupProcessSchema } from "@/lib/validations"
+import { createAdminAuditLog } from "@/lib/audit"
 
 const TOPUP_OPTIONS = [
     { amount: 500, price: 5000 },
@@ -19,11 +21,14 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Forbidden" }, { status: 403 })
         }
 
-        const { emailOrName, amount } = await req.json()
+        const body = await req.json()
+        const parsed = adminTopupProcessSchema.safeParse(body)
 
-        if (!emailOrName?.trim()) {
-            return NextResponse.json({ error: "Email atau nama diperlukan" }, { status: 400 })
+        if (!parsed.success) {
+            return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 })
         }
+
+        const { emailOrName, amount } = parsed.data
 
         const option = TOPUP_OPTIONS.find((o) => o.amount === amount)
         if (!option) {
@@ -62,6 +67,15 @@ export async function POST(req: Request) {
                 select: { id: true, name: true, email: true, points: true },
             }),
         ])
+
+        // Record audit trail
+        await createAdminAuditLog(
+            session.user.id,
+            "DIRECT_TOPUP",
+            "USER",
+            targetUser.id,
+            { amount: option.amount, price: option.price, orderId: order.id }
+        )
 
         return NextResponse.json({ order, user: updatedUser }, { status: 201 })
     } catch (error) {

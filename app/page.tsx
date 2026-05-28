@@ -85,10 +85,10 @@ export default function LandingPage() {
           }}
         />
         {/* Decorative geometric shapes */}
-        <div className="absolute top-[10%] right-[5%] w-24 h-24 border-[3px] border-black/[0.06] rotate-12" />
+        <div className="absolute top-[10%] right-[5%] w-24 h-24 border-[3px] border-black/[0.06] rotate-12 rounded-2xl" />
         <div className="absolute top-[40%] left-[3%] w-16 h-16 rounded-full border-[3px] border-black/[0.05]" />
-        <div className="absolute bottom-[15%] right-[10%] w-20 h-20 border-[3px] border-black/[0.04] rotate-45" />
-        <div className="absolute top-[70%] left-[8%] w-12 h-12 bg-[#FFFF00]/[0.06] border-[3px] border-black/[0.04]" />
+        <div className="absolute bottom-[15%] right-[10%] w-20 h-20 border-[3px] border-black/[0.04] rotate-45 rounded-3xl" />
+        <div className="absolute top-[70%] left-[8%] w-12 h-12 bg-[#FFFF00]/[0.06] border-[3px] border-black/[0.04] rounded-xl" />
         <div className="absolute top-[25%] left-[50%] w-8 h-8 rounded-full bg-[#FF00FF]/[0.05]" />
         <div className="absolute bottom-[40%] right-[25%] w-14 h-14 rounded-full border-[3px] border-black/[0.03]" />
       </div>

@@ -38,7 +38,7 @@ export function LandingFooter({
           <div className="lg:col-span-2">
             <Link href="/" className="inline-flex items-center gap-2.5 mb-6 group">
               <div className="relative w-9 h-9 flex items-center justify-center shrink-0">
-                <div className="absolute inset-0 bg-[#FFFF00] border-[3px] border-white group-hover:translate-x-[-2px] group-hover:translate-y-[-2px] group-hover:shadow-[3px_3px_0_#FFFF00] transition-all" />
+                <div className="absolute inset-0 bg-[#FFFF00] border-[3px] border-white group-hover:translate-x-[-2px] group-hover:translate-y-[-2px] group-hover:shadow-[3px_3px_0_#FFFF00] transition-all rounded-xl" />
                 <MapPin className="relative w-4 h-4 text-black z-10" />
               </div>
               <span className="font-black text-[20px] font-[Outfit] text-white tracking-tight">
@@ -58,7 +58,7 @@ export function LandingFooter({
                     key={social.label}
                     href={social.href}
                     aria-label={social.label}
-                    className="w-9 h-9 border-[3px] border-white/30 bg-transparent flex items-center justify-center text-white/60 hover:text-black hover:bg-[#FFFF00] hover:border-[#FFFF00] transition-all"
+                    className="w-9 h-9 border-[3px] border-white/30 bg-transparent flex items-center justify-center text-white/60 hover:text-black hover:bg-[#FFFF00] hover:border-[#FFFF00] transition-all rounded-xl"
                   >
                     <Icon className="w-4 h-4" />
                   </a>

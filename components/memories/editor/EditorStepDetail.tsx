@@ -11,7 +11,7 @@ import { MemoryInput } from "@/lib/validations"
 const LocationPicker = dynamic(() => import("@/components/map/LocationPicker"), {
     ssr: false,
     loading: () => (
-        <div className="h-[300px] w-full bg-[#E5E5E5] animate-pulse border-[3px] border-black flex items-center justify-center">
+        <div className="h-[300px] w-full bg-[#E5E5E5] animate-pulse border-[3px] border-black flex items-center justify-center rounded-2xl">
             <span className="text-neutral-500 text-sm font-black uppercase">Memuat peta...</span>
         </div>
     )
@@ -31,9 +31,9 @@ export function EditorStepDetail({ register, control, errors, isSubmitting, isPr
     return (
         <div className="space-y-6">
             {/* Momen Form */}
-            <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000]">
+            <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[5px_5px_0_#000] rounded-3xl">
                 <div className="flex items-center gap-3 mb-6">
-                    <div className="p-2.5 bg-[#00FFFF] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                    <div className="p-2.5 bg-[#00FFFF] border-[2px] border-black shadow-[2px_2px_0_#000] rounded-xl">
                         <BookText className="w-5 h-5 text-black" />
                     </div>
                     <div>
@@ -48,7 +48,7 @@ export function EditorStepDetail({ register, control, errors, isSubmitting, isPr
                         <Input
                             {...register("title")}
                             placeholder="Liburan tak terlupakan..."
-                            className="!bg-[#E5E5E5] !border-[3px] !border-black !rounded-none focus:!bg-[#FFFF00] !transition-all !text-black !font-bold !placeholder:text-neutral-400"
+                            className="!bg-[#E5E5E5] !border-[3px] !border-black !rounded-xl focus:!bg-[#FFFF00] !transition-all !text-black !font-bold !placeholder:text-neutral-400"
                             disabled={isSubmitting}
                         />
                         {errors.title && <p className="text-[#FF0000] text-sm mt-1.5 font-bold">{errors.title.message}</p>}
@@ -58,7 +58,7 @@ export function EditorStepDetail({ register, control, errors, isSubmitting, isPr
                         <label className="block text-sm font-black text-black uppercase tracking-wider mb-2">Cerita</label>
                         <textarea
                             {...register("story")}
-                            className="w-full min-h-[140px] bg-[#E5E5E5] border-[3px] border-black p-4 text-base focus:bg-[#FFFF00] outline-none resize-none transition-all placeholder:text-neutral-400 text-black font-bold"
+                            className="w-full min-h-[140px] bg-[#E5E5E5] border-[3px] border-black p-4 text-base focus:bg-[#FFFF00] outline-none resize-none transition-all placeholder:text-neutral-400 text-black font-bold rounded-xl"
                             placeholder="Ceritakan apa yang terjadi... setiap detail berharga."
                             disabled={isSubmitting}
                         />
@@ -70,7 +70,7 @@ export function EditorStepDetail({ register, control, errors, isSubmitting, isPr
                         <Input
                             type="date"
                             {...register("date")}
-                            className="!bg-[#E5E5E5] !border-[3px] !border-black !rounded-none focus:!bg-[#FFFF00] !transition-all !text-black !font-bold"
+                            className="!bg-[#E5E5E5] !border-[3px] !border-black !rounded-xl focus:!bg-[#FFFF00] !transition-all !text-black !font-bold"
                             disabled={isSubmitting}
                         />
                         {errors.date && <p className="text-[#FF0000] text-sm mt-1.5 font-bold">{errors.date.message}</p>}
@@ -79,9 +79,9 @@ export function EditorStepDetail({ register, control, errors, isSubmitting, isPr
             </div>
 
             {/* Emotion */}
-            <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000]">
+            <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[5px_5px_0_#000] rounded-3xl">
                 <div className="flex items-center gap-3 mb-6">
-                    <div className="p-2.5 bg-[#FF00FF] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                    <div className="p-2.5 bg-[#FF00FF] border-[2px] border-black shadow-[2px_2px_0_#000] rounded-xl">
                         <Smile className="w-5 h-5 text-white" />
                     </div>
                     <div>
@@ -110,9 +110,9 @@ export function EditorStepDetail({ register, control, errors, isSubmitting, isPr
             />
 
             {/* Location */}
-            <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000] relative z-30">
+            <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[5px_5px_0_#000] relative z-30 rounded-3xl">
                 <div className="flex items-center gap-3 mb-6">
-                    <div className="p-2.5 bg-[#FFFF00] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                    <div className="p-2.5 bg-[#FFFF00] border-[2px] border-black shadow-[2px_2px_0_#000] rounded-xl">
                         <MapPin className="w-5 h-5 text-black" />
                     </div>
                     <div>
@@ -120,7 +120,7 @@ export function EditorStepDetail({ register, control, errors, isSubmitting, isPr
                         <p className="text-xs text-neutral-500 font-bold">Tandai tempat kenangan</p>
                     </div>
                 </div>
-                <div className="overflow-hidden border-[3px] border-black">
+                <div className="overflow-hidden border-[3px] border-black rounded-2xl">
                     <Controller
                         control={control}
                         name="latitude"

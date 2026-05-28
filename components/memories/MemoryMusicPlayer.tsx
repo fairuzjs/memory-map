@@ -113,8 +113,8 @@ export function MemoryMusicPlayer({
             ws = WaveSurfer.create({
                 container: waveformRef.current!,
                 waveColor: "rgba(0, 0, 0, 0.2)",
-                progressColor: "#FF00FF",
-                cursorColor: "#FF00FF",
+                progressColor: "#c084fc",
+                cursorColor: "#c084fc",
                 cursorWidth: 2,
                 barWidth: 3,
                 barGap: 1.5,
@@ -269,7 +269,7 @@ export function MemoryMusicPlayer({
             {[0, 1, 2, 3].map((i) => (
                 <div
                     key={i}
-                    className="w-[3px] bg-[#FF00FF]"
+                    className="w-[3px] bg-black"
                     style={{
                         height: isPlaying ? undefined : "4px",
                         animation: isPlaying
@@ -291,10 +291,10 @@ export function MemoryMusicPlayer({
                 }
             `}</style>
 
-            <div className="bg-white border-[3px] border-black shadow-[4px_4px_0_#000] overflow-hidden">
+            <div className="bg-[#FFFDF0] overflow-hidden rounded-2xl transition-all">
                 {/* Header */}
                 <div className="flex items-center gap-3 px-4 pt-4 pb-2">
-                    <div className="w-8 h-8 bg-[#FF00FF] border-[2px] border-black shadow-[2px_2px_0_#000] flex items-center justify-center shrink-0">
+                    <div className="w-8 h-8 bg-[#f5d0fe] border-[2px] border-black shadow-[2px_2px_0_#000] flex items-center justify-center rounded-xl shrink-0">
                         <EqualizerBars />
                     </div>
                     <div className="min-w-0 flex-1">
@@ -305,7 +305,7 @@ export function MemoryMusicPlayer({
                     </div>
                     <button
                         onClick={toggleMute}
-                        className="w-8 h-8 flex items-center justify-center border-[2px] border-black bg-[#E5E5E5] hover:bg-[#FFFF00] transition-colors shrink-0"
+                        className="w-8 h-8 flex items-center justify-center border-[2px] border-black bg-white rounded-xl shadow-[2px_2px_0_#000] hover:bg-[#fef08a] hover:-translate-y-0.5 active:translate-y-px active:shadow-none transition-all shrink-0"
                         title={isMuted ? "Unmute" : "Mute"}
                     >
                         {isMuted ? (
@@ -322,9 +322,9 @@ export function MemoryMusicPlayer({
 
                     {/* Progress overlay on waveform */}
                     {waveformReady && (
-                        <div className="absolute bottom-2 left-4 right-4 h-[3px] bg-[#E5E5E5] border border-black/20 overflow-hidden">
+                        <div className="absolute bottom-2 left-4 right-4 h-1.5 bg-black/10 border border-black/5 rounded-full overflow-hidden">
                             <div
-                                className="h-full bg-[#FF00FF] transition-all duration-150 ease-linear"
+                                className="h-full bg-[#c084fc] rounded-full transition-all duration-150 ease-linear"
                                 style={{ width: `${progress * 100}%` }}
                             />
                         </div>
@@ -336,7 +336,7 @@ export function MemoryMusicPlayer({
                                 {[0, 1, 2].map(i => (
                                     <div
                                         key={i}
-                                        className="w-2 h-2 bg-[#FF00FF] animate-pulse"
+                                        className="w-2 h-2 bg-[#c084fc] rounded-full animate-pulse"
                                         style={{ animationDelay: `${i * 150}ms` }}
                                     />
                                 ))}
@@ -357,7 +357,7 @@ export function MemoryMusicPlayer({
                         {/* Stop */}
                         <button
                             onClick={handleStop}
-                            className="w-8 h-8 flex items-center justify-center border-[2px] border-black bg-white hover:bg-[#E5E5E5] transition-all"
+                            className="w-8 h-8 flex items-center justify-center border-[2px] border-black bg-white rounded-xl shadow-[2px_2px_0_#000] hover:bg-[#fecaca] hover:text-[#991b1b] hover:-translate-y-0.5 active:translate-y-px active:shadow-none transition-all"
                             title="Stop"
                         >
                             <Square className="w-3.5 h-3.5 text-black" />
@@ -366,7 +366,7 @@ export function MemoryMusicPlayer({
                         {/* Play / Pause */}
                         <button
                             onClick={isPlaying ? handlePause : handlePlay}
-                            className="w-10 h-10 flex items-center justify-center bg-[#FF00FF] border-[3px] border-black shadow-[3px_3px_0_#000] text-white hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all"
+                            className="w-10 h-10 flex items-center justify-center bg-[#f5d0fe] border-[2.5px] border-black shadow-[3px_3px_0_#000] text-black hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none transition-all rounded-xl"
                             title={isPlaying ? "Pause" : "Play"}
                         >
                             {isPlaying ? (

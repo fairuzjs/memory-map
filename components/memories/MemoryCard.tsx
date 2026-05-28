@@ -47,6 +47,25 @@ function parseTheme(rawValue: string | null | undefined): CardTheme | null {
     try { return JSON.parse(rawValue) } catch { return null }
 }
 
+function isDarkTheme(theme: CardTheme | null) {
+    if (!theme) return false
+    const bg = theme.background.toLowerCase()
+    return (
+        bg.includes("#0a") ||
+        bg.includes("#1a") ||
+        bg.includes("#03") ||
+        bg.includes("#05") ||
+        bg.includes("#12") ||
+        bg.includes("#15") ||
+        bg.includes("rgba(10,10,20") ||
+        bg.includes("rgba(5,5,15") ||
+        theme.titleColor.toLowerCase().startsWith("#d") ||
+        theme.titleColor.toLowerCase().startsWith("#e") ||
+        theme.titleColor.toLowerCase().startsWith("#f") ||
+        theme.titleColor.toLowerCase().startsWith("#9")
+    )
+}
+
 export function MemoryCard({ memory, isCollaboration, placements = [] }: MemoryCardProps) {
     const collab = isCollaboration ?? memory.isCollaboration ?? false
     const emotion = emotionMap[memory.emotion] ?? emotionMap.HAPPY
@@ -212,7 +231,7 @@ export function MemoryCard({ memory, isCollaboration, placements = [] }: MemoryC
                             className="border-[2px] border-black group-hover/author:border-[#FF00FF] transition-colors object-cover"
                             unoptimized={!memory.user.image || memory.user.image.startsWith("https://api.dicebear.com")}
                         />
-                        <span className={`text-[12px] font-black uppercase transition-colors group-hover/author:text-[#FF00FF] ${theme?.footerTextColor ?? "text-black"}`}>
+                        <span className={`text-[12px] font-black uppercase transition-colors group-hover/author:text-[#FF00FF] ${theme ? (isDarkTheme(theme) ? "text-white" : "text-black") : "text-black"}`}>
                             {memory.user.name}
                         </span>
                     </Link>

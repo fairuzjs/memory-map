@@ -113,12 +113,16 @@ export default function CreateMemoryPage() {
                 const statusRes = await fetch("/api/premium/status")
                 if (statusRes.ok) {
                     const status = await statusRes.json()
-                    if (status.isPremium) {
+                    
+                    // Gunakan spotifyAccess yang baru jika ada
+                    if (status.spotifyAccess) {
+                        setHasSpotifyPremium(status.spotifyAccess.canAttachNewTrack)
+                    }
+
+                    if (status.activePremium) {
                         setMaxPhotos(status.limits.maxPhotos)
                         setMaxCollaborators(status.limits.maxCollaborators)
                         setIsPremium(true)
-                        // Premium users get Spotify auto-unlock
-                        setHasSpotifyPremium(true)
                     }
                 }
             } catch { }
@@ -247,7 +251,7 @@ export default function CreateMemoryPage() {
                         className="relative z-20 flex flex-col items-center justify-center min-h-[60vh] text-center px-4"
                     >
                         {/* Icon */}
-                        <div className="w-20 h-20 flex items-center justify-center mb-6 mx-auto bg-[#FFFF00] border-[4px] border-black shadow-[4px_4px_0_#000]">
+                        <div className="w-20 h-20 flex items-center justify-center mb-6 mx-auto bg-[#FFFF00] border-[3px] border-black shadow-[3px_3px_0_#000] rounded-2xl">
                             <ShieldAlert className="w-9 h-9 text-black" />
                         </div>
 
@@ -266,7 +270,7 @@ export default function CreateMemoryPage() {
                                 {["Judul memory", "Cerita & momen", "Lokasi di peta"].map(label => (
                                     <div
                                         key={label}
-                                        className="h-12 flex items-center px-4 bg-[#E5E5E5] border-[3px] border-black"
+                                        className="h-12 flex items-center px-4 bg-[#E5E5E5] border-[3px] border-black rounded-xl"
                                     >
                                         <span className="text-sm text-neutral-500 font-bold">{label}</span>
                                     </div>
@@ -274,7 +278,7 @@ export default function CreateMemoryPage() {
                             </div>
                             {/* Lock badge overlay */}
                             <div className="absolute inset-0 flex items-center justify-center bg-white/70">
-                                <div className="flex items-center gap-2 px-4 py-2 bg-[#FFFF00] border-[3px] border-black shadow-[3px_3px_0_#000]">
+                                <div className="flex items-center gap-2 px-4 py-2 bg-[#FFFF00] border-[3px] border-black shadow-[3px_3px_0_#000] rounded-xl">
                                     <ShieldAlert className="w-4 h-4 text-black" />
                                     <span className="text-sm font-black text-black uppercase">Konten terkunci</span>
                                 </div>
@@ -285,13 +289,13 @@ export default function CreateMemoryPage() {
                         <div className="flex flex-col sm:flex-row items-center gap-3">
                             <Link
                                 href="/settings?tab=security"
-                                className="flex items-center gap-2.5 px-6 py-3 text-sm font-black text-black uppercase bg-[#FF00FF] text-white border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all"
+                                className="flex items-center gap-2.5 px-6 py-3 text-sm font-black text-black uppercase bg-[#FF00FF] text-white border-[3px] border-black shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] active:translate-y-px active:shadow-none transition-all"
                             >
                                 Verifikasi Email Sekarang
                             </Link>
                             <button
                                 onClick={() => router.back()}
-                                className="flex items-center gap-2 px-6 py-3 text-sm font-black text-black uppercase bg-white border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all"
+                                className="flex items-center gap-2 px-6 py-3 text-sm font-black text-black uppercase bg-white border-[3px] border-black shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] active:translate-y-px active:shadow-none transition-all"
                             >
                                 Kembali
                             </button>
@@ -306,7 +310,7 @@ export default function CreateMemoryPage() {
 
                     {/* Page Header */}
                     <div className="mb-8 text-center">
-                        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#FFFF00] border-[3px] border-black shadow-[3px_3px_0_#000] mb-4">
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#FFFF00] border-[3px] border-black shadow-[3px_3px_0_#000] mb-4 rounded-xl">
                             <Sparkles className="w-4 h-4 text-black" />
                             <span className="text-xs font-black text-black uppercase tracking-widest">Buat Baru</span>
                         </div>
@@ -335,17 +339,17 @@ export default function CreateMemoryPage() {
                                             }
                                         }}
                                         className={`
-                                        flex items-center gap-2.5 px-4 py-2.5 border-[3px] border-black transition-all duration-200
+                                        flex items-center gap-2.5 px-4 py-2.5 border-[3px] border-black transition-all duration-200 rounded-xl
                                         ${isActive
-                                                ? "bg-[#FFFF00] text-black shadow-[4px_4px_0_#000]"
+                                                ? "bg-[#FFFF00] text-black shadow-[3px_3px_0_#000]"
                                                 : isCompleted
-                                                    ? "bg-[#00FF00] text-black shadow-[3px_3px_0_#000] cursor-pointer hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000]"
+                                                    ? "bg-[#00FF00] text-black shadow-[2.5px_2.5px_0_#000] cursor-pointer hover:-translate-y-0.5 hover:shadow-[3.5px_3.5px_0_#000] active:translate-y-px active:shadow-none"
                                                     : "bg-[#E5E5E5] text-neutral-400"
                                             }
                                     `}
                                     >
                                         <div className={`
-                                        w-7 h-7 flex items-center justify-center text-xs font-black transition-all border-[2px] border-black
+                                        w-7 h-7 flex items-center justify-center text-xs font-black transition-all border-[2px] border-black rounded-lg
                                         ${isActive
                                                 ? "bg-black text-[#FFFF00]"
                                                 : isCompleted
@@ -363,7 +367,7 @@ export default function CreateMemoryPage() {
                                         </div>
                                     </button>
                                     {index < STEPS.length - 1 && (
-                                        <div className={`w-6 h-[3px] ${currentStep > index ? "bg-black" : "bg-[#E5E5E5]"}`} />
+                                        <div className={`w-6 h-[3px] rounded-full ${currentStep > index ? "bg-black" : "bg-[#E5E5E5]"}`} />
                                     )}
                                 </div>
                             )
@@ -384,9 +388,9 @@ export default function CreateMemoryPage() {
                                     className="space-y-6"
                                 >
                                     {/* Momen Form */}
-                                    <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000]">
+                                    <div className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[5px_5px_0_#000] rounded-3xl">
                                         <div className="flex items-center gap-3 mb-6">
-                                            <div className="p-2.5 bg-[#00FFFF] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                                            <div className="p-2.5 bg-[#00FFFF] border-[2px] border-black shadow-[2px_2px_0_#000] rounded-xl">
                                                 <BookText className="w-5 h-5 text-black" />
                                             </div>
                                             <div>
@@ -401,7 +405,7 @@ export default function CreateMemoryPage() {
                                                 <Input
                                                     {...register("title")}
                                                     placeholder="Liburan tak terlupakan..."
-                                                    className="!bg-[#E5E5E5] !border-[3px] !border-black !rounded-none focus:!bg-[#FFFF00] !transition-all !text-black !font-bold !placeholder:text-neutral-400"
+                                                    className="!bg-[#E5E5E5] !border-[3px] !border-black !rounded-xl focus:!bg-[#FFFF00] !transition-all !text-black !font-bold !placeholder:text-neutral-400"
                                                     disabled={isSubmitting}
                                                 />
                                                 {errors.title && <p className="text-[#FF0000] text-sm mt-1.5 font-bold">{errors.title.message}</p>}
@@ -411,7 +415,7 @@ export default function CreateMemoryPage() {
                                                 <label className="block text-sm font-black text-black uppercase tracking-wider mb-2">Cerita</label>
                                                 <textarea
                                                     {...register("story")}
-                                                    className="w-full min-h-[140px] bg-[#E5E5E5] border-[3px] border-black p-4 text-base focus:bg-[#FFFF00] outline-none resize-none transition-all placeholder:text-neutral-400 text-black font-bold"
+                                                    className="w-full min-h-[140px] bg-[#E5E5E5] border-[3px] border-black p-4 text-base focus:bg-[#FFFF00] outline-none resize-none transition-all placeholder:text-neutral-400 text-black font-bold rounded-xl"
                                                     placeholder="Ceritakan apa yang terjadi... setiap detail berharga."
                                                     disabled={isSubmitting}
                                                 />
@@ -423,7 +427,7 @@ export default function CreateMemoryPage() {
                                                 <Input
                                                     type="date"
                                                     {...register("date")}
-                                                    className="!bg-[#E5E5E5] !border-[3px] !border-black !rounded-none focus:!bg-[#FFFF00] !transition-all !text-black !font-bold"
+                                                    className="!bg-[#E5E5E5] !border-[3px] !border-black !rounded-xl focus:!bg-[#FFFF00] !transition-all !text-black !font-bold"
                                                     disabled={isSubmitting}
                                                 />
                                                 {errors.date && <p className="text-[#FF0000] text-sm mt-1.5 font-bold">{errors.date.message}</p>}
@@ -432,9 +436,9 @@ export default function CreateMemoryPage() {
                                     </div>
 
                                     {/* Emotion */}
-                                    <div data-tutorial="input-emotion" className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000]">
+                                    <div data-tutorial="input-emotion" className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[5px_5px_0_#000] rounded-3xl">
                                         <div className="flex items-center gap-3 mb-6">
-                                            <div className="p-2.5 bg-[#FF00FF] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                                            <div className="p-2.5 bg-[#FF00FF] border-[2px] border-black shadow-[2px_2px_0_#000] rounded-xl">
                                                 <Smile className="w-5 h-5 text-white" />
                                             </div>
                                             <div>
@@ -463,9 +467,9 @@ export default function CreateMemoryPage() {
                                     />
 
                                     {/* Location */}
-                                    <div data-tutorial="input-location" className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000] relative z-30">
+                                    <div data-tutorial="input-location" className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[5px_5px_0_#000] relative z-30 rounded-3xl">
                                         <div className="flex items-center gap-3 mb-6">
-                                            <div className="p-2.5 bg-[#FFFF00] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                                            <div className="p-2.5 bg-[#FFFF00] border-[2px] border-black shadow-[2px_2px_0_#000] rounded-xl">
                                                 <MapPin className="w-5 h-5 text-black" />
                                             </div>
                                             <div>
@@ -473,7 +477,7 @@ export default function CreateMemoryPage() {
                                                 <p className="text-xs text-neutral-500 font-bold">Tandai tempat kenangan</p>
                                             </div>
                                         </div>
-                                        <div className="overflow-hidden border-[3px] border-black">
+                                        <div className="overflow-hidden border-[3px] border-black rounded-2xl">
                                             <Controller
                                                 control={control}
                                                 name="latitude"
@@ -512,7 +516,7 @@ export default function CreateMemoryPage() {
                                             type="button"
                                             onClick={() => router.back()}
                                             disabled={isSubmitting}
-                                            className="px-6 py-2.5 text-sm font-black text-black uppercase bg-white border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all disabled:opacity-50"
+                                            className="px-6 py-2.5 text-sm font-black text-black uppercase bg-white border-[3px] border-black shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] active:translate-y-px active:shadow-none transition-all disabled:opacity-50"
                                         >
                                             Batal
                                         </button>
@@ -520,7 +524,7 @@ export default function CreateMemoryPage() {
                                             type="button"
                                             onClick={handleNext}
                                             data-tutorial="btn-next-step"
-                                            className="flex items-center gap-2 px-6 py-2.5 text-sm font-black text-black uppercase bg-[#FFFF00] border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all"
+                                            className="flex items-center gap-2 px-6 py-2.5 text-sm font-black text-black uppercase bg-[#FFFF00] border-[3px] border-black shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] active:translate-y-px active:shadow-none transition-all"
                                         >
                                             Lanjutkan
                                             <ArrowRight className="w-4 h-4" />
@@ -528,7 +532,6 @@ export default function CreateMemoryPage() {
                                     </div>
                                 </motion.div>
                             )}
-
                             {currentStep === 1 && (
                                 <motion.div
                                     key="step-1"
@@ -541,10 +544,10 @@ export default function CreateMemoryPage() {
                                     className="space-y-6"
                                 >
                                     {/* Cover Image Section */}
-                                    <div data-tutorial="cover-section" className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000]">
+                                    <div data-tutorial="cover-section" className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[5px_5px_0_#000] rounded-3xl">
                                         <div className="flex items-center justify-between mb-5">
                                             <div className="flex items-center gap-3">
-                                                <div className="p-2.5 bg-[#FFFF00] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                                                <div className="p-2.5 bg-[#FFFF00] border-[2px] border-black shadow-[2px_2px_0_#000] rounded-xl">
                                                     <Crop className="w-5 h-5 text-black" />
                                                 </div>
                                                 <div>
@@ -556,13 +559,13 @@ export default function CreateMemoryPage() {
                                                 type="button"
                                                 data-tutorial="btn-atur-cover"
                                                 onClick={() => setShowCoverEditor(true)}
-                                                className="flex items-center gap-2 px-4 py-2 text-xs font-black uppercase text-black border-[3px] border-black bg-[#00FFFF] shadow-[3px_3px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0_#000] transition-all"
+                                                className="flex items-center gap-2 px-4 py-2 text-xs font-black uppercase text-black border-[3px] border-black bg-[#00FFFF] shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] active:translate-y-px active:shadow-none transition-all"
                                             >
 
                                                 {watch("coverImage") ? "Edit Cover" : "Atur Cover"}
                                             </button>
                                         </div>
-                                        <div className="relative w-full border-[3px] border-black overflow-hidden bg-[#E5E5E5] shadow-[3px_3px_0_#000]" style={{ aspectRatio: "16/9" }}>
+                                        <div className="relative w-full border-[3px] border-black overflow-hidden bg-[#E5E5E5] shadow-[3px_3px_0_#000] rounded-2xl" style={{ aspectRatio: "16/9" }}>
                                             {watch("coverImage") ? (
                                                 <img src={watch("coverImage")!} alt="Cover preview" className="w-full h-full object-cover" />
                                             ) : (
@@ -570,7 +573,7 @@ export default function CreateMemoryPage() {
                                                     className="w-full h-full flex flex-col items-center justify-center gap-3 bg-[#E5E5E5]"
                                                     style={{ backgroundImage: "linear-gradient(#D5D5D5 2px, transparent 2px), linear-gradient(90deg, #D5D5D5 2px, transparent 2px)", backgroundSize: "24px 24px" }}
                                                 >
-                                                    <div className="w-14 h-14 bg-white border-[3px] border-black shadow-[3px_3px_0_#000] flex items-center justify-center">
+                                                    <div className="w-14 h-14 bg-white border-[3px] border-black shadow-[3px_3px_0_#000] flex items-center justify-center rounded-xl">
                                                         <ImageIcon className="w-7 h-7 text-black/40" />
                                                     </div>
                                                     <p className="text-[11px] font-black text-black/40 uppercase tracking-wider text-center px-4">
@@ -614,9 +617,9 @@ export default function CreateMemoryPage() {
                                     {/* Photos & Music in 2-column grid */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         {/* Photos */}
-                                        <div data-tutorial="photo-uploader" className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000]">
+                                        <div data-tutorial="photo-uploader" className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[5px_5px_0_#000] rounded-3xl">
                                             <div className="flex items-center gap-3 mb-6">
-                                                <div className="p-2.5 bg-[#00FF00] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                                                <div className="p-2.5 bg-[#00FF00] border-[2px] border-black shadow-[2px_2px_0_#000] rounded-xl">
                                                     <ImagePlus className="w-5 h-5 text-black" />
                                                 </div>
                                                 <div>
@@ -639,10 +642,10 @@ export default function CreateMemoryPage() {
                                         </div>
 
                                         {/* Music */}
-                                        <div data-tutorial="music-uploader" className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000] flex flex-col h-full">
+                                        <div data-tutorial="music-uploader" className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[5px_5px_0_#000] flex flex-col h-full rounded-3xl">
                                             <div className="flex items-center justify-between mb-6">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="p-2.5 bg-[#FF00FF] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                                                    <div className="p-2.5 bg-[#FF00FF] border-[2px] border-black shadow-[2px_2px_0_#000] rounded-xl">
                                                         <Music className="w-5 h-5 text-white" />
                                                     </div>
                                                     <div>
@@ -654,7 +657,7 @@ export default function CreateMemoryPage() {
 
                                             {/* Music Source Tabs */}
                                             <div className="flex-1 flex flex-col gap-4">
-                                                <div className="flex border-[3px] border-black overflow-hidden">
+                                                <div className="flex border-[3px] border-black overflow-hidden rounded-xl bg-white">
                                                     <button
                                                         type="button"
                                                         onClick={() => setMusicTab("upload")}
@@ -680,7 +683,7 @@ export default function CreateMemoryPage() {
                                                     </button>
                                                 </div>
 
-                                                <div className="flex-1 bg-[#E5E5E5] border-[3px] border-black p-4">
+                                                <div className="flex-1 bg-[#FFFDF0] border-[3px] border-black p-4 rounded-xl shadow-[2.5px_2.5px_0_#000]">
                                                     {musicTab === "upload" ? (
                                                         <Controller
                                                             control={control}
@@ -732,9 +735,9 @@ export default function CreateMemoryPage() {
                                     </div>
 
                                     {/* Collaborators */}
-                                    <div data-tutorial="collaborator-picker" className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000] relative z-20">
+                                    <div data-tutorial="collaborator-picker" className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[5px_5px_0_#000] relative z-20 rounded-3xl">
                                         <div className="flex items-center gap-3 mb-2">
-                                            <div className="p-2.5 bg-[#00FFFF] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                                            <div className="p-2.5 bg-[#00FFFF] border-[2px] border-black shadow-[2px_2px_0_#000] rounded-xl">
                                                 <Users className="w-5 h-5 text-black" />
                                             </div>
                                             <div>
@@ -761,10 +764,10 @@ export default function CreateMemoryPage() {
                                     </div>
 
                                     {/* Settings */}
-                                    <div data-tutorial="privacy-toggle" className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[4px_4px_0_#000] relative z-10">
+                                    <div data-tutorial="privacy-toggle" className="bg-white p-6 sm:p-8 border-[3px] border-black shadow-[5px_5px_0_#000] relative z-10 rounded-3xl">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-3">
-                                                <div className="p-2.5 bg-[#FFFF00] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                                                <div className="p-2.5 bg-[#FFFF00] border-[2px] border-black shadow-[2px_2px_0_#000] rounded-xl">
                                                     <Globe className="w-5 h-5 text-black" />
                                                 </div>
                                                 <div>
@@ -774,7 +777,7 @@ export default function CreateMemoryPage() {
                                             </div>
                                             <label className="relative inline-flex items-center cursor-pointer">
                                                 <input type="checkbox" {...register("isPublic")} className="sr-only peer" />
-                                                <div className="w-14 h-8 bg-[#E5E5E5] border-[3px] border-black peer-focus:outline-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[1px] after:left-[2px] after:bg-white after:border-[2px] after:border-black after:h-6 after:w-6 after:transition-all peer-checked:bg-[#00FF00]"></div>
+                                                <div className="w-14 h-8 bg-[#E5E5E5] border-[3px] border-black rounded-full peer-focus:outline-none peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[1px] after:left-[2px] after:bg-white after:border-[2px] after:border-black after:h-6 after:w-6 after:rounded-full after:transition-all peer-checked:bg-[#00FF00]"></div>
                                             </label>
                                         </div>
                                     </div>
@@ -785,7 +788,7 @@ export default function CreateMemoryPage() {
                                             type="button"
                                             onClick={handleBack}
                                             disabled={isSubmitting}
-                                            className="flex items-center gap-2 px-6 py-2.5 text-sm font-black text-black uppercase bg-white border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all disabled:opacity-50"
+                                            className="flex items-center gap-2 px-6 py-2.5 text-sm font-black text-black uppercase bg-white border-[3px] border-black shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] active:translate-y-px active:shadow-none transition-all disabled:opacity-50"
                                         >
                                             <ArrowLeft className="w-4 h-4" />
                                             Kembali
@@ -794,7 +797,7 @@ export default function CreateMemoryPage() {
                                             type="submit"
                                             disabled={isSubmitting}
                                             data-tutorial="btn-submit"
-                                            className="flex items-center gap-2 px-8 py-2.5 text-sm font-black text-black uppercase bg-[#00FF00] border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all disabled:opacity-50"
+                                            className="flex items-center gap-2 px-8 py-2.5 text-sm font-black text-black uppercase bg-[#00FF00] border-[3px] border-black shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] active:translate-y-px active:shadow-none transition-all disabled:opacity-50"
                                         >
                                             <Save className="w-4 h-4" />
                                             {isSubmitting ? "Menyimpan..." : "Simpan Kenangan"}

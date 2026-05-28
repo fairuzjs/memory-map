@@ -114,7 +114,7 @@ export default function LocationPicker({ latitude, longitude, locationName, onCh
         <div className="space-y-4">
             {/* Search Bar */}
             <div className="flex gap-2">
-                <div className="relative flex-1">
+                <div className="relative flex-1 flex items-center bg-white border-[2.5px] border-black rounded-xl overflow-hidden focus-within:bg-[#FFFDF0] transition-all">
                     <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black" />
                     <input
                         value={searchQuery}
@@ -124,7 +124,7 @@ export default function LocationPicker({ latitude, longitude, locationName, onCh
                         }}
                         onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                         placeholder="Cari lokasi (cth: Bali, Jakarta)"
-                        className="w-full pl-9 pr-10 py-2.5 bg-[#E5E5E5] border-[3px] border-black text-black font-bold placeholder:text-neutral-400 outline-none focus:bg-[#FFFF00] transition-all text-sm"
+                        className="w-full pl-9 pr-10 py-2.5 bg-transparent text-black font-bold placeholder:text-neutral-400 outline-none text-sm"
                     />
                     {searchQuery && (
                         <button
@@ -136,10 +136,10 @@ export default function LocationPicker({ latitude, longitude, locationName, onCh
                         </button>
                     )}
                     {showSuggestions && suggestions.length > 0 && (
-                        <div className="absolute z-50 w-full mt-1 bg-white border-[3px] border-black shadow-[4px_4px_0_#000] overflow-hidden max-h-64 overflow-y-auto">
+                        <div className="absolute z-50 w-full mt-1 bg-[#FFFDF0] border-[2.5px] border-black shadow-[5px_5px_0_#000] rounded-2xl overflow-hidden max-h-64 overflow-y-auto">
                             {suggestions.map((s, i) => (
                                 <button key={i} type="button"
-                                    className="w-full text-left px-4 py-2.5 text-sm text-black font-bold hover:bg-[#FFFF00] transition-colors border-b-[2px] border-black last:border-b-0 truncate"
+                                    className="w-full text-left px-4 py-2.5 text-xs text-black font-black uppercase hover:bg-[#fef08a]/35 transition-colors border-b-[2px] border-black/10 last:border-b-0 truncate"
                                     onClick={() => handleSelectSuggestion(s)}
                                 >
                                     {s.display_name}
@@ -152,7 +152,7 @@ export default function LocationPicker({ latitude, longitude, locationName, onCh
                     type="button"
                     onClick={(e) => handleSearch(e)}
                     disabled={isSearching}
-                    className="flex items-center gap-2 px-4 py-2.5 bg-[#00FFFF] border-[3px] border-black shadow-[3px_3px_0_#000] text-black font-black text-sm uppercase hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all disabled:opacity-50 shrink-0"
+                    className="flex items-center gap-2 px-4 py-2.5 bg-[#86efac] border-[2.5px] border-black shadow-[3px_3px_0_#000] text-black font-black text-sm uppercase hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-0 active:translate-y-0 active:shadow-none transition-all disabled:opacity-50 shrink-0 rounded-xl"
                 >
                     <Search className="w-4 h-4" />
                     {isSearching ? "..." : "Cari"}
@@ -173,41 +173,39 @@ export default function LocationPicker({ latitude, longitude, locationName, onCh
 
                     {/* Style Switcher — top-right */}
                     <div className="absolute top-3 right-3 z-10 flex flex-col items-end gap-1.5">
+                        {/* Toggle Button */}
+                        <button
+                            type="button"
+                            onClick={() => setStyleOpen(o => !o)}
+                            className="flex items-center gap-1.5 px-2.5 py-1.5 text-[10px] font-black uppercase border-[2px] border-black shadow-[2px_2px_0_#000] bg-[#FFFDF0] text-black hover:bg-[#fef08a] hover:translate-x-[-0.5px] hover:translate-y-[-0.5px] hover:shadow-[3px_3px_0_#000] active:translate-x-0 active:translate-y-0 active:shadow-none transition-all duration-150"
+                            title="Ganti tampilan peta"
+                        >
+                            <Layers className="w-3.5 h-3.5 text-black shrink-0" />
+                            <span>{activeStyleLabel}</span>
+                        </button>
+
                         {styleOpen && (
-                            <div className="flex flex-col gap-1 mb-0.5">
+                            <div className="bg-white border-[2px] border-black shadow-[3px_3px_0_#000] rounded-xl p-1.5 flex flex-col gap-1 min-w-[110px]">
                                 {MAP_STYLES.map(s => (
                                     <button
                                         key={s.id}
                                         type="button"
                                         onClick={() => { setMapStyle(s.style); setStyleOpen(false) }}
-                                        className={`flex items-center gap-2 px-2.5 py-1.5 text-xs font-black uppercase transition-all duration-150 border-[2px] border-black ${
+                                        className={`flex items-center gap-1.5 w-full px-2 py-1 rounded text-[9px] font-black uppercase border-[1.5px] transition-all duration-150 ${
                                             mapStyle === s.style
-                                                ? "bg-[#FFFF00] text-black shadow-[2px_2px_0_#000]"
-                                                : "bg-white text-black hover:bg-[#E5E5E5]"
+                                                ? "bg-[#fef08a] border-black shadow-[1.5px_1.5px_0_#000]"
+                                                : "bg-white border-black/10 hover:border-black hover:bg-[#F5F2EB] shadow-none"
                                         }`}
                                     >
                                         <span
-                                            className="w-3 h-3 border-[1.5px] border-black shrink-0"
+                                            className="w-2.5 h-2.5 rounded-full border border-black shrink-0"
                                             style={{ backgroundColor: s.preview }}
                                         />
-                                        {s.label}
+                                        <span>{s.label}</span>
                                     </button>
                                 ))}
                             </div>
                         )}
-                        <button
-                            type="button"
-                            onClick={() => setStyleOpen(o => !o)}
-                            className={`flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-black uppercase transition-all duration-150 border-[2px] border-black ${
-                                styleOpen
-                                    ? "bg-[#FFFF00] text-black shadow-[2px_2px_0_#000]"
-                                    : "bg-white text-black hover:bg-[#E5E5E5]"
-                            }`}
-                            title="Ganti tampilan peta"
-                        >
-                            <Layers className="w-3.5 h-3.5" />
-                            <span>{activeStyleLabel}</span>
-                        </button>
                     </div>
 
                     {/* Location Pin Marker */}
@@ -241,15 +239,11 @@ export default function LocationPicker({ latitude, longitude, locationName, onCh
                                     </div>
                                 )
                             })() : (
-                                <div style={{
-                                    backgroundColor: '#6366f1',
-                                    width: '32px', height: '32px',
-                                    borderRadius: '50%',
-                                    border: '3px solid white',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    boxShadow: '0 4px 12px rgba(99,102,241,0.5)'
-                                }}>
-                                    <span style={{ fontSize: '16px' }}>📍</span>
+                                <div className="relative flex flex-col items-center group">
+                                    <div className="w-9 h-9 rounded-full border-[2.5px] border-black bg-[#fef08a] flex items-center justify-center shadow-[2.5px_2.5px_0_#000] z-10 transition-transform duration-200 group-hover:-translate-y-0.5">
+                                        <span className="text-base select-none">📍</span>
+                                    </div>
+                                    <div className="w-3.5 h-3.5 border-r-[2.5px] border-b-[2.5px] border-black bg-[#fef08a] rotate-45 -mt-[9px] z-0 shadow-[1.5px_1.5px_0_#000] transition-transform duration-200 group-hover:-translate-y-0.5" />
                                 </div>
                             )}
                         </Marker>

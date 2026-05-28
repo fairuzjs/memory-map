@@ -105,7 +105,7 @@ function FieldGroup({ label, icon: Icon, hint, children }: {
     )
 }
 
-const inputClass = "w-full bg-[#E5E5E5] border-[3px] border-black px-4 py-3 text-black font-bold placeholder-neutral-400 focus:outline-none focus:bg-[#FFFF00] text-sm transition-all"
+const inputClass = "w-full bg-neutral-50 border-[2.5px] border-black px-4 py-3 text-black font-bold placeholder-neutral-400 focus:outline-none focus:bg-[#fef08a] rounded-xl shadow-[2px_2px_0_#000] focus:shadow-[4px_4px_0_#000] text-sm transition-all"
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function SettingsPage() {
@@ -372,7 +372,7 @@ export default function SettingsPage() {
         return (
             <div className="flex-1 flex items-center justify-center min-h-[70vh]">
                 <div className="flex flex-col items-center gap-4">
-                    <div className="w-12 h-12 bg-[#FFFF00] border-[3px] border-black shadow-[4px_4px_0_#000] flex items-center justify-center">
+                    <div className="w-12 h-12 bg-[#fef08a] border-[2.5px] border-black shadow-[4px_4px_0_#000] flex items-center justify-center rounded-xl">
                         <Loader2 className="w-5 h-5 text-black animate-spin" />
                     </div>
                     <p className="text-sm text-black font-black uppercase">Memuat pengaturan...</p>
@@ -395,12 +395,12 @@ export default function SettingsPage() {
                     >
                         <motion.div
                             initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
-                            className="w-full max-w-lg bg-white border-[4px] border-black shadow-[8px_8px_0_#000] overflow-hidden"
+                            className="w-full max-w-lg bg-white border-[3px] border-black shadow-[8px_8px_0_#000] overflow-hidden rounded-2xl"
                         >
                             {/* Modal header */}
                             <div className="px-6 pt-6 pb-4 border-b-[3px] border-black">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-9 h-9 flex items-center justify-center bg-[#00FFFF] border-[3px] border-black shadow-[2px_2px_0_#000]">
+                                    <div className="w-9 h-9 flex items-center justify-center bg-[#67e8f9] border-[2.5px] border-black shadow-[2px_2px_0_#000] rounded-xl">
                                         <Camera className="w-4 h-4 text-black" />
                                     </div>
                                     <div>
@@ -430,23 +430,23 @@ export default function SettingsPage() {
                                     <div>
                                         <div className="flex items-center justify-between mb-2">
                                             <label className="text-xs font-black text-black uppercase tracking-wider">Zoom</label>
-                                            <span className="text-xs text-black font-black font-mono bg-[#FFFF00] border-[2px] border-black px-2 py-0.5">{zoom.toFixed(1)}×</span>
+                                            <span className="text-xs text-black font-black font-mono bg-[#fef08a] border-[2px] border-black px-2 py-0.5 rounded-lg shadow-[1.5px_1.5px_0_#000]">{zoom.toFixed(1)}×</span>
                                         </div>
                                         <input
                                             type="range" min={1} max={3} step={0.1} value={zoom}
                                             onChange={(e) => setZoom(Number(e.target.value))}
-                                            className="w-full h-2 appearance-none accent-black cursor-pointer bg-[#E5E5E5] border-[2px] border-black"
+                                            className="w-full h-2 appearance-none accent-black cursor-pointer bg-[#E5E5E5] border-[2px] border-black rounded-lg"
                                         />
                                     </div>
                                     <div>
                                         <div className="flex items-center justify-between mb-2">
                                             <label className="text-xs font-black text-black uppercase tracking-wider">Rotasi</label>
-                                            <span className="text-xs text-black font-black font-mono bg-[#00FFFF] border-[2px] border-black px-2 py-0.5">{rotation}°</span>
+                                            <span className="text-xs text-black font-black font-mono bg-[#67e8f9] border-[2px] border-black px-2 py-0.5 rounded-lg shadow-[1.5px_1.5px_0_#000]">{rotation}°</span>
                                         </div>
                                         <input
                                             type="range" min={0} max={360} step={1} value={rotation}
                                             onChange={(e) => setRotation(Number(e.target.value))}
-                                            className="w-full h-2 appearance-none accent-black cursor-pointer bg-[#E5E5E5] border-[2px] border-black"
+                                            className="w-full h-2 appearance-none accent-black cursor-pointer bg-[#E5E5E5] border-[2px] border-black rounded-lg"
                                         />
                                     </div>
                                 </div>
@@ -454,13 +454,13 @@ export default function SettingsPage() {
                                 <div className="flex gap-3 pt-1">
                                     <button
                                         onClick={() => setIsCropping(false)}
-                                        className="flex-1 py-2.5 text-sm font-black text-black uppercase bg-white border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all"
+                                        className="flex-1 py-2.5 text-sm font-black text-black uppercase bg-white border-[2.5px] border-black shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 active:translate-y-px active:shadow-none transition-all"
                                     >
                                         Batal
                                     </button>
                                     <button
                                         onClick={saveCrop}
-                                        className="flex-1 py-2.5 text-sm font-black text-black uppercase flex items-center justify-center gap-2 bg-[#00FF00] border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all"
+                                        className="flex-1 py-2.5 text-sm font-black text-black uppercase flex items-center justify-center gap-2 bg-[#86efac] border-[2.5px] border-black shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 active:translate-y-px active:shadow-none transition-all"
                                     >
                                         <Check className="w-4 h-4" /> Simpan
                                     </button>
@@ -477,7 +477,7 @@ export default function SettingsPage() {
                     {/* Back link */}
                     <Link
                         href={`/profile/${session?.user?.id}`}
-                        className="inline-flex items-center gap-2 text-sm text-black font-black uppercase bg-white border-[2px] border-black px-3 py-1.5 shadow-[2px_2px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all group mb-8"
+                        className="inline-flex items-center gap-2 text-sm text-black font-black uppercase bg-white border-[2px] border-black px-3 py-1.5 shadow-[2px_2px_0_#000] hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#000] hover:bg-[#fef08a] active:translate-y-px active:shadow-none transition-all group mb-8 rounded-xl"
                     >
                         <ArrowLeft className="w-4 h-4" />
                         Kembali ke Profil
@@ -486,7 +486,7 @@ export default function SettingsPage() {
                     {/* Page header */}
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div className="flex items-center gap-4">
-                            <div className="w-14 h-14 flex items-center justify-center shrink-0 bg-[#FFFF00] border-[3px] border-black shadow-[4px_4px_0_#000]">
+                            <div className="w-14 h-14 flex items-center justify-center shrink-0 bg-[#fef08a] border-[2.5px] border-black shadow-[3.5px_3.5px_0_#000] rounded-2xl">
                                 <Settings className="w-6 h-6 text-black" />
                             </div>
                             <div>
@@ -496,7 +496,7 @@ export default function SettingsPage() {
                         </div>
 
                         {/* Avatar preview pill */}
-                        <div className="hidden sm:flex items-center gap-3 px-4 py-2.5 shrink-0 bg-white border-[3px] border-black shadow-[3px_3px_0_#000]">
+                        <div className="hidden sm:flex items-center gap-3 px-4 py-2.5 shrink-0 bg-white border-[2.5px] border-black shadow-[3px_3px_0_#000] rounded-xl">
                             <img src={avatarSrc} alt="Avatar" className="w-9 h-9 rounded-full object-cover border-[2px] border-black" />
                             <div>
                                 <p className="text-sm font-black text-black leading-none">{name || "Nama Belum Diisi"}</p>
@@ -511,12 +511,12 @@ export default function SettingsPage() {
             <div className="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
 
                 {/* Tab bar */}
-                <div className="flex gap-0 mb-8 overflow-hidden border-[3px] border-black shadow-[4px_4px_0_#000]">
+                <div className="flex gap-0 mb-8 overflow-hidden border-[3px] border-black shadow-[4px_4px_0_#000] rounded-2xl bg-white">
                     {TABS.map((t, i, arr) => (
                         <button
                             key={t.id}
                             onClick={() => setTab(t.id)}
-                            className={`relative flex-1 flex items-center justify-center gap-2.5 py-3 text-sm font-black uppercase transition-all ${i < arr.length - 1 ? 'border-r-[3px] border-black' : ''} ${tab === t.id ? 'bg-[#FFFF00] text-black' : 'bg-white text-neutral-400 hover:bg-[#E5E5E5] hover:text-black'}`}
+                            className={`relative flex-1 flex items-center justify-center gap-2.5 py-3 text-sm font-black uppercase transition-all ${i < arr.length - 1 ? 'border-r-[3px] border-black' : ''} ${tab === t.id ? 'bg-[#fef08a] text-black' : 'bg-white text-neutral-400 hover:bg-neutral-50 hover:text-black'}`}
                         >
                             <t.icon className="w-4 h-4" />
                             <span>{t.label}</span>
@@ -539,7 +539,7 @@ export default function SettingsPage() {
                         >
                             {/* Avatar Card */}
                             <div
-                                className="overflow-hidden bg-white border-[3px] border-black shadow-[4px_4px_0_#000]"
+                                className="rounded-2xl border-[3px] border-black bg-white shadow-[4px_4px_0_#000] overflow-hidden"
                             >
                                 {/* Card header */}
                                 <div className="px-6 pt-5 pb-4 flex items-center gap-2 border-b-[3px] border-black">
@@ -581,7 +581,7 @@ export default function SettingsPage() {
                                                 type="button"
                                                 onClick={() => avatarInputRef.current?.click()}
                                                 disabled={uploadingPhoto}
-                                                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-black text-black uppercase bg-[#00FFFF] border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all"
+                                                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-black text-black uppercase bg-[#67e8f9] border-[2.5px] border-black rounded-xl shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all"
                                             >
                                                 <Camera className="w-3.5 h-3.5" />
                                                 {uploadingPhoto ? "Mengunggah..." : "Unggah Foto Baru"}
@@ -604,11 +604,7 @@ export default function SettingsPage() {
                                                         key={idx}
                                                         type="button"
                                                         onClick={() => { setImage(url); setPreviewImage(url) }}
-                                                        className="relative rounded-full overflow-hidden w-12 h-12 transition-all hover:scale-110 active:scale-95 shrink-0"
-                                                        style={{
-                                                            border: isSelected ? "3px solid #000" : "3px solid #E5E5E5",
-                                                            boxShadow: isSelected ? "3px 3px 0 #000" : "none",
-                                                        }}
+                                                        className={`relative rounded-full overflow-hidden w-12 h-12 transition-all hover:scale-105 active:scale-95 shrink-0 border-[2.5px] border-black ${isSelected ? 'shadow-[2.5px_2.5px_0_#000] scale-105' : 'opacity-80 hover:opacity-100'}`}
                                                         title={`Avatar ${idx + 1}`}
                                                     >
                                                         <img src={url} alt={`Avatar ${idx + 1}`} className="w-full h-full object-cover" />
@@ -628,7 +624,7 @@ export default function SettingsPage() {
 
                             {/* Basic Info Card */}
                             <div
-                                className="overflow-hidden bg-white border-[3px] border-black shadow-[4px_4px_0_#000]"
+                                className="rounded-2xl border-[3px] border-black bg-white shadow-[4px_4px_0_#000] overflow-hidden"
                             >
                                 <div className="px-6 pt-5 pb-4 flex items-center gap-2 border-b-[3px] border-black">
                                     <User className="w-4 h-4 text-black" />
@@ -643,12 +639,12 @@ export default function SettingsPage() {
                                                 type="email"
                                                 value={userEmail}
                                                 readOnly
-                                                className="w-full bg-[#E5E5E5] border-[3px] border-black px-4 py-3 text-neutral-500 cursor-not-allowed focus:outline-none text-sm pr-28 font-bold"
+                                                className="w-full bg-neutral-100 border-[2.5px] border-black px-4 py-3 text-neutral-500 cursor-not-allowed focus:outline-none text-sm pr-36 font-bold rounded-xl shadow-[2px_2px_0_#000]"
                                             />
                                             <div className="absolute right-3 top-1/2 -translate-y-1/2">
                                                 {isEmailVerified
-                                                    ? <span className="flex items-center gap-1 text-[10px] font-black text-black bg-[#00FF00] border-[2px] border-black px-2 py-1"><ShieldCheck className="w-3 h-3" />Terverifikasi</span>
-                                                    : <span className="flex items-center gap-1 text-[10px] font-black text-black bg-[#FFFF00] border-[2px] border-black px-2 py-1"><ShieldAlert className="w-3 h-3" />Belum Diverifikasi</span>
+                                                    ? <span className="flex items-center gap-1 text-[10px] font-black text-black bg-[#86efac] border-[2px] border-black px-2.5 py-1 rounded-lg"><ShieldCheck className="w-3 h-3" />Terverifikasi</span>
+                                                    : <span className="flex items-center gap-1 text-[10px] font-black text-black bg-[#fef08a] border-[2px] border-black px-2.5 py-1 rounded-lg"><ShieldAlert className="w-3 h-3" />Belum Diverifikasi</span>
                                                 }
                                             </div>
                                         </div>
@@ -698,7 +694,7 @@ export default function SettingsPage() {
                                             {username && !usernameError && (
                                                 <motion.div
                                                     initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
-                                                    className="flex items-center gap-2 px-3.5 py-2.5 bg-[#00FFFF] border-[2px] border-black shadow-[2px_2px_0_#000]"
+                                                    className="flex items-center gap-2 px-3.5 py-2.5 bg-[#67e8f9] border-[2px] border-black shadow-[2.5px_2.5px_0_#000] rounded-xl"
                                                 >
                                                     <LinkIcon className="w-3.5 h-3.5 text-black shrink-0" />
                                                     <span className="text-xs text-black font-black font-mono">
@@ -743,7 +739,7 @@ export default function SettingsPage() {
                             transition={{ duration: 0.22 }}
                         >
                             <div
-                                className="overflow-hidden bg-white border-[3px] border-black shadow-[4px_4px_0_#000]"
+                                className="rounded-2xl border-[3px] border-black bg-white shadow-[4px_4px_0_#000] overflow-hidden"
                             >
                                 {/* Card header */}
                                 <div className="px-6 pt-5 pb-4 border-b-[3px] border-black">
@@ -758,11 +754,11 @@ export default function SettingsPage() {
                                     {SOCIALS.map(s => (
                                         <div
                                             key={s.key}
-                                            className="p-4 transition-all border-[2px] border-black bg-white"
+                                            className="rounded-xl border-[2.5px] border-black shadow-[2.5px_2.5px_0_#000] hover:-translate-y-0.5 transition-all bg-white p-4"
                                         >
                                             {/* Platform Label */}
                                             <label className="flex items-center gap-3 mb-3 cursor-default">
-                                                <div className="w-8 h-8 flex items-center justify-center shrink-0 bg-[#E5E5E5] border-[2px] border-black">
+                                                <div className="w-8 h-8 flex items-center justify-center shrink-0 bg-neutral-50 border-[2px] border-black rounded-lg">
                                                     <s.icon className="w-4 h-4 text-black" />
                                                 </div>
                                                 <div>
@@ -770,7 +766,7 @@ export default function SettingsPage() {
                                                     <p className="text-[11px] text-neutral-500 font-bold">{s.placeholder}</p>
                                                 </div>
                                                 {socials[s.key] && (
-                                                    <div className="ml-auto flex items-center gap-1.5 px-2.5 py-1 bg-[#00FF00] border-[2px] border-black">
+                                                    <div className="ml-auto flex items-center gap-1.5 px-2.5 py-1 bg-[#86efac] border-[2px] border-black rounded-lg">
                                                         <Check className="w-3 h-3 text-black" />
                                                         <span className="text-[10px] font-black text-black">Terhubung</span>
                                                     </div>
@@ -797,7 +793,7 @@ export default function SettingsPage() {
                                                                 const top = (window.screen.height / 2) - (h / 2)
                                                                 window.open(url, "VerifyLink", `width=${w},height=${h},top=${top},left=${left},scrollbars=yes,status=no`)
                                                             }}
-                                                            className="flex items-center gap-1.5 text-xs font-black px-3 py-1.5 uppercase bg-white text-black border-[2px] border-black shadow-[2px_2px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all"
+                                                            className="flex items-center gap-1.5 text-[10px] font-black px-2.5 py-1 uppercase bg-[#fef08a] text-black border-[2px] border-black shadow-[1.5px_1.5px_0_#000] hover:translate-x-[-0.5px] hover:translate-y-[-0.5px] hover:shadow-[2px_2px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all rounded-lg"
                                                         >
                                                             <ExternalLink className="w-3.5 h-3.5" />
                                                             Cek URL
@@ -809,10 +805,10 @@ export default function SettingsPage() {
                                     ))}
 
                                     <div
-                                        className="flex items-start gap-2.5 px-4 py-3 text-xs text-neutral-500 font-bold bg-[#FFFF00] border-[2px] border-black"
+                                        className="flex items-start gap-2.5 px-4 py-3 text-xs font-bold text-black bg-[#fef08a] border-[2.5px] border-black rounded-xl shadow-[3px_3px_0_#000]"
                                     >
                                         <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-black" />
-                                        <span className="text-black">Tempel URL lengkap termasuk <code className="font-mono font-black">https://</code> untuk setiap link yang ingin kamu tambahkan.</span>
+                                        <span>Tempel URL lengkap termasuk <code className="font-mono font-black">https://</code> untuk setiap link yang ingin kamu tambahkan.</span>
                                     </div>
                                 </div>
                             </div>
@@ -831,7 +827,7 @@ export default function SettingsPage() {
                         >
                             {/* Email Verification Card */}
                             <div
-                                className="overflow-hidden bg-white border-[3px] border-black shadow-[4px_4px_0_#000]"
+                                className="rounded-2xl border-[3px] border-black bg-white shadow-[4px_4px_0_#000] overflow-hidden"
                             >
                                 <div className="px-6 pt-5 pb-4 flex items-center gap-2 border-b-[3px] border-black">
                                     <KeyRound className="w-4 h-4 text-black" />
@@ -841,9 +837,9 @@ export default function SettingsPage() {
                                 <div className="p-6 space-y-5">
                                     {/* Status banner */}
                                     <div
-                                        className={`flex items-center gap-4 p-4 border-[2px] border-black ${isEmailVerified ? 'bg-[#00FF00]' : 'bg-[#FFFF00]'}`}
+                                        className={`flex items-center gap-4 p-4 border-[2.5px] border-black rounded-xl shadow-[3px_3px_0_#000] ${isEmailVerified ? 'bg-[#86efac]' : 'bg-[#fef08a]'}`}
                                     >
-                                        <div className="w-10 h-10 flex items-center justify-center shrink-0 bg-white border-[2px] border-black">
+                                        <div className="w-10 h-10 flex items-center justify-center shrink-0 bg-white border-[2px] border-black rounded-xl">
                                             {isEmailVerified
                                                 ? <ShieldCheck className="w-5 h-5 text-black" />
                                                 : <ShieldAlert className="w-5 h-5 text-black" />
@@ -856,7 +852,7 @@ export default function SettingsPage() {
                                             <p className="text-xs text-black/60 mt-0.5 truncate font-bold">{userEmail}</p>
                                         </div>
                                         {isEmailVerified && (
-                                            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white border-[2px] border-black shrink-0">
+                                            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white border-[2px] border-black rounded-lg shrink-0">
                                                 <Check className="w-3.5 h-3.5 text-black" />
                                                 <span className="text-[11px] font-black text-black">Aktif</span>
                                             </div>
@@ -866,7 +862,7 @@ export default function SettingsPage() {
                                     {/* Description */}
                                     {!isEmailVerified && (
                                         <div
-                                            className="flex items-start gap-3 px-4 py-3 text-xs text-black font-bold bg-[#FFFF00] border-[2px] border-black"
+                                            className="flex items-start gap-3 px-4 py-3 text-xs text-black font-bold bg-[#fef08a] border-[2.5px] border-black rounded-xl shadow-[3px_3px_0_#000]"
                                         >
                                             <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-black" />
                                             <span>Akun dengan email tidak terverifikasi <strong className="font-black">tidak dapat membuat memory atau berkomentar</strong>. Verifikasi email kamu sekarang untuk mengakses seluruh fitur.</span>
@@ -883,7 +879,7 @@ export default function SettingsPage() {
                                             setCooldown(0)
                                             setShowVerifyModal(true)
                                         }}
-                                        className={`inline-flex items-center gap-2.5 px-5 py-2.5 text-sm font-black text-black uppercase border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all ${isEmailVerified ? 'bg-[#00FFFF]' : 'bg-[#FF00FF] text-white'}`}
+                                        className={`inline-flex items-center gap-2.5 px-5 py-2.5 text-sm font-black text-black uppercase border-[2.5px] border-black rounded-xl shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all ${isEmailVerified ? 'bg-[#67e8f9]' : 'bg-[#f5d0fe]'}`}
                                     >
                                         {isEmailVerified
                                             ? <><RefreshCw className="w-4 h-4" /> Ganti Email</>  
@@ -899,13 +895,13 @@ export default function SettingsPage() {
                 {/* ── Save Button ─────────────────────────────── */}
                 <motion.div
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
-                    className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 p-4 bg-white border-[3px] border-black shadow-[4px_4px_0_#000]"
+                    className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 p-4 bg-white border-[3px] border-black shadow-[4px_4px_0_#000] rounded-2xl"
                 >
                     <p className="text-sm text-neutral-500 hidden sm:block font-bold">Perubahan disimpan ke akun dan akan langsung terlihat di profil.</p>
                     <button
                         onClick={handleSave}
                         disabled={saving || uploadingPhoto}
-                        className="inline-flex items-center justify-center gap-2.5 px-8 py-3 text-sm font-black text-black uppercase bg-[#00FF00] border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none disabled:opacity-50 transition-all shrink-0"
+                        className="inline-flex items-center justify-center gap-2.5 px-8 py-3 text-sm font-black text-black uppercase bg-[#86efac] border-[2.5px] border-black rounded-xl shadow-[3.5px_3.5px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4.5px_4.5px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none disabled:opacity-50 transition-all shrink-0"
                     >
                         {saving
                             ? <><Loader2 className="w-4 h-4 animate-spin" /> Menyimpan...</>
@@ -926,13 +922,13 @@ export default function SettingsPage() {
                         <motion.div
                             initial={{ scale: 0.92, y: 24 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.92, y: 24 }}
                             transition={{ type: "spring", bounce: 0.22, duration: 0.38 }}
-                            className="w-full max-w-md bg-white border-[4px] border-black shadow-[8px_8px_0_#000] overflow-hidden"
+                            className="w-full max-w-md bg-white border-[3.5px] border-black shadow-[8px_8px_0_#000] rounded-2xl overflow-hidden"
                         >
                             {/* Modal Header */}
                             <div className="px-6 pt-6 pb-4 border-b-[3px] border-black flex items-center justify-between">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-9 h-9 flex items-center justify-center bg-[#FF00FF] border-[3px] border-black shadow-[2px_2px_0_#000]">
-                                        <KeyRound className="w-4 h-4 text-white" />
+                                    <div className="w-9 h-9 flex items-center justify-center bg-[#f5d0fe] border-[2.5px] border-black shadow-[2px_2px_0_#000] rounded-xl">
+                                        <KeyRound className="w-4 h-4 text-black" />
                                     </div>
                                     <div>
                                         <h2 className="text-base font-black text-black uppercase">Verifikasi Email</h2>
@@ -941,7 +937,7 @@ export default function SettingsPage() {
                                 </div>
                                 <button
                                     onClick={() => setShowVerifyModal(false)}
-                                    className="w-8 h-8 flex items-center justify-center text-black bg-white border-[2px] border-black shadow-[2px_2px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all"
+                                    className="w-8 h-8 flex items-center justify-center text-black bg-white border-[2px] border-black shadow-[2px_2px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all rounded-xl"
                                 >
                                     <X className="w-4 h-4" />
                                 </button>
@@ -952,9 +948,9 @@ export default function SettingsPage() {
                                 {[1, 2].map(s => (
                                     <div key={s} className="flex items-center gap-2">
                                         <div
-                                            className={`w-6 h-6 flex items-center justify-center text-[11px] font-black transition-all border-[2px] border-black ${verifyStep >= s ? 'bg-[#FFFF00] text-black' : 'bg-[#E5E5E5] text-neutral-400'}`}
+                                            className={`w-6 h-6 flex items-center justify-center text-[11px] font-black transition-all border-[2px] border-black rounded-full ${verifyStep >= s ? 'bg-[#fef08a] text-black' : 'bg-neutral-100 text-neutral-400'}`}
                                         >{s}</div>
-                                        {s < 2 && <div className={`w-8 h-0.5 ${verifyStep > 1 ? 'bg-black' : 'bg-[#E5E5E5]'}`} />}
+                                        {s < 2 && <div className={`w-8 h-0.5 ${verifyStep > 1 ? 'bg-black' : 'bg-neutral-200'}`} />}
                                     </div>
                                 ))}
                                 <span className="ml-2 text-xs text-neutral-500 font-bold">
@@ -993,7 +989,7 @@ export default function SettingsPage() {
                                             id="btn-send-otp"
                                             onClick={handleSendOtp}
                                             disabled={sendingOtp || cooldown > 0}
-                                            className="w-full py-3 text-sm font-black text-black uppercase flex items-center justify-center gap-2 bg-[#FF00FF] text-white border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all disabled:opacity-50"
+                                            className="w-full py-3 text-sm font-black text-black uppercase flex items-center justify-center gap-2 bg-[#f5d0fe] border-[2.5px] border-black shadow-[3.5px_3.5px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4.5px_4.5px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all disabled:opacity-50 rounded-xl"
                                         >
                                             {sendingOtp
                                                 ? <><Loader2 className="w-4 h-4 animate-spin" /> Mengirim...</>
@@ -1025,10 +1021,9 @@ export default function SettingsPage() {
                                                     value={digit}
                                                     onChange={e => handleOtpInput(i, e.target.value)}
                                                     onKeyDown={e => handleOtpKeyDown(i, e)}
-                                                    className="w-11 h-14 text-center text-xl font-black text-black transition-all focus:outline-none focus:bg-[#FFFF00]"
+                                                    className="w-11 h-14 text-center text-xl font-black text-black transition-all focus:outline-none focus:bg-[#fef08a] rounded-xl border-[2.5px] border-black"
                                                     style={{
-                                                        background: digit ? "#FFFF00" : "#E5E5E5",
-                                                        border: digit ? "3px solid #000" : "3px solid #000",
+                                                        background: digit ? "#fef08a" : "#f5f5f5",
                                                         boxShadow: digit ? "2px 2px 0 #000" : "none"
                                                     }}
                                                 />
@@ -1061,7 +1056,7 @@ export default function SettingsPage() {
                                             id="btn-verify-otp"
                                             onClick={handleVerifyOtp}
                                             disabled={verifyingOtp || otp.join("").length < 6}
-                                            className="w-full py-3 text-sm font-black text-black uppercase flex items-center justify-center gap-2 bg-[#00FF00] border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all disabled:opacity-50"
+                                            className="w-full py-3 text-sm font-black text-black uppercase flex items-center justify-center gap-2 bg-[#86efac] border-[2.5px] border-black shadow-[3.5px_3.5px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4.5px_4.5px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all disabled:opacity-50 rounded-xl"
                                         >
                                             {verifyingOtp
                                                 ? <><Loader2 className="w-4 h-4 animate-spin" /> Memverifikasi...</>

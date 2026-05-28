@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth"
 import { getCachedUser } from "@/lib/services/user-service"
 import { revalidateTag } from "next/cache"
 import { CACHE_TAGS } from "@/lib/cache"
+import { checkAndCleanupPremium } from "@/lib/premium-enforcement"
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
@@ -15,6 +16,9 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
         if (!user) {
             return NextResponse.json({ error: "User not found" }, { status: 404 })
         }
+
+        // Trigger lazy cleanup asynchronously for the profile being viewed
+        checkAndCleanupPremium(user).catch(console.error);
 
         let isFollowing = false;
         if (session?.user?.id && session.user.id !== id) {

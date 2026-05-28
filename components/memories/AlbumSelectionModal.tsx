@@ -229,12 +229,12 @@ export function AlbumSelectionModal({ memoryId, memoryPhotos = [], onClose }: Al
                 initial={{ scale: 0.95, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.95, opacity: 0 }}
-                className="bg-[#FFFDF0] border-[4px] border-black shadow-[10px_10px_0_#000] w-full max-w-2xl overflow-hidden flex flex-col my-8"
+                className="bg-[#FFFDF0] border-[3px] border-black shadow-[6px_6px_0_#000] w-full max-w-2xl overflow-hidden flex flex-col my-8 rounded-3xl"
             >
                 {/* Header */}
-                <div className="bg-[#00FFFF] border-b-[4px] border-black p-5 flex justify-between items-center">
+                <div className="bg-[#00FFFF] border-b-[3px] border-black p-5 flex justify-between items-center">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-white border-[3px] border-black shadow-[3px_3px_0_#000] flex items-center justify-center">
+                        <div className="w-10 h-10 bg-white border-[3px] border-black shadow-[2px_2px_0_#000] flex items-center justify-center rounded-xl">
                             <BookOpen className="h-5 w-5 text-black" />
                         </div>
                         <div>
@@ -250,7 +250,7 @@ export function AlbumSelectionModal({ memoryId, memoryPhotos = [], onClose }: Al
                     <button
                         onClick={handleSaveAssociations}
                         disabled={isSaving}
-                        className="px-3 py-1.5 text-xs font-black bg-white hover:bg-black hover:text-white border-[2.5px] border-black shadow-[2px_2px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all"
+                        className="px-3 py-1.5 text-xs font-black bg-white hover:bg-black hover:text-white border-[2.5px] border-black shadow-[2px_2px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#000] active:translate-y-px active:shadow-none transition-all"
                     >
                         LEWATI / TANPA ALBUM
                     </button>
@@ -266,7 +266,7 @@ export function AlbumSelectionModal({ memoryId, memoryPhotos = [], onClose }: Al
                     ) : !showCreateForm ? (
                         <>
                             {/* Alert/Info */}
-                            <div className="bg-[#FFFF00] border-[3px] border-black p-4 flex gap-3 shadow-[3px_3px_0_#000]">
+                            <div className="bg-[#FFFF00] border-[3px] border-black p-4 flex gap-3 shadow-[3px_3px_0_#000] rounded-2xl">
                                 <Info className="w-5 h-5 shrink-0 text-black" />
                                 <div className="text-xs font-bold text-black leading-relaxed">
                                     Pilih satu atau lebih album untuk mengelompokkan kenangan ini. Jika tidak memilih album custom, kenangan akan masuk ke album default <span className="uppercase underline">&quot;Belum Dikelompokkan&quot;</span>.
@@ -284,15 +284,15 @@ export function AlbumSelectionModal({ memoryId, memoryPhotos = [], onClose }: Al
                                             type="button"
                                             onClick={() => toggleAlbumSelection(album.id)}
                                             className={`
-                                                flex items-center gap-3 p-3 text-left border-[3px] border-black transition-all group relative overflow-hidden
+                                                flex items-center gap-3 p-3 text-left border-[3px] border-black transition-all group relative overflow-hidden rounded-2xl
                                                 ${isSelected
-                                                    ? "bg-[#00FF00] shadow-[4px_4px_0_#000] translate-x-[-1px] translate-y-[-1px]"
-                                                    : "bg-white hover:bg-[#FFF] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0_#000] shadow-[3px_3px_0_#000]"
+                                                    ? "bg-[#00FF00] shadow-[4px_4px_0_#000] -translate-y-0.5"
+                                                    : "bg-white hover:bg-[#FFF] hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none shadow-[3px_3px_0_#000]"
                                                 }
                                             `}
                                         >
                                             {/* Cover / Icon Preview */}
-                                            <div className="w-12 h-12 bg-[#FF00FF] border-[2.5px] border-black shadow-[2px_2px_0_#000] flex items-center justify-center shrink-0 overflow-hidden relative">
+                                            <div className="w-12 h-12 bg-[#FF00FF] border-[2.5px] border-black shadow-[2px_2px_0_#000] flex items-center justify-center shrink-0 overflow-hidden relative rounded-xl">
                                                 {album.coverImage ? (
                                                     <img src={album.coverImage} alt={album.name} className="w-full h-full object-cover" />
                                                 ) : (
@@ -315,7 +315,7 @@ export function AlbumSelectionModal({ memoryId, memoryPhotos = [], onClose }: Al
 
                                             {/* Check indicator */}
                                             <div className={`
-                                                w-6 h-6 border-[2.5px] border-black flex items-center justify-center shrink-0
+                                                w-6 h-6 border-[2.5px] border-black flex items-center justify-center shrink-0 rounded-md
                                                 ${isSelected ? "bg-black text-[#00FF00]" : "bg-white"}
                                             `}>
                                                 {isSelected && <Check className="w-4 h-4" strokeWidth={3} />}
@@ -328,7 +328,7 @@ export function AlbumSelectionModal({ memoryId, memoryPhotos = [], onClose }: Al
                                 <button
                                     type="button"
                                     onClick={() => setShowCreateForm(true)}
-                                    className="flex items-center justify-center gap-2 p-3 text-center bg-[#FF00FF] hover:bg-black text-white hover:text-white border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0_#000] transition-all font-black uppercase text-sm"
+                                    className="flex items-center justify-center gap-2 p-3 text-center bg-[#FF00FF] hover:bg-black text-white hover:text-white border-[3px] border-black shadow-[3px_3px_0_#000] rounded-2xl hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] active:translate-y-px active:shadow-none transition-all font-black uppercase text-sm"
                                 >
                                     <Plus className="w-5 h-5 text-white" />
                                     BUAT ALBUM BARU
@@ -338,8 +338,8 @@ export function AlbumSelectionModal({ memoryId, memoryPhotos = [], onClose }: Al
                     ) : (
                         /* CREATE NEW ALBUM FORM PANEL */
                         <form onSubmit={handleCreateAlbum} className="space-y-4">
-                            <div className="border-[3px] border-black bg-white p-5 shadow-[4px_4px_0_#000] space-y-4">
-                                <div className="flex justify-between items-center border-b-[3px] border-black pb-2 mb-2 bg-[#FF00FF]/10 -mx-5 -mt-5 p-4">
+                            <div className="border-[3px] border-black bg-white p-5 shadow-[4px_4px_0_#000] space-y-4 rounded-2xl">
+                                <div className="flex justify-between items-center border-b-[3px] border-black pb-2 mb-2 bg-[#FF00FF]/10 -mx-5 -mt-5 p-4 rounded-t-2xl">
                                     <h3 className="text-sm font-black text-black uppercase flex items-center gap-2">
                                         <FolderHeart className="w-5 h-5" />
                                         Buat Album Baru
@@ -347,7 +347,7 @@ export function AlbumSelectionModal({ memoryId, memoryPhotos = [], onClose }: Al
                                     <button
                                         type="button"
                                         onClick={() => setShowCreateForm(false)}
-                                        className="w-7 h-7 flex items-center justify-center bg-white border-[2px] border-black hover:bg-red-500 hover:text-white shadow-[1px_1px_0_#000] transition-all"
+                                        className="w-7 h-7 flex items-center justify-center bg-white border-[2px] border-black hover:bg-red-500 hover:text-white shadow-[1px_1px_0_#000] rounded-lg transition-all"
                                     >
                                         <X className="w-4 h-4" />
                                     </button>
@@ -361,7 +361,7 @@ export function AlbumSelectionModal({ memoryId, memoryPhotos = [], onClose }: Al
                                         value={newAlbumName}
                                         onChange={e => setNewAlbumName(e.target.value)}
                                         placeholder="contoh: Liburan Pantai 2026"
-                                        className="w-full bg-[#E5E5E5] border-[3px] border-black p-3 text-sm focus:bg-[#FFFF00] outline-none transition-all placeholder:text-neutral-400 text-black font-bold"
+                                        className="w-full bg-[#E5E5E5] border-[3px] border-black p-3 text-sm focus:bg-[#FFFF00] outline-none transition-all placeholder:text-neutral-400 text-black font-bold rounded-xl"
                                         required
                                     />
                                 </div>
@@ -373,7 +373,7 @@ export function AlbumSelectionModal({ memoryId, memoryPhotos = [], onClose }: Al
                                         value={newAlbumDesc}
                                         onChange={e => setNewAlbumDesc(e.target.value)}
                                         placeholder="Tulis ringkasan cerita album ini..."
-                                        className="w-full min-h-[80px] bg-[#E5E5E5] border-[3px] border-black p-3 text-sm focus:bg-[#FFFF00] outline-none resize-none transition-all placeholder:text-neutral-400 text-black font-bold"
+                                        className="w-full min-h-[80px] bg-[#E5E5E5] border-[3px] border-black p-3 text-sm focus:bg-[#FFFF00] outline-none resize-none transition-all placeholder:text-neutral-400 text-black font-bold rounded-xl"
                                     />
                                 </div>
 
@@ -391,9 +391,9 @@ export function AlbumSelectionModal({ memoryId, memoryPhotos = [], onClose }: Al
                                                     setNewAlbumIcon(id)
                                                 }}
                                                 className={`
-                                                    w-9 h-9 flex items-center justify-center text-lg border-[2px] border-black transition-all
+                                                    w-9 h-9 flex items-center justify-center text-lg border-[2px] border-black transition-all rounded-xl
                                                     ${newAlbumIcon === id
-                                                        ? "bg-[#FFFF00] shadow-[2px_2px_0_#000] translate-x-[-1px] translate-y-[-1px]"
+                                                        ? "bg-[#FFFF00] shadow-[2px_2px_0_#000] -translate-y-0.5"
                                                         : "bg-[#E5E5E5] hover:bg-white"
                                                     }
                                                 `}
@@ -421,16 +421,16 @@ export function AlbumSelectionModal({ memoryId, memoryPhotos = [], onClose }: Al
                                                                 type="button"
                                                                 onClick={() => setNewAlbumCover(photoUrl)}
                                                                 className={`
-                                                                    w-16 h-16 border-[2px] border-black relative overflow-hidden transition-all shrink-0
+                                                                    w-16 h-16 border-[2px] border-black relative overflow-hidden transition-all shrink-0 rounded-xl
                                                                     ${isSelected
-                                                                        ? "ring-4 ring-[#00FF00] shadow-[2px_2px_0_#000] translate-x-[-1px] translate-y-[-1px]"
+                                                                        ? "ring-4 ring-[#00FF00] shadow-[2px_2px_0_#000] -translate-y-0.5"
                                                                         : "opacity-75 hover:opacity-100"
                                                                     }
                                                                 `}
                                                             >
                                                                 <img src={photoUrl} alt="Memory Photo" className="w-full h-full object-cover" />
                                                                 {isSelected && (
-                                                                    <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                                                                    <div className="absolute inset-0 bg-black/30 flex items-center justify-center rounded-xl">
                                                                         <Check className="w-6 h-6 text-[#00FF00]" strokeWidth={4} />
                                                                     </div>
                                                                 )}
@@ -447,7 +447,7 @@ export function AlbumSelectionModal({ memoryId, memoryPhotos = [], onClose }: Al
                                                 type="button"
                                                 onClick={() => fileInputRef.current?.click()}
                                                 disabled={isUploadingCover}
-                                                className="flex items-center gap-2 px-3 py-2 text-xs font-black bg-white hover:bg-[#E5E5E5] border-[2.5px] border-black shadow-[2px_2px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all disabled:opacity-50 uppercase"
+                                                className="flex items-center gap-2 px-3 py-2 text-xs font-black bg-white hover:bg-[#E5E5E5] border-[2.5px] border-black shadow-[2px_2px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#000] active:translate-y-px active:shadow-none transition-all disabled:opacity-50 uppercase"
                                             >
                                                 {isUploadingCover ? (
                                                     <>
@@ -481,9 +481,9 @@ export function AlbumSelectionModal({ memoryId, memoryPhotos = [], onClose }: Al
 
                                         {/* Live Preview of cover */}
                                         {newAlbumCover && (
-                                            <div className="w-full h-32 border-[2.5px] border-black relative overflow-hidden bg-black/5">
+                                            <div className="w-full h-32 border-[2.5px] border-black relative overflow-hidden bg-black/5 rounded-xl">
                                                 <img src={newAlbumCover} alt="Cover Preview" className="w-full h-full object-cover" />
-                                                <div className="absolute bottom-2 left-2 bg-[#FFFF00] border-[2px] border-black px-2 py-0.5 text-[9px] font-black uppercase text-black shadow-[1.5px_1.5px_0_#000]">
+                                                <div className="absolute bottom-2 left-2 bg-[#FFFF00] border-[2px] border-black px-2 py-0.5 text-[9px] font-black uppercase text-black shadow-[1.5px_1.5px_0_#000] rounded-md">
                                                     PREVIEW COVER
                                                 </div>
                                             </div>
@@ -497,14 +497,14 @@ export function AlbumSelectionModal({ memoryId, memoryPhotos = [], onClose }: Al
                                 <button
                                     type="button"
                                     onClick={() => setShowCreateForm(false)}
-                                    className="px-5 py-2 text-xs font-black bg-white border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all uppercase"
+                                    className="px-5 py-2 text-xs font-black bg-white border-[3px] border-black shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] active:translate-y-px active:shadow-none transition-all uppercase"
                                 >
                                     KEMBALI
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={isSaving}
-                                    className="flex items-center gap-1.5 px-6 py-2 text-xs font-black bg-[#00FF00] border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all uppercase disabled:opacity-50"
+                                    className="flex items-center gap-1.5 px-6 py-2 text-xs font-black bg-[#00FF00] border-[3px] border-black shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] active:translate-y-px active:shadow-none transition-all uppercase disabled:opacity-50"
                                 >
                                     {isSaving ? "MENYIMPAN..." : "SIMPAN ALBUM BARU"}
                                 </button>
@@ -515,12 +515,12 @@ export function AlbumSelectionModal({ memoryId, memoryPhotos = [], onClose }: Al
 
                 {/* Footer Actions */}
                 {!showCreateForm && (
-                    <div className="bg-[#FFF] border-t-[4px] border-black p-5 flex justify-end gap-3 shrink-0">
+                    <div className="bg-[#FFF] border-t-[3px] border-black p-5 flex justify-end gap-3 shrink-0">
                         <button
                             type="button"
                             onClick={handleSaveAssociations}
                             disabled={isSaving}
-                            className="flex items-center gap-1.5 px-6 py-2.5 text-sm font-black bg-[#00FF00] border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0_#000] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all uppercase disabled:opacity-50"
+                            className="flex items-center gap-1.5 px-6 py-2.5 text-sm font-black bg-[#00FF00] border-[3px] border-black shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#000] active:translate-y-px active:shadow-none transition-all uppercase disabled:opacity-50"
                         >
                             {isSaving ? (
                                 <>
