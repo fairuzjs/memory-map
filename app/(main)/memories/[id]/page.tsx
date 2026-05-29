@@ -125,10 +125,10 @@ export default function MemoryDetailPage() {
         return (
             <div className="flex-1 flex flex-col items-center justify-center min-h-[60vh] bg-white relative">
                 <div className="flex flex-col items-center gap-4 border-[3px] border-black bg-white p-8 shadow-[6px_6px_0_#000] rounded-3xl">
-                    <div className="w-16 h-16 border-[3px] border-black bg-[#00FFFF] shadow-[4px_4px_0_#000] flex items-center justify-center rounded-2xl">
+                    <div className="w-16 h-16 border-[3px] border-black bg-[var(--mm-soft-cyan)] shadow-[4px_4px_0_#000] flex items-center justify-center rounded-2xl">
                         <Loader2 className="w-8 h-8 text-black animate-spin" />
                     </div>
-                    <span className="text-[14px] font-black uppercase text-black bg-[#FFFF00] border-[2.5px] border-black px-4 py-2 rounded-xl shadow-[3px_3px_0_#000]">
+                    <span className="text-[14px] font-black uppercase text-black bg-[var(--mm-warning)] border-[2.5px] border-black px-4 py-2 rounded-xl shadow-[3px_3px_0_#000]">
                         Memuat Kenangan...
                     </span>
                 </div>
@@ -146,15 +146,15 @@ export default function MemoryDetailPage() {
 
     const emotionConfig = (() => {
         switch(memory.emotion) {
-            case "HAPPY": return { bg: "bg-[#FFFF00]", text: "text-black", border: "border-black" }
-            case "SAD": return { bg: "bg-[#00FFFF]", text: "text-black", border: "border-black" }
-            case "ROMANTIC": return { bg: "bg-[#FF00FF]", text: "text-white", border: "border-black" }
-            case "PEACEFUL": return { bg: "bg-[#00FF00]", text: "text-black", border: "border-black" }
-            case "EXCITED": return { bg: "bg-[#FF3300]", text: "text-white", border: "border-black" }
-            case "NOSTALGIC": return { bg: "bg-[#E5E5E5]", text: "text-black", border: "border-black" }
-            case "GRATEFUL": return { bg: "bg-[#00FF00]", text: "text-black", border: "border-black" }
-            case "ADVENTUROUS": return { bg: "bg-[#FFFF00]", text: "text-black", border: "border-black" }
-            default: return { bg: "bg-[#E5E5E5]", text: "text-black", border: "border-black" }
+            case "HAPPY": return { bg: "bg-[var(--mm-primary)]", text: "text-black", border: "border-black" }
+            case "SAD": return { bg: "bg-[var(--mm-secondary)]", text: "text-black", border: "border-black" }
+            case "ROMANTIC": return { bg: "bg-[var(--mm-accent)]", text: "text-white", border: "border-black" }
+            case "PEACEFUL": return { bg: "bg-[var(--mm-success)]", text: "text-black", border: "border-black" }
+            case "EXCITED": return { bg: "bg-[var(--mm-danger)]", text: "text-white", border: "border-black" }
+            case "NOSTALGIC": return { bg: "bg-[var(--mm-tertiary)]", text: "text-black", border: "border-black" }
+            case "GRATEFUL": return { bg: "bg-[var(--mm-success)]", text: "text-black", border: "border-black" }
+            case "ADVENTUROUS": return { bg: "bg-[var(--mm-lime)]", text: "text-black", border: "border-black" }
+            default: return { bg: "bg-[var(--mm-secondary)]", text: "text-black", border: "border-black" }
         }
     })();
 
@@ -221,7 +221,7 @@ export default function MemoryDetailPage() {
                             <>
                                 <button
                                     onClick={() => setShowStickerPanel(true)}
-                                    className="flex items-center gap-2 bg-[#FFFF00] text-black border-[3px] border-black px-4 py-2 font-black uppercase rounded-xl shadow-[4px_4px_0_#000] hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#000] active:translate-y-px active:shadow-none transition-all"
+                                    className="flex items-center gap-2 bg-[var(--mm-warning)] text-black border-[3px] border-black px-4 py-2 font-black uppercase rounded-xl shadow-[4px_4px_0_#000] hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#000] active:translate-y-px active:shadow-none transition-all"
                                     title="Tambah Stiker"
                                 >
                                     <Sticker className="w-4 h-4" />
@@ -233,7 +233,7 @@ export default function MemoryDetailPage() {
                                     )}
                                 </button>
                                 <Link href={`/memories/${id}/edit`}>
-                                    <button className="flex items-center gap-2 bg-[#00FF00] text-black border-[3px] border-black px-4 py-2 font-black uppercase rounded-xl shadow-[4px_4px_0_#000] hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#000] active:translate-y-px active:shadow-none transition-all">
+                                    <button className="flex items-center gap-2 bg-[var(--mm-success)] text-black border-[3px] border-black px-4 py-2 font-black uppercase rounded-xl shadow-[4px_4px_0_#000] hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#000] active:translate-y-px active:shadow-none transition-all">
                                         <Edit className="w-4 h-4" />
                                         <span className="hidden sm:inline">Edit</span>
                                     </button>
@@ -241,7 +241,7 @@ export default function MemoryDetailPage() {
                                 <button
                                     onClick={handleDelete}
                                     disabled={isDeleting}
-                                    className="flex items-center gap-2 bg-[#FF3300] text-white border-[3px] border-black px-4 py-2 font-black uppercase rounded-xl shadow-[4px_4px_0_#000] hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#000] active:translate-y-px active:shadow-none transition-all disabled:opacity-50"
+                                    className="flex items-center gap-2 bg-[var(--mm-danger)] text-white border-[3px] border-black px-4 py-2 font-black uppercase rounded-xl shadow-[4px_4px_0_#000] hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#000] active:translate-y-px active:shadow-none transition-all disabled:opacity-50"
                                 >
                                     <Trash2 className="w-4 h-4" />
                                     <span className="hidden sm:inline">{isDeleting ? "Hapus..." : "Hapus"}</span>
@@ -259,14 +259,14 @@ export default function MemoryDetailPage() {
                     {/* Badges */}
                     <div className={`flex items-center gap-3 mb-6 ${heroPhoto ? "" : "justify-center"}`}>
                         <span className={`inline-flex items-center gap-2 text-[12px] font-black uppercase tracking-wider px-3 py-1 border-[2.5px] border-black rounded-xl shadow-[2px_2px_0_#000] ${memory.isPublic
-                            ? "bg-[#00FF00] text-black"
-                            : "bg-[#E5E5E5] text-black"
+                            ? "bg-[var(--mm-success)] text-black"
+                            : "bg-[var(--mm-bg)] text-black"
                             }`}>
                             {memory.isPublic ? <Globe className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
                             {memory.isPublic ? "Publik" : "Privat"}
                         </span>
                         {allPhotos.length > 0 && (
-                            <span className="inline-flex items-center gap-2 text-[12px] font-black uppercase tracking-wider px-3 py-1 border-[2.5px] border-black bg-[#00FFFF] text-black rounded-xl shadow-[2px_2px_0_#000]">
+                            <span className="inline-flex items-center gap-2 text-[12px] font-black uppercase tracking-wider px-3 py-1 border-[2.5px] border-black bg-[var(--mm-soft-cyan)] text-black rounded-xl shadow-[2px_2px_0_#000]">
                                 <Images className="w-4 h-4" />
                                 {allPhotos.length} Foto
                             </span>
@@ -281,14 +281,14 @@ export default function MemoryDetailPage() {
                     {/* Meta */}
                     <div className={`flex flex-wrap items-center gap-4 text-[14px] font-black uppercase ${heroPhoto ? "text-white" : "text-black bg-white p-2.5 border-[2.5px] border-black rounded-xl shadow-[3px_3px_0_#000] justify-center inline-flex"}`}>
                         <span className="flex items-center gap-2">
-                            <Calendar className={`w-4 h-4 ${heroPhoto ? "text-[#00FFFF]" : "text-black"}`} />
+                            <Calendar className={`w-4 h-4 ${heroPhoto ? "text-[var(--mm-soft-cyan)]" : "text-black"}`} />
                             {formattedDate}
                         </span>
                         {memory.locationName && (
                             <>
                                 <span className="w-1.5 h-1.5 bg-black rounded-full hidden sm:block" />
                                 <span className="flex items-center gap-2">
-                                    <MapPin className={`w-4 h-4 ${heroPhoto ? "text-[#00FF00]" : "text-black"}`} />
+                                    <MapPin className={`w-4 h-4 ${heroPhoto ? "text-[var(--mm-success)]" : "text-black"}`} />
                                     {memory.locationName}
                                 </span>
                             </>
@@ -316,12 +316,12 @@ export default function MemoryDetailPage() {
                                         alt={memory.user.name}
                                         className="w-12 h-12 border-[3px] border-black object-cover bg-white shadow-[2px_2px_0_#000] rounded-xl"
                                     />
-                                    <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#00FF00] border-[2px] border-black rounded-full" />
+                                    <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-[var(--mm-success)] border-[2px] border-black rounded-full" />
                                 </div>
                                 <div className="flex flex-col">
                                     <p className="text-[16px] font-black uppercase text-black flex items-center gap-2">
                                         {memory.user.name}
-                                        <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity text-[#FF00FF]" />
+                                        <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity text-[var(--mm-accent)]" />
                                     </p>
                                     <p className="text-[12px] font-bold text-black/60 uppercase">
                                         {memory.isPublic ? "Publik" : "Privat"} • {formattedDate}
@@ -366,7 +366,7 @@ export default function MemoryDetailPage() {
 
                         {/* Music Player — MOBILE ONLY (above gallery) */}
                         {(memory.audioUrl || memory.spotifyTrackId) && isMobile && (
-                            <div className="mb-12 lg:hidden border-[3px] border-black shadow-[4px_4px_0_#000] bg-[#FF00FF] rounded-2xl overflow-hidden">
+                            <div className="mb-12 lg:hidden border-[3px] border-black shadow-[4px_4px_0_#000] bg-[var(--mm-accent)] rounded-2xl overflow-hidden">
                                 {memory.spotifyTrackId ? (
                                     <iframe
                                         style={{ borderRadius: '0' }}
@@ -393,7 +393,7 @@ export default function MemoryDetailPage() {
                         {/* Photo Gallery — only secondary photos */}
                         {galleryPhotos.length > 0 && (
                             <div className="mb-16">
-                                <h3 className="inline-block px-3 py-1 bg-[#00FFFF] border-[3px] border-black text-[16px] font-black uppercase rounded-xl shadow-[4px_4px_0_#000] mb-6">
+                                <h3 className="inline-block px-3 py-1 bg-[var(--mm-soft-cyan)] border-[3px] border-black text-[16px] font-black uppercase rounded-xl shadow-[4px_4px_0_#000] mb-6">
                                     Galeri Foto
                                 </h3>
                                 <div className={`grid gap-4 ${galleryPhotos.length === 1 ? "grid-cols-1" :
@@ -421,7 +421,7 @@ export default function MemoryDetailPage() {
 
                         {/* Reactions */}
                         <div className="mb-12 bg-white border-[3px] border-black p-6 sm:p-8 rounded-3xl shadow-[6px_6px_0_#000]">
-                            <h3 className="inline-block px-3 py-1 bg-[#FFFF00] border-[3px] border-black text-[16px] font-black uppercase rounded-xl shadow-[4px_4px_0_#000] mb-6">
+                            <h3 className="inline-block px-3 py-1 bg-[var(--mm-warning)] border-[3px] border-black text-[16px] font-black uppercase rounded-xl shadow-[4px_4px_0_#000] mb-6">
                                 Reaksi
                             </h3>
                             <Reactions memoryId={memory.id} initialReactions={memory.reactions || []} />
@@ -429,7 +429,7 @@ export default function MemoryDetailPage() {
 
                         {/* Comments */}
                         <div className="bg-white border-[3px] border-black p-6 sm:p-8 rounded-3xl shadow-[6px_6px_0_#000] mb-12">
-                            <h3 className="inline-block px-3 py-1 bg-[#00FF00] border-[3px] border-black text-[16px] font-black uppercase rounded-xl shadow-[4px_4px_0_#000] mb-6">
+                            <h3 className="inline-block px-3 py-1 bg-[var(--mm-success)] border-[3px] border-black text-[16px] font-black uppercase rounded-xl shadow-[4px_4px_0_#000] mb-6">
                                 Komentar
                             </h3>
                             <Comments memoryId={memory.id} initialComments={memory.comments || []} />
@@ -442,7 +442,7 @@ export default function MemoryDetailPage() {
 
                             {/* Music Player — DESKTOP ONLY (sidebar) */}
                             {(memory.audioUrl || memory.spotifyTrackId) && !isMobile && (
-                                <div className="hidden lg:block relative bg-[#FF00FF] border-[3px] border-black rounded-2xl shadow-[6px_6px_0_#000] overflow-hidden">
+                                <div className="hidden lg:block relative bg-[var(--mm-accent)] border-[3px] border-black rounded-2xl shadow-[6px_6px_0_#000] overflow-hidden">
                                     <div className="p-3 border-b-[3px] border-black bg-white">
                                         <p className="text-[12px] font-black text-black uppercase tracking-wider">Soundtrack</p>
                                     </div>
@@ -472,13 +472,13 @@ export default function MemoryDetailPage() {
                             )}
 
                             {/* Memory Info Card */}
-                            <div className="bg-[#E5E5E5] border-[3px] border-black p-6 rounded-3xl shadow-[6px_6px_0_#000]">
+                            <div className="bg-[var(--mm-bg)] border-[3px] border-black p-6 rounded-3xl shadow-[6px_6px_0_#000]">
                                 <h3 className="inline-block px-3 py-1 bg-white border-[3px] border-black text-[14px] font-black uppercase rounded-xl shadow-[4px_4px_0_#000] mb-6">
                                     Detail Kenangan
                                </h3>
                                 <ul className="space-y-5">
                                     <li className="flex items-start gap-4">
-                                        <div className="w-10 h-10 border-[3px] border-black bg-[#00FFFF] flex items-center justify-center shrink-0 rounded-xl shadow-[2px_2px_0_#000]">
+                                        <div className="w-10 h-10 border-[3px] border-black bg-[var(--mm-soft-cyan)] flex items-center justify-center shrink-0 rounded-xl shadow-[2px_2px_0_#000]">
                                             <Calendar className="w-5 h-5 text-black" />
                                         </div>
                                         <div>
@@ -488,7 +488,7 @@ export default function MemoryDetailPage() {
                                     </li>
                                     {memory.locationName && (
                                         <li className="flex items-start gap-4">
-                                            <div className="w-10 h-10 border-[3px] border-black bg-[#FFFF00] flex items-center justify-center shrink-0 rounded-xl shadow-[2px_2px_0_#000]">
+                                            <div className="w-10 h-10 border-[3px] border-black bg-[var(--mm-warning)] flex items-center justify-center shrink-0 rounded-xl shadow-[2px_2px_0_#000]">
                                                 <MapPin className="w-5 h-5 text-black" />
                                             </div>
                                             <div>
@@ -498,7 +498,7 @@ export default function MemoryDetailPage() {
                                         </li>
                                     )}
                                     <li className="flex items-start gap-4">
-                                        <div className={`w-10 h-10 border-[3px] border-black flex items-center justify-center shrink-0 rounded-xl shadow-[2px_2px_0_#000] ${memory.isPublic ? "bg-[#00FF00]" : "bg-neutral-400"}`}>
+                                        <div className={`w-10 h-10 border-[3px] border-black flex items-center justify-center shrink-0 rounded-xl shadow-[2px_2px_0_#000] ${memory.isPublic ? "bg-[var(--mm-success)]" : "bg-neutral-400"}`}>
                                             {memory.isPublic
                                                 ? <Globe className="w-5 h-5 text-black" />
                                                 : <Lock className="w-5 h-5 text-black" />
@@ -511,7 +511,7 @@ export default function MemoryDetailPage() {
                                     </li>
                                     {memory.photos?.length > 0 && (
                                         <li className="flex items-start gap-4">
-                                            <div className="w-10 h-10 border-[3px] border-black bg-[#FF00FF] flex items-center justify-center shrink-0 rounded-xl shadow-[2px_2px_0_#000]">
+                                            <div className="w-10 h-10 border-[3px] border-black bg-[var(--mm-accent)] flex items-center justify-center shrink-0 rounded-xl shadow-[2px_2px_0_#000]">
                                                 <Images className="w-5 h-5 text-white" />
                                             </div>
                                             <div>
@@ -526,7 +526,7 @@ export default function MemoryDetailPage() {
                             {/* Map Preview */}
                             {memory.latitude && memory.longitude && (
                                 <div className="bg-white border-[3px] border-black shadow-[6px_6px_0_#000] rounded-3xl overflow-hidden">
-                                    <div className="p-3 border-b-[3px] border-black bg-[#FFFF00]">
+                                    <div className="p-3 border-b-[3px] border-black bg-[var(--mm-warning)]">
                                         <p className="text-[14px] font-black uppercase text-black">Lokasi pada Peta</p>
                                     </div>
                                     <iframe

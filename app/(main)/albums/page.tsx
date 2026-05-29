@@ -65,7 +65,7 @@ const DECO_STICKERS: string[] = []
 const ROTATIONS = ["scrap-rotate-1", "scrap-rotate-2", "scrap-rotate-3", "scrap-rotate-4", "scrap-rotate-5", "scrap-rotate-6"]
 
 // ── Accent colors (warm pastel palette) ─────────────────
-const CARD_ACCENTS = ["#67e8f9", "#fef08a", "#f5d0fe", "#86efac", "#c084fc", "#fdba74"]
+const CARD_ACCENTS = ["var(--mm-soft-cyan)", "var(--mm-warning)", "var(--mm-tertiary)", "var(--mm-success)", "var(--mm-accent)", "var(--mm-primary)"]
 
 interface Album {
     id: string
@@ -157,14 +157,14 @@ function AlbumCover({
                 <div
                     className="flex h-full w-full items-center justify-center"
                     style={{
-                        background: `linear-gradient(135deg, ${accent}88, #fef08a66 48%, #f5d0fe55)`,
+                        background: `linear-gradient(135deg, color-mix(in srgb, ${accent} 50%, transparent), color-mix(in srgb, var(--mm-warning) 40%, transparent) 48%, color-mix(in srgb, var(--mm-tertiary) 33%, transparent))`,
                     }}
                 >
                     <AlbumGlyph icon={album.icon} className="h-14 w-14 text-black/70" />
                 </div>
             )}
             {!compact && (
-                <div className="absolute left-2.5 top-2.5 border-[2px] border-black bg-[#fef08a] px-2.5 py-1 text-[10px] font-black uppercase text-black shadow-[2px_2px_0_#000] rounded-lg">
+                <div className="absolute left-2.5 top-2.5 border-[2px] border-black bg-[var(--mm-warning)] px-2.5 py-1 text-[10px] font-black uppercase text-black shadow-[2px_2px_0_#000] rounded-lg">
                     {album._count.memories} memory
                 </div>
             )}
@@ -267,7 +267,7 @@ function InteractivePolaroids({ albumsList }: { albumsList: Album[] }) {
                             {album.coverImage ? (
                                 <img src={album.coverImage} alt="" className="h-full w-full object-cover pointer-events-none" loading="lazy" />
                             ) : (
-                                <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#00FFFF44] to-[#FF00FF33]">
+                                <div className="flex h-full w-full items-center justify-center bg-gradient-to-br" style={{ backgroundImage: "linear-gradient(135deg, color-mix(in srgb, var(--mm-secondary) 25%, transparent), color-mix(in srgb, var(--mm-accent) 20%, transparent))" }}>
                                     <AlbumGlyph icon={album.icon} className="h-6 w-6 text-black/50" />
                                 </div>
                             )}
@@ -632,7 +632,7 @@ export default function AlbumsPage() {
                         e.preventDefault()
                         setActiveMenuId(isOpen ? null : album.id)
                     }}
-                    className="flex h-9 w-9 items-center justify-center border-[2px] border-black bg-white text-black shadow-[3px_3px_0_#000] rounded-xl transition-all hover:-translate-y-0.5 hover:bg-[#fef08a]"
+                    className="flex h-9 w-9 items-center justify-center border-[2px] border-black bg-white text-black shadow-[3px_3px_0_#000] rounded-xl transition-all hover:-translate-y-0.5 hover:bg-[var(--mm-warning)]"
                     aria-label="Album menu"
                 >
                     <MoreVertical className="h-4 w-4" />
@@ -646,7 +646,7 @@ export default function AlbumsPage() {
                             className="absolute right-0 mt-2 w-52 border-[2.5px] border-black bg-white rounded-xl py-1 text-left shadow-[5px_5px_0_#000] overflow-hidden"
                         >
                             {!isSystem && (
-                                <button onClick={() => openEditModal(album)} className="flex w-full items-center gap-2 border-b-2 border-dashed border-black/20 px-4 py-2.5 text-xs font-black uppercase text-black hover:bg-[#67e8f9]">
+                                <button onClick={() => openEditModal(album)} className="flex w-full items-center gap-2 border-b-2 border-dashed border-black/20 px-4 py-2.5 text-xs font-black uppercase text-black hover:bg-[var(--mm-soft-cyan)]">
                                     <Pencil className="h-4 w-4" /> Edit Album
                                 </button>
                             )}
@@ -656,12 +656,12 @@ export default function AlbumsPage() {
                                     setAlbumCover(album.coverImage)
                                     setActiveMenuId(null)
                                 }}
-                                className="flex w-full items-center gap-2 border-b-2 border-dashed border-black/20 px-4 py-2.5 text-xs font-black uppercase text-black hover:bg-[#fef08a]"
+                                className="flex w-full items-center gap-2 border-b-2 border-dashed border-black/20 px-4 py-2.5 text-xs font-black uppercase text-black hover:bg-[var(--mm-warning)]"
                             >
                                 <ImagePlus className="h-4 w-4" /> Ganti Cover
                             </button>
                             {!isSystem && (
-                                <button onClick={() => openOrganizeModal(album)} className="flex w-full items-center gap-2 border-b-2 border-dashed border-black/20 px-4 py-2.5 text-xs font-black uppercase text-black hover:bg-[#86efac]">
+                                <button onClick={() => openOrganizeModal(album)} className="flex w-full items-center gap-2 border-b-2 border-dashed border-black/20 px-4 py-2.5 text-xs font-black uppercase text-black hover:bg-[var(--mm-success)]">
                                     <Layers3 className="h-4 w-4" /> Kelola Memory
                                 </button>
                             )}
@@ -813,7 +813,7 @@ export default function AlbumsPage() {
                                     resetForm()
                                     setShowCreateModal(true)
                                 }}
-                                className="flex w-full min-[520px]:w-auto shrink-0 items-center justify-center gap-2 border-[2.5px] border-black bg-yellow-200 px-5 py-3 text-xs font-black uppercase text-black shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none transition-all"
+                                className="flex w-full min-[520px]:w-auto shrink-0 items-center justify-center gap-2 border-[2.5px] border-black bg-[var(--mm-primary)] px-5 py-3 text-xs font-black uppercase text-black shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none transition-all"
                             >
                                 <Plus className="h-4 w-4" /> Buat Album
                             </motion.button>
@@ -845,7 +845,7 @@ export default function AlbumsPage() {
                                             setSearchOpen(false)
                                             fetchAlbums("")
                                         }}
-                                        className="mr-2 flex h-7 w-7 items-center justify-center border-[1.5px] border-black bg-white text-black shadow-[2px_2px_0_#000] hover:bg-yellow-200 rounded-lg transition-all"
+                                        className="mr-2 flex h-7 w-7 items-center justify-center border-[1.5px] border-black bg-white text-black shadow-[2px_2px_0_#000] hover:bg-[var(--mm-primary)] rounded-lg transition-all"
                                         aria-label="Bersihkan pencarian"
                                     >
                                         <X className="h-4 w-4" />
@@ -863,9 +863,9 @@ export default function AlbumsPage() {
                                                         setSearchOpen(false)
                                                         fetchAlbums(album.name)
                                                     }}
-                                                    className="flex w-full items-center gap-3 border-b-[2px] border-dashed border-black/20 px-3 py-2 text-left last:border-b-0 hover:bg-yellow-100"
+                                                    className="flex w-full items-center gap-3 border-b-[2px] border-dashed border-black/20 px-3 py-2 text-left last:border-b-0 hover:bg-[color-mix(in_srgb,var(--mm-primary)_10%,transparent)]"
                                                 >
-                                                    <span className="flex h-8 w-8 shrink-0 items-center justify-center border-[1.5px] border-black bg-cyan-200 rounded-md text-black">
+                                                    <span className="flex h-8 w-8 shrink-0 items-center justify-center border-[1.5px] border-black bg-[var(--mm-secondary)] rounded-md text-black">
                                                         <AlbumGlyph icon={album.icon} className="h-4 w-4" />
                                                     </span>
                                                     <span className="min-w-0 flex-1">
@@ -887,8 +887,8 @@ export default function AlbumsPage() {
                         {/* ── Stats row — horizontal scroll on mobile, grid on sm+ ──────── */}
                         <div className="mt-6 flex justify-center sm:justify-start gap-2.5 overflow-x-auto pb-2 px-1 sm:px-0 sm:grid sm:grid-cols-3 sm:gap-3 sm:overflow-visible sm:pb-0 custom-scrollbar">
                             {[
-                                { label: "Album", value: customAlbums.length, color: "#a5f3fc" },
-                                { label: "Memory", value: totalMemoriesCount, color: "#fae8ff" },
+                                { label: "Album", value: customAlbums.length, color: "var(--mm-soft-cyan)" },
+                                { label: "Memory", value: totalMemoriesCount, color: "var(--mm-tertiary)" },
                             ].map((stat, i) => (
                                 <div
                                     key={stat.label}
@@ -909,11 +909,11 @@ export default function AlbumsPage() {
                                 <Link
                                     href={`/albums/${systemAlbum.id}`}
                                     className={`group block shrink-0 min-w-[105px] border-[2.5px] border-black bg-white px-3.5 py-2 shadow-[3px_3px_0_#000] rounded-xl transition-all hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none hover:bg-neutral-50 sm:min-w-0 sm:p-3.5 ${ROTATIONS[2 % ROTATIONS.length]}`}
-                                    style={{ borderTopColor: "#fef08a", borderTopWidth: "5px" }}
+                                    style={{ borderTopColor: "var(--mm-warning)", borderTopWidth: "5px" }}
                                 >
                                     <span className="mb-0.5 flex items-center justify-between gap-1.5 text-[9px] font-black uppercase text-black/50 sm:mb-1 sm:text-[10px]">
                                         <span>Belum Rapi</span>
-                                        <span className="text-[7px] bg-rose-300 text-black px-1.5 py-0.5 rounded-md border-[1.5px] border-black shadow-[1px_1px_0_#000] sm:text-[8px] sm:px-1.5">Sistem</span>
+                                        <span className="text-[7px] bg-[var(--mm-accent)] text-black px-1.5 py-0.5 rounded-md border-[1.5px] border-black shadow-[1px_1px_0_#000] sm:text-[8px] sm:px-1.5">Sistem</span>
                                     </span>
                                     <strong className="block text-lg font-black uppercase leading-tight text-black group-hover:text-fuchsia-500 sm:text-xl">
                                         {systemAlbum._count.memories}
@@ -922,7 +922,7 @@ export default function AlbumsPage() {
                             ) : (
                                 <div
                                     className={`shrink-0 min-w-[95px] sm:min-w-0 border-[2.5px] border-black bg-white px-3.5 py-2 shadow-[3px_3px_0_#000] rounded-xl sm:min-w-0 sm:p-3.5 ${ROTATIONS[2 % ROTATIONS.length]}`}
-                                    style={{ borderTopColor: "#fef08a", borderTopWidth: "5px" }}
+                                    style={{ borderTopColor: "var(--mm-warning)", borderTopWidth: "5px" }}
                                 >
                                     <span className="mb-0.5 block text-[9px] font-black uppercase text-black/50 sm:mb-1 sm:text-[10px]">
                                         Belum Rapi
@@ -1021,11 +1021,11 @@ export default function AlbumsPage() {
             <section className="flex flex-col gap-4 border-b-[3px] border-black pb-4 lg:flex-row lg:items-center lg:justify-between">
                 <div className="flex gap-2 overflow-x-auto pb-1.5 custom-scrollbar">
                     {[
-                        ["semua", "Semua", "#f5f5f5"],
-                        ["terbaru", "Terbaru", "#a5f3fc"],
-                        ["az", "A-Z", "#bbf7d0"],
-                        ["paling_banyak", "Paling Banyak", "#fae8ff"],
-                        ["favorit", "Favorit", "#fef08a"],
+                        ["semua", "Semua", "var(--mm-secondary)"],
+                        ["terbaru", "Terbaru", "var(--mm-soft-cyan)"],
+                        ["az", "A-Z", "var(--mm-success)"],
+                        ["paling_banyak", "Paling Banyak", "var(--mm-tertiary)"],
+                        ["favorit", "Favorit", "var(--mm-warning)"],
                     ].map(([key, label, activeColor]) => (
                         <button
                             key={key}
@@ -1053,7 +1053,7 @@ export default function AlbumsPage() {
                                     key={mode as string}
                                     onClick={() => setViewMode(mode as ViewMode)}
                                     className={`flex items-center gap-1.5 border-r-[2.5px] border-black px-4 py-2.5 text-xs font-black uppercase last:border-r-0 transition-colors duration-200 ${
-                                        isActive ? "bg-cyan-200 text-black" : "bg-white text-black/60 hover:bg-yellow-100 hover:text-black"
+                                        isActive ? "bg-[var(--mm-soft-cyan)] text-black" : "bg-white text-black/60 hover:bg-[color-mix(in_srgb,var(--mm-primary)_10%,transparent)] hover:text-black"
                                     }`}
                                 >
                                     <LucideIcon className="h-4 w-4" />
@@ -1089,7 +1089,7 @@ export default function AlbumsPage() {
                         whileHover={{ scale: 1.05, rotate: 1 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => setShowCreateModal(true)} 
-                        className="border-[3px] border-black bg-[#86efac] px-6 py-3 text-xs font-black uppercase text-black shadow-[4px_4px_0_#000] hover:-translate-y-0.5 hover:shadow-[5.5px_5.5px_0_#000] transition-all"
+                        className="border-[3px] border-black bg-[var(--mm-success)] px-6 py-3 text-xs font-black uppercase text-black shadow-[4px_4px_0_#000] hover:-translate-y-0.5 hover:shadow-[5.5px_5.5px_0_#000] transition-all"
                     >
                         Buat Album Pertama
                     </motion.button>
@@ -1149,7 +1149,7 @@ export default function AlbumsPage() {
 
                     {/* ── All organized notice ───────────────────── */}
                     {!showSystemAlbum && customAlbums.length > 0 && (
-                        <div className="flex items-center gap-2 border-[2px] border-dashed border-[#00AA00] bg-[#00FF00]/10 px-4 py-3 text-xs font-black uppercase text-black">
+                        <div className="flex items-center gap-2 border-[2px] border-dashed border-[color-mix(in_srgb,var(--mm-success)_60%,black)] bg-[color-mix(in_srgb,var(--mm-success)_10%,transparent)] px-4 py-3 text-xs font-black uppercase text-black">
                             <Check className="h-4 w-4" />
                             Semua kenangan sudah dikelompokkan ke album custom.
                         </div>
@@ -1223,7 +1223,7 @@ export default function AlbumsPage() {
                                 <button
                                     type="button"
                                     onClick={() => { setShowCreateModal(false); setEditingAlbum(null); resetForm() }}
-                                    className="flex h-8 w-8 items-center justify-center border-[2px] border-black bg-white text-black shadow-[2.5px_2.5px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[3.5px_3.5px_0_#000] active:translate-y-px active:shadow-none hover:bg-[#fef08a] transition-all"
+                                    className="flex h-8 w-8 items-center justify-center border-[2px] border-black bg-white text-black shadow-[2.5px_2.5px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[3.5px_3.5px_0_#000] active:translate-y-px active:shadow-none hover:bg-[var(--mm-warning)] transition-all"
                                 >
                                     <X className="h-4 w-4" />
                                 </button>
@@ -1232,11 +1232,11 @@ export default function AlbumsPage() {
                                 <div className="space-y-4">
                                     <label data-tutorial="album-input-name" className="block text-xs font-black uppercase text-black">
                                         Nama Album
-                                        <input value={albumName} onChange={e => setAlbumName(e.target.value)} className="mt-2 w-full border-[2.5px] border-black bg-neutral-50 p-3 text-sm font-bold text-black placeholder:text-black/30 outline-none rounded-xl focus:bg-[#fef08a] focus:ring-0 transition-all duration-200" placeholder="Liburan Pantai 2026" />
+                                        <input value={albumName} onChange={e => setAlbumName(e.target.value)} className="mt-2 w-full border-[2.5px] border-black bg-neutral-50 p-3 text-sm font-bold text-black placeholder:text-black/30 outline-none rounded-xl focus:bg-[var(--mm-warning)] focus:ring-0 transition-all duration-200" placeholder="Liburan Pantai 2026" />
                                     </label>
                                     <label className="block text-xs font-black uppercase text-black">
                                         Deskripsi
-                                        <textarea value={albumDesc} onChange={e => setAlbumDesc(e.target.value)} maxLength={120} className="mt-2 min-h-[110px] w-full resize-none border-[2.5px] border-black bg-neutral-50 p-3 text-sm font-bold text-black placeholder:text-black/30 outline-none rounded-xl focus:bg-[#fef08a] focus:ring-0 transition-all duration-200" placeholder="Album untuk menyimpan momen selama perjalanan..." />
+                                        <textarea value={albumDesc} onChange={e => setAlbumDesc(e.target.value)} maxLength={120} className="mt-2 min-h-[110px] w-full resize-none border-[2.5px] border-black bg-neutral-50 p-3 text-sm font-bold text-black placeholder:text-black/30 outline-none rounded-xl focus:bg-[var(--mm-warning)] focus:ring-0 transition-all duration-200" placeholder="Album untuk menyimpan momen selama perjalanan..." />
                                     </label>
                                 </div>
 
@@ -1287,7 +1287,7 @@ export default function AlbumsPage() {
                                                     onClick={() => setAlbumIcon(id)}
                                                     className={`flex h-11 items-center justify-center border-[2px] border-black rounded-xl transition-all duration-200 ${
                                                         albumIcon === id
-                                                            ? "bg-[#86efac] text-black shadow-[2px_2px_0_#000] -translate-y-0.5"
+                                                            ? "bg-[var(--mm-success)] text-black shadow-[2px_2px_0_#000] -translate-y-0.5"
                                                             : "bg-white text-black hover:bg-neutral-50 hover:shadow-[2px_2px_0_#000] hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
                                                     }`}
                                                 >
@@ -1308,7 +1308,7 @@ export default function AlbumsPage() {
                                             data-tutorial="album-btn-save"
                                             type="submit"
                                             disabled={isSaving}
-                                            className="border-[2.5px] border-black bg-[#86efac] rounded-xl px-5 py-2.5 text-xs font-black uppercase text-black shadow-[3px_3px_0_#000] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] active:translate-y-px active:shadow-none transition-all disabled:opacity-60"
+                                            className="border-[2.5px] border-black bg-[var(--mm-success)] rounded-xl px-5 py-2.5 text-xs font-black uppercase text-black shadow-[3px_3px_0_#000] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] active:translate-y-px active:shadow-none transition-all disabled:opacity-60"
                                         >
                                             {isSaving ? "Menyimpan..." : editingAlbum ? "Simpan" : "Buat Album"}
                                         </button>
@@ -1332,7 +1332,7 @@ export default function AlbumsPage() {
                             exit={{ opacity: 0, scale: 0.96 }}
                             className="w-full max-w-md border-[3px] border-black bg-white shadow-[8px_8px_0_#000] rounded-2xl overflow-hidden"
                         >
-                            <div className="flex items-center justify-between border-b-[2.5px] border-black bg-[#fef08a] p-4">
+                            <div className="flex items-center justify-between border-b-[2.5px] border-black bg-[var(--mm-warning)] p-4">
                                 <h3 className="text-xs sm:text-sm font-black uppercase tracking-wider text-black">Ganti Cover</h3>
                                 <button
                                     type="button"
@@ -1373,7 +1373,7 @@ export default function AlbumsPage() {
                                     <button
                                         onClick={handleSaveCoverUpdate}
                                         disabled={isSaving}
-                                        className="border-[2.5px] border-black bg-[#86efac] rounded-xl px-5 py-2.5 text-xs font-black uppercase text-black shadow-[3px_3px_0_#000] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] active:translate-y-px active:shadow-none transition-all"
+                                        className="border-[2.5px] border-black bg-[var(--mm-success)] rounded-xl px-5 py-2.5 text-xs font-black uppercase text-black shadow-[3px_3px_0_#000] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] active:translate-y-px active:shadow-none transition-all"
                                     >
                                         Simpan
                                     </button>
@@ -1396,7 +1396,7 @@ export default function AlbumsPage() {
                             exit={{ opacity: 0, scale: 0.96 }}
                             className="flex max-h-[86vh] w-full max-w-3xl flex-col border-[3px] border-black bg-white shadow-[8px_8px_0_#000] rounded-2xl overflow-hidden"
                         >
-                            <div className="flex items-center justify-between border-b-[2.5px] border-black bg-[#86efac] p-4">
+                            <div className="flex items-center justify-between border-b-[2.5px] border-black bg-[var(--mm-success)] p-4">
                                 <h3 className="text-xs sm:text-sm font-black uppercase tracking-wider text-black">Kelola Memory di &quot;{organizingAlbum.name}&quot;</h3>
                                 <button
                                     type="button"
@@ -1419,7 +1419,7 @@ export default function AlbumsPage() {
                                                     type="button"
                                                     onClick={() => setSelectedMemoryIds(prev => selected ? prev.filter(id => id !== memory.id) : [...prev, memory.id])}
                                                     className={`flex items-center gap-3 border-[2px] border-black p-2 text-left shadow-[2px_2px_0_#000] rounded-xl transition-all hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#000] active:translate-y-px active:shadow-none ${
-                                                        selected ? "bg-[#86efac]/20" : "bg-white"
+                                                        selected ? "bg-[color-mix(in_srgb,var(--mm-success)_20%,transparent)]" : "bg-white"
                                                     }`}
                                                 >
                                                     <div className="flex h-12 aspect-video shrink-0 items-center justify-center overflow-hidden border-2 border-black bg-[#E5E5E5] rounded-lg">
@@ -1429,7 +1429,7 @@ export default function AlbumsPage() {
                                                         <p className="truncate text-xs font-black uppercase text-black">{memory.title}</p>
                                                         <p className="text-[10px] font-bold uppercase text-black/50">{formatDate(new Date(memory.date))}</p>
                                                     </div>
-                                                    <div className={`flex h-6 w-6 items-center justify-center border-2 border-black rounded-md transition-colors ${selected ? "bg-black text-[#86efac]" : "bg-white"}`}>
+                                                    <div className={`flex h-6 w-6 items-center justify-center border-2 border-black rounded-md transition-colors ${selected ? "bg-black text-[var(--mm-success)]" : "bg-white"}`}>
                                                         {selected && <Check className="h-4 w-4" />}
                                                     </div>
                                                 </button>
@@ -1449,7 +1449,7 @@ export default function AlbumsPage() {
                                     data-tutorial="album-btn-save-organize"
                                     onClick={handleSaveOrganize}
                                     disabled={isSaving}
-                                    className="border-[2.5px] border-black bg-[#86efac] rounded-xl px-5 py-2.5 text-xs font-black uppercase text-black shadow-[3px_3px_0_#000] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] active:translate-y-px active:shadow-none transition-all"
+                                    className="border-[2.5px] border-black bg-[var(--mm-success)] rounded-xl px-5 py-2.5 text-xs font-black uppercase text-black shadow-[3px_3px_0_#000] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] active:translate-y-px active:shadow-none transition-all"
                                 >
                                     Simpan Pengelompokan
                                 </button>

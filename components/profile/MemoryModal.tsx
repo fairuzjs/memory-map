@@ -66,7 +66,7 @@ export function MemoryModal({ memory, onClose, onReact, isOwner, onPin }: Memory
                                         {photos.map((_: any, i: number) => (
                                             <button key={i} onClick={() => setPhotoIdx(i)}
                                                 className="w-2.5 h-2.5 border-[2px] border-black transition-all rounded-full shadow-[1px_1px_0_#000]"
-                                                style={{ background: i === photoIdx ? "#fef08a" : "#fff" }} />
+                                                style={{ background: i === photoIdx ? "var(--mm-primary)" : "#fff" }} />
                                         ))}
                                     </div>
                                     <motion.button 
@@ -119,7 +119,7 @@ export function MemoryModal({ memory, onClose, onReact, isOwner, onPin }: Memory
                             {isOwner && onPin && (
                                 <button
                                     onClick={onPin}
-                                    className={`flex items-center justify-center w-8 h-8 border-[2px] border-black transition-all shadow-[2px_2px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#000] active:translate-y-px active:shadow-none ${memory.isPinned ? "bg-[#fef08a] text-black" : "bg-white text-black"}`}
+                                    className={`flex items-center justify-center w-8 h-8 border-[2px] border-black transition-all shadow-[2px_2px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#000] active:translate-y-px active:shadow-none ${memory.isPinned ? "bg-[var(--mm-primary)] text-black" : "bg-white text-black"}`}
                                     title={memory.isPinned ? "Batal Sematkan" : "Sematkan Kenangan"}
                                 >
                                     <Pin className={`w-4 h-4 ${memory.isPinned ? "fill-black" : ""}`} />
@@ -137,7 +137,7 @@ export function MemoryModal({ memory, onClose, onReact, isOwner, onPin }: Memory
                                 </div>
                                 <Link 
                                     href={`/map?lat=${memory.latitude}&lng=${memory.longitude}&memoryId=${memory.id}`}
-                                    className="text-[10px] font-black uppercase text-black bg-[#67e8f9] border-[2px] border-black px-2 py-0.5 rounded-lg shadow-[1.5px_1.5px_0_#000] hover:-translate-y-0.5 hover:shadow-[2.5px_2.5px_0_#000] active:translate-y-px active:shadow-none transition-all"
+                                    className="text-[10px] font-black uppercase text-black bg-[var(--mm-secondary)] border-[2px] border-black px-2 py-0.5 rounded-lg shadow-[1.5px_1.5px_0_#000] hover:-translate-y-0.5 hover:shadow-[2.5px_2.5px_0_#000] active:translate-y-px active:shadow-none transition-all"
                                 >
                                     Lihat di Peta
                                 </Link>
@@ -172,7 +172,7 @@ export function MemoryModal({ memory, onClose, onReact, isOwner, onPin }: Memory
                             </div>
                         </div>
                         <Link href={`/memories/${memory.id}`}
-                            className="flex items-center gap-1.5 text-xs font-black uppercase px-3 py-1.5 bg-[#fef08a] border-[2px] border-black text-black shadow-[2.5px_2.5px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[3.5px_3.5px_0_#000] active:translate-y-px active:shadow-none transition-all">
+                            className="flex items-center gap-1.5 text-xs font-black uppercase px-3 py-1.5 bg-[var(--mm-primary)] border-[2px] border-black text-black shadow-[2.5px_2.5px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[3.5px_3.5px_0_#000] active:translate-y-px active:shadow-none transition-all">
                             Lihat Detail
                             <ChevronRight className="w-3.5 h-3.5" />
                         </Link>

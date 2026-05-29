@@ -40,7 +40,7 @@ import { formatDate } from "@/lib/utils"
 const MapView = dynamic(() => import("@/components/map/MapView"), {
     ssr: false,
     loading: () => (
-        <div className="flex h-[500px] w-full items-center justify-center border-[4px] border-black bg-[#DFF7E8]">
+        <div className="flex h-[500px] w-full items-center justify-center border-[4px] border-black bg-[color-mix(in_srgb,var(--mm-success)_20%,var(--mm-bg))]">
             <span className="text-xs font-black uppercase tracking-widest text-black">Memuat peta album...</span>
         </div>
     ),
@@ -112,7 +112,7 @@ const ICON_OPTIONS: Array<{ id: string; Icon: LucideIcon }> = [
 ]
 
 // ── Accent colors ──────────────────────────────────────────
-const STAT_COLORS = ["#67e8f9", "#f5d0fe", "#86efac", "#fef08a"]
+const STAT_COLORS = ["var(--mm-soft-cyan)", "var(--mm-tertiary)", "var(--mm-success)", "var(--mm-warning)"]
 const ROTATIONS = ["scrap-rotate-1", "scrap-rotate-2", "scrap-rotate-3", "scrap-rotate-4"]
 
 function normalizeIconId(icon?: string | null) {
@@ -218,7 +218,7 @@ export default function AlbumDetailPage() {
     if (loading) {
         return (
             <div className="flex min-h-[520px] flex-col items-center justify-center gap-4">
-                <Loader2 className="h-10 w-10 animate-spin text-[#FF00FF]" />
+                <Loader2 className="h-10 w-10 animate-spin text-[var(--mm-accent)]" />
                 <p className="text-sm font-black uppercase tracking-widest text-black">Memuat album...</p>
             </div>
         )
@@ -239,7 +239,7 @@ export default function AlbumDetailPage() {
             <div className="flex items-center justify-between">
                 <Link
                     href="/albums"
-                    className="inline-flex items-center gap-2 border-[2.5px] border-black bg-white px-4 py-2 text-xs font-black uppercase text-black shadow-[3px_3px_0_#000] rounded-xl transition-all hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] hover:bg-[#fef08a] active:translate-y-px active:shadow-none"
+                    className="inline-flex items-center gap-2 border-[2.5px] border-black bg-white px-4 py-2 text-xs font-black uppercase text-black shadow-[3px_3px_0_#000] rounded-xl transition-all hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] hover:bg-[var(--mm-warning)] active:translate-y-px active:shadow-none"
                 >
                     <ArrowLeft className="h-4 w-4" />
                     Kembali
@@ -258,19 +258,19 @@ export default function AlbumDetailPage() {
                                 {album.coverImage ? (
                                     <img src={album.coverImage} alt={album.name} className="h-full w-full object-cover" />
                                 ) : (
-                                    <div className="h-full w-full bg-[linear-gradient(135deg,#00FFFF55,#FFFF0066_50%,#FF00FF55)]" />
+                                    <div className="h-full w-full bg-[linear-gradient(135deg,color-mix(in_srgb,var(--mm-secondary)_33%,transparent),color-mix(in_srgb,var(--mm-warning)_40%,transparent)_50%,color-mix(in_srgb,var(--mm-accent)_33%,transparent))]" />
                                 )}
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
 
                                 {/* Album badge */}
-                                <div className="absolute left-4 top-4 rotate-[-5deg] border-[2px] border-black bg-[#fef08a] px-3.5 py-1 text-[10px] font-black uppercase text-black shadow-[2px_2px_0_#000] rounded-lg">
+                                <div className="absolute left-4 top-4 rotate-[-5deg] border-[2px] border-black bg-[var(--mm-warning)] px-3.5 py-1 text-[10px] font-black uppercase text-black shadow-[2px_2px_0_#000] rounded-lg">
                                     Album
                                 </div>
 
                                 {/* Album info overlay */}
                                 <div className="absolute bottom-4 left-4 right-4 flex items-end gap-4">
                                     <div
-                                        className="flex h-16 w-16 shrink-0 items-center justify-center border-[2.5px] border-black bg-[#fef08a] text-black shadow-[3px_3px_0_#f5d0fe] rounded-2xl sm:h-20 sm:w-20"
+                                        className="flex h-16 w-16 shrink-0 items-center justify-center border-[2.5px] border-black bg-[var(--mm-warning)] text-black shadow-[3px_3px_0_var(--mm-tertiary)] rounded-2xl sm:h-20 sm:w-20"
                                     >
                                         <AlbumGlyph icon={album.icon} className="h-8 w-8 sm:h-10 sm:w-10" />
                                     </div>
@@ -286,7 +286,7 @@ export default function AlbumDetailPage() {
                             </div>
                         </div>
                         {/* Handwritten caption under polaroid frame */}
-                        <div className="px-4 py-2.5 text-center border-t-[2.5px] border-black bg-[#fafaf9]">
+                        <div className="px-4 py-2.5 text-center border-t-[2.5px] border-black bg-[var(--mm-bg)]">
                             <span className="font-caveat text-sm font-bold text-black/50">
                                 {album.memories.length > 0
                                     ? `${album.memories.length} kenangan tersimpan`
@@ -325,12 +325,12 @@ export default function AlbumDetailPage() {
                     </div>
 
                     {/* Mini map preview */}
-                    <div className="relative h-36 overflow-hidden border-[2.5px] border-black bg-[#DFF7E8] rounded-xl shadow-[2px_2px_0_#000]">
+                    <div className="relative h-36 overflow-hidden border-[2.5px] border-black bg-[color-mix(in_srgb,var(--mm-success)_20%,var(--mm-bg))] rounded-xl shadow-[2px_2px_0_#000]">
                         <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)", backgroundSize: "34px 34px" }} />
                         {album.memories.slice(0, 5).map((memory, index) => (
                             <div
                                 key={memory.id}
-                                className="absolute flex h-8 w-8 items-center justify-center border-[2px] border-black bg-[#fef08a] rounded-lg shadow-[2px_2px_0_#000]"
+                                className="absolute flex h-8 w-8 items-center justify-center border-[2px] border-black bg-[var(--mm-warning)] rounded-lg shadow-[2px_2px_0_#000]"
                                 style={{
                                     left: `${14 + (index * 17) % 70}%`,
                                     top: `${18 + (index * 23) % 56}%`,
@@ -370,7 +370,7 @@ export default function AlbumDetailPage() {
                         )}
                     </div>
 
-                    <Link href="#album-content" className="relative flex items-center justify-center gap-2 border-[2.5px] border-black bg-[#fef08a] rounded-xl px-4 py-3 text-xs font-black uppercase text-black shadow-[3px_3px_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none">
+                    <Link href="#album-content" className="relative flex items-center justify-center gap-2 border-[2.5px] border-black bg-[var(--mm-warning)] rounded-xl px-4 py-3 text-xs font-black uppercase text-black shadow-[3px_3px_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none">
                         Lihat Semua Memory <ArrowRight className="h-4 w-4" />
                     </Link>
                 </aside>
@@ -399,8 +399,8 @@ export default function AlbumDetailPage() {
                                     onClick={() => setViewMode(mode as ViewMode)}
                                     className={`flex items-center gap-1.5 border-r-[2.5px] border-black px-4 py-2.5 text-xs font-black uppercase last:border-r-0 transition-all ${
                                         isActive 
-                                            ? "bg-[#67e8f9] text-black" 
-                                            : "bg-white text-black hover:bg-[#fef08a]"
+                                            ? "bg-[var(--mm-soft-cyan)] text-black" 
+                                            : "bg-white text-black hover:bg-[var(--mm-warning)]"
                                     }`}
                                 >
                                     <LucideIcon className="h-4 w-4" />
@@ -417,7 +417,7 @@ export default function AlbumDetailPage() {
                         <h3 className="mb-2 text-lg font-black uppercase text-black tracking-wider">Album ini masih kosong</h3>
                         <p className="mb-4 text-xs font-bold text-black/55">Tambahkan memory dari halaman album untuk mulai mengisi koleksi ini.</p>
                         <p className="mx-auto mb-6 font-caveat text-base text-black/40">Mulai isi chapter ini dengan kenanganmu</p>
-                        <Link href="/albums" className="inline-flex border-[2.5px] border-black bg-[#86efac] rounded-xl px-5 py-3 text-xs font-black uppercase text-black shadow-[3px_3px_0_#000] hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none transition-all">
+                        <Link href="/albums" className="inline-flex border-[2.5px] border-black bg-[var(--mm-success)] rounded-xl px-5 py-3 text-xs font-black uppercase text-black shadow-[3px_3px_0_#000] hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none transition-all">
                             Kelola Memory
                         </Link>
                     </div>
@@ -475,14 +475,14 @@ export default function AlbumDetailPage() {
                                                             <div className="min-w-0 flex-1">
                                                                 <div className="mb-2 flex flex-wrap items-center gap-2">
                                                                     {/* Emotion tag badge */}
-                                                                    <span className="border-[2px] border-black bg-[#67e8f9] px-2 py-0.5 text-[10px] font-black uppercase text-black rounded-lg shadow-[1px_1px_0_#000]">{memory.emotion}</span>
+                                                                    <span className="border-[2px] border-black bg-[var(--mm-soft-cyan)] px-2 py-0.5 text-[10px] font-black uppercase text-black rounded-lg shadow-[1px_1px_0_#000]">{memory.emotion}</span>
                                                                     {memory.locationName && (
                                                                         <span className="flex items-center gap-1 text-[10px] font-bold uppercase text-black/55">
                                                                             <MapPin className="h-3 w-3" /> {memory.locationName}
                                                                         </span>
                                                                     )}
                                                                 </div>
-                                                                <h4 className="line-clamp-1 text-lg font-black uppercase text-black group-hover:text-[#c084fc] transition-colors">{memory.title}</h4>
+                                                                <h4 className="line-clamp-1 text-lg font-black uppercase text-black group-hover:text-[var(--mm-accent)] transition-colors">{memory.title}</h4>
                                                                 <p className="mt-2 line-clamp-2 text-xs font-medium leading-relaxed text-black/60">{memory.story}</p>
                                                                 <span className="mt-3 flex items-center gap-1 text-[10px] font-black uppercase text-black/45">
                                                                     <Clock className="h-3.5 w-3.5" /> {formatDate(new Date(memory.date))}

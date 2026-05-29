@@ -28,15 +28,15 @@ const EMOTIONS = [
 ]
 
 const EMOTION_COLORS: Record<string, string> = {
-    ALL: "bg-[#bae6fd]",          // Soft Sky Blue
-    HAPPY: "bg-[#fef08a]",        // Soft Yellow
-    SAD: "bg-[#bfdbfe]",          // Soft Blue
-    NOSTALGIC: "bg-[#fed7aa]",    // Soft Orange/Peach
-    EXCITED: "bg-[#fca5a5]",      // Soft Red
-    PEACEFUL: "bg-[#86efac]",     // Soft Green
-    GRATEFUL: "bg-[#f5d0fe]",     // Soft Fuchsia/Purple
-    ROMANTIC: "bg-[#fbcfe8]",     // Soft Pink
-    ADVENTUROUS: "bg-[#99f6e4]",   // Soft Teal
+    ALL: "bg-[var(--mm-soft-cyan)]",
+    HAPPY: "bg-[var(--mm-warning)]",
+    SAD: "bg-[var(--mm-secondary)]",
+    NOSTALGIC: "bg-[var(--mm-primary)]",
+    EXCITED: "bg-[var(--mm-danger)]",
+    PEACEFUL: "bg-[var(--mm-success)]",
+    GRATEFUL: "bg-[var(--mm-tertiary)]",
+    ROMANTIC: "bg-[var(--mm-accent)]",
+    ADVENTUROUS: "bg-[var(--mm-lime)]",
 }
 
 const SORT_OPTIONS: { value: Sort; label: string; icon: React.ReactNode }[] = [
@@ -58,7 +58,7 @@ function UserCard({ user, index }: { user: any; index: number }) {
         >
             <Link
                 href={`/profile/${user.id}`}
-                className="group flex items-center gap-4 rounded-2xl border-[3px] border-black bg-white p-4 shadow-[4px_4px_0_#000] transition-all duration-200 hover:-translate-y-1 hover:shadow-[6px_6px_0_#000] hover:bg-[#fef08a] active:translate-y-0 active:shadow-none"
+                className="group flex items-center gap-4 rounded-2xl border-[3px] border-black bg-white p-4 shadow-[4px_4px_0_#000] transition-all duration-200 hover:-translate-y-1 hover:shadow-[6px_6px_0_#000] hover:bg-[var(--mm-warning)] active:translate-y-0 active:shadow-none"
             >
                 <div className="relative shrink-0">
                     <img src={avatar} alt={user.name}
@@ -70,7 +70,7 @@ function UserCard({ user, index }: { user: any; index: number }) {
                         {user.name}
                     </p>
                 </div>
-                <div className="flex h-8 w-8 items-center justify-center rounded-xl border-[3px] border-black bg-white transition-colors group-hover:bg-black group-hover:text-[#67e8f9]">
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl border-[3px] border-black bg-white transition-colors group-hover:bg-black group-hover:text-[var(--mm-soft-cyan)]">
                     <ChevronRight className="w-5 h-5 font-black" />
                 </div>
             </Link>
@@ -134,7 +134,7 @@ function ExplorersTab() {
                             initial={{ opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.7 }} transition={{ duration: 0.12 }}
                             onClick={clearSearch}
-                            className="absolute right-4 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-xl border-[3px] border-black bg-[#f5d0fe] transition-all hover:bg-black hover:text-[#f5d0fe] hover:-translate-y-[60%] shadow-[2px_2px_0_#000] active:translate-y-[-50%] active:shadow-none"
+                            className="absolute right-4 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-xl border-[3px] border-black bg-[var(--mm-tertiary)] transition-all hover:bg-black hover:text-[var(--mm-tertiary)] hover:-translate-y-[60%] shadow-[2px_2px_0_#000] active:translate-y-[-50%] active:shadow-none"
                         >
                             <X className="w-5 h-5 font-black text-black group-hover:text-white" />
                         </motion.button>
@@ -156,7 +156,7 @@ function ExplorersTab() {
                     <motion.div key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                         className="flex flex-col items-center justify-center rounded-2xl border-[3px] border-black bg-white py-20 text-center shadow-[4px_4px_0_#000]"
                     >
-                        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl border-[3px] border-black bg-[#67e8f9] shadow-[4px_4px_0_#000]">
+                        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl border-[3px] border-black bg-[var(--mm-soft-cyan)] shadow-[4px_4px_0_#000]">
                             <Users className="w-7 h-7 text-black" />
                         </div>
                         <p className="mb-1 text-[18px] font-black uppercase text-black">Temukan sesama explorer</p>
@@ -167,18 +167,18 @@ function ExplorersTab() {
                     <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                         className="flex flex-col items-center justify-center rounded-2xl border-[3px] border-black bg-white py-20 text-center shadow-[4px_4px_0_#000]"
                     >
-                        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl border-[3px] border-black bg-[#fca5a5] shadow-[4px_4px_0_#000]">
+                        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl border-[3px] border-black bg-[var(--mm-danger)] shadow-[4px_4px_0_#000]">
                             <UserRound className="w-7 h-7 text-black" />
                         </div>
                         <p className="mb-1 text-[18px] font-black uppercase text-black">Tidak ada hasil</p>
                         <p className="text-[14px] font-bold text-black/60">
-                            Kata kunci <span className="rounded-md border-[2px] border-black bg-[#fef08a] px-1.5 py-0.5 text-black shadow-[2px_2px_0_#000] mx-1">{query}</span> tidak ditemukan
+                            Kata kunci <span className="rounded-md border-[2px] border-black bg-[var(--mm-warning)] px-1.5 py-0.5 text-black shadow-[2px_2px_0_#000] mx-1">{query}</span> tidak ditemukan
                         </p>
                     </motion.div>
                 )}
                 {!loading && searched && results.length > 0 && (
                     <motion.div key="results" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                        <p className="mb-4 inline-block rounded-xl border-[3px] border-black bg-[#86efac] px-4 py-1.5 text-[13px] font-black uppercase text-black shadow-[2px_2px_0_#000]">
+                        <p className="mb-4 inline-block rounded-xl border-[3px] border-black bg-[var(--mm-success)] px-4 py-1.5 text-[13px] font-black uppercase text-black shadow-[2px_2px_0_#000]">
                             {results.length} ditemukan
                         </p>
                         <div className="space-y-3">
@@ -296,12 +296,12 @@ function InstaMemoryCard({ memory }: { memory: any }) {
                 
                 {/* Visual Indicators */}
                 {(memory.audioUrl || memory.spotifyTrackId) && (
-                    <div className="absolute left-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-xl border-[3px] border-black bg-[#67e8f9] shadow-[2px_2px_0_#000] sm:h-8 sm:w-8">
+                    <div className="absolute left-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-xl border-[3px] border-black bg-[var(--mm-soft-cyan)] shadow-[2px_2px_0_#000] sm:h-8 sm:w-8">
                         <span className="text-[12px] sm:text-[14px]">🎵</span>
                     </div>
                 )}
                 {memory.isCollaboration && (
-                    <div className="absolute right-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-xl border-[3px] border-black bg-[#f5d0fe] shadow-[2px_2px_0_#000] sm:h-8 sm:w-8">
+                    <div className="absolute right-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-xl border-[3px] border-black bg-[var(--mm-tertiary)] shadow-[2px_2px_0_#000] sm:h-8 sm:w-8">
                         <span className="text-[12px] sm:text-[14px]">👥</span>
                     </div>
                 )}
@@ -309,7 +309,7 @@ function InstaMemoryCard({ memory }: { memory: any }) {
 
             {/* Username Footer */}
             <div 
-                className={`flex items-center gap-2 p-2 transition-colors sm:p-3 ${!theme ? "bg-white group-hover:bg-[#fef08a]" : ""}`}
+                className={`flex items-center gap-2 p-2 transition-colors sm:p-3 ${!theme ? "bg-white group-hover:bg-[var(--mm-warning)]" : ""}`}
             >
                 <img
                     src={memory.user.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${memory.user.id}`}
@@ -386,7 +386,7 @@ function MemoriesFeedTab() {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
 
             {/* ── Compact Filter Bar ────────────────────────────────── */}
-            <div className="sticky top-[88px] z-20 mb-4 space-y-3 rounded-2xl border-[3px] border-black bg-[#FFFDF0] p-4 shadow-[4px_4px_0_#000] sm:static sm:bg-transparent sm:p-0 sm:shadow-none sm:border-none sm:space-y-4">
+            <div className="sticky top-[88px] z-20 mb-4 space-y-3 rounded-2xl border-[3px] border-black bg-[var(--mm-bg)] p-4 shadow-[4px_4px_0_#000] sm:static sm:bg-transparent sm:p-0 sm:shadow-none sm:border-none sm:space-y-4">
                 {/* Row 1: Sort + Count badge */}
                 <div className="flex items-center gap-2">
                     {SORT_OPTIONS.map(opt => {
@@ -394,7 +394,7 @@ function MemoriesFeedTab() {
                         // Custom active colors for sort options to increase variety:
                         // Terbaru: soft green (#86efac)
                         // Terpopuler: soft yellow (#fef08a)
-                        const activeBg = opt.value === "latest" ? "bg-[#86efac]" : "bg-[#fef08a]"
+                        const activeBg = opt.value === "latest" ? "bg-[var(--mm-success)]" : "bg-[var(--mm-warning)]"
                         return (
                             <button
                                 key={opt.value}
@@ -411,7 +411,7 @@ function MemoriesFeedTab() {
                         )
                     })}
                     {!loading && total > 0 && (
-                        <div className="ml-auto rounded-xl border-[3px] border-black bg-[#f5d0fe] px-3 py-2 text-[12px] font-black text-black tabular-nums whitespace-nowrap shadow-[2px_2px_0_#000]">
+                        <div className="ml-auto rounded-xl border-[3px] border-black bg-[var(--mm-tertiary)] px-3 py-2 text-[12px] font-black text-black tabular-nums whitespace-nowrap shadow-[2px_2px_0_#000]">
                             {memories.length}/{total}
                         </div>
                     )}
@@ -420,7 +420,7 @@ function MemoriesFeedTab() {
                 <div className="scrollbar-none flex items-center gap-2 overflow-x-auto pb-2">
                     {EMOTIONS.map(em => {
                         const active = selectedEmotion === em.value
-                        const activeBg = EMOTION_COLORS[em.value] || "bg-[#fef08a]"
+                        const activeBg = EMOTION_COLORS[em.value] || "bg-[var(--mm-warning)]"
                         return (
                             <button
                                 key={em.value}
@@ -451,7 +451,7 @@ function MemoriesFeedTab() {
                     <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                         className="flex flex-col items-center justify-center rounded-2xl border-[3px] border-black bg-white py-20 text-center shadow-[4px_4px_0_#000]"
                     >
-                        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl border-[3px] border-black bg-[#fef08a] shadow-[4px_4px_0_#000]">
+                        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl border-[3px] border-black bg-[var(--mm-warning)] shadow-[4px_4px_0_#000]">
                             <MapPin className="w-8 h-8 text-black" />
                         </div>
                         <p className="mb-2 text-[18px] font-black uppercase text-black">Belum ada kenangan</p>
@@ -462,7 +462,7 @@ function MemoriesFeedTab() {
                         </p>
                         {selectedEmotion !== "ALL" && (
                             <button onClick={() => handleEmotionChange("ALL")}
-                                className="rounded-xl border-[3px] border-black bg-[#86efac] px-6 py-3 text-[14px] font-black uppercase text-black shadow-[4px_4px_0_#000] transition-all hover:-translate-y-1 hover:shadow-[6px_6px_0_#000] active:translate-y-0 active:shadow-none">
+                                className="rounded-xl border-[3px] border-black bg-[var(--mm-success)] px-6 py-3 text-[14px] font-black uppercase text-black shadow-[4px_4px_0_#000] transition-all hover:-translate-y-1 hover:shadow-[6px_6px_0_#000] active:translate-y-0 active:shadow-none">
                                 Lihat Semua
                             </button>
                         )}
@@ -473,7 +473,7 @@ function MemoriesFeedTab() {
                     >
                         <SectionHeader
                             icon={<ImageIcon className="w-5 h-5 text-black" />}
-                            iconBg="bg-[#86efac]"
+                            iconBg="bg-[var(--mm-success)]"
                             title="Semua Kenangan"
                             count={total}
                         />
@@ -498,7 +498,7 @@ function MemoriesFeedTab() {
                                 <button
                                     onClick={loadMore}
                                     disabled={loadingMore}
-                                    className="flex min-h-12 items-center gap-3 rounded-xl border-[3px] border-black bg-[#fef08a] px-8 py-3 text-[15px] font-black uppercase text-black shadow-[4px_4px_0_#000] transition-all hover:-translate-y-1 hover:shadow-[6px_6px_0_#000] active:translate-y-0 active:shadow-none disabled:cursor-not-allowed disabled:opacity-50"
+                                    className="flex min-h-12 items-center gap-3 rounded-xl border-[3px] border-black bg-[var(--mm-warning)] px-8 py-3 text-[15px] font-black uppercase text-black shadow-[4px_4px_0_#000] transition-all hover:-translate-y-1 hover:shadow-[6px_6px_0_#000] active:translate-y-0 active:shadow-none disabled:cursor-not-allowed disabled:opacity-50"
                                 >
                                     {loadingMore
                                         ? <><Loader2 className="w-5 h-5 animate-spin" /> Memuat…</>
@@ -510,7 +510,7 @@ function MemoriesFeedTab() {
 
                         {!hasMore && memories.length > 0 && (
                             <div className="flex justify-center pt-6">
-                                <p className="inline-block rounded-xl border-[3px] border-black bg-[#86efac] px-5 py-3 text-[13px] font-black uppercase text-black shadow-[4px_4px_0_#000]">
+                                <p className="inline-block rounded-xl border-[3px] border-black bg-[var(--mm-success)] px-5 py-3 text-[13px] font-black uppercase text-black shadow-[4px_4px_0_#000]">
                                     Semua {total} kenangan telah ditampilkan
                                 </p>
                             </div>
@@ -547,7 +547,7 @@ export default function CommunityPage() {
                 >
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white border-[3px] border-black p-4 sm:p-5 shadow-[6px_6px_0_#000] rounded-2xl">
                         <div className="flex items-center gap-4 flex-1">
-                            <div className="w-12 h-12 sm:w-14 sm:h-14 bg-[#67e8f9] border-[2.5px] border-black flex items-center justify-center shrink-0 shadow-[3px_3px_0_#000] rounded-xl">
+                            <div className="w-12 h-12 sm:w-14 sm:h-14 bg-[var(--mm-soft-cyan)] border-[2.5px] border-black flex items-center justify-center shrink-0 shadow-[3px_3px_0_#000] rounded-xl">
                                 <Globe className="h-6 w-6 sm:h-7 sm:w-7 text-black" />
                             </div>
                             <div>
@@ -570,8 +570,8 @@ export default function CommunityPage() {
                 >
                     <div className="flex w-full items-center gap-2 rounded-2xl border-[3px] border-black bg-white p-2 shadow-[4px_4px_0_#000] sm:inline-flex sm:w-auto">
                         {([
-                            { id: "memories"  as Tab, label: "Memories",  icon: <Globe className="w-5 h-5" />, activeBg: "bg-[#fef08a]" },
-                            { id: "explorers" as Tab, label: "Explorers", icon: <Users className="w-5 h-5" />, activeBg: "bg-[#f5d0fe]" },
+                            { id: "memories"  as Tab, label: "Memories",  icon: <Globe className="w-5 h-5" />, activeBg: "bg-[var(--mm-warning)]" },
+                            { id: "explorers" as Tab, label: "Explorers", icon: <Users className="w-5 h-5" />, activeBg: "bg-[var(--mm-tertiary)]" },
                         ] as const).map((tab) => {
                             const active = activeTab === tab.id
                             return (
@@ -581,7 +581,7 @@ export default function CommunityPage() {
                                     className={`flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-[14px] font-black uppercase transition-all sm:flex-none sm:justify-start sm:px-6 sm:text-[15px] border-[2px] border-transparent ${
                                         active
                                             ? `${tab.activeBg} text-black border-black shadow-[2.5px_2.5px_0_#000]`
-                                            : "bg-transparent text-black hover:bg-[#F5F2EB] hover:border-black/20"
+                                            : "bg-transparent text-black hover:bg-[color-mix(in_srgb,var(--mm-primary)_8%,transparent)] hover:border-black/20"
                                     }`}
                                 >
                                     <span>{tab.icon}</span>

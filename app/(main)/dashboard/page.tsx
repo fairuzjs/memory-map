@@ -129,12 +129,12 @@ function buildHeatmapCells(memories: DashboardMemory[]): HeatCell[] {
 }
 
 function heatCellStyle(count: number, isFuture: boolean): React.CSSProperties {
-    if (isFuture) return { background: '#fafaf9', border: '2px solid black', borderRadius: '4px' }
-    if (count === 0) return { background: 'white', border: '2px solid black', borderRadius: '4px' }
-    if (count === 1) return { background: '#67e8f9', border: '2px solid black', borderRadius: '4px' }
-    if (count === 2) return { background: '#86efac', border: '2px solid black', borderRadius: '4px' }
-    if (count === 3) return { background: '#f5d0fe', border: '2px solid black', borderRadius: '4px' }
-    return { background: '#fef08a', border: '2px solid black', borderRadius: '4px', boxShadow: '2px 2px 0 #000' }
+    if (isFuture) return { background: '#fafaf9', border: '2px solid var(--mm-border)', borderRadius: '4px' }
+    if (count === 0) return { background: 'var(--mm-surface)', border: '2px solid var(--mm-border)', borderRadius: '4px' }
+    if (count === 1) return { background: 'var(--mm-soft-cyan)', border: '2px solid var(--mm-border)', borderRadius: '4px' }
+    if (count === 2) return { background: 'var(--mm-success)', border: '2px solid var(--mm-border)', borderRadius: '4px' }
+    if (count === 3) return { background: 'var(--mm-tertiary)', border: '2px solid var(--mm-border)', borderRadius: '4px' }
+    return { background: 'var(--mm-warning)', border: '2px solid var(--mm-border)', borderRadius: '4px', boxShadow: '2px 2px 0 var(--mm-shadow)' }
 }
 
 function ActivityHeatmap({ memories }: { memories: DashboardMemory[] }) {
@@ -171,13 +171,13 @@ function ActivityHeatmap({ memories }: { memories: DashboardMemory[] }) {
         <div className="w-full">
             {/* Year summary */}
             <div className="flex items-center gap-5 mb-4 flex-wrap">
-                <div className="flex items-baseline gap-2 bg-[#fef08a] border-[2.5px] border-black px-3.5 py-1 rounded-xl shadow-[2px_2px_0_#000]">
-                    <span className="text-xl font-black text-black" style={{ fontFamily: "'Syne',sans-serif" }}>{thisYearCount}</span>
-                    <span className="text-xs font-bold text-black/70 uppercase tracking-widest">kenangan</span>
+                <div className="flex items-baseline gap-2 bg-[var(--mm-warning)] border-[2.5px] border-[var(--mm-border)] px-3.5 py-1 rounded-xl shadow-[2px_2px_0_var(--mm-shadow)]">
+                    <span className="text-xl font-black text-[var(--mm-ink)]" style={{ fontFamily: "'Syne',sans-serif" }}>{thisYearCount}</span>
+                    <span className="text-xs font-bold text-[var(--mm-ink)]/70 uppercase tracking-widest">kenangan</span>
                 </div>
-                <div className="flex items-baseline gap-2 bg-[#67e8f9] border-[2.5px] border-black px-3.5 py-1 rounded-xl shadow-[2px_2px_0_#000]">
-                    <span className="text-xl font-black text-black" style={{ fontFamily: "'Syne',sans-serif" }}>{activeDays}</span>
-                    <span className="text-xs font-bold text-black/70 uppercase tracking-widest">hari aktif</span>
+                <div className="flex items-baseline gap-2 bg-[var(--mm-soft-cyan)] border-[2.5px] border-[var(--mm-border)] px-3.5 py-1 rounded-xl shadow-[2px_2px_0_var(--mm-shadow)]">
+                    <span className="text-xl font-black text-[var(--mm-ink)]" style={{ fontFamily: "'Syne',sans-serif" }}>{activeDays}</span>
+                    <span className="text-xs font-bold text-[var(--mm-ink)]/70 uppercase tracking-widest">hari aktif</span>
                 </div>
             </div>
 
@@ -214,13 +214,13 @@ function ActivityHeatmap({ memories }: { memories: DashboardMemory[] }) {
                                             style={{ width: CELL, height: CELL, flexShrink: 0, cursor: cell.count > 0 ? 'pointer' : 'default', transition: 'all 0.1s', ...heatCellStyle(cell.count, cell.isFuture) }}
                                             onMouseEnter={e => {
                                                 (e.currentTarget as HTMLDivElement).style.transform = 'translate(-2px, -2px)';
-                                                (e.currentTarget as HTMLDivElement).style.boxShadow = '3px 3px 0 #000';
+                                                (e.currentTarget as HTMLDivElement).style.boxShadow = '3px 3px 0 var(--mm-shadow)';
                                                 const r = (e.currentTarget as HTMLDivElement).getBoundingClientRect()
                                                 setTooltip({ x: r.left + r.width / 2, y: r.top, cell })
                                             }}
                                             onMouseLeave={e => { 
                                                 (e.currentTarget as HTMLDivElement).style.transform = 'translate(0, 0)'; 
-                                                (e.currentTarget as HTMLDivElement).style.boxShadow = cell.count >= 4 ? '2px 2px 0 #000' : 'none'; 
+                                                (e.currentTarget as HTMLDivElement).style.boxShadow = cell.count >= 4 ? '2px 2px 0 var(--mm-shadow)' : 'none'; 
                                                 setTooltip(null) 
                                             }}
                                         />
@@ -244,11 +244,11 @@ function ActivityHeatmap({ memories }: { memories: DashboardMemory[] }) {
             {/* Tooltip */}
             {tooltip && (
                 <div className="fixed z-[9999] pointer-events-none" style={{ left: tooltip.x, top: tooltip.y - 50, transform: 'translateX(-50%)' }}>
-                    <div className="px-3.5 py-2 bg-white border-[2.5px] border-black rounded-xl shadow-[3px_3px_0_#000] whitespace-nowrap">
-                        <span className="font-black text-black">
+                    <div className="px-3.5 py-2 bg-[var(--mm-surface)] border-[2.5px] border-[var(--mm-border)] rounded-xl shadow-[3px_3px_0_var(--mm-shadow)] whitespace-nowrap">
+                        <span className="font-black text-[var(--mm-ink)]">
                             {tooltip.cell.isFuture ? 'Akan datang' : tooltip.cell.count === 0 ? 'Tidak ada kenangan' : `${tooltip.cell.count} kenangan`}
                         </span>
-                        <span className="text-black/60 font-bold ml-2 text-xs">{formatDate(tooltip.cell.dayObj)}</span>
+                        <span className="text-[var(--mm-ink)]/60 font-bold ml-2 text-xs">{formatDate(tooltip.cell.dayObj)}</span>
                     </div>
                 </div>
             )}
@@ -304,8 +304,8 @@ function ActivityCalendar({
                     <CalendarDays className="w-4 h-4 text-black" />
                     <span className="text-[11px] font-black uppercase tracking-[0.1em] text-black">30 Hari Terakhir</span>
                 </div>
-                <div className="bg-[#fef08a] border-[2px] border-black rounded-lg px-2.5 py-0.5 shadow-[2px_2px_0_#000]">
-                    <span className="text-[11px] font-black text-black">{activeDaysCount} hari aktif</span>
+                <div className="bg-[var(--mm-warning)] border-[2px] border-[var(--mm-border)] rounded-lg px-2.5 py-0.5 shadow-[2px_2px_0_var(--mm-shadow)]">
+                    <span className="text-[11px] font-black text-[var(--mm-ink)]">{activeDaysCount} hari aktif</span>
                 </div>
             </div>
 
@@ -325,9 +325,9 @@ function ActivityCalendar({
                                 key={di}
                                 className="aspect-square flex items-center justify-center transition-all rounded-md"
                                 style={{
-                                    background: day.isActive ? '#86efac' : day.inRange ? '#fafaf9' : 'rgba(0,0,0,0.05)',
-                                    border: day.isToday ? '3px solid black' : '2px solid black',
-                                    boxShadow: (day.isActive || day.isToday) ? '2px 2px 0 #000' : 'none',
+                                    background: day.isActive ? 'var(--mm-success)' : day.inRange ? '#fafaf9' : 'rgba(0,0,0,0.05)',
+                                    border: day.isToday ? '3px solid var(--mm-border)' : '2px solid var(--mm-border)',
+                                    boxShadow: (day.isActive || day.isToday) ? '2px 2px 0 var(--mm-shadow)' : 'none',
                                     opacity: !day.inRange ? 0.4 : 1,
                                 }}
                             >
@@ -343,13 +343,13 @@ function ActivityCalendar({
             {/* Legend */}
             <div className="flex items-center justify-center gap-4 mt-2">
                 {[
-                    { bg: '#86efac', label: 'Aktif', border: '2px solid black', radius: '4px' },
-                    { bg: '#fafaf9', label: 'Tidak Aktif', border: '2px solid black', radius: '4px' },
-                    { bg: 'transparent', label: 'Hari Ini', border: '3px solid black', radius: '4px' },
+                    { bg: 'var(--mm-success)', label: 'Aktif', border: '2px solid var(--mm-border)', radius: '4px' },
+                    { bg: '#fafaf9', label: 'Tidak Aktif', border: '2px solid var(--mm-border)', radius: '4px' },
+                    { bg: 'transparent', label: 'Hari Ini', border: '3px solid var(--mm-border)', radius: '4px' },
                 ].map(item => (
                     <div key={item.label} className="flex items-center gap-1.5">
-                        <div className="w-4 h-4 shadow-[1px_1px_0_#000]" style={{ background: item.bg, border: item.border, borderRadius: item.radius }} />
-                        <span className="text-[10px] font-bold text-black/70">{item.label}</span>
+                        <div className="w-4 h-4 shadow-[1px_1px_0_var(--mm-shadow)]" style={{ background: item.bg, border: item.border, borderRadius: item.radius }} />
+                        <span className="text-[10px] font-bold text-[var(--mm-ink)]/70">{item.label}</span>
                     </div>
                 ))}
             </div>
@@ -361,13 +361,13 @@ function ActivityCalendar({
 function StatBar({ label, value, barColor, sub }: { label: string; value: string | number; barColor: string; sub: string }) {
     const isLong = typeof value === 'string' && value.length > 6
     return (
-        <div className="flex-1 min-w-0 px-4 py-4 border-r-[3px] border-black last:border-r-0 bg-white group hover:bg-[#fafaf9] transition-colors">
-            <p className="text-[11px] font-black uppercase tracking-[0.1em] text-black/50 mb-1.5">{label}</p>
-            <p className="font-black leading-none mb-3 text-black" style={{ fontSize: isLong ? '1.4rem' : '2rem', fontFamily: "'Syne',sans-serif" }}>
+        <div className="flex-1 min-w-0 px-4 py-4 border-r-[3px] border-[var(--mm-border)] last:border-r-0 bg-[var(--mm-surface)] group hover:bg-[#fafaf9] transition-colors">
+            <p className="text-[11px] font-black uppercase tracking-[0.1em] text-[var(--mm-ink)]/50 mb-1.5">{label}</p>
+            <p className="font-black leading-none mb-3 text-[var(--mm-ink)]" style={{ fontSize: isLong ? '1.4rem' : '2rem', fontFamily: "'Syne',sans-serif" }}>
                 {value}
             </p>
-            <div className="h-[5px] w-10 border-[2px] border-black shadow-[2px_2px_0_#000] mb-2 group-hover:w-full transition-all duration-300" style={{ background: barColor }} />
-            <p className="text-[11px] font-bold text-black/70">{sub}</p>
+            <div className="h-[5px] w-10 border-[2px] border-[var(--mm-border)] shadow-[2px_2px_0_var(--mm-shadow)] mb-2 group-hover:w-full transition-all duration-300" style={{ background: barColor }} />
+            <p className="text-[11px] font-bold text-[var(--mm-ink)]/70">{sub}</p>
         </div>
     )
 }
@@ -480,31 +480,31 @@ export default function DashboardPage() {
             <motion.div initial="hidden" animate="show" variants={stagger}>
                 <motion.div
                     variants={fadeUp}
-                    className="relative px-7 py-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 bg-[#67e8f9] border-[3px] border-black rounded-2xl shadow-[6px_6px_0_#000] overflow-hidden"
+                    className="relative px-7 py-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 bg-[var(--mm-soft-cyan)] border-[3px] border-[var(--mm-border)] rounded-2xl shadow-[6px_6px_0_var(--mm-shadow)] overflow-hidden"
                 >
-                    <div className="absolute inset-0 pointer-events-none opacity-[0.1]" style={{ backgroundImage: "radial-gradient(black 2px, transparent 2px)", backgroundSize: "20px 20px" }} />
+                    <div className="absolute inset-0 pointer-events-none opacity-[0.1]" style={{ backgroundImage: "radial-gradient(var(--mm-ink) 2px, transparent 2px)", backgroundSize: "20px 20px" }} />
 
                     <div className="relative z-10">
                         <div className="flex items-center gap-2 mb-3">
-                            <span className="inline-block px-2.5 py-1 bg-[#fef08a] border-[2px] border-black text-[10px] font-black uppercase tracking-widest text-black shadow-[2px_2px_0_#000] rounded-lg">
+                            <span className="inline-block px-2.5 py-1 bg-[var(--mm-primary)] border-[2px] border-[var(--mm-border)] text-[10px] font-black uppercase tracking-widest text-[var(--mm-ink)] shadow-[2px_2px_0_var(--mm-shadow)] rounded-lg">
                                 {greeting}
                             </span>
                         </div>
-                        <h1 className="text-[32px] sm:text-[40px] font-black text-black leading-tight mb-3" style={{ fontFamily: "'Syne',sans-serif" }}>
+                        <h1 className="text-[32px] sm:text-[40px] font-black text-[var(--mm-ink)] leading-tight mb-3" style={{ fontFamily: "'Syne',sans-serif" }}>
                             Selamat Datang,{" "}
-                            <span className="inline-block bg-[#f5d0fe] text-black px-3 py-0.5 mt-1 border-[2.5px] border-black shadow-[3px_3px_0_#000] -rotate-1 rounded-xl">
+                            <span className="inline-block bg-[var(--mm-tertiary)] text-[var(--mm-ink)] px-3 py-0.5 mt-1 border-[2.5px] border-[var(--mm-border)] shadow-[3px_3px_0_var(--mm-shadow)] -rotate-1 rounded-xl">
                                 {firstName}
                             </span>.
                         </h1>
-                        <p className="text-base font-bold text-black/70 max-w-7xl w-full leading-relaxed">Siap untuk menyimpan kenangan baru Anda di peta?</p>
+                        <p className="text-base font-bold text-[var(--mm-ink)]/70 max-w-7xl w-full leading-relaxed">Siap untuk menyimpan kenangan baru Anda di peta?</p>
                     </div>
 
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0 relative z-10">
-                        <Link href="/memories/create" data-tutorial="create-memory" className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-black text-black bg-[#fef08a] border-[2.5px] border-black rounded-xl shadow-[3px_3px_0_#000] hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none transition-all uppercase">
+                        <Link href="/memories/create" data-tutorial="create-memory" className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-black text-[var(--mm-ink)] bg-[var(--mm-primary)] border-[2.5px] border-[var(--mm-border)] rounded-xl shadow-[3px_3px_0_var(--mm-shadow)] hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_var(--mm-shadow)] active:translate-y-px active:shadow-none transition-all uppercase">
                             <Plus className="w-5 h-5" />
                             <span>Tambah Kenangan</span>
                         </Link>
-                        <Link href="/map" data-tutorial="explore-map" className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-black text-black bg-white border-[2.5px] border-black rounded-xl shadow-[3px_3px_0_#000] hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none hover:bg-[#86efac] transition-all uppercase">
+                        <Link href="/map" data-tutorial="explore-map" className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-black text-[var(--mm-ink)] bg-[var(--mm-surface)] border-[2.5px] border-[var(--mm-border)] rounded-xl shadow-[3px_3px_0_var(--mm-shadow)] hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_var(--mm-shadow)] active:translate-y-px active:shadow-none hover:bg-[var(--mm-success)] transition-all uppercase">
                             <Globe className="w-5 h-5" />
                             <span>Jelajahi Peta</span>
                         </Link>
@@ -516,12 +516,12 @@ export default function DashboardPage() {
             {streakData !== null && showStreakBanner && (
                 <div className="fixed bottom-6 right-4 md:bottom-8 md:right-8 z-50 w-[calc(100%-2rem)] md:w-auto max-w-sm pointer-events-auto">
                     <motion.div initial={{ opacity: 0, y: 50, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
-                        <div className="relative border-[3px] border-black bg-white p-5 rounded-2xl flex items-center justify-between gap-4 shadow-[6px_6px_0_#000]">
-                            <button onClick={() => setShowStreakBanner(false)} className="absolute -top-3 -right-3 p-1.5 bg-[#f5d0fe] border-[2.5px] border-black text-black hover:bg-black hover:text-white rounded-xl transition-colors z-10 shadow-[3px_3px_0_#000] active:translate-y-px active:shadow-none">
+                        <div className="relative border-[3px] border-[var(--mm-border)] bg-[var(--mm-surface)] p-5 rounded-2xl flex items-center justify-between gap-4 shadow-[6px_6px_0_var(--mm-shadow)]">
+                            <button onClick={() => setShowStreakBanner(false)} className="absolute -top-3 -right-3 p-1.5 bg-[var(--mm-tertiary)] border-[2.5px] border-[var(--mm-border)] text-[var(--mm-ink)] hover:bg-[var(--mm-ink)] hover:text-[var(--mm-surface)] rounded-xl transition-colors z-10 shadow-[3px_3px_0_var(--mm-shadow)] active:translate-y-px active:shadow-none">
                                 <X className="w-4 h-4" />
                             </button>
                             <div className="flex items-center gap-4 min-w-0 pr-4">
-                                <div className={`w-12 h-12 flex items-center justify-center flex-shrink-0 border-[2.5px] border-black shadow-[3px_3px_0_#000] rounded-xl ${streakData.alreadyClaimed ? "bg-[#86efac]" : "bg-[#fef08a]"}`}>
+                                <div className={`w-12 h-12 flex items-center justify-center flex-shrink-0 border-[2.5px] border-[var(--mm-border)] shadow-[3px_3px_0_var(--mm-shadow)] rounded-xl ${streakData.alreadyClaimed ? "bg-[var(--mm-success)]" : "bg-[var(--mm-warning)]"}`}>
                                     <Flame className={`w-6 h-6 text-black`} />
                                 </div>
                                 <div className="min-w-0 flex-1">
@@ -530,12 +530,12 @@ export default function DashboardPage() {
                                         <span className="text-xs font-bold text-black/60 uppercase">hari streak</span>
                                     </div>
                                     {streakData.alreadyClaimed
-                                        ? <span className="inline-flex items-center gap-1 text-[10px] font-black px-2.5 py-0.5 bg-[#86efac] text-black border-[2px] border-black rounded-lg uppercase tracking-wider"><CheckCircle2 className="w-3 h-3" />Sudah klaim</span>
-                                        : <span className="inline-block text-[10px] font-black px-2.5 py-0.5 bg-[#fef08a] text-black border-[2px] border-black rounded-lg uppercase tracking-wider">Belum klaim</span>
+                                        ? <span className="inline-flex items-center gap-1 text-[10px] font-black px-2.5 py-0.5 bg-[var(--mm-success)] text-[var(--mm-ink)] border-[2px] border-[var(--mm-border)] rounded-lg uppercase tracking-wider"><CheckCircle2 className="w-3 h-3" />Sudah klaim</span>
+                                        : <span className="inline-block text-[10px] font-black px-2.5 py-0.5 bg-[var(--mm-warning)] text-[var(--mm-ink)] border-[2px] border-[var(--mm-border)] rounded-lg uppercase tracking-wider">Belum klaim</span>
                                     }
                                 </div>
                             </div>
-                            <Link href="/streak" className={`flex items-center justify-center gap-1 text-xs font-black px-4 py-2 border-[2.5px] border-black rounded-xl shadow-[3px_3px_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none uppercase ${streakData.alreadyClaimed ? "bg-white" : "bg-[#67e8f9]"}`}>
+                            <Link href="/streak" className={`flex items-center justify-center gap-1 text-xs font-black px-4 py-2 border-[2.5px] border-[var(--mm-border)] rounded-xl shadow-[3px_3px_0_var(--mm-shadow)] transition-all hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_var(--mm-shadow)] active:translate-y-px active:shadow-none uppercase ${streakData.alreadyClaimed ? "bg-[var(--mm-surface)]" : "bg-[var(--mm-soft-cyan)]"}`}>
                                 {streakData.alreadyClaimed ? "Detail" : "Klaim"}<ChevronRight className="w-4 h-4" />
                             </Link>
                         </div>
@@ -547,7 +547,7 @@ export default function DashboardPage() {
             <AnimatedSection>
                 <motion.div variants={fadeUp} className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-[#f5d0fe] border-[2.5px] border-black shadow-[3px_3px_0_#000] rounded-xl flex items-center justify-center text-black">
+                        <div className="w-10 h-10 bg-[var(--mm-tertiary)] border-[2.5px] border-[var(--mm-border)] shadow-[3px_3px_0_var(--mm-shadow)] rounded-xl flex items-center justify-center text-[var(--mm-ink)]">
                             <TrendingUp className="w-5 h-5" />
                         </div>
                         <div>
@@ -557,14 +557,14 @@ export default function DashboardPage() {
                     </div>
                 </motion.div>
 
-                <motion.div variants={fadeUp} className="rounded-2xl border-[3px] border-black bg-white shadow-[6px_6px_0_#000] overflow-hidden">
+                <motion.div variants={fadeUp} className="rounded-2xl border-[3px] border-[var(--mm-border)] bg-[var(--mm-surface)] shadow-[6px_6px_0_var(--mm-shadow)] overflow-hidden">
                     {/* Mobile 2×2 */}
                     <div className="grid grid-cols-2 sm:hidden">
                         {[
-                            { label: 'Kenangan', value: stats.totalMemories, barColor: '#67e8f9', sub: '+1 minggu ini' },
-                            { label: 'Tempat', value: stats.uniqueLocations, barColor: '#86efac', sub: 'Di berbagai kota' },
-                            { label: 'Perasaan Utama', value: emotionDisplay, barColor: '#f5d0fe', sub: 'Paling sering' },
-                            { label: 'Foto', value: stats.totalPhotos, barColor: '#fef08a', sub: 'Terlampir' },
+                            { label: 'Kenangan', value: stats.totalMemories, barColor: 'var(--mm-soft-cyan)', sub: '+1 minggu ini' },
+                            { label: 'Tempat', value: stats.uniqueLocations, barColor: 'var(--mm-success)', sub: 'Di berbagai kota' },
+                            { label: 'Perasaan Utama', value: emotionDisplay, barColor: 'var(--mm-tertiary)', sub: 'Paling sering' },
+                            { label: 'Foto', value: stats.totalPhotos, barColor: 'var(--mm-warning)', sub: 'Terlampir' },
                         ].map((item, i) => (
                             <div key={item.label} style={{ borderRight: i % 2 === 0 ? '3px solid black' : 'none', borderBottom: i < 2 ? '3px solid black' : 'none' }}>
                                 <StatBar {...item} />
@@ -573,10 +573,10 @@ export default function DashboardPage() {
                     </div>
                     {/* Desktop row */}
                     <div className="hidden sm:flex">
-                        <StatBar label="Kenangan" value={stats.totalMemories} barColor="#67e8f9" sub="+1 minggu ini" />
-                        <StatBar label="Tempat" value={stats.uniqueLocations} barColor="#86efac" sub="Di berbagai kota" />
-                        <StatBar label="Perasaan Utama" value={emotionDisplay} barColor="#f5d0fe" sub="Paling sering" />
-                        <StatBar label="Foto" value={stats.totalPhotos} barColor="#fef08a" sub="Terlampir" />
+                        <StatBar label="Kenangan" value={stats.totalMemories} barColor="var(--mm-soft-cyan)" sub="+1 minggu ini" />
+                        <StatBar label="Tempat" value={stats.uniqueLocations} barColor="var(--mm-success)" sub="Di berbagai kota" />
+                        <StatBar label="Perasaan Utama" value={emotionDisplay} barColor="var(--mm-tertiary)" sub="Paling sering" />
+                        <StatBar label="Foto" value={stats.totalPhotos} barColor="var(--mm-warning)" sub="Terlampir" />
                     </div>
                 </motion.div>
             </AnimatedSection>
@@ -585,7 +585,7 @@ export default function DashboardPage() {
             <AnimatedSection>
                 <motion.div variants={fadeUp} className="mb-4 flex items-center justify-between gap-4">
                     <div className="flex min-w-0 items-center gap-3">
-                        <div className="flex h-11 w-11 shrink-0 items-center justify-center border-[2.5px] border-black rounded-xl bg-[#67e8f9] shadow-[3px_3px_0_#000]">
+                        <div className="flex h-11 w-11 shrink-0 items-center justify-center border-[2.5px] border-[var(--mm-border)] rounded-xl bg-[var(--mm-soft-cyan)] shadow-[3px_3px_0_var(--mm-shadow)]">
                             <BookOpen className="h-5 w-5 text-black" />
                         </div>
                         <div className="min-w-0">
@@ -593,26 +593,26 @@ export default function DashboardPage() {
                             <p className="mt-1 line-clamp-1 text-[12px] font-bold text-black/50">Koleksi cerita yang baru kamu susun</p>
                         </div>
                     </div>
-                    <Link href="/albums" className="group flex shrink-0 items-center gap-1.5 border-[2.5px] border-black bg-[#f5d0fe] rounded-xl px-3.5 py-2 text-xs font-black uppercase tracking-wide text-black shadow-[3px_3px_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none">
+                    <Link href="/albums" className="group flex shrink-0 items-center gap-1.5 border-[2.5px] border-[var(--mm-border)] bg-[var(--mm-tertiary)] rounded-xl px-3.5 py-2 text-xs font-black uppercase tracking-wide text-[var(--mm-ink)] shadow-[3px_3px_0_var(--mm-shadow)] transition-all hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_var(--mm-shadow)] active:translate-y-px active:shadow-none">
                         <span className="hidden sm:inline">Lihat Semua</span><ArrowRight className="h-3.5 w-3.5 text-black" />
                     </Link>
                 </motion.div>
 
                 <motion.div variants={fadeUp} className="grid grid-cols-1 gap-4 lg:grid-cols-3">
                     {albums.slice(0, 3).map((album, index) => {
-                        const accent = ["#67e8f9", "#fef08a", "#f5d0fe", "#86efac", "#c084fc", "#fdba74"][index % 6]
+                        const accent = ["var(--mm-soft-cyan)", "var(--mm-warning)", "var(--mm-tertiary)", "var(--mm-success)", "var(--mm-tertiary)", "var(--mm-warning)"][index % 6]
                         return (
                         <Link
                             key={album.id}
                             href={`/albums/${album.id}`}
-                            className="group relative grid min-h-[122px] grid-cols-[112px_1fr] overflow-hidden border-[3px] border-black rounded-2xl bg-white shadow-[5px_5px_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_#000]"
+                            className="group relative grid min-h-[122px] grid-cols-[112px_1fr] overflow-hidden border-[3px] border-[var(--mm-border)] rounded-2xl bg-[var(--mm-surface)] shadow-[5px_5px_0_var(--mm-shadow)] transition-all hover:-translate-y-0.5 hover:shadow-[7px_7px_0_var(--mm-shadow)]"
                         >
                             {/* Binding edge */}
                             <div className="absolute left-0 top-0 bottom-0 w-[5px]" style={{ background: `repeating-linear-gradient(to bottom, ${accent} 0px, ${accent} 8px, #000 8px, #000 10px)` }} />
 
                             {/* Left column: Polaroid stamp frame */}
                             <div className="relative flex items-center justify-center p-2 pl-4">
-                                <div className="relative w-[78px] aspect-[4/5] border-[2px] border-black bg-white p-1 pb-3.5 shadow-[2px_2px_0_#000] rotate-[-3deg] rounded-md group-hover:rotate-0 transition-transform duration-300">
+                                <div className="relative w-[78px] aspect-[4/5] border-[2px] border-[var(--mm-border)] bg-[var(--mm-surface)] p-1 pb-3.5 shadow-[2px_2px_0_var(--mm-shadow)] rotate-[-3deg] rounded-md group-hover:rotate-0 transition-transform duration-300">
                                     <div className="relative aspect-square w-full bg-neutral-200 overflow-hidden border border-black/10 rounded-sm">
                                         {album.coverImage ? (
                                             <Image
@@ -645,11 +645,11 @@ export default function DashboardPage() {
                                         >
                                             <DashboardAlbumIcon icon={album.icon} className="h-3.5 w-3.5" />
                                         </div>
-                                        <h3 className="truncate text-[15px] font-black uppercase leading-tight text-black transition-colors group-hover:text-[#FF00FF]" style={{ fontFamily: "'Syne',sans-serif" }}>
+                                        <h3 className="truncate text-[15px] font-black uppercase leading-tight text-[var(--mm-ink)] transition-colors group-hover:text-[var(--mm-accent)]" style={{ fontFamily: "'Syne',sans-serif" }}>
                                             {album.name}
                                         </h3>
                                     </div>
-                                    <span className="shrink-0 border-[1.5px] border-black bg-[#fef08a] px-2 py-0.5 text-[9px] font-black uppercase leading-none shadow-[1.5px_1.5px_0_#000] rounded-md">
+                                    <span className="shrink-0 border-[1.5px] border-[var(--mm-border)] bg-[var(--mm-warning)] px-2 py-0.5 text-[9px] font-black uppercase leading-none shadow-[1.5px_1.5px_0_var(--mm-shadow)] rounded-md">
                                         Baru
                                     </span>
                                 </div>
@@ -671,11 +671,11 @@ export default function DashboardPage() {
                         )
                     })}
                     {albums.length === 0 && (
-                        <div className="col-span-full border-[3px] border-black rounded-2xl p-8 bg-white text-center shadow-[5px_5px_0_#000]">
-                            <BookOpen className="mx-auto mb-2 h-10 w-10 text-black" />
-                            <p className="text-sm font-black uppercase text-black">Belum ada album dibuat</p>
-                            <p className="text-xs font-bold text-neutral-500 mt-1 mb-4">Mulai kelompokkan cerita hidupmu dalam album tema sendiri</p>
-                            <Link href="/albums" className="inline-flex items-center gap-1 px-4 py-2 text-xs font-black bg-[#86efac] border-[2.5px] border-black rounded-xl shadow-[3px_3px_0_#000] hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none transition-all uppercase">
+                        <div className="col-span-full border-[3px] border-[var(--mm-border)] rounded-2xl p-8 bg-[var(--mm-surface)] text-center shadow-[5px_5px_0_var(--mm-shadow)]">
+                            <BookOpen className="mx-auto mb-2 h-10 w-10 text-[var(--mm-ink)]" />
+                            <p className="text-sm font-black uppercase text-[var(--mm-ink)]">Belum ada album dibuat</p>
+                            <p className="text-xs font-bold text-[var(--mm-ink-muted)] mt-1 mb-4">Mulai kelompokkan cerita hidupmu dalam album tema sendiri</p>
+                            <Link href="/albums" className="inline-flex items-center gap-1 px-4 py-2 text-xs font-black bg-[var(--mm-success)] border-[2.5px] border-[var(--mm-border)] rounded-xl shadow-[3px_3px_0_var(--mm-shadow)] hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_var(--mm-shadow)] active:translate-y-px active:shadow-none transition-all uppercase">
                                 Buat Album Pertamamu
                             </Link>
                         </div>
@@ -686,15 +686,15 @@ export default function DashboardPage() {
             {/* ── Activity Section: Heatmap (left) + Calendar (right) ───────── */}
             <AnimatedSection>
                 {/* Mobile Tab Switcher */}
-                <div className="flex lg:hidden mb-5 border-[2.5px] border-black rounded-xl overflow-hidden shadow-[4px_4px_0_#000] bg-white">
+                <div className="flex lg:hidden mb-5 border-[2.5px] border-[var(--mm-border)] rounded-xl overflow-hidden shadow-[4px_4px_0_var(--mm-shadow)] bg-[var(--mm-surface)]">
                     {(['graph', 'calendar'] as const).map(t => (
                         <button
                             key={t}
                             onClick={() => setMobileTab(t)}
-                            className="flex-1 py-3 text-[11px] font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2 border-r-[2.5px] border-black last:border-r-0"
+                            className="flex-1 py-3 text-[11px] font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2 border-r-[2.5px] border-[var(--mm-border)] last:border-r-0"
                             style={{
-                                background: mobileTab === t ? '#fef08a' : 'white',
-                                color: 'black',
+                                background: mobileTab === t ? 'var(--mm-warning)' : 'var(--mm-surface)',
+                                color: 'var(--mm-ink)',
                             }}
                         >
                             {t === 'graph' ? <Activity className="w-4 h-4" /> : <CalendarDays className="w-4 h-4" />}
@@ -705,7 +705,7 @@ export default function DashboardPage() {
 
                 {/* Section header (Desktop only) */}
                 <motion.div variants={fadeUp} className="hidden lg:flex items-center gap-3 mb-5">
-                    <div className="w-10 h-10 bg-[#86efac] border-[2.5px] border-black rounded-xl shadow-[3px_3px_0_#000] flex items-center justify-center">
+                    <div className="w-10 h-10 bg-[var(--mm-success)] border-[2.5px] border-[var(--mm-border)] rounded-xl shadow-[3px_3px_0_var(--mm-shadow)] flex items-center justify-center">
                         <Activity className="w-5 h-5 text-black" />
                     </div>
                     <div>
@@ -720,10 +720,10 @@ export default function DashboardPage() {
                     {/* ── LEFT: GitHub Heatmap ─────────────────────────────── */}
                     <motion.div
                         variants={fadeUp}
-                        className={`relative p-6 bg-white border-[3px] border-black rounded-2xl shadow-[6px_6px_0_#000] flex-1 min-w-0 ${mobileTab !== 'graph' ? 'hidden lg:block' : 'block'}`}
+                        className={`relative p-6 bg-[var(--mm-surface)] border-[3px] border-[var(--mm-border)] rounded-2xl shadow-[6px_6px_0_var(--mm-shadow)] flex-1 min-w-0 ${mobileTab !== 'graph' ? 'hidden lg:block' : 'block'}`}
                     >
-                        <div className="flex items-center gap-2 mb-6 bg-black text-white w-fit px-3 py-1.5 border-[2px] border-black rounded-lg shadow-[2px_2px_0_#f5d0fe]">
-                            <Activity className="w-4 h-4 text-[#67e8f9]" />
+                        <div className="flex items-center gap-2 mb-6 bg-[var(--mm-ink)] text-[var(--mm-surface)] w-fit px-3 py-1.5 border-[2px] border-[var(--mm-border)] rounded-lg shadow-[2px_2px_0_var(--mm-tertiary)]">
+                            <Activity className="w-4 h-4 text-[var(--mm-soft-cyan)]" />
                             <span className="text-[11px] font-black uppercase tracking-[0.1em]">Contribution Graph</span>
                         </div>
 
@@ -733,7 +733,7 @@ export default function DashboardPage() {
                     {/* ── RIGHT: 30-Day Calendar ─────────────── */}
                     <motion.div
                         variants={fadeUp}
-                        className={`relative p-6 bg-white border-[3px] border-black rounded-2xl shadow-[6px_6px_0_#000] w-full lg:w-[360px] flex-shrink-0 ${mobileTab !== 'calendar' ? 'hidden lg:block' : 'block'}`}
+                        className={`relative p-6 bg-[var(--mm-surface)] border-[3px] border-[var(--mm-border)] rounded-2xl shadow-[6px_6px_0_var(--mm-shadow)] w-full lg:w-[360px] flex-shrink-0 ${mobileTab !== 'calendar' ? 'hidden lg:block' : 'block'}`}
                     >
                         {streakData ? (
                             <ActivityCalendar

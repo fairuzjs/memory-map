@@ -79,7 +79,7 @@ export function MemoryGridCell({ memory, onClick, profileId }: { memory: any; on
 
             <div className="absolute top-2 right-2 flex items-center gap-1.5 z-20">
                 {memory.isPinned && (
-                    <div className="flex items-center justify-center w-6 h-6 bg-[#fef08a] border-[2px] border-black shadow-[1px_1px_0_#000] rounded-lg" title="Disematkan">
+                    <div className="flex items-center justify-center w-6 h-6 bg-[var(--mm-primary)] border-[2px] border-black shadow-[1px_1px_0_#000] rounded-lg" title="Disematkan">
                         <Pin className="w-3 h-3 text-black fill-black" />
                     </div>
                 )}
@@ -108,7 +108,7 @@ export function MemoryGrid({ memories, isOwner, profileId, onReact, onPin }: { m
         >
             <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 flex items-center justify-center bg-[#fef08a] border-[2.5px] border-black shadow-[2.5px_2.5px_0_#000] rounded-xl">
+                    <div className="w-9 h-9 flex items-center justify-center bg-[var(--mm-primary)] border-[2.5px] border-black shadow-[2.5px_2.5px_0_#000] rounded-xl">
                         <ImageIcon className="w-4 h-4 text-black" />
                     </div>
                     <div>
@@ -120,7 +120,7 @@ export function MemoryGrid({ memories, isOwner, profileId, onReact, onPin }: { m
                 </div>
                 {isOwner && (
                     <Link href="/memories/create"
-                        className="flex items-center gap-1.5 px-4 py-2.5 text-xs font-black uppercase text-black bg-[#86efac] border-[2.5px] border-black shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] active:translate-y-px active:shadow-none transition-all">
+                        className="flex items-center gap-1.5 px-4 py-2.5 text-xs font-black uppercase text-black bg-[var(--mm-primary)] border-[2.5px] border-black shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] active:translate-y-px active:shadow-none transition-all">
                         <Plus className="w-3.5 h-3.5" />
                         Tambah
                     </Link>

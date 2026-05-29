@@ -6,12 +6,13 @@ import { signOut, useSession } from "next-auth/react"
 import {
     MapPin, Map, LogOut, LayoutDashboard, User as UserIcon, Globe, Shield,
     MessageSquareText, Menu, X, Flame, Package, Crown, Settings, ShoppingBag,
-    Dices, BookOpen, ChevronDown, MoreHorizontal,
+    Dices, BookOpen, ChevronDown, MoreHorizontal, Palette,
 } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
 import { NotificationDropdown } from "./NotificationDropdown"
 import { openOnboardingGuide } from "./OnboardingGuide"
 import { motion, AnimatePresence } from "framer-motion"
+import { ThemeSwitcherPopup } from "@/components/theme/ThemeSwitcher"
 
 // ─── Link helper for active states ──────────────────────────────────────────
 function NavLink({
@@ -26,9 +27,12 @@ function NavLink({
             data-tutorial={tutorialId}
             className={`flex items-center gap-2 px-3 py-1.5 text-[13px] font-bold border-[2px] transition-all rounded-xl ${
                 active
-                    ? "bg-[#00FFFF] border-black shadow-[2px_2px_0_#000] text-black"
-                    : "border-transparent text-black hover:bg-[#FFFF00] hover:border-black"
+                    ? "border-[var(--mm-border)] shadow-[2px_2px_0_var(--mm-shadow)] text-[var(--mm-ink)]"
+                    : "border-transparent text-[var(--mm-ink)] hover:border-[var(--mm-border)]"
             } ${className}`}
+            style={active ? { backgroundColor: "var(--mm-secondary)" } : undefined}
+            onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.backgroundColor = "var(--mm-primary)" }}
+            onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.backgroundColor = "" }}
         >
             <Icon className="w-3.5 h-3.5" />
             {label}
@@ -73,19 +77,19 @@ function ProfileDropdown({
                 onClick={() => setIsOpen(!isOpen)}
                 className={`flex items-center gap-1.5 border-[2px] rounded-xl transition-all ${
                     isOpen
-                        ? "border-black shadow-[2px_2px_0_#000] bg-[#FFFF00]"
-                        : "border-transparent hover:border-black"
+                        ? "border-[var(--mm-border)] shadow-[2px_2px_0_var(--mm-shadow)]"
+                        : "border-transparent hover:border-[var(--mm-border)]"
                 }`}
-                style={{ padding: "3px 6px 3px 3px" }}
+                style={{ padding: "3px 6px 3px 3px", ...(isOpen ? { backgroundColor: "var(--mm-primary)" } : {}) }}
             >
-                <div className="w-8 h-8 border-[2px] border-black overflow-hidden bg-white flex items-center justify-center shrink-0 rounded-lg">
+                <div className="w-8 h-8 border-[2px] border-[var(--mm-border)] overflow-hidden bg-[var(--mm-surface)] flex items-center justify-center shrink-0 rounded-lg">
                     {session.user.image ? (
                         <img src={session.user.image} alt="" className="w-full h-full object-cover" />
                     ) : (
-                        <UserIcon className="w-3.5 h-3.5 text-black" />
+                        <UserIcon className="w-3.5 h-3.5 text-[var(--mm-ink)]" />
                     )}
                 </div>
-                <ChevronDown className={`w-3 h-3 text-black transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
+                <ChevronDown className={`w-3 h-3 text-[var(--mm-ink)] transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
             </button>
 
             <AnimatePresence>
@@ -95,7 +99,7 @@ function ProfileDropdown({
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 6, scale: 0.96 }}
                         transition={{ duration: 0.15 }}
-                        className="absolute right-0 top-full mt-2 w-56 bg-white border-[3px] border-black shadow-[6px_6px_0_#000] z-[200] py-2 rounded-2xl overflow-hidden"
+                        className="absolute right-0 top-full mt-2 w-56 bg-[var(--mm-surface)] border-[3px] border-[var(--mm-border)] shadow-[6px_6px_0_var(--mm-shadow)] z-[200] py-2 rounded-2xl overflow-hidden"
                     >
                         {items.map((item, i) => {
                             if (item === "divider") {
@@ -113,9 +117,12 @@ function ProfileDropdown({
                                     onClick={() => setIsOpen(false)}
                                     className={`flex items-center gap-2.5 mx-1.5 px-3 py-2 text-[13px] font-bold transition-all border-[2px] border-transparent rounded-xl ${
                                         isActive
-                                            ? "bg-[#FFFF00] border-black text-black"
-                                            : "text-black hover:bg-[#FFFF00] hover:border-black"
+                                            ? "border-[var(--mm-border)] text-[var(--mm-ink)]"
+                                            : "text-[var(--mm-ink)] hover:border-[var(--mm-border)]"
                                     }`}
+                                    style={{ backgroundColor: isActive ? "var(--mm-primary)" : undefined }}
+                                    onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.backgroundColor = "var(--mm-primary)" }}
+                                    onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.backgroundColor = "" }}
                                 >
                                     <Icon className="w-4 h-4 shrink-0" />
                                     {item.label}
@@ -125,7 +132,7 @@ function ProfileDropdown({
                         <div className="h-[2px] bg-black/15 mx-3 my-1" />
                         <button
                             onClick={() => { setIsOpen(false); signOut({ callbackUrl: "/login" }) }}
-                            className="flex items-center gap-2.5 mx-1.5 px-3 py-2 text-[13px] font-bold text-black hover:bg-black hover:text-white transition-all w-[calc(100%-12px)] border-[2px] border-transparent rounded-xl hover:border-black"
+                            className="flex items-center gap-2.5 mx-1.5 px-3 py-2 text-[13px] font-bold text-[var(--mm-ink)] hover:bg-[var(--mm-ink)] hover:text-[var(--mm-surface)] transition-all w-[calc(100%-12px)] border-[2px] border-transparent rounded-xl hover:border-[var(--mm-border)]"
                         >
                             <LogOut className="w-4 h-4 shrink-0" />
                             Sign Out
@@ -150,9 +157,11 @@ function DrawerItem({
             data-tutorial={tutorialId}
             className={`flex items-center gap-3 px-3 py-2.5 text-[14px] font-bold border-[2px] border-transparent rounded-xl transition-all ${
                 active
-                    ? `border-black shadow-[2px_2px_0_#000] text-black`
-                    : "text-black hover:bg-[#FFFF00] hover:border-black"
+                    ? `border-[var(--mm-border)] shadow-[2px_2px_0_var(--mm-shadow)] text-[var(--mm-ink)]`
+                    : "text-[var(--mm-ink)] hover:border-[var(--mm-border)]"
             }`}
+            onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.backgroundColor = "var(--mm-primary)" }}
+            onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.backgroundColor = "" }}
             style={active && accent ? { backgroundColor: accent } : undefined}
         >
             <Icon className="w-[18px] h-[18px] shrink-0" />
@@ -174,8 +183,8 @@ function GridItem({
             data-tutorial={tutorialId}
             className={`flex flex-col items-center justify-center gap-1.5 py-3 text-[11px] font-black uppercase tracking-wide border-[2px] rounded-xl transition-all ${
                 active
-                    ? "border-black shadow-[2px_2px_0_#000] text-black"
-                    : "border-black/15 hover:border-black text-black/80 hover:text-black"
+                    ? "border-[var(--mm-border)] shadow-[2px_2px_0_var(--mm-shadow)] text-[var(--mm-ink)]"
+                    : "border-[var(--mm-border)]/15 hover:border-[var(--mm-border)] text-[var(--mm-ink)]/80 hover:text-[var(--mm-ink)]"
             }`}
             style={{ backgroundColor: active ? accent : `${accent}40` }}
         >
@@ -188,7 +197,7 @@ function GridItem({
 // ─── Section Title ──────────────────────────────────────────────────────────
 function SectionTitle({ children }: { children: string }) {
     return (
-        <p className="text-[10px] font-black text-black/40 uppercase tracking-[0.15em] px-1 pt-3 pb-1">
+        <p className="text-[10px] font-black uppercase tracking-[0.15em] px-1 pt-3 pb-1" style={{ color: "var(--mm-ink-muted)" }}>
             {children}
         </p>
     )
@@ -201,6 +210,7 @@ export function Navbar() {
     const pathname = usePathname()
     const { data: session } = useSession()
     const [isMenuOpen, setIsMenuOpen] = useState(false)
+    const [isThemePopupOpen, setIsThemePopupOpen] = useState(false)
     const [scrolled, setScrolled] = useState(false)
     const [isPremium, setIsPremium] = useState<boolean | null>(null)
 
@@ -237,23 +247,23 @@ export function Navbar() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
                 <motion.div
                     animate={{
-                        boxShadow: scrolled ? "4px 4px 0px #000" : "4px 4px 0px #000",
-                        borderColor: "#000",
-                        backgroundColor: scrolled ? "#FFFFFF" : "rgba(255,253,240,0.95)",
+                        boxShadow: "4px 4px 0px var(--mm-shadow)",
+                        borderColor: "var(--mm-border)",
+                        backgroundColor: scrolled ? "var(--mm-surface)" : "var(--mm-bg-95)",
                     }}
                     transition={{ duration: 0.2, ease: "easeOut" }}
-                    className="relative border-[3px] border-black rounded-2xl shadow-[4px_4px_0_#000] transition-colors"
+                    className="relative border-[3px] border-[var(--mm-border)] rounded-2xl shadow-[4px_4px_0_var(--mm-shadow)] transition-colors"
                 >
                     <div className="flex items-center justify-between h-[56px] px-4" style={{ minWidth: 0 }}>
 
                         {/* ── LEFT: Logo ──────────────────────────────── */}
                         <Link href="/" className="flex items-center gap-2 group shrink-0">
                             <div className="relative w-8 h-8 flex items-center justify-center shrink-0">
-                                <div className="absolute inset-0 bg-[#FFFF00] border-[3px] border-black rounded-lg group-hover:translate-x-[-2px] group-hover:translate-y-[-2px] group-hover:shadow-[3px_3px_0_#000] transition-all duration-200" />
-                                <MapPin className="relative w-3.5 h-3.5 text-black z-10" />
+                                <div className="absolute inset-0 bg-[var(--mm-primary)] border-[3px] border-[var(--mm-border)] rounded-lg group-hover:translate-x-[-2px] group-hover:translate-y-[-2px] group-hover:shadow-[3px_3px_0_var(--mm-shadow)] transition-all duration-200" />
+                                <MapPin className="relative w-3.5 h-3.5 text-[var(--mm-ink)] z-10" />
                             </div>
-                            <span className="font-black text-[18px] font-[Outfit] text-black tracking-tight">
-                                Memory<span className="text-[#FF00FF]">Map</span>
+                            <span className="font-black text-[18px] font-[Outfit] text-[var(--mm-ink)] tracking-tight">
+                                Memory<span className="text-[var(--mm-accent)]">Map</span>
                             </span>
                         </Link>
 
@@ -268,7 +278,7 @@ export function Navbar() {
                             <button
                                 onClick={() => openOnboardingGuide()}
                                 data-tutorial="nav-guide"
-                                className="flex items-center gap-2 px-3 py-1.5 text-[13px] font-bold border-[2px] border-transparent rounded-xl text-black hover:bg-[#00FF00] hover:border-black transition-all"
+                                className="flex items-center gap-2 px-3 py-1.5 text-[13px] font-bold border-[2px] border-transparent rounded-xl text-[var(--mm-ink)] hover:bg-[var(--mm-lime)] hover:border-[var(--mm-border)] transition-all"
                             >
                                 <BookOpen className="w-3.5 h-3.5" />
                                 <span className="hidden xl:inline">Panduan</span>
@@ -282,6 +292,15 @@ export function Navbar() {
 
                         {/* ── RIGHT: Actions (desktop) ───────────────── */}
                         <div className="flex items-center gap-1.5 shrink-0">
+                            {/* Theme Selector Button */}
+                            <button
+                                onClick={() => setIsThemePopupOpen(true)}
+                                className="flex items-center justify-center w-10 h-10 border-[3px] border-transparent rounded-xl transition-all relative bg-[var(--mm-surface)] hover:border-[var(--mm-border)] text-[var(--mm-ink)] hover:bg-[var(--mm-primary)] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_var(--mm-shadow)] cursor-pointer shrink-0"
+                                title="Ubah Tema"
+                            >
+                                <Palette className="w-5 h-5" />
+                            </button>
+
                             {session?.user ? (
                                 <>
                                     {/* Premium — compact */}
@@ -290,11 +309,25 @@ export function Navbar() {
                                         data-tutorial="nav-premium"
                                         className={`hidden md:flex items-center gap-1.5 px-2.5 py-1.5 text-[12px] font-black border-[2px] rounded-xl transition-all uppercase tracking-wider ${
                                             pathname === "/premium"
-                                                ? "bg-[#FFFF00] border-black shadow-[2px_2px_0_#000] text-black"
+                                                ? "border-[var(--mm-border)] shadow-[2px_2px_0_var(--mm-shadow)] text-[var(--mm-ink)]"
                                                 : isPremium
-                                                    ? "bg-[#FFFF00]/30 border-black text-black hover:bg-[#FFFF00] hover:shadow-[2px_2px_0_#000]"
-                                                    : "bg-white border-black text-black hover:bg-[#00FF00] hover:shadow-[2px_2px_0_#000]"
+                                                    ? "border-[var(--mm-border)] text-[var(--mm-ink)] hover:shadow-[2px_2px_0_var(--mm-shadow)]"
+                                                    : "bg-[var(--mm-surface)] border-[var(--mm-border)] text-[var(--mm-ink)] hover:shadow-[2px_2px_0_var(--mm-shadow)]"
                                         }`}
+                                        style={{
+                                            backgroundColor: pathname === "/premium" ? "var(--mm-primary)"
+                                                : isPremium ? "color-mix(in srgb, var(--mm-primary) 30%, transparent)" : undefined
+                                        }}
+                                        onMouseEnter={e => {
+                                            if (pathname !== "/premium") {
+                                                (e.currentTarget as HTMLElement).style.backgroundColor = isPremium ? "var(--mm-primary)" : "var(--mm-lime)"
+                                            }
+                                        }}
+                                        onMouseLeave={e => {
+                                            if (pathname !== "/premium") {
+                                                (e.currentTarget as HTMLElement).style.backgroundColor = isPremium ? "color-mix(in srgb, var(--mm-primary) 30%, transparent)" : "var(--mm-surface)"
+                                            }
+                                        }}
                                     >
                                         <Crown className="w-3.5 h-3.5" />
                                         {isPremium ? "PRO" : "Premium"}
@@ -308,12 +341,12 @@ export function Navbar() {
                                 </>
                             ) : (
                                 <>
-                                    <Link href="/login" className="hidden sm:block px-3 py-1.5 text-[13px] font-bold text-black hover:bg-[#00FFFF] border-[2px] border-transparent hover:border-black transition-all rounded-xl">
+                                    <Link href="/login" className="hidden sm:block px-3 py-1.5 text-[13px] font-bold text-[var(--mm-ink)] hover:bg-[var(--mm-secondary)] border-[2px] border-transparent hover:border-[var(--mm-border)] transition-all rounded-xl">
                                         Masuk
                                     </Link>
                                     <Link
                                         href="/register"
-                                        className="hidden sm:inline-flex items-center justify-center px-4 py-1.5 text-[13px] font-black text-black bg-[#FFFF00] border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] transition-all uppercase tracking-wide rounded-xl"
+                                        className="hidden sm:inline-flex items-center justify-center px-4 py-1.5 text-[13px] font-black text-[var(--mm-ink)] bg-[var(--mm-primary)] border-[3px] border-[var(--mm-border)] shadow-[3px_3px_0_var(--mm-shadow)] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_var(--mm-shadow)] transition-all uppercase tracking-wide rounded-xl"
                                     >
                                         Mulai Gratis
                                     </Link>
@@ -325,12 +358,12 @@ export function Navbar() {
                                 <Link
                                     href={`/profile/${session.user.id}`}
                                     data-tutorial="mobile-nav-profile"
-                                    className="flex md:hidden items-center justify-center w-8 h-8 border-[2px] border-black overflow-hidden bg-white hover:shadow-[2px_2px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all rounded-lg"
+                                    className="flex md:hidden items-center justify-center w-8 h-8 border-[2px] border-[var(--mm-border)] overflow-hidden bg-[var(--mm-surface)] hover:shadow-[2px_2px_0_var(--mm-shadow)] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all rounded-lg"
                                 >
                                     {session.user.image ? (
                                         <img src={session.user.image} alt="" className="w-full h-full object-cover" />
                                     ) : (
-                                        <UserIcon className="w-3.5 h-3.5 text-black" />
+                                        <UserIcon className="w-3.5 h-3.5 text-[var(--mm-ink)]" />
                                     )}
                                 </Link>
                             )}
@@ -339,7 +372,7 @@ export function Navbar() {
                             <button
                                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                                 data-tutorial="mobile-menu-button"
-                                className="flex md:hidden items-center justify-center w-9 h-9 text-black hover:bg-[#FFFF00] border-[2px] border-transparent rounded-lg hover:border-black transition-all"
+                                className="flex md:hidden items-center justify-center w-9 h-9 text-[var(--mm-ink)] hover:bg-[var(--mm-primary)] border-[2px] border-transparent rounded-lg hover:border-[var(--mm-border)] transition-all"
                                 aria-label="Toggle menu"
                             >
                                 <AnimatePresence mode="wait" initial={false}>
@@ -372,7 +405,7 @@ export function Navbar() {
                         >
                             <div
                                 data-tutorial="mobile-drawer"
-                                className="border-[3px] border-black bg-white rounded-3xl shadow-[6px_6px_0_#000] flex flex-col overflow-hidden"
+                                className="border-[3px] border-[var(--mm-border)] bg-[var(--mm-surface)] rounded-3xl shadow-[6px_6px_0_var(--mm-shadow)] flex flex-col overflow-hidden"
                                 style={{
                                     maxHeight: "calc(100vh - 120px)",
                                     paddingBottom: "env(safe-area-inset-bottom, 0px)",
@@ -384,10 +417,10 @@ export function Navbar() {
                                     {/* SECTION: UTAMA */}
                                     <SectionTitle>UTAMA</SectionTitle>
                                     <div className="space-y-0.5">
-                                        <DrawerItem href="/dashboard" icon={LayoutDashboard} label="Dashboard" active={pathname === "/dashboard"} tutorialId="mobile-nav-dashboard" onClick={close} accent="#00FFFF" />
-                                        <DrawerItem href="/map" icon={Map} label="Map" active={pathname === "/map"} tutorialId="mobile-nav-map" onClick={close} accent="#00FFFF" />
-                                        <DrawerItem href="/community" icon={Globe} label="Community" active={pathname === "/community"} tutorialId="mobile-nav-community" onClick={close} accent="#00FFFF" />
-                                        <DrawerItem href="/streak" icon={Flame} label="Streak" active={pathname === "/streak"} tutorialId="mobile-nav-streak" onClick={close} accent="#FFFF00" />
+                                        <DrawerItem href="/dashboard" icon={LayoutDashboard} label="Dashboard" active={pathname === "/dashboard"} tutorialId="mobile-nav-dashboard" onClick={close} accent="var(--mm-secondary)" />
+                                        <DrawerItem href="/map" icon={Map} label="Map" active={pathname === "/map"} tutorialId="mobile-nav-map" onClick={close} accent="var(--mm-secondary)" />
+                                        <DrawerItem href="/community" icon={Globe} label="Community" active={pathname === "/community"} tutorialId="mobile-nav-community" onClick={close} accent="var(--mm-secondary)" />
+                                        <DrawerItem href="/streak" icon={Flame} label="Streak" active={pathname === "/streak"} tutorialId="mobile-nav-streak" onClick={close} accent="var(--mm-primary)" />
                                     </div>
 
                                     {session?.user && (
@@ -395,53 +428,65 @@ export function Navbar() {
                                             {/* SECTION: AKUN */}
                                             <SectionTitle>AKUN</SectionTitle>
                                             <div className="space-y-0.5">
-                                                <DrawerItem href="/settings" icon={Settings} label="Settings" active={pathname === "/settings"} tutorialId="mobile-nav-settings" onClick={close} accent="#FF00FF" />
-                                                <DrawerItem href="/inventory" icon={Package} label="Inventori" active={pathname === "/inventory"} tutorialId="mobile-nav-inventory" onClick={close} accent="#FF00FF" />
+                                                <DrawerItem href="/settings" icon={Settings} label="Settings" active={pathname === "/settings"} tutorialId="mobile-nav-settings" onClick={close} accent="var(--mm-accent)" />
+                                                <DrawerItem href="/inventory" icon={Package} label="Inventori" active={pathname === "/inventory"} tutorialId="mobile-nav-inventory" onClick={close} accent="var(--mm-accent)" />
                                             </div>
 
                                             {/* SECTION: FITUR — 2-column grid */}
                                             <SectionTitle>FITUR</SectionTitle>
                                             <div className="grid grid-cols-2 gap-1.5">
-                                                <GridItem href="/shop" icon={ShoppingBag} label="Shop" active={pathname === "/shop"} tutorialId="mobile-nav-shop" onClick={close} accent="#00FFFF" />
-                                                <GridItem href="/gacha" icon={Dices} label="Gacha" active={pathname === "/gacha"} tutorialId="mobile-nav-gacha" onClick={close} accent="#FF00FF" />
+                                                <GridItem href="/shop" icon={ShoppingBag} label="Shop" active={pathname === "/shop"} tutorialId="mobile-nav-shop" onClick={close} accent="var(--mm-secondary)" />
+                                                <GridItem href="/gacha" icon={Dices} label="Gacha" active={pathname === "/gacha"} tutorialId="mobile-nav-gacha" onClick={close} accent="var(--mm-accent)" />
                                                 <button
                                                     onClick={() => { close(); openOnboardingGuide() }}
                                                     data-tutorial="mobile-nav-guide"
-                                                    className="flex flex-col items-center justify-center gap-1.5 py-3 text-[11px] font-black uppercase tracking-wide border-[2px] border-black/15 hover:border-black text-black/80 hover:text-black transition-all rounded-xl"
-                                                    style={{ backgroundColor: "rgba(0, 255, 0, 0.25)" }}
+                                                    className="flex flex-col items-center justify-center gap-1.5 py-3 text-[11px] font-black uppercase tracking-wide border-[2px] border-[var(--mm-border)]/15 hover:border-[var(--mm-border)] text-[var(--mm-ink)]/80 hover:text-[var(--mm-ink)] transition-all rounded-xl"
+                                                    style={{ backgroundColor: "color-mix(in srgb, var(--mm-lime) 25%, transparent)" }}
                                                 >
                                                     <BookOpen className="w-5 h-5" />
                                                     Panduan
                                                 </button>
-                                                <GridItem href="/premium" icon={Crown} label={isPremium ? "PRO ✦" : "Premium"} active={pathname === "/premium"} tutorialId="mobile-nav-premium" onClick={close} accent="#FFFF00" />
+                                                <GridItem href="/premium" icon={Crown} label={isPremium ? "PRO ✦" : "Premium"} active={pathname === "/premium"} tutorialId="mobile-nav-premium" onClick={close} accent="var(--mm-primary)" />
                                             </div>
 
                                             {/* SECTION: BANTUAN */}
                                             <SectionTitle>BANTUAN</SectionTitle>
                                             <div className="space-y-0.5">
-                                                <DrawerItem href="/feedbacks" icon={MessageSquareText} label="Pusat Bantuan" active={pathname === "/feedbacks"} tutorialId="mobile-nav-help" onClick={close} accent="#00FF00" />
+                                                <DrawerItem href="/feedbacks" icon={MessageSquareText} label="Pusat Bantuan" active={pathname === "/feedbacks"} tutorialId="mobile-nav-help" onClick={close} accent="var(--mm-lime)" />
                                             </div>
 
                                             {/* Admin */}
                                             {session.user.role === "ADMIN" && (
                                                 <>
                                                     <SectionTitle>ADMIN</SectionTitle>
-                                                    <DrawerItem href="/admin" icon={Shield} label="Admin Panel" active={pathname.startsWith("/admin")} onClick={close} accent="#FF00FF" />
+                                                    <DrawerItem href="/admin" icon={Shield} label="Admin Panel" active={pathname.startsWith("/admin")} onClick={close} accent="var(--mm-accent)" />
                                                 </>
                                             )}
                                         </>
                                     )}
 
+                                    {/* SECTION: TAMPILAN */}
+                                    <SectionTitle>TAMPILAN</SectionTitle>
+                                    <div className="space-y-0.5">
+                                        <button
+                                            onClick={() => { close(); setIsThemePopupOpen(true); }}
+                                            className="w-full flex items-center gap-3 px-3 py-2.5 text-[14px] font-bold border-[2px] border-[var(--mm-border)] rounded-xl transition-all text-[var(--mm-ink)] hover:bg-[var(--mm-primary)] shadow-[2px_2px_0_var(--mm-shadow)] hover:-translate-y-0.5 hover:shadow-[3px_3px_0_var(--mm-shadow)] bg-[var(--mm-surface)] cursor-pointer text-left"
+                                        >
+                                            <Palette className="w-[18px] h-[18px] shrink-0" />
+                                            Ganti Tema Warna
+                                        </button>
+                                    </div>
+
                                     {!session?.user && (
                                         <div className="space-y-2 pt-3">
-                                            <Link href="/login" onClick={close} className="flex items-center gap-3 px-3 py-2.5 text-[14px] font-bold text-black hover:bg-[#00FFFF] border-[2px] border-transparent hover:border-black transition-all rounded-xl">
+                                            <Link href="/login" onClick={close} className="flex items-center gap-3 px-3 py-2.5 text-[14px] font-bold text-[var(--mm-ink)] hover:bg-[var(--mm-secondary)] border-[2px] border-transparent hover:border-[var(--mm-border)] transition-all rounded-xl">
                                                 <UserIcon className="w-[18px] h-[18px] shrink-0" />
                                                 Sign In
                                             </Link>
                                             <Link
                                                 href="/register"
                                                 onClick={close}
-                                                className="w-full inline-flex items-center justify-center py-2.5 text-[14px] font-black text-black bg-[#FFFF00] border-[3px] border-black shadow-[3px_3px_0_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#000] transition-all uppercase rounded-xl"
+                                                className="w-full inline-flex items-center justify-center py-2.5 text-[14px] font-black text-[var(--mm-ink)] bg-[var(--mm-primary)] border-[3px] border-[var(--mm-border)] shadow-[3px_3px_0_var(--mm-shadow)] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_var(--mm-shadow)] transition-all uppercase rounded-xl"
                                             >
                                                 Mulai Gratis
                                             </Link>
@@ -451,10 +496,10 @@ export function Navbar() {
 
                                 {/* ── Sign Out — sticky bottom ────────────── */}
                                 {session?.user && (
-                                    <div className="shrink-0 border-t-[3px] border-black px-3 py-2">
+                                    <div className="shrink-0 border-t-[3px] border-[var(--mm-border)] px-3 py-2">
                                         <button
                                             onClick={() => { close(); signOut({ callbackUrl: "/login" }) }}
-                                            className="flex items-center justify-center gap-2 w-full px-3 py-2.5 text-[13px] font-black text-white bg-black hover:bg-[#FF00FF] border-[2px] border-black rounded-xl transition-all uppercase tracking-wider"
+                                            className="flex items-center justify-center gap-2 w-full px-3 py-2.5 text-[13px] font-black text-[var(--mm-surface)] bg-[var(--mm-ink)] hover:bg-[var(--mm-accent)] border-[2px] border-[var(--mm-border)] rounded-xl transition-all uppercase tracking-wider"
                                         >
                                             <LogOut className="w-4 h-4" />
                                             Sign Out
@@ -465,6 +510,11 @@ export function Navbar() {
                         </motion.div>
                     )}
                 </AnimatePresence>
+
+                <ThemeSwitcherPopup
+                    isOpen={isThemePopupOpen}
+                    onClose={() => setIsThemePopupOpen(false)}
+                />
             </div>
         </nav>
     )

@@ -6,13 +6,16 @@ import { useRouter, useSearchParams } from "next/navigation"
 import {
     Instagram, Facebook, Settings, Loader2, Check, AlertCircle,
     Camera, User, FileText, Share2, ArrowLeft, Mail, AtSign, Link as LinkIcon,
-    Sparkles, Shield, Globe, ExternalLink, ShieldCheck, ShieldAlert, Timer, KeyRound, RefreshCw, X
+    Sparkles, Shield, Globe, ExternalLink, ShieldCheck, ShieldAlert, Timer, KeyRound, RefreshCw, X,
+    Palette
 } from "lucide-react"
 import Link from "next/link"
 import toast from "react-hot-toast"
 import { motion, AnimatePresence } from "framer-motion"
 import Cropper from "react-easy-crop"
 import getCroppedImg from "@/lib/cropImage"
+import { useTheme } from "@/components/theme/ThemeProvider"
+import { ThemeSwitcherPopup } from "@/components/theme/ThemeSwitcher"
 
 // ─── TikTok SVG icon ──────────────────────────────────────────────────────────
 function TikTokIcon({ className }: { className?: string }) {
@@ -814,6 +817,8 @@ export default function SettingsPage() {
                             </div>
                         </motion.div>
                     )}
+
+
 
                     {/* ── Security Tab ─────────────────────────── */}
                     {tab === "security" && (

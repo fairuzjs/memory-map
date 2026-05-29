@@ -89,7 +89,7 @@ export function ProfileHeader({
                             {user.isVerified && <BadgeCheck className="w-[18px] h-[18px] text-white shrink-0 relative -top-1 fill-[#0095F6]" />}
                         </div>
                         {isAdmin && (
-                            <span className="md:hidden inline-block px-3 py-0.5 text-[10px] font-black tracking-widest uppercase bg-[#00FFFF] border-[2px] border-black text-black shadow-[2px_2px_0_#000] rounded-lg">Admin</span>
+                            <span className="md:hidden inline-block px-3 py-0.5 text-[10px] font-black tracking-widest uppercase bg-[var(--mm-secondary)] border-[2px] border-black text-black shadow-[2px_2px_0_#000] rounded-lg">Admin</span>
                         )}
                     </div>
                     {user.username && <h2 className="text-base sm:text-lg font-bold text-neutral-200 mb-1">{user.name}</h2>}
@@ -117,9 +117,9 @@ export function ProfileHeader({
                 {/* Stats Bar */}
                 <div className="flex items-stretch gap-0 overflow-hidden w-[280px] sm:w-[320px] md:w-[360px] max-w-full mb-1 bg-white border-[3px] border-black shadow-[4px_4px_0_#000] rounded-2xl">
                     {[
-                        { label: "Kenangan", value: countMemories, icon: MapPin, bg: "#00FFFF" },
-                        { label: "Pengikut", value: countFollowers, icon: Users, bg: "#FF00FF", onClick: isOwner ? onShowFollowers : undefined },
-                        { label: "Mengikuti", value: countFollowing, icon: UserCheck, bg: "#FFFF00", onClick: isOwner ? onShowFollowing : undefined },
+                        { label: "Kenangan", value: countMemories, icon: MapPin, bg: "var(--mm-secondary)" },
+                        { label: "Pengikut", value: countFollowers, icon: Users, bg: "var(--mm-accent)", onClick: isOwner ? onShowFollowers : undefined },
+                        { label: "Mengikuti", value: countFollowing, icon: UserCheck, bg: "var(--mm-primary)", onClick: isOwner ? onShowFollowing : undefined },
                     ].map(({ label, value, icon: Icon, bg, onClick }, i, arr) => (
                         <div 
                             key={label} 
@@ -169,7 +169,7 @@ export function ProfileHeader({
 
                     {isOwner ? (
                         <div className="flex items-center gap-2">
-                            <Link href="/inventory" className="flex items-center justify-center w-10 h-10 bg-[#00FFFF] border-[2.5px] border-black shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none transition-all">
+                            <Link href="/inventory" className="flex items-center justify-center w-10 h-10 bg-[var(--mm-secondary)] border-[2.5px] border-black shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none transition-all">
                                 <Package className="w-4 h-4 text-black" />
                             </Link>
                             <Link href="/settings" className="flex items-center justify-center w-10 h-10 bg-white border-[2.5px] border-black shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none transition-all">
@@ -180,7 +180,7 @@ export function ProfileHeader({
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
                                     onClick={onEdit} 
-                                    className="flex items-center gap-1.5 px-5 h-10 bg-[#FFFF00] border-[2.5px] border-black text-black text-xs font-black uppercase shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none transition-all"
+                                    className="flex items-center gap-1.5 px-5 h-10 bg-[var(--mm-primary)] border-[2.5px] border-black text-black text-xs font-black uppercase shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none transition-all"
                                 >
                                     <Pencil className="w-3.5 h-3.5" />
                                     <span>Edit Profil</span>
@@ -198,7 +198,7 @@ export function ProfileHeader({
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             onClick={onFollow} 
-                            className={`flex items-center gap-1.5 px-6 h-10 border-[2.5px] border-black text-xs font-black uppercase shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none transition-all ${user.isFollowing ? 'bg-white text-black' : 'bg-[#FF00FF] text-white'}`}
+                            className={`flex items-center gap-1.5 px-6 h-10 border-[2.5px] border-black text-xs font-black uppercase shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none transition-all ${user.isFollowing ? 'bg-white text-black' : 'bg-[var(--mm-accent)] text-white'}`}
                         >
                             {user.isFollowing ? <UserCheck className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
                             <span>{user.isFollowing ? "Mengikuti" : "Ikuti"}</span>

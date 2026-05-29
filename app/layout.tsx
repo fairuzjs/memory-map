@@ -16,13 +16,32 @@ export const metadata: Metadata = {
   description: "Map your precious life memories",
 };
 
+// Inline script to set data-theme before first paint — prevents flash of wrong theme
+const themeScript = `
+(function(){
+  try {
+    var t = localStorage.getItem('mm-theme');
+    if (t && ['classic','candy','ocean','matcha','sunset'].includes(t)) {
+      document.documentElement.dataset.theme = t;
+    } else {
+      document.documentElement.dataset.theme = 'classic';
+    }
+  } catch(e) {
+    document.documentElement.dataset.theme = 'classic';
+  }
+})();
+`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className={`${inter.variable} ${outfit.variable} ${caveat.variable} font-sans bg-neutral-950 text-neutral-100 antialiased`}>
         <Providers>
           {children}
@@ -32,38 +51,38 @@ export default function RootLayout({
             toastOptions={{
               duration: 4000,
               style: {
-                background: "#fff",
-                color: "#000",
-                border: "3px solid #000",
+                background: "var(--mm-surface, #fff)",
+                color: "var(--mm-ink, #000)",
+                border: "3px solid var(--mm-border, #000)",
                 borderRadius: "16px",
                 padding: "12px 20px",
                 fontSize: "14px",
                 fontWeight: "900",
                 fontFamily: "var(--font-outfit)",
-                boxShadow: "6px 6px 0 #000",
+                boxShadow: "6px 6px 0 var(--mm-shadow, #000)",
                 textTransform: "uppercase" as const,
                 letterSpacing: "0.02em",
               },
               success: {
                 iconTheme: {
-                  primary: "#000",
-                  secondary: "#86efac",
+                  primary: "var(--mm-ink, #000)",
+                  secondary: "var(--mm-success, #86efac)",
                 },
                 style: {
-                  background: "#86efac",
-                  color: "#000",
-                  border: "3px solid #000",
+                  background: "var(--mm-success, #86efac)",
+                  color: "var(--mm-ink, #000)",
+                  border: "3px solid var(--mm-border, #000)",
                 }
               },
               error: {
                 iconTheme: {
                   primary: "#fff",
-                  secondary: "#FF3300",
+                  secondary: "var(--mm-danger, #FF3300)",
                 },
                 style: {
-                  background: "#FF3300",
+                  background: "var(--mm-danger, #FF3300)",
                   color: "#fff",
-                  border: "3px solid #000",
+                  border: "3px solid var(--mm-border, #000)",
                 }
               }
             }}

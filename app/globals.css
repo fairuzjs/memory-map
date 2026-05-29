@@ -4,6 +4,111 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ══════════════════════════════════════════════════════════════════════════════
+   MEMORY MAP — Theme System (CSS Variables)
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Classic Memory Map (default) ────────────────────────────────────────────── */
+:root,
+[data-theme="classic"] {
+  --mm-bg: #FFFDF0;
+  --mm-bg-95: rgba(255, 253, 240, 0.95);
+  --mm-surface: #FFFFFF;
+  --mm-primary: #FFFF00;
+  --mm-secondary: #00FFFF;
+  --mm-accent: #FF00FF;
+  --mm-tertiary: #f5d0fe;
+  --mm-success: #86efac;
+  --mm-warning: #fef08a;
+  --mm-danger: #FF3300;
+  --mm-lime: #00FF00;
+  --mm-ink: #000000;
+  --mm-ink-muted: rgba(0, 0, 0, 0.5);
+  --mm-border: #000000;
+  --mm-shadow: #000000;
+  --mm-soft-cyan: #67e8f9;
+}
+
+/* ── Candy Pop ───────────────────────────────────────────────────────────────── */
+[data-theme="candy"] {
+  --mm-bg: #FFF0F6;
+  --mm-bg-95: rgba(255, 240, 246, 0.95);
+  --mm-surface: #FFFFFF;
+  --mm-primary: #FF007F;
+  --mm-secondary: #BA55D3;
+  --mm-accent: #FF0055;
+  --mm-tertiary: #FF80BF;
+  --mm-success: #00FFCC;
+  --mm-warning: #FFF200;
+  --mm-danger: #FF0033;
+  --mm-lime: #39FF14;
+  --mm-ink: #000000;
+  --mm-ink-muted: rgba(0, 0, 0, 0.6);
+  --mm-border: #000000;
+  --mm-shadow: #000000;
+  --mm-soft-cyan: #D699FF;
+}
+
+/* ── Ocean Blue ──────────────────────────────────────────────────────────────── */
+[data-theme="ocean"] {
+  --mm-bg: #F0F9FF;
+  --mm-bg-95: rgba(240, 249, 255, 0.95);
+  --mm-surface: #FFFFFF;
+  --mm-primary: #00E5FF;
+  --mm-secondary: #00B0FF;
+  --mm-accent: #0055FF;
+  --mm-tertiary: #80F5FF;
+  --mm-success: #00FF99;
+  --mm-warning: #FFE600;
+  --mm-danger: #FF2A2A;
+  --mm-lime: #00FFA2;
+  --mm-ink: #000000;
+  --mm-ink-muted: rgba(0, 0, 0, 0.6);
+  --mm-border: #000000;
+  --mm-shadow: #000000;
+  --mm-soft-cyan: #99F6E4;
+}
+
+/* ── Matcha Green ────────────────────────────────────────────────────────────── */
+[data-theme="matcha"] {
+  --mm-bg: #F7FEE7;
+  --mm-bg-95: rgba(247, 254, 231, 0.95);
+  --mm-surface: #FFFFFF;
+  --mm-primary: #A3E635;
+  --mm-secondary: #6EE7B7;
+  --mm-accent: #15803D;
+  --mm-tertiary: #D9F99D;
+  --mm-success: #4ADE80;
+  --mm-warning: #FDE047;
+  --mm-danger: #F87171;
+  --mm-lime: #22C55E;
+  --mm-ink: #000000;
+  --mm-ink-muted: rgba(0, 0, 0, 0.6);
+  --mm-border: #000000;
+  --mm-shadow: #000000;
+  --mm-soft-cyan: #CCFBF1;
+}
+
+/* ── Sunset Orange ───────────────────────────────────────────────────────────── */
+[data-theme="sunset"] {
+  --mm-bg: #FFF7ED;
+  --mm-bg-95: rgba(255, 247, 237, 0.95);
+  --mm-surface: #FFFFFF;
+  --mm-primary: #F97316;
+  --mm-secondary: #FACC15;
+  --mm-accent: #EF4444;
+  --mm-tertiary: #FFEDD5;
+  --mm-success: #86EFAC;
+  --mm-warning: #FCD34D;
+  --mm-danger: #DC2626;
+  --mm-lime: #FB923C;
+  --mm-ink: #000000;
+  --mm-ink-muted: rgba(0, 0, 0, 0.6);
+  --mm-border: #000000;
+  --mm-shadow: #000000;
+  --mm-soft-cyan: #FFDDD2;
+}
+
 @theme {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-outfit: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;

@@ -363,12 +363,12 @@ export default function UserProfilePage() {
                         />
                         <div className="flex flex-wrap justify-center gap-4 animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
                             {isOwner ? (
-                                <button onClick={() => { setIsPhotoModalOpen(false); setIsEditOpen(true) }} className="flex items-center gap-2 px-6 py-3 bg-[#FFFF00] border-[2.5px] border-black text-black font-black uppercase text-sm shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none transition-all">
+                                <button onClick={() => { setIsPhotoModalOpen(false); setIsEditOpen(true) }} className="flex items-center gap-2 px-6 py-3 bg-[var(--mm-primary)] border-[2.5px] border-black text-black font-black uppercase text-sm shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none transition-all">
                                     <Camera className="w-4 h-4" />
                                     <span>Ubah Foto</span>
                                 </button>
                             ) : (
-                                <button onClick={() => { handleFollow() }} className={`flex items-center gap-2 px-6 py-3 border-[2.5px] border-black font-black uppercase text-sm shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none transition-all ${user.isFollowing ? 'bg-white text-black' : 'bg-[#FF00FF] text-white'}`}>
+                                <button onClick={() => { handleFollow() }} className={`flex items-center gap-2 px-6 py-3 border-[2.5px] border-black font-black uppercase text-sm shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none transition-all ${user.isFollowing ? 'bg-white text-black' : 'bg-[var(--mm-accent)] text-white'}`}>
                                     {user.isFollowing ? <UserCheck className="w-5 h-5" /> : <UserPlus className="w-5 h-5" />}
                                     <span>{user.isFollowing ? "Mengikuti" : "Ikuti"}</span>
                                 </button>

@@ -18,16 +18,16 @@ interface ProfilePassportProps {
 
 export function ProfilePassport({ user, isOwner, stats }: ProfilePassportProps) {
     const stamps = [
-        { id: "total", label: "Total Kenangan", value: stats.totalMemories, icon: Globe, bg: "#00FFFF", rotate: "-3deg" },
-        { id: "visual", label: "Foto", value: stats.memoriesWithPhotos, icon: ImageIcon, bg: "#FFFF00", rotate: "2deg" },
-        { id: "journal", label: "Jurnal", value: stats.memoriesTextOnly, icon: BookOpen, bg: "#00FF00", rotate: "-1deg" },
-        { id: "map", label: "Titik Kenangan", value: stats.mappedMemories, icon: MapPin, bg: "#FF00FF", rotate: "4deg" },
+        { id: "total", label: "Total Kenangan", value: stats.totalMemories, icon: Globe, bg: "var(--mm-secondary)", rotate: "-3deg" },
+        { id: "visual", label: "Foto", value: stats.memoriesWithPhotos, icon: ImageIcon, bg: "var(--mm-primary)", rotate: "2deg" },
+        { id: "journal", label: "Jurnal", value: stats.memoriesTextOnly, icon: BookOpen, bg: "var(--mm-lime)", rotate: "-1deg" },
+        { id: "map", label: "Titik Kenangan", value: stats.mappedMemories, icon: MapPin, bg: "var(--mm-accent)", rotate: "4deg" },
     ]
 
     return (
         <div className="bg-white border-[3px] border-black shadow-[6px_6px_0_#000] rounded-2xl p-6 lg:p-8 flex flex-col gap-6 relative overflow-hidden h-full">
             <div className="flex items-center gap-3 relative z-10">
-                <div className="w-10 h-10 flex items-center justify-center shrink-0 bg-[#00FFFF] border-[2.5px] border-black shadow-[2.5px_2.5px_0_#000] rounded-xl">
+                <div className="w-10 h-10 flex items-center justify-center shrink-0 bg-[var(--mm-secondary)] border-[2.5px] border-black shadow-[2.5px_2.5px_0_#000] rounded-xl">
                     <BookOpen className="w-4 h-4 text-black" />
                 </div>
                 <h2 className="text-lg font-black text-black tracking-tight uppercase">Cap Paspor Kenangan</h2>
@@ -41,7 +41,7 @@ export function ProfilePassport({ user, isOwner, stats }: ProfilePassportProps) 
                         {isOwner ? "Buku paspormu masih kosong. Mulailah membuat kenangan!" : `${user.name} belum membagikan lembar paspornya.`}
                     </p>
                     {isOwner && (
-                        <Link href="/memories/create" className="mt-5 text-xs font-black uppercase text-black bg-[#FFFF00] border-[2.5px] border-black rounded-xl px-5 py-2.5 shadow-[3px_3px_0_#000] hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none transition-all">
+                        <Link href="/memories/create" className="mt-5 text-xs font-black uppercase text-black bg-[var(--mm-primary)] border-[2.5px] border-black rounded-xl px-5 py-2.5 shadow-[3px_3px_0_#000] hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none transition-all">
                             Tambah Cap Pertama
                         </Link>
                     )}
@@ -70,11 +70,11 @@ export function ProfilePassport({ user, isOwner, stats }: ProfilePassportProps) 
                     </div>
 
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }} className="flex items-center gap-4 mt-2 justify-center sm:justify-start">
-                        <div className="flex items-center gap-2 px-4 py-2 bg-[#FF00FF] border-[2px] border-black shadow-[2.5px_2.5px_0_#000] rounded-xl">
+                        <div className="flex items-center gap-2 px-4 py-2 bg-[var(--mm-accent)] border-[2px] border-black shadow-[2.5px_2.5px_0_#000] rounded-xl">
                             <Heart className="w-3.5 h-3.5 text-white" />
                             <span className="text-xs font-black text-white">{stats.totalReactions} <span className="text-white/70 font-bold ml-1">Suka</span></span>
                         </div>
-                        <div className="flex items-center gap-2 px-4 py-2 bg-[#00FF00] border-[2px] border-black shadow-[2.5px_2.5px_0_#000] rounded-xl">
+                        <div className="flex items-center gap-2 px-4 py-2 bg-[var(--mm-lime)] border-[2px] border-black shadow-[2.5px_2.5px_0_#000] rounded-xl">
                             <MessageCircle className="w-3.5 h-3.5 text-black" />
                             <span className="text-xs font-black text-black">{stats.totalComments} <span className="text-black/70 font-bold ml-1">Komentar</span></span>
                         </div>
