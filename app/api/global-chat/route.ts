@@ -5,6 +5,35 @@ import { checkRateLimit, getClientIP, rateLimitResponse, RATE_LIMITS } from "@/l
 import { globalChatSchema } from "@/lib/validations"
 import { captureError } from "@/lib/monitoring"
 
+// ── Shared include for replyTo preview ──────────────────────────────────────
+const replyToInclude = {
+    select: {
+        id: true,
+        content: true,
+        user: {
+            select: {
+                id: true,
+                name: true,
+            }
+        }
+    }
+}
+
+const messageInclude = {
+    user: {
+        select: {
+            id: true,
+            name: true,
+            username: true,
+            image: true,
+            role: true,
+            isVerified: true,
+            isPremium: true,
+        }
+    },
+    replyTo: replyToInclude,
+}
+
 export async function GET(req: Request) {
     try {
         const session = await auth()
@@ -18,19 +47,7 @@ export async function GET(req: Request) {
         if (singleId) {
             const message = await prisma.globalChatMessage.findUnique({
                 where: { id: singleId, isDeleted: false },
-                include: {
-                    user: {
-                        select: {
-                            id: true,
-                            name: true,
-                            username: true,
-                            image: true,
-                            role: true,
-                            isVerified: true,
-                            isPremium: true
-                        }
-                    }
-                }
+                include: messageInclude,
             })
             return NextResponse.json({ message })
         }
@@ -50,19 +67,7 @@ export async function GET(req: Request) {
                 },
                 orderBy: { createdAt: "asc" },
                 take: 100,
-                include: {
-                    user: {
-                        select: {
-                            id: true,
-                            name: true,
-                            username: true,
-                            image: true,
-                            role: true,
-                            isVerified: true,
-                            isPremium: true,
-                        }
-                    }
-                }
+                include: messageInclude,
             })
 
             return NextResponse.json({ messages: newMessages })
@@ -72,33 +77,20 @@ export async function GET(req: Request) {
         const take = 50
 
         const messages = await prisma.globalChatMessage.findMany({
-            take: take + 1, // Fetch +1 to know if there's a next page
+            take: take + 1,
             skip: cursor ? 1 : 0,
             cursor: cursor ? { id: cursor } : undefined,
             orderBy: { createdAt: "desc" },
             where: { isDeleted: false },
-            include: {
-                user: {
-                    select: {
-                        id: true,
-                        name: true,
-                        username: true,
-                        image: true,
-                        role: true,
-                        isVerified: true,
-                        isPremium: true,
-                    }
-                }
-            }
+            include: messageInclude,
         })
 
         let nextCursor: string | null = null
         if (messages.length > take) {
-            const nextItem = messages.pop() // Remove the extra item
+            const nextItem = messages.pop()
             nextCursor = nextItem!.id
         }
 
-        // Return messages in reverse order (oldest to newest) to match chat behavior
         return NextResponse.json({
             messages: messages.reverse(),
             nextCursor,
@@ -116,7 +108,6 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
 
-        // Rate Limit
         const ip = getClientIP(req)
         const rateLimitKey = `global-chat:${session.user.id}:${ip}`
         const rateLimitResult = checkRateLimit(rateLimitKey, RATE_LIMITS.GLOBAL_CHAT.limit, RATE_LIMITS.GLOBAL_CHAT.windowMs)
@@ -132,24 +123,25 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 })
         }
 
+        // Validate replyToId if provided
+        const replyToId: string | undefined = body.replyToId
+        if (replyToId) {
+            const replyTarget = await prisma.globalChatMessage.findUnique({
+                where: { id: replyToId, isDeleted: false },
+                select: { id: true }
+            })
+            if (!replyTarget) {
+                return NextResponse.json({ error: "Pesan yang di-reply tidak ditemukan" }, { status: 400 })
+            }
+        }
+
         const message = await prisma.globalChatMessage.create({
             data: {
                 content: parsed.data.content,
                 userId: session.user.id,
+                ...(replyToId ? { replyToId } : {}),
             },
-            include: {
-                user: {
-                    select: {
-                        id: true,
-                        name: true,
-                        username: true,
-                        image: true,
-                        role: true,
-                        isVerified: true,
-                        isPremium: true,
-                    }
-                }
-            }
+            include: messageInclude,
         })
 
         return NextResponse.json(message, { status: 201 })

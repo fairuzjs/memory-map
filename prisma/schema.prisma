@@ -620,8 +620,14 @@ model GlobalChatMessage {
   user        User      @relation("UserGlobalChatMessages", fields: [userId], references: [id], onDelete: Cascade)
   deletedBy   User?     @relation("DeletedGlobalChatMessages", fields: [deletedById], references: [id], onDelete: SetNull)
 
+  // ── Reply fields ──────────────────────────────────────────────
+  replyToId   String?
+  replyTo     GlobalChatMessage?  @relation("ChatReplies", fields: [replyToId], references: [id], onDelete: SetNull)
+  replies     GlobalChatMessage[] @relation("ChatReplies")
+
   @@index([createdAt])
   @@index([userId])
   @@index([isDeleted, createdAt])
+  @@index([replyToId])
   @@map("global_chat_messages")
 }
