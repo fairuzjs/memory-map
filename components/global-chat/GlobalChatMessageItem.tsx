@@ -1,5 +1,6 @@
 "use client"
 
+import { memo } from "react"
 import { Trash2, ShieldCheck, ShieldAlert } from "lucide-react"
 import Image from "next/image"
 import { PremiumCrown } from "@/components/ui/PremiumCrown"
@@ -45,7 +46,7 @@ function getRelativeTime(dateString: string) {
     }
 }
 
-export function GlobalChatMessageItem({ message, currentUserId, currentUserRole, onDelete }: Props) {
+export const GlobalChatMessageItem = memo(function GlobalChatMessageItem({ message, currentUserId, currentUserRole, onDelete }: Props) {
     const isMe = currentUserId === message.userId
     const canDelete = isMe || currentUserRole === "ADMIN"
 
@@ -121,4 +122,4 @@ export function GlobalChatMessageItem({ message, currentUserId, currentUserRole,
             </div>
         </div>
     )
-}
+})

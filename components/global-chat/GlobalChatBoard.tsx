@@ -8,7 +8,6 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
 import toast from "react-hot-toast"
 import { useSession } from "next-auth/react"
 import { motion } from "framer-motion"
-import { MessageSquareText } from "lucide-react"
 import { supabase } from "@/lib/supabase"
 
 export function GlobalChatBoard() {
@@ -18,34 +17,84 @@ export function GlobalChatBoard() {
 
     const [messages, setMessages] = useState<ChatMessage[]>([])
     const [isLoading, setIsLoading] = useState(true)
+    const [nextCursor, setNextCursor] = useState<string | null>(null)
+    const [isLoadingMore, setIsLoadingMore] = useState(false)
+
     const scrollRef = useRef<HTMLDivElement>(null)
+    const lastMessageIdRef = useRef<string | null>(null)
     const { confirmProps, openConfirm } = useConfirm()
-    
-    // Auto scroll logic
+
+    // ── Smart auto-scroll: hanya scroll jika user dekat bawah ──
+    const isNearBottom = useCallback(() => {
+        if (!scrollRef.current) return true
+        const { scrollTop, scrollHeight, clientHeight } = scrollRef.current
+        return scrollHeight - scrollTop - clientHeight < 150
+    }, [])
+
     const scrollToBottom = useCallback(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight
         }
     }, [])
 
-    const fetchMessages = useCallback(async (isPolling = false) => {
+    // ── Sinkronisasi lastMessageIdRef ──
+    useEffect(() => {
+        if (messages.length > 0) {
+            lastMessageIdRef.current = messages[messages.length - 1].id
+        }
+    }, [messages])
+
+    // ── Initial fetch: muat batch terbaru ──
+    const fetchMessages = useCallback(async () => {
         try {
             const res = await fetch("/api/global-chat")
             if (!res.ok) throw new Error("Gagal mengambil pesan")
-            
             const data = await res.json()
             setMessages(data.messages)
-            
-            if (!isPolling) {
-                setTimeout(scrollToBottom, 100)
-            }
-        } catch (error) {
-            if (!isPolling) toast.error("Gagal memuat obrolan")
+            setNextCursor(data.nextCursor)
+            setTimeout(scrollToBottom, 100)
+        } catch {
+            toast.error("Gagal memuat obrolan")
         } finally {
-            if (!isPolling) setIsLoading(false)
+            setIsLoading(false)
         }
     }, [scrollToBottom])
 
+    // ── Load More: muat pesan lama via cursor pagination ──
+    const loadOlderMessages = useCallback(async () => {
+        if (!nextCursor || isLoadingMore) return
+        setIsLoadingMore(true)
+
+        const scrollEl = scrollRef.current
+        const prevScrollHeight = scrollEl?.scrollHeight ?? 0
+
+        try {
+            const res = await fetch(`/api/global-chat?cursor=${nextCursor}`)
+            if (!res.ok) throw new Error("Gagal memuat pesan lama")
+            const data = await res.json()
+
+            setMessages(prev => {
+                const existingIds = new Set(prev.map(m => m.id))
+                const unique = (data.messages as ChatMessage[]).filter(m => !existingIds.has(m.id))
+                if (unique.length === 0) return prev
+                return [...unique, ...prev]
+            })
+            setNextCursor(data.nextCursor)
+
+            // Pertahankan posisi scroll setelah prepend
+            requestAnimationFrame(() => {
+                if (scrollEl) {
+                    scrollEl.scrollTop += scrollEl.scrollHeight - prevScrollHeight
+                }
+            })
+        } catch {
+            toast.error("Gagal memuat pesan lama")
+        } finally {
+            setIsLoadingMore(false)
+        }
+    }, [nextCursor, isLoadingMore])
+
+    // ── Main effect: Realtime + Incremental Polling + Full Sync ──
     useEffect(() => {
         if (!currentUserId) {
             setIsLoading(false)
@@ -54,9 +103,7 @@ export function GlobalChatBoard() {
 
         fetchMessages()
 
-        // ──────────────────────────────────────────────
-        // 1. Supabase Realtime — instant delivery (best-effort)
-        // ──────────────────────────────────────────────
+        // ─── 1. Supabase Realtime — instant delivery (best-effort) ───
         const channel = supabase
             .channel('global-chat')
             .on(
@@ -64,7 +111,6 @@ export function GlobalChatBoard() {
                 { event: 'INSERT', schema: 'public', table: 'global_chat_messages' },
                 async (payload) => {
                     if (payload.new.isDeleted) return
-                    
                     try {
                         const res = await fetch(`/api/global-chat?singleId=${payload.new.id}`)
                         if (res.ok) {
@@ -74,11 +120,11 @@ export function GlobalChatBoard() {
                                     if (prev.find(m => m.id === data.message.id)) return prev
                                     return [...prev, data.message]
                                 })
-                                setTimeout(scrollToBottom, 100)
+                                if (isNearBottom()) setTimeout(scrollToBottom, 100)
                             }
                         }
                     } catch (e) {
-                        console.error("[GlobalChat] Error fetching new message:", e)
+                        console.error("[GlobalChat] Realtime INSERT error:", e)
                     }
                 }
             )
@@ -95,43 +141,74 @@ export function GlobalChatBoard() {
                 console.log("[GlobalChat] Realtime status:", status)
             })
 
-        // ──────────────────────────────────────────────
-        // 2. Polling — SELALU aktif sebagai safety net
-        //    Hanya update state jika ada perubahan nyata
-        // ──────────────────────────────────────────────
+        // ─── 2. Incremental polling (10s) — hanya ambil pesan baru ───
         const pollingInterval = setInterval(async () => {
+            const lastId = lastMessageIdRef.current
+            if (!lastId) return
+            try {
+                const res = await fetch(`/api/global-chat?after=${lastId}`)
+                if (!res.ok) return
+                const data = await res.json()
+                const newMsgs = data.messages as ChatMessage[]
+                if (newMsgs.length > 0) {
+                    setMessages(prev => {
+                        const existingIds = new Set(prev.map(m => m.id))
+                        const unique = newMsgs.filter(m => !existingIds.has(m.id))
+                        if (unique.length === 0) return prev
+                        return [...prev, ...unique]
+                    })
+                    if (isNearBottom()) setTimeout(scrollToBottom, 100)
+                }
+            } catch {
+                // Silently fail
+            }
+        }, 10000)
+
+        // ─── 3. Full sync (60s) — sinkronisasi delete/update ───
+        const fullSyncInterval = setInterval(async () => {
             try {
                 const res = await fetch("/api/global-chat")
                 if (!res.ok) return
                 const data = await res.json()
-                const incoming = data.messages as ChatMessage[]
+                const latest = data.messages as ChatMessage[]
 
                 setMessages(prev => {
-                    const prevLastId = prev.length > 0 ? prev[prev.length - 1].id : null
-                    const newLastId = incoming.length > 0 ? incoming[incoming.length - 1].id : null
+                    if (latest.length === 0 && prev.length === 0) return prev
 
-                    // Hanya update jika ada perubahan (jumlah berbeda atau pesan terakhir berbeda)
-                    if (prev.length !== incoming.length || prevLastId !== newLastId) {
-                        // Ada pesan baru → auto-scroll
-                        if (incoming.length > prev.length) {
-                            setTimeout(scrollToBottom, 100)
-                        }
-                        return incoming
+                    // Pertahankan pesan lama dari "Load More" yang bukan bagian batch terbaru
+                    const latestIds = new Set(latest.map(m => m.id))
+                    const oldestLatestTime = latest.length > 0
+                        ? new Date(latest[0].createdAt).getTime()
+                        : Infinity
+                    const olderMessages = prev.filter(m =>
+                        !latestIds.has(m.id) &&
+                        new Date(m.createdAt).getTime() < oldestLatestTime
+                    )
+
+                    const merged = [...olderMessages, ...latest]
+
+                    // Skip re-render jika tidak ada perubahan
+                    if (merged.length === prev.length &&
+                        merged[0]?.id === prev[0]?.id &&
+                        merged[merged.length - 1]?.id === prev[prev.length - 1]?.id) {
+                        return prev
                     }
-                    return prev // Tidak ada perubahan, skip re-render
+                    return merged
                 })
             } catch {
-                // Silently fail untuk polling
+                // Silently fail
             }
-        }, 10000)
+        }, 60000)
 
         return () => {
             clearInterval(pollingInterval)
+            clearInterval(fullSyncInterval)
             supabase.removeChannel(channel)
         }
-    }, [currentUserId, fetchMessages, scrollToBottom])
+    }, [currentUserId, fetchMessages, scrollToBottom, isNearBottom])
 
-    const handleSend = async (content: string) => {
+    // ── Stabilized callbacks ──
+    const handleSend = useCallback(async (content: string) => {
         const res = await fetch("/api/global-chat", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -150,9 +227,9 @@ export function GlobalChatBoard() {
             return [...prev, newMessage]
         })
         setTimeout(scrollToBottom, 100)
-    }
+    }, [scrollToBottom])
 
-    const handleDelete = (messageId: string) => {
+    const handleDelete = useCallback((messageId: string) => {
         openConfirm({
             title: "Hapus Pesan",
             description: "Pesan yang dihapus tidak bisa dikembalikan. Lanjutkan?",
@@ -166,7 +243,7 @@ export function GlobalChatBoard() {
                         throw new Error(error.error || "Gagal menghapus pesan")
                     }
                     toast.success("Pesan berhasil dihapus")
-                    // Realtime UPDATE akan otomatis menghapus di klien lain. 
+                    // Realtime UPDATE akan otomatis menghapus di klien lain.
                     // Kita juga bisa hapus instan dari UI ini:
                     setMessages(prev => prev.filter(m => m.id !== messageId))
                 } catch (error: any) {
@@ -174,7 +251,7 @@ export function GlobalChatBoard() {
                 }
             }
         })
-    }
+    }, [openConfirm])
 
     if (!currentUserId) {
         return (
@@ -210,6 +287,26 @@ export function GlobalChatBoard() {
                     </div>
                 ) : (
                     <div className="max-w-4xl mx-auto pb-4">
+                        {/* Load More — Muat pesan lama */}
+                        {nextCursor && (
+                            <div className="flex justify-center mb-4">
+                                <button
+                                    onClick={loadOlderMessages}
+                                    disabled={isLoadingMore}
+                                    className="px-4 py-2 text-xs font-black uppercase border-2 border-black bg-white hover:bg-yellow-300 shadow-[2px_2px_0_#000] rounded-lg transition-colors disabled:opacity-50"
+                                >
+                                    {isLoadingMore ? (
+                                        <span className="flex items-center gap-2">
+                                            <span className="w-3 h-3 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                                            Memuat...
+                                        </span>
+                                    ) : (
+                                        "⬆ Muat Pesan Lama"
+                                    )}
+                                </button>
+                            </div>
+                        )}
+
                         {messages.map(msg => (
                             <GlobalChatMessageItem
                                 key={msg.id}

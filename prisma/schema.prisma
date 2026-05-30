@@ -622,5 +622,6 @@ model GlobalChatMessage {
 
   @@index([createdAt])
   @@index([userId])
+  @@index([isDeleted, createdAt])
   @@map("global_chat_messages")
 }

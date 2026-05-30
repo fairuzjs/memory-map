@@ -35,6 +35,39 @@ export async function GET(req: Request) {
             return NextResponse.json({ message })
         }
 
+        // Incremental polling: hanya ambil pesan setelah ID tertentu
+        const afterId = url.searchParams.get("after")
+        if (afterId) {
+            const afterMessage = await prisma.globalChatMessage.findUnique({
+                where: { id: afterId },
+                select: { createdAt: true }
+            })
+
+            const newMessages = await prisma.globalChatMessage.findMany({
+                where: {
+                    isDeleted: false,
+                    createdAt: { gt: afterMessage?.createdAt ?? new Date(0) }
+                },
+                orderBy: { createdAt: "asc" },
+                take: 100,
+                include: {
+                    user: {
+                        select: {
+                            id: true,
+                            name: true,
+                            username: true,
+                            image: true,
+                            role: true,
+                            isVerified: true,
+                            isPremium: true,
+                        }
+                    }
+                }
+            })
+
+            return NextResponse.json({ messages: newMessages })
+        }
+
         const cursor = url.searchParams.get("cursor")
         const take = 50
 
