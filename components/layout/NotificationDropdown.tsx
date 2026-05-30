@@ -159,7 +159,8 @@ export function NotificationDropdown() {
                 body: JSON.stringify({ action })
             })
 
-            if (res.ok || res.status === 409) {
+            if (res.ok || res.status === 409 || res.status === 404) {
+                // Hapus notifikasi dari UI & server terlepas dari hasilnya
                 await fetch("/api/notifications", {
                     method: "DELETE",
                     headers: { "Content-Type": "application/json" },
