@@ -19,11 +19,26 @@ export async function GET(req: Request, { params }: RouteParams) {
         const userId = session.user.id
 
         const album = await prisma.album.findUnique({
-            where: {
-                id,
-                userId
-            },
+            where: { id },
             include: {
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        image: true
+                    }
+                },
+                collaborators: {
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                name: true,
+                                image: true
+                            }
+                        }
+                    }
+                },
                 memories: {
                     include: {
                         memory: {
@@ -55,10 +70,16 @@ export async function GET(req: Request, { params }: RouteParams) {
             return NextResponse.json({ error: "Album tidak ditemukan" }, { status: 404 })
         }
 
+        // Validasi Otorisasi Keanggotaan
+        const isOwner = album.userId === userId
+        const isAcceptedCollab = album.collaborators.some(c => c.userId === userId && c.status === "ACCEPTED")
+
+        if (!isOwner && !isAcceptedCollab) {
+            return NextResponse.json({ error: "Anda tidak memiliki akses ke album ini" }, { status: 403 })
+        }
+
         const isSystemAlbum = album.name === SYSTEM_ALBUM_NAME
 
-        // Untuk album sistem: juga sertakan memory kolaborasi yang belum di album custom
-        // Namun memory sudah di-sync di GET /api/albums, jadi relasi sudah benar.
         // Format memories sebagai array Memory untuk kemudahan frontend
         const formattedMemories = album.memories
             .map(am => am.memory)
@@ -84,23 +105,76 @@ export async function PUT(req: Request, { params }: RouteParams) {
 
         const { id } = await params
         const body = await req.json()
-        const { name, description, coverImage, icon } = body
+        const { name, description, coverImage, icon, approvePendingCover, rejectPendingCover } = body
+        const userId = session.user.id
 
-        // Verify ownership
+        // Fetch album dengan kolaborator
         const existingAlbum = await prisma.album.findUnique({
-            where: { id, userId: session.user.id }
+            where: { id },
+            include: { collaborators: true }
         })
 
         if (!existingAlbum) {
             return NextResponse.json({ error: "Album tidak ditemukan" }, { status: 404 })
         }
 
-        // Cegah edit nama album sistem
+        const isOwner = existingAlbum.userId === userId
+        const isEditor = existingAlbum.collaborators.some(c => c.userId === userId && c.role === "EDITOR" && c.status === "ACCEPTED")
+
+        if (!isOwner && !isEditor) {
+            return NextResponse.json({ error: "Anda tidak memiliki akses untuk menyunting album ini" }, { status: 403 })
+        }
+
+        // Jika Owner menyetujui/menolak pengajuan cover
+        if (isOwner && (approvePendingCover || rejectPendingCover)) {
+            let updatedData: any = {
+                pendingCoverImage: null,
+                pendingCoverActorId: null
+            }
+            if (approvePendingCover && existingAlbum.pendingCoverImage) {
+                updatedData.coverImage = existingAlbum.pendingCoverImage
+            }
+            const updatedAlbum = await prisma.album.update({
+                where: { id },
+                data: updatedData
+            })
+            return NextResponse.json(updatedAlbum)
+        }
+
+        // Jika Editor ingin mengubah cover (butuh persetujuan Owner)
+        if (isEditor && !isOwner) {
+            if (coverImage) {
+                const updatedAlbum = await prisma.album.update({
+                    where: { id },
+                    data: {
+                        pendingCoverImage: coverImage,
+                        pendingCoverActorId: userId
+                    }
+                })
+                
+                // Kirim notifikasi ke Owner (Tipe ALBUM_INVITE mewakili pengajuan/aksi kolaborasi album)
+                await prisma.notification.create({
+                    data: {
+                        userId: existingAlbum.userId,
+                        actorId: userId,
+                        albumId: id,
+                        type: "ALBUM_INVITE"
+                    }
+                })
+
+                return NextResponse.json({
+                    ...updatedAlbum,
+                    message: "Pengajuan perubahan sampul berhasil dikirim ke Owner untuk disetujui"
+                })
+            }
+            return NextResponse.json({ error: "Editor hanya diperbolehkan mengajukan perubahan sampul album" }, { status: 400 })
+        }
+
+        // Hanya Owner yang bisa mengedit detail utama (nama, deskripsi, icon, atau coverImage langsung)
         if (existingAlbum.name === SYSTEM_ALBUM_NAME && name && name !== SYSTEM_ALBUM_NAME) {
             return NextResponse.json({ error: "Album sistem tidak dapat diubah namanya" }, { status: 400 })
         }
 
-        // Cegah rename album mana pun menjadi nama sistem
         if (name && name.trim() === SYSTEM_ALBUM_NAME && existingAlbum.name !== SYSTEM_ALBUM_NAME) {
             return NextResponse.json({ error: "Nama album tidak boleh sama dengan album sistem" }, { status: 400 })
         }

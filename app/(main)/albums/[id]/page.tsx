@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState, useRef, useCallback } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import dynamic from "next/dynamic"
@@ -27,15 +27,23 @@ import {
     Music2,
     Palmtree,
     Plane,
-    Route,
     Sparkles,
     Star,
     Waves,
+    Users,
+    CheckCircle2,
+    XCircle,
+    Crown,
+    Trash2,
+    Send,
+    X
 } from "lucide-react"
 import toast from "react-hot-toast"
 import { MemoryCard } from "@/components/memories/MemoryCard"
 import { MemoryCover } from "@/components/memories/MemoryCover"
 import { formatDate } from "@/lib/utils"
+import { StickyNotesWall } from "@/components/albums/StickyNotesWall"
+import { AlbumChatDrawer } from "@/components/albums/AlbumChatDrawer"
 
 const MapView = dynamic(() => import("@/components/map/MapView"), {
     ssr: false,
@@ -87,16 +95,45 @@ interface Memory {
 
 interface AlbumDetail {
     id: string
+    userId: string
     name: string
     description: string | null
     coverImage: string | null
+    pendingCoverImage: string | null
+    pendingCoverActorId: string | null
     icon: string | null
     createdAt: string
     updatedAt: string
     memories: Memory[]
+    collaborators: {
+        id: string
+        userId: string
+        role: "OWNER" | "EDITOR" | "CONTRIBUTOR"
+        status: "PENDING" | "ACCEPTED" | "DECLINED"
+        user: {
+            id: string
+            name: string
+            image: string | null
+        }
+    }[]
 }
 
-type ViewMode = "grid" | "timeline" | "map"
+interface UserSuggestion {
+    id: string
+    name: string
+    username?: string | null
+    email?: string | null
+    image?: string | null
+}
+
+interface MemoryParticle {
+    id: number
+    emoji: string
+    x: number
+    y: number
+}
+
+type ViewMode = "grid" | "timeline" | "map" | "sticky"
 
 const ICON_OPTIONS: Array<{ id: string; Icon: LucideIcon }> = [
     { id: "waves", Icon: Waves },
@@ -149,38 +186,110 @@ function getErrorMessage(error: unknown, fallback: string) {
     return error instanceof Error ? error.message : fallback
 }
 
-
-
 export default function AlbumDetailPage() {
     const { id } = useParams() as { id: string }
     const router = useRouter()
     const { data: session } = useSession()
 
     const [album, setAlbum] = useState<AlbumDetail | null>(null)
+    const [pendingRemoveCollaborator, setPendingRemoveCollaborator] = useState<{
+        userId: string
+        name: string
+        isSelf: boolean
+    } | null>(null)
     const [loading, setLoading] = useState(true)
     const [viewMode, setViewMode] = useState<ViewMode>("grid")
+    const [showMobileNotesSheet, setShowMobileNotesSheet] = useState(false)
+
+    // Shared album states
+    const [selectedContributorId, setSelectedContributorId] = useState<string | null>(null)
+    const [showSettingsModal, setShowSettingsModal] = useState(false)
+    const [inviteInput, setInviteInput] = useState("")
+    const [inviteRole, setInviteRole] = useState<"EDITOR" | "CONTRIBUTOR">("CONTRIBUTOR")
+    const [isInviting, setIsInviting] = useState(false)
+    const [isRemoving, setIsRemoving] = useState<string | null>(null)
+    const [isSaving, setIsSaving] = useState(false)
+
+    const [userSuggestions, setUserSuggestions] = useState<UserSuggestion[]>([])
+    const [isSearchingUsers, setIsSearchingUsers] = useState(false)
+    const autocompleteRef = useRef<HTMLDivElement>(null)
+
+    const fetchAlbum = useCallback(async () => {
+        try {
+            const res = await fetch(`/api/albums/${id}`)
+            if (!res.ok) {
+                if (res.status === 404) throw new Error("Album tidak ditemukan")
+                throw new Error("Gagal mengambil detail album")
+            }
+            setAlbum(await res.json())
+        } catch (error: unknown) {
+            toast.error(getErrorMessage(error, "Terjadi kesalahan"))
+            router.push("/albums")
+        } finally {
+            setLoading(false)
+        }
+    }, [id, router])
 
     useEffect(() => {
         if (!session?.user?.id || !id) return
+        fetchAlbum()
+    }, [id, session?.user?.id, fetchAlbum])
 
-        const fetchAlbum = async () => {
-            try {
-                const res = await fetch(`/api/albums/${id}`)
-                if (!res.ok) {
-                    if (res.status === 404) throw new Error("Album tidak ditemukan")
-                    throw new Error("Gagal mengambil detail album")
-                }
-                setAlbum(await res.json())
-            } catch (error: unknown) {
-                toast.error(getErrorMessage(error, "Terjadi kesalahan"))
-                router.push("/albums")
-            } finally {
-                setLoading(false)
+    useEffect(() => {
+        const handleOutsideClick = (e: MouseEvent) => {
+            if (autocompleteRef.current && !autocompleteRef.current.contains(e.target as Node)) {
+                setUserSuggestions([])
             }
         }
+        document.addEventListener("mousedown", handleOutsideClick)
+        return () => document.removeEventListener("mousedown", handleOutsideClick)
+    }, [])
 
-        fetchAlbum()
-    }, [id, router, session?.user?.id])
+    const handleInviteInputChange = async (val: string) => {
+        setInviteInput(val)
+        const query = val.trim()
+        if (query.length < 2) {
+            setUserSuggestions([])
+            return
+        }
+        setIsSearchingUsers(true)
+        try {
+            const res = await fetch(`/api/users/search?q=${encodeURIComponent(query)}`)
+            if (res.ok) {
+                const data = await res.json()
+                setUserSuggestions(data)
+            } else {
+                setUserSuggestions([])
+            }
+        } catch {
+            setUserSuggestions([])
+        } finally {
+            setIsSearchingUsers(false)
+        }
+    }
+
+    const isOwner = album?.userId === session?.user?.id
+    const [memoryParticles, setMemoryParticles] = useState<MemoryParticle[]>([])
+
+    const handleMemoryEmojiReaction = (memoryId: string, emoji: string, e: React.MouseEvent<HTMLButtonElement>) => {
+        const rect = e.currentTarget.getBoundingClientRect()
+        const newParticle: MemoryParticle = {
+            id: Date.now() + Math.random(),
+            emoji,
+            x: rect.left + rect.width / 2 + (Math.random() * 20 - 10),
+            y: rect.top - 10
+        }
+        setMemoryParticles(prev => [...prev, newParticle])
+        
+        setTimeout(() => {
+            setMemoryParticles(prev => prev.filter(p => p.id !== newParticle.id))
+        }, 1200)
+
+        toast.success(`Kamu bereaksi ${emoji}!`, { id: `react-${memoryId}`, duration: 800 })
+    }
+    const acceptedCollaborators = useMemo(() => {
+        return album?.collaborators?.filter(c => c.status === "ACCEPTED") || []
+    }, [album])
 
     const stats = useMemo(() => {
         if (!album) return { memories: 0, photos: 0, places: 0, latest: "-" }
@@ -195,10 +304,17 @@ export default function AlbumDetailPage() {
         }
     }, [album])
 
+    // Filter memories by selected contributor
+    const filteredMemories = useMemo(() => {
+        if (!album) return []
+        if (!selectedContributorId) return album.memories
+        return album.memories.filter(m => m.user?.id === selectedContributorId)
+    }, [album, selectedContributorId])
+
     const chronologicalGroups = useMemo(() => {
         if (!album) return []
         const groups: Record<string, Memory[]> = {}
-        const sorted = [...album.memories].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        const sorted = [...filteredMemories].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
         for (const memory of sorted) {
             const date = new Date(memory.date)
             const key = date.toLocaleString("id-ID", { month: "long", year: "numeric" })
@@ -206,14 +322,108 @@ export default function AlbumDetailPage() {
             groups[key].push(memory)
         }
         return Object.entries(groups)
-    }, [album])
+    }, [album, filteredMemories])
 
-    const recentPhotos = useMemo(() => {
-        if (!album) return []
-        return [...album.memories]
-            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-            .slice(0, 6)
-    }, [album])
+    // Contributor colors helper
+    const contributorColors = useMemo(() => {
+        const colors: Record<string, string> = {}
+        if (!album) return colors
+        colors[album.userId] = "var(--mm-warning)" // Owner color
+        const palette = ["var(--mm-soft-cyan)", "var(--mm-tertiary)", "var(--mm-success)", "var(--mm-accent)", "var(--mm-primary)"]
+        acceptedCollaborators.forEach((c, idx) => {
+            colors[c.userId] = palette[idx % palette.length]
+        })
+        return colors
+    }, [album, acceptedCollaborators])
+
+    // Invite user api call
+    const handleInvite = async (e: React.FormEvent) => {
+        e.preventDefault()
+        if (!inviteInput.trim()) return
+        setIsInviting(true)
+        try {
+            const res = await fetch(`/api/albums/${id}/invite`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ target: inviteInput.trim(), role: inviteRole })
+            })
+            if (res.ok) {
+                toast.success("Undangan kolaborasi berhasil dikirim.")
+                setInviteInput("")
+                setUserSuggestions([])
+                fetchAlbum()
+            } else {
+                const err = await res.json()
+                toast.error(err.error || "Gagal mengirim undangan")
+            }
+        } catch (err) {
+            toast.error("Gagal mengirim undangan")
+        } finally {
+            setIsInviting(false)
+        }
+    }
+
+    // Eject or self-remove collaborator
+    const handleRemoveCollaborator = (targetId: string) => {
+        const isSelf = targetId === session?.user?.id
+        const collab = album?.collaborators?.find(c => c.userId === targetId)
+        const name = collab?.user?.name || (isSelf ? session?.user?.name || "Saya" : "Kolaborator")
+
+        setPendingRemoveCollaborator({
+            userId: targetId,
+            name,
+            isSelf
+        })
+    }
+
+    const confirmRemoveCollaborator = async () => {
+        if (!pendingRemoveCollaborator) return
+        const { userId, isSelf } = pendingRemoveCollaborator
+
+        setIsRemoving(userId)
+        try {
+            const res = await fetch(`/api/albums/${id}/collaborators/${userId}`, {
+                method: "DELETE"
+            })
+            if (res.ok) {
+                toast.success(isSelf ? "Anda telah keluar dari album." : "Kolaborator berhasil dikeluarkan.")
+                setPendingRemoveCollaborator(null)
+                if (isSelf) {
+                    router.push("/albums")
+                } else {
+                    fetchAlbum()
+                }
+            } else {
+                toast.error("Gagal memproses tindakan")
+            }
+        } catch {
+            toast.error("Terjadi kesalahan teknis")
+        } finally {
+            setIsRemoving(null)
+        }
+    }
+
+    // Cover image request respond
+    const handleCoverRespond = async (action: "ACCEPT" | "REJECT") => {
+        setIsSaving(true)
+        try {
+            const res = await fetch(`/api/albums/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(action === "ACCEPT" ? { approvePendingCover: true } : { rejectPendingCover: true })
+            })
+            if (res.ok) {
+                toast.success(action === "ACCEPT" ? "Cover baru disetujui." : "Pengajuan cover ditolak.")
+                fetchAlbum()
+            } else {
+                toast.error("Gagal memperbarui cover album")
+            }
+        } catch (err) {
+            toast.error("Terjadi kesalahan teknis")
+        } finally {
+            setIsSaving(false)
+        }
+    }
 
     if (loading) {
         return (
@@ -244,12 +454,51 @@ export default function AlbumDetailPage() {
                     <ArrowLeft className="h-4 w-4" />
                     Kembali
                 </Link>
+
+                {(album.userId === session?.user?.id || acceptedCollaborators.length > 0) && (
+                    <button
+                        onClick={() => setShowSettingsModal(true)}
+                        className="inline-flex items-center gap-2 border-[2.5px] border-black bg-white px-4 py-2 text-xs font-black uppercase text-black shadow-[3px_3px_0_#000] rounded-xl transition-all hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] hover:bg-[var(--mm-primary)] active:translate-y-px active:shadow-none"
+                    >
+                        <Users className="h-4 w-4" />
+                        Kolaborator ({acceptedCollaborators.length + 1}/5)
+                    </button>
+                )}
             </div>
+
+            {/* ── Pending Cover Request Banner (Owner only) ── */}
+            {isOwner && album.pendingCoverImage && (
+                <div className="flex items-center gap-4 border-[2.5px] border-black bg-[var(--mm-secondary)]/10 p-3.5 rounded-2xl shadow-[3px_3px_0_var(--mm-shadow)] border-dashed">
+                    <div className="relative h-16 w-24 shrink-0 border border-black rounded-lg overflow-hidden">
+                        <img src={album.pendingCoverImage} className="w-full h-full object-cover" alt="" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                        <span className="inline-block mb-1 px-1.5 py-0.5 bg-[var(--mm-secondary)] border border-black text-[8px] font-black uppercase rounded-md">Pending Cover</span>
+                        <p className="text-[11px] font-bold text-black/70">Seorang Editor mengajukan cover baru. Silakan review:</p>
+                    </div>
+                    <div className="flex gap-2 shrink-0">
+                        <button
+                            disabled={isSaving}
+                            onClick={() => handleCoverRespond("ACCEPT")}
+                            className="py-1.5 px-3 text-[10px] font-black uppercase bg-[var(--mm-success)] border border-black rounded-xl hover:brightness-105 active:translate-y-px shadow-[2px_2px_0_#000] disabled:opacity-50"
+                        >
+                            Setujui
+                        </button>
+                        <button
+                            disabled={isSaving}
+                            onClick={() => handleCoverRespond("REJECT")}
+                            className="py-1.5 px-3 text-[10px] font-black uppercase bg-white border border-black rounded-xl hover:bg-neutral-100 active:translate-y-px shadow-[2px_2px_0_#000] disabled:opacity-50"
+                        >
+                            Tolak
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* ══════════════════════════════════════════════════
                 HERO — Album Detail (Polaroid Frame)
                 ══════════════════════════════════════════════════ */}
-            <section className="grid gap-6 lg:grid-cols-[1fr_340px]">
+            <section className="grid gap-5 lg:grid-cols-[1fr_340px] items-start">
                 <div className="relative overflow-hidden border-[3px] border-black bg-white rounded-2xl shadow-[6px_6px_0_#000]">
                     {/* Cover area with double border (polaroid feel) */}
                     <div className="relative overflow-hidden border-b-[2.5px] border-black bg-white">
@@ -263,8 +512,15 @@ export default function AlbumDetailPage() {
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
 
                                 {/* Album badge */}
-                                <div className="absolute left-4 top-4 rotate-[-5deg] border-[2px] border-black bg-[var(--mm-warning)] px-3.5 py-1 text-[10px] font-black uppercase text-black shadow-[2px_2px_0_#000] rounded-lg">
-                                    Album
+                                <div className="absolute left-4 top-4 flex gap-2 rotate-[-3deg] z-20">
+                                    <div className="border-[2px] border-black bg-[var(--mm-warning)] px-3.5 py-1 text-[10px] font-black uppercase text-black shadow-[2px_2px_0_#000] rounded-lg">
+                                        Album
+                                    </div>
+                                    {(album.userId !== session?.user?.id || acceptedCollaborators.length > 0) && (
+                                        <div className="border-[2px] border-black bg-[var(--mm-success)] px-3.5 py-1 text-[10px] font-black uppercase text-black shadow-[2px_2px_0_#000] rounded-lg">
+                                            Shared
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Album info overlay */}
@@ -315,65 +571,14 @@ export default function AlbumDetailPage() {
                     </div>
                 </div>
 
-                {/* ── Aside: Album Summary ────────────────────── */}
-                <aside className="relative space-y-5 border-[3px] border-black bg-white p-5 rounded-2xl shadow-[6px_6px_0_#000] overflow-hidden">
-                    <div className="dot-paper-light pointer-events-none absolute inset-0 opacity-20" />
-
-                    <div className="relative flex items-center gap-2 border-b-[2.5px] border-black pb-3">
-                        <Route className="h-5 w-5 text-black" />
-                        <h2 className="text-sm font-black uppercase text-black tracking-wider">Ringkasan Album</h2>
-                    </div>
-
-                    {/* Mini map preview */}
-                    <div className="relative h-36 overflow-hidden border-[2.5px] border-black bg-[color-mix(in_srgb,var(--mm-success)_20%,var(--mm-bg))] rounded-xl shadow-[2px_2px_0_#000]">
-                        <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)", backgroundSize: "34px 34px" }} />
-                        {album.memories.slice(0, 5).map((memory, index) => (
-                            <div
-                                key={memory.id}
-                                className="absolute flex h-8 w-8 items-center justify-center border-[2px] border-black bg-[var(--mm-warning)] rounded-lg shadow-[2px_2px_0_#000]"
-                                style={{
-                                    left: `${14 + (index * 17) % 70}%`,
-                                    top: `${18 + (index * 23) % 56}%`,
-                                }}
-                            >
-                                <MapPin className="h-3.5 w-3.5 text-black" />
-                            </div>
-                        ))}
-                        {album.memories.length === 0 && (
-                            <div className="flex h-full items-center justify-center">
-                                <span className="text-xs font-bold text-black/30">Belum ada lokasi</span>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Recent photos */}
-                    <div className="relative">
-                        <h3 className="mb-3 text-xs font-black uppercase text-black tracking-wider">Memory Terbaru</h3>
-                        {recentPhotos.length > 0 ? (
-                            <div className="grid grid-cols-3 gap-3">
-                                {recentPhotos.map((memory, i) => (
-                                    <Link
-                                        key={memory.id}
-                                        href={`/memories/${memory.id}`}
-                                        className={`aspect-[4/5] flex flex-col p-1 pb-2 border-[2px] border-black bg-white shadow-[2.5px_2.5px_0_#000] rounded-lg transition-all hover:scale-105 hover:-translate-y-0.5 hover:shadow-[3.5px_3.5px_0_#000] active:scale-95 duration-200 ${ROTATIONS[i % ROTATIONS.length]}`}
-                                    >
-                                        <div className="flex-1 overflow-hidden border-[1.5px] border-black bg-[#E5E5E5] rounded-md">
-                                            <MemoryCover memory={memory} className="h-full w-full object-cover" />
-                                        </div>
-                                    </Link>
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="flex h-28 items-center justify-center border-[2.5px] border-dashed border-black bg-neutral-50 rounded-xl text-xs font-black uppercase text-black/45">
-                                Belum ada foto
-                            </div>
-                        )}
-                    </div>
-
-                    <Link href="#album-content" className="relative flex items-center justify-center gap-2 border-[2.5px] border-black bg-[var(--mm-warning)] rounded-xl px-4 py-3 text-xs font-black uppercase text-black shadow-[3px_3px_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none">
-                        Lihat Semua Memory <ArrowRight className="h-4 w-4" />
-                    </Link>
-                </aside>
+                {/* ── Sticky Notes Wall ───────────────────────── */}
+                <div className="hidden lg:block">
+                    <StickyNotesWall
+                        albumId={id}
+                        albumOwnerId={album.userId}
+                        currentUserId={session?.user?.id}
+                    />
+                </div>
             </section>
 
             {/* ══════════════════════════════════════════════════
@@ -387,17 +592,17 @@ export default function AlbumDetailPage() {
                     </div>
                     <div className="flex w-fit border-[2.5px] border-black bg-white rounded-xl overflow-hidden shadow-[3px_3px_0_#000]">
                         {[
-                            ["grid", Grid3X3, "Grid"],
-                            ["timeline", Calendar, "Timeline"],
-                            ["map", Map, "Map"],
-                        ].map(([mode, Icon, label]) => {
+                            ["grid", Grid3X3, "Grid", "flex"],
+                            ["timeline", Calendar, "Timeline", "flex"],
+                            ["map", Map, "Map", "flex"],
+                        ].map(([mode, Icon, label, visibility]) => {
                             const LucideIcon = Icon as typeof Grid3X3
                             const isActive = viewMode === mode
                             return (
                                 <button
                                     key={mode as string}
                                     onClick={() => setViewMode(mode as ViewMode)}
-                                    className={`flex items-center gap-1.5 border-r-[2.5px] border-black px-4 py-2.5 text-xs font-black uppercase last:border-r-0 transition-all ${
+                                    className={`${visibility} items-center gap-1.5 border-r-[2.5px] border-black px-4 py-2.5 text-xs font-black uppercase last:border-r-0 transition-all ${
                                         isActive 
                                             ? "bg-[var(--mm-soft-cyan)] text-black" 
                                             : "bg-white text-black hover:bg-[var(--mm-warning)]"
@@ -411,15 +616,60 @@ export default function AlbumDetailPage() {
                     </div>
                 </div>
 
-                {album.memories.length === 0 ? (
+                {/* Contributor Filter Bar */}
+                {album.collaborators && album.collaborators.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-2.5 p-4 border-[2.5px] border-black bg-[var(--mm-surface)] rounded-2xl shadow-[4px_4px_0_var(--mm-shadow)] mb-4">
+                        <button
+                            onClick={() => setSelectedContributorId(null)}
+                            className={`px-3 py-1.5 border-[2px] border-black text-[11px] font-black uppercase rounded-xl transition-all ${
+                                !selectedContributorId 
+                                    ? "bg-black text-white shadow-none" 
+                                    : "bg-white text-black shadow-[2px_2px_0_#000] hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#000]"
+                            }`}
+                        >
+                            Semua ({album.memories.length})
+                        </button>
+                        
+                        {/* Owner filter */}
+                        <button
+                            onClick={() => setSelectedContributorId(album.userId)}
+                            className={`flex items-center gap-1.5 px-3 py-1.5 border-[2px] border-black text-[11px] font-black uppercase rounded-xl transition-all ${
+                                selectedContributorId === album.userId
+                                    ? "bg-black text-white shadow-none"
+                                    : "bg-white text-black shadow-[2px_2px_0_#000] hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#000]"
+                            }`}
+                        >
+                            <span className="w-2.5 h-2.5 rounded-full border border-black" style={{ backgroundColor: contributorColors[album.userId] }} />
+                            Owner ({album.memories.filter(m => m.user?.id === album.userId).length})
+                        </button>
+
+                        {/* Collaborator filters */}
+                        {acceptedCollaborators.map(c => {
+                            const count = album.memories.filter(m => m.user?.id === c.userId).length
+                            return (
+                                <button
+                                    key={c.userId}
+                                    onClick={() => setSelectedContributorId(c.userId)}
+                                    className={`flex items-center gap-1.5 px-3 py-1.5 border-[2px] border-black text-[11px] font-black uppercase rounded-xl transition-all ${
+                                        selectedContributorId === c.userId
+                                            ? "bg-black text-white shadow-none"
+                                            : "bg-white text-black shadow-[2px_2px_0_#000] hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#000]"
+                                    }`}
+                                >
+                                    <span className="w-2.5 h-2.5 rounded-full border border-black" style={{ backgroundColor: contributorColors[c.userId] }} />
+                                    {c.user.name} ({count})
+                                </button>
+                            )
+                        })}
+                    </div>
+                )}
+
+                {filteredMemories.length === 0 ? (
                     <div className="border-[3px] border-black bg-white p-12 text-center rounded-2xl shadow-[6px_6px_0_#000]">
                         <ImageIcon className="mx-auto mb-4 h-12 w-12 text-black" />
-                        <h3 className="mb-2 text-lg font-black uppercase text-black tracking-wider">Album ini masih kosong</h3>
-                        <p className="mb-4 text-xs font-bold text-black/55">Tambahkan memory dari halaman album untuk mulai mengisi koleksi ini.</p>
-                        <p className="mx-auto mb-6 font-caveat text-base text-black/40">Mulai isi chapter ini dengan kenanganmu</p>
-                        <Link href="/albums" className="inline-flex border-[2.5px] border-black bg-[var(--mm-success)] rounded-xl px-5 py-3 text-xs font-black uppercase text-black shadow-[3px_3px_0_#000] hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0_#000] active:translate-y-px active:shadow-none transition-all">
-                            Kelola Memory
-                        </Link>
+                        <h3 className="mb-2 text-lg font-black uppercase text-black tracking-wider">Belum ada kenangan</h3>
+                        <p className="mb-4 text-xs font-bold text-black/55">Tidak ada memori yang ditemukan untuk kontributor ini.</p>
+                        <p className="mx-auto mb-6 font-caveat text-base text-black/40">Chapter ini menanti cerita...</p>
                     </div>
                 ) : (
                     <AnimatePresence mode="wait">
@@ -429,11 +679,20 @@ export default function AlbumDetailPage() {
                                 initial={{ opacity: 0, y: 8 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: 8 }}
-                                className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                                className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 animate-stagger"
                             >
-                                {album.memories.map(memory => (
-                                    <MemoryCard key={memory.id} memory={memory} isCollaboration={memory.isCollaboration} placements={memory.stickerPlacements || []} />
-                                ))}
+                                {filteredMemories.map(memory => {
+                                    const frameColor = contributorColors[memory.user?.id || ""] || "transparent"
+                                    return (
+                                        <div
+                                            key={memory.id}
+                                            className="relative transition-all hover:-translate-y-1 rounded-2xl overflow-hidden"
+                                            style={{ borderLeft: `4px solid ${frameColor}` }}
+                                        >
+                                            <MemoryCard memory={memory} isCollaboration={memory.isCollaboration} placements={memory.stickerPlacements || []} />
+                                        </div>
+                                    )
+                                })}
                             </motion.div>
                         )}
 
@@ -462,11 +721,13 @@ export default function AlbumDetailPage() {
                                             </h3>
                                             <div className="space-y-5">
                                                 {memories.map(memory => {
+                                                    const frameColor = contributorColors[memory.user?.id || ""] || "black"
                                                     return (
                                                         <Link
                                                             key={memory.id}
                                                             href={`/memories/${memory.id}`}
                                                             className="group flex flex-col gap-4 border-[3px] border-black bg-white p-4 rounded-2xl shadow-[5px_5px_0_#000] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[7px_7px_0_#000] active:translate-y-px active:shadow-none sm:flex-row"
+                                                            style={{ borderLeftColor: frameColor, borderLeftWidth: "6px" }}
                                                         >
                                                             {/* Photo container in timeline item */}
                                                             <div className="aspect-video w-full shrink-0 overflow-hidden border-[2.5px] border-black bg-neutral-100 rounded-xl sm:w-44">
@@ -484,9 +745,19 @@ export default function AlbumDetailPage() {
                                                                 </div>
                                                                 <h4 className="line-clamp-1 text-lg font-black uppercase text-black group-hover:text-[var(--mm-accent)] transition-colors">{memory.title}</h4>
                                                                 <p className="mt-2 line-clamp-2 text-xs font-medium leading-relaxed text-black/60">{memory.story}</p>
-                                                                <span className="mt-3 flex items-center gap-1 text-[10px] font-black uppercase text-black/45">
-                                                                    <Clock className="h-3.5 w-3.5" /> {formatDate(new Date(memory.date))}
-                                                                </span>
+                                                                <div className="mt-3 flex items-center justify-between">
+                                                                    <span className="flex items-center gap-1 text-[10px] font-black uppercase text-black/45">
+                                                                        <Clock className="h-3.5 w-3.5" /> {formatDate(new Date(memory.date))}
+                                                                    </span>
+                                                                    <div className="flex items-center gap-1.5">
+                                                                        <img
+                                                                            src={memory.user?.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${memory.user?.id}`}
+                                                                            className="w-4 h-4 rounded-full border border-black"
+                                                                            alt=""
+                                                                        />
+                                                                        <span className="text-[10px] font-black text-black/60 uppercase">{memory.user?.name}</span>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                             <ArrowRight className="hidden h-5 w-5 self-center transition-transform group-hover:translate-x-1 sm:block text-black" />
                                                         </Link>
@@ -507,12 +778,344 @@ export default function AlbumDetailPage() {
                                 exit={{ opacity: 0, y: 8 }}
                                 className="h-[540px] overflow-hidden border-[3px] border-black rounded-2xl shadow-[6px_6px_0_#000]"
                             >
-                                <MapView memories={album.memories} />
+                                <MapView memories={filteredMemories} />
                             </motion.div>
                         )}
                     </AnimatePresence>
                 )}
             </section>
+
+            {/* ══════════════════════════════════════════════════
+                MODAL: Collaborator Settings Panel (Neubrutalism)
+                ══════════════════════════════════════════════════ */}
+            <AnimatePresence>
+                {showSettingsModal && (
+                    <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
+                        {/* Overlay */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setShowSettingsModal(false)}
+                            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+                        />
+
+                        {/* Modal Container */}
+                        <motion.div
+                            initial={{ scale: 0.95, y: 15, opacity: 0 }}
+                            animate={{ scale: 1, y: 0, opacity: 1 }}
+                            exit={{ scale: 0.95, y: 15, opacity: 0 }}
+                            className="relative w-full max-w-md bg-white border-[3px] border-black shadow-[6px_6px_0_#000] rounded-2xl overflow-hidden z-10 p-6 space-y-5"
+                        >
+                            {/* Close */}
+                            <button
+                                onClick={() => setShowSettingsModal(false)}
+                                className="absolute top-4 right-4 p-1 bg-white border-[2px] border-black shadow-[2px_2px_0_#000] hover:bg-neutral-100 rounded-lg active:translate-y-px transition-all"
+                            >
+                                <X className="h-4 w-4" />
+                            </button>
+
+                            <div>
+                                <h3 className="text-lg font-black uppercase text-black tracking-wide flex items-center gap-2">
+                                    <Users className="h-5 w-5 text-black" />
+                                    Kolaborator Album
+                                </h3>
+                                <p className="text-[11px] font-bold text-black/55 mt-1">Mengelola akses dan teman di album bersama ini.</p>
+                            </div>
+
+                            {/* Invite Form (Owner/Editor only) */}
+                            {(isOwner || album.collaborators?.some(c => c.userId === session?.user?.id && c.role === "EDITOR" && c.status === "ACCEPTED")) && (
+                                <form onSubmit={handleInvite} className="p-4 border-[2px] border-black bg-[var(--mm-primary)]/10 rounded-xl space-y-3 shadow-[3px_3px_0_var(--mm-shadow)]">
+                                    <h4 className="text-xs font-black uppercase text-black tracking-wider">Undang Kontributor Baru (Maks 5)</h4>
+                                    
+                                    {acceptedCollaborators.length + 1 >= 5 ? (
+                                        <p className="text-[11px] font-black text-rose-600 bg-rose-50 border border-rose-300 p-2 rounded-lg text-center">Batas maksimal kolaborator (5 orang) telah tercapai.</p>
+                                    ) : (
+                                        <div className="space-y-3.5">
+                                            <div className="flex gap-2 relative" ref={autocompleteRef}>
+                                                <div className="flex-1 relative">
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Username atau Email"
+                                                        value={inviteInput}
+                                                        onChange={e => handleInviteInputChange(e.target.value)}
+                                                        disabled={isInviting}
+                                                        className="w-full px-3 py-2 text-xs font-bold border-[2px] border-black bg-white rounded-xl focus:outline-none"
+                                                    />
+                                                    {/* Autocomplete Dropdown */}
+                                                    {userSuggestions.length > 0 && (
+                                                        <div className="absolute left-0 right-0 top-full mt-2 bg-white border-[2.5px] border-black rounded-xl shadow-[4px_4px_0_#000] z-[100] max-h-48 overflow-y-auto divide-y-[2px] divide-black custom-scrollbar">
+                                                            {userSuggestions.map(user => (
+                                                                <button
+                                                                    key={user.id}
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        setInviteInput(user.username || user.email || user.name)
+                                                                        setUserSuggestions([])
+                                                                    }}
+                                                                    className="w-full flex items-center gap-2 p-2.5 text-left hover:bg-[var(--mm-primary)]/10 transition-colors"
+                                                                >
+                                                                    <img
+                                                                        src={user.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`}
+                                                                        className="w-6.5 h-6.5 rounded-full border border-black object-cover"
+                                                                        alt=""
+                                                                    />
+                                                                    <div className="flex-1 min-w-0 flex flex-col">
+                                                                        <span className="text-[11px] font-black text-black leading-none truncate">{user.name}</span>
+                                                                        <span className="text-[9px] font-bold text-black/50 mt-1 leading-none truncate">
+                                                                            {user.username ? `@${user.username}` : user.email}
+                                                                        </span>
+                                                                    </div>
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <button
+                                                    type="submit"
+                                                    disabled={isInviting || !inviteInput.trim()}
+                                                    className="px-3.5 py-2 bg-[var(--mm-warning)] border-[2.5px] border-black text-xs font-black uppercase rounded-xl shadow-[2px_2px_0_#000] hover:-translate-y-0.5 active:translate-y-px active:shadow-none transition-all disabled:opacity-50"
+                                                >
+                                                    {isInviting ? <Loader2 className="h-4. w-4. animate-spin" /> : <Send className="h-4 w-4" />}
+                                                </button>
+                                            </div>
+                                            <div className="flex items-center gap-4 text-xs font-black">
+                                                <span className="text-[10px] text-black/55 uppercase">Peran:</span>
+                                                <label className="flex items-center gap-1.5 cursor-pointer">
+                                                    <input
+                                                        type="radio"
+                                                        name="role"
+                                                        value="CONTRIBUTOR"
+                                                        checked={inviteRole === "CONTRIBUTOR"}
+                                                        onChange={() => setInviteRole("CONTRIBUTOR")}
+                                                        className="accent-black"
+                                                    />
+                                                    Contributor
+                                                </label>
+                                                <label className="flex items-center gap-1.5 cursor-pointer">
+                                                    <input
+                                                        type="radio"
+                                                        name="role"
+                                                        value="EDITOR"
+                                                        checked={inviteRole === "EDITOR"}
+                                                        onChange={() => setInviteRole("EDITOR")}
+                                                        className="accent-black"
+                                                    />
+                                                    Editor
+                                                </label>
+                                            </div>
+                                        </div>
+                                    )}
+                                </form>
+                            )}
+
+                            {/* Collaborators List */}
+                            <div className="space-y-3">
+                                <h4 className="text-xs font-black uppercase text-black tracking-wider">Anggota ({acceptedCollaborators.length + 1})</h4>
+                                <div className="space-y-2.5 max-h-48 overflow-y-auto custom-scrollbar pr-1">
+                                    {/* Owner Row */}
+                                    <div className="flex items-center justify-between p-2 border-[2px] border-black bg-white rounded-xl shadow-[2px_2px_0_#000]">
+                                        <div className="flex items-center gap-2">
+                                            <img
+                                                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${album.userId}`}
+                                                className="w-7 h-7 rounded-full border border-black object-cover"
+                                                alt=""
+                                            />
+                                            <span className="text-xs font-black uppercase text-black">Owner</span>
+                                        </div>
+                                        <span className="text-[9px] font-black uppercase bg-[var(--mm-warning)] px-2 py-0.5 border border-black rounded-md">OWNER</span>
+                                    </div>
+
+                                    {/* Collaborators Rows */}
+                                    {album.collaborators?.map(c => {
+                                        const isTargetSelf = c.userId === session?.user?.id
+                                        return (
+                                            <div key={c.id} className="flex items-center justify-between p-2 border-[2px] border-black bg-white rounded-xl shadow-[2px_2px_0_#000]">
+                                                <div className="flex items-center gap-2">
+                                                    <img
+                                                        src={c.user.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.userId}`}
+                                                        className="w-7 h-7 rounded-full border border-black object-cover"
+                                                        alt=""
+                                                    />
+                                                    <div className="flex flex-col">
+                                                        <span className="text-xs font-black uppercase text-black leading-none">{c.user.name}</span>
+                                                        <span className="text-[8px] font-bold text-black/50 mt-1 uppercase tracking-wide leading-none">{c.status}</span>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div className="flex items-center gap-2">
+                                                    <span className={`text-[9px] font-black uppercase px-2 py-0.5 border border-black rounded-md ${c.role === "EDITOR" ? "bg-[var(--mm-primary)]" : "bg-neutral-100"}`}>
+                                                        {c.role}
+                                                    </span>
+                                                    
+                                                    {/* Kick/Leave Button */}
+                                                    {(isOwner || isTargetSelf) && c.status !== "DECLINED" && (
+                                                        <button
+                                                            disabled={isRemoving !== null}
+                                                            onClick={() => handleRemoveCollaborator(c.userId)}
+                                                            className="p-1 border border-black bg-rose-50 rounded-md hover:bg-rose-500 hover:text-white transition-colors active:translate-y-px"
+                                                            title={isTargetSelf ? "Keluar dari Album" : "Keluarkan Kolaborator"}
+                                                        >
+                                                            {isRemoving === c.userId ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Live Chat Drawer */}
+            <AlbumChatDrawer albumId={id} currentUserId={session?.user?.id} />
+
+            {/* ── MODAL: Confirm Remove Collaborator ── */}
+            <AnimatePresence>
+                {pendingRemoveCollaborator && (
+                    <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/75 p-4">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.96, y: 12 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.96, y: 12 }}
+                            className="w-full max-w-md border-[3.5px] border-black bg-[#b3b3b3] shadow-[8px_8px_0_#000] rounded-3xl overflow-hidden"
+                        >
+                            <div className="border-b-[3.5px] border-black bg-[#c44d58] p-4 text-black">
+                                <h3 className="text-sm font-black uppercase tracking-wider">
+                                    {pendingRemoveCollaborator.isSelf ? "KELUAR DARI ALBUM?" : "KELUARKAN KOLABORATOR?"}
+                                </h3>
+                            </div>
+                            <div className="space-y-5 p-6 pb-7">
+                                <p className="text-sm font-bold leading-relaxed text-neutral-900">
+                                    {pendingRemoveCollaborator.isSelf ? (
+                                        <>
+                                            Apakah Anda yakin ingin keluar dari album kolaborasi ini?
+                                        </>
+                                    ) : (
+                                        <>
+                                            Apakah Anda yakin ingin mengeluarkan kolaborator <span className="font-black uppercase text-black">&quot;{pendingRemoveCollaborator.name}&quot;</span> dari album bersama?
+                                        </>
+                                    )}
+                                </p>
+                                <div className="border-[3.5px] border-black bg-[#bebdaf] p-4 text-[10.5px] font-black uppercase tracking-wider text-neutral-800 rounded-2xl shadow-[4px_4px_0_#000] leading-relaxed">
+                                    {pendingRemoveCollaborator.isSelf ? (
+                                        "ANDA PERLU DIUNDANG KEMBALI JIKA INGIN BERGABUNG LAGI KE ALBUM BERSAMA INI."
+                                    ) : (
+                                        "KOLABORATOR YANG DIKELUARKAN TIDAK AKAN BISA MENAMBAHKAN MEMORY BARU KE ALBUM INI."
+                                    )}
+                                </div>
+                                <div className="border-t-[3.5px] border-black my-5 w-full opacity-100" />
+                                <div className="flex justify-end gap-3.5 pt-1.5">
+                                    <button
+                                        type="button"
+                                        onClick={() => setPendingRemoveCollaborator(null)}
+                                        disabled={isRemoving !== null}
+                                        className="border-[3.5px] border-black bg-[#9c9c9c] rounded-[18px] px-6 py-2.5 text-xs font-black uppercase text-black shadow-[4px_4px_0_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0_#000] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all disabled:opacity-60"
+                                    >
+                                        Batal
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={confirmRemoveCollaborator}
+                                        disabled={isRemoving !== null}
+                                        className="border-[3.5px] border-black bg-[#c44d58] rounded-[18px] px-6 py-2.5 text-xs font-black uppercase text-black shadow-[4px_4px_0_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0_#000] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all disabled:opacity-60"
+                                    >
+                                        {isRemoving !== null ? (
+                                            pendingRemoveCollaborator.isSelf ? "Meninggalkan..." : "Mengeluarkan..."
+                                        ) : (
+                                            pendingRemoveCollaborator.isSelf ? "Keluar" : "Keluarkan"
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* ── MOBILE FLOATING BADGE & BOTTOM SHEET: Sticky Notes Wall ── */}
+            <div className="fixed bottom-5 left-5 z-40 lg:hidden">
+                <motion.button
+                    whileHover={{ scale: 1.08, rotate: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setShowMobileNotesSheet(true)}
+                    className="relative flex h-[52px] w-[52px] rotate-[-6deg] items-center justify-center border-[2.5px] border-black bg-[#FEF08A] shadow-[3px_3px_0_#000] rounded-2xl transition-all"
+                    title="Buka Catatan Tempel"
+                >
+                    <span className="text-xl">📌</span>
+                    {/* Pulsing decoration dot */}
+                    <span className="absolute -top-1 -right-1 flex h-4.5 w-4.5 items-center justify-center border-[1.5px] border-black bg-rose-500 text-[8px] font-black text-white rounded-full">
+                        ✨
+                    </span>
+                </motion.button>
+            </div>
+
+            <AnimatePresence>
+                {showMobileNotesSheet && (
+                    <div className="fixed inset-0 z-[10000] flex items-end justify-center lg:hidden">
+                        {/* Backdrop */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setShowMobileNotesSheet(false)}
+                            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                        />
+                        
+                        {/* Slide-up Container */}
+                        <motion.div
+                            initial={{ y: "100%" }}
+                            animate={{ y: 0 }}
+                            exit={{ y: "100%" }}
+                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                            className="relative w-full max-h-[85vh] bg-white border-t-[3.5px] border-black rounded-t-[28px] shadow-[0_-8px_32px_rgba(0,0,0,0.15)] z-10 flex flex-col overflow-hidden"
+                        >
+                            {/* Handle / Drag Indicator */}
+                            <div className="py-3 flex justify-center bg-[#FAFAF8] border-b border-black/5">
+                                <div className="w-12 h-1.5 bg-neutral-300 rounded-full" />
+                            </div>
+
+                            {/* Sticky Notes Wall content */}
+                            <div className="flex-1 overflow-y-auto p-4 pt-1">
+                                <StickyNotesWall
+                                    albumId={id}
+                                    albumOwnerId={album.userId}
+                                    currentUserId={session?.user?.id}
+                                />
+                            </div>
+
+                            {/* Bottom close bar */}
+                            <div className="p-4 border-t-[2.5px] border-black bg-white">
+                                <button
+                                    onClick={() => setShowMobileNotesSheet(false)}
+                                    className="w-full py-2.5 bg-neutral-200 border-[2.5px] border-black text-xs font-black uppercase tracking-wider rounded-xl shadow-[3px_3px_0_#000] active:translate-y-px active:shadow-none transition-all"
+                                >
+                                    Tutup Catatan
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Floating Particles */}
+            <AnimatePresence>
+                {memoryParticles.map(p => (
+                    <motion.div
+                        key={p.id}
+                        initial={{ opacity: 1, scale: 0.8, x: p.x, y: p.y }}
+                        animate={{ opacity: 0, scale: 1.4, y: p.y - 120, x: p.x + (Math.random() * 40 - 20) }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 1, ease: "easeOut" }}
+                        className="fixed pointer-events-none z-[9999] text-xl"
+                    >
+                        {p.emoji}
+                    </motion.div>
+                ))}
+            </AnimatePresence>
         </div>
     )
 }

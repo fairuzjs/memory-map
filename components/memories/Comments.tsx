@@ -6,9 +6,12 @@ import toast from "react-hot-toast"
 import Link from "next/link"
 import { ConfirmDialog, useConfirm } from "@/components/ui/ConfirmDialog"
 import { formatDate } from "@/lib/utils"
-import { ShieldAlert, Lock, ArrowRight, BadgeCheck } from "lucide-react"
+import { ShieldAlert, Lock, ArrowRight, BadgeCheck, Mic, Loader2 } from "lucide-react"
 import { PremiumBadge } from "@/components/ui/PremiumBadge"
 import { isPremiumActive } from "@/lib/premium-config"
+import { AnimatePresence } from "framer-motion"
+import { VoiceCommentRecorder } from "./VoiceCommentRecorder"
+import { VoiceCommentPlayer } from "./VoiceCommentPlayer"
 
 export function Comments({ memoryId, initialComments }: { memoryId: string, initialComments: any[] }) {
     const { data: session } = useSession()
@@ -17,6 +20,30 @@ export function Comments({ memoryId, initialComments }: { memoryId: string, init
     const [replyTo, setReplyTo] = useState<string | null>(null)
     const [replyContent, setReplyContent] = useState("")
     const [submitting, setSubmitting] = useState(false)
+    const [showVoiceRecorder, setShowVoiceRecorder] = useState(false)
+
+    const handleSendVoiceComment = async (voiceUrl: string, durationSeconds: number) => {
+        if (submitting) return
+        setSubmitting(true)
+        try {
+            const res = await fetch(`/api/memories/${memoryId}/comments`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    content: "[Balasan Suara]",
+                    voiceUrl,
+                    voiceDuration: durationSeconds
+                })
+            })
+            const data = await res.json()
+            if (!res.ok) throw new Error(data.error || "Gagal mengirim balasan suara")
+            setComments(prev => [{ ...data, replies: [] }, ...prev])
+        } catch (e: any) {
+            toast.error(e.message || "Failed to post voice comment")
+        } finally {
+            setSubmitting(false)
+        }
+    }
 
     const handleSubmit = async (e: React.FormEvent, parentId: string | null = null) => {
         e.preventDefault()
@@ -197,7 +224,16 @@ export function Comments({ memoryId, initialComments }: { memoryId: string, init
                             className="w-full bg-white border-[3px] border-black shadow-[4px_4px_0_#000] focus:shadow-[6px_6px_0_#000] focus:-translate-y-0.5 p-4 text-[14px] font-bold text-black placeholder:text-black/50 outline-none resize-none min-h-[100px] transition-all rounded-2xl"
                             disabled={submitting}
                         />
-                        <div className="mt-4 flex justify-end">
+                        <div className="mt-4 flex justify-end items-center">
+                            <button
+                                type="button"
+                                onClick={() => setShowVoiceRecorder(true)}
+                                disabled={submitting}
+                                className="bg-[var(--mm-warning)] border-[3px] border-black p-2.5 rounded-xl shadow-[3px_3px_0_#000] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] active:translate-y-px active:shadow-none transition-all mr-3 flex items-center justify-center shrink-0 disabled:opacity-50"
+                                title="Rekam Komentar Suara"
+                            >
+                                <Mic className="w-5 h-5 text-black" />
+                            </button>
                             <button type="submit" disabled={submitting || !content.trim()} className="bg-[#00FF00] border-[3px] border-black text-black px-6 py-2.5 text-[14px] font-black uppercase shadow-[3px_3px_0_#000] rounded-xl hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] active:translate-y-px active:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed">
                                 {submitting ? "Memposting..." : "Post Komentar"}
                             </button>
@@ -244,7 +280,11 @@ export function Comments({ memoryId, initialComments }: { memoryId: string, init
                                             <span className="text-[10px] font-bold text-black/60 uppercase">{formatDate(comment.createdAt)}</span>
                                         </div>
                                     </div>
-                                    <p className="text-[14px] font-bold text-black whitespace-pre-wrap leading-relaxed">{comment.content}</p>
+                                    {comment.voiceUrl ? (
+                                        <VoiceCommentPlayer voiceUrl={comment.voiceUrl} durationSeconds={comment.voiceDuration} />
+                                    ) : (
+                                        <p className="text-[14px] font-bold text-black whitespace-pre-wrap leading-relaxed">{comment.content}</p>
+                                    )}
                                 </div>
 
                                 <div className="flex gap-4 mt-3 ml-2 text-[12px] font-black uppercase">
@@ -317,6 +357,16 @@ export function Comments({ memoryId, initialComments }: { memoryId: string, init
             </div>
         </div>
         <ConfirmDialog {...confirmProps} />
+
+        {/* Voice Recorder Dialog */}
+        <AnimatePresence>
+            {showVoiceRecorder && (
+                <VoiceCommentRecorder
+                    onSendVoice={handleSendVoiceComment}
+                    onClose={() => setShowVoiceRecorder(false)}
+                />
+            )}
+        </AnimatePresence>
         </>
     )
 }

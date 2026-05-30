@@ -69,6 +69,7 @@ const CARD_ACCENTS = ["var(--mm-soft-cyan)", "var(--mm-warning)", "var(--mm-tert
 
 interface Album {
     id: string
+    userId?: string
     name: string
     description: string | null
     coverImage: string | null
@@ -77,6 +78,14 @@ interface Album {
     updatedAt: string
     isSystemAlbum?: boolean
     _count: { memories: number }
+    collaborators?: {
+        id: string
+        user: {
+            id: string
+            name: string
+            image: string | null
+        }
+    }[]
 }
 
 type ViewMode = "grid" | "timeline" | "map"
@@ -700,10 +709,17 @@ export default function AlbumsPage() {
                     <Link href={`/albums/${album.id}`} className="flex flex-1 gap-4">
                         <AlbumCover album={album} accent={accent} compact />
                         <div className="flex min-w-0 flex-1 flex-col justify-center">
-                            <h3 className="line-clamp-1 text-base font-black uppercase text-black transition-colors group-hover:text-[#d946ef]">
-                                {album.name}
-                            </h3>
-                            <p className="mb-2 mt-1 line-clamp-2 text-xs font-bold leading-relaxed text-black/60">
+                            <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
+                                <h3 className="line-clamp-1 text-base font-black uppercase text-black transition-colors group-hover:text-[#d946ef]">
+                                    {album.name}
+                                </h3>
+                                {(album.userId !== session?.user?.id || (album.collaborators && album.collaborators.length > 0)) && (
+                                    <span className="shrink-0 border-[1.5px] border-[var(--mm-border)] bg-[var(--mm-success)] px-1.5 py-0.5 text-[8px] font-black uppercase leading-none shadow-[1px_1px_0_var(--mm-shadow)] rounded-md">
+                                        Shared
+                                    </span>
+                                )}
+                            </div>
+                            <p className="mb-2 mt-0.5 line-clamp-2 text-xs font-bold leading-relaxed text-black/60">
                                 {album.description || "Koleksi kenangan yang siap kamu buka lagi kapan saja."}
                             </p>
                             <div className="flex items-center gap-3 text-[10px] font-black uppercase text-black/50">
@@ -753,11 +769,36 @@ export default function AlbumsPage() {
                                     {album.name}
                                 </h3>
                             </div>
+                            {(album.userId !== session?.user?.id || (album.collaborators && album.collaborators.length > 0)) && (
+                                <span className="shrink-0 border-[1.5px] border-[var(--mm-border)] bg-[var(--mm-success)] px-2 py-0.5 text-[9px] font-black uppercase leading-none shadow-[1.5px_1.5px_0_var(--mm-shadow)] rounded-md">
+                                    Shared
+                                </span>
+                            )}
                         </div>
 
-                        <p className="mb-3 line-clamp-2 text-[11px] font-bold leading-relaxed text-black/55">
+                        <p className="mb-2 line-clamp-2 text-[11px] font-bold leading-relaxed text-black/55">
                             {album.description || "Koleksi kenangan yang siap kamu buka lagi kapan saja."}
                         </p>
+
+                        {/* Avatar Stack kontributor */}
+                        {album.collaborators && album.collaborators.length > 0 && (
+                            <div className="flex items-center gap-1.5 mt-1.5 mb-2.5">
+                                <div className="flex -space-x-1.5 overflow-hidden">
+                                    {album.collaborators.slice(0, 4).map(c => (
+                                        <img
+                                            key={c.user.id}
+                                            className="inline-block h-5.5 w-5.5 rounded-full border-[1.5px] border-black object-cover"
+                                            src={c.user.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.user.id}`}
+                                            alt={c.user.name}
+                                            title={c.user.name}
+                                        />
+                                    ))}
+                                </div>
+                                {album.collaborators.length > 4 && (
+                                    <span className="text-[9px] font-black text-black/55">+{album.collaborators.length - 4}</span>
+                                )}
+                            </div>
+                        )}
 
                         <div className="flex items-center justify-between border-t-2 border-dashed border-black/20 pt-2.5 text-[10px] font-black uppercase text-black/45">
                             <span className="flex items-center gap-1">
@@ -1167,25 +1208,25 @@ export default function AlbumsPage() {
                             initial={{ opacity: 0, scale: 0.96, y: 12 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.96, y: 12 }}
-                            className="w-full max-w-md border-[3px] border-black bg-white shadow-[8px_8px_0_#000] rounded-2xl overflow-hidden"
+                            className="w-full max-w-md border-[3.5px] border-black bg-[#b3b3b3] shadow-[8px_8px_0_#000] rounded-3xl overflow-hidden"
                         >
-                            <div className="border-b-[2.5px] border-black bg-rose-400 p-4 text-black">
+                            <div className="border-b-[3.5px] border-black bg-[#c44d58] p-4 text-black">
                                 <h3 className="text-sm font-black uppercase tracking-wider">Hapus Album Kenangan?</h3>
                             </div>
-                            <div className="space-y-4 p-5">
-                                <p className="text-sm font-bold leading-relaxed text-black/80">
-                                    Album <span className="font-black uppercase text-black">&quot;{pendingDeleteAlbum.name}&quot;</span> akan dihapus dari daftar album.
-                                    Kenangan di dalamnya tidak ikut terhapus.
+                            <div className="space-y-5 p-6 pb-7">
+                                <p className="text-sm font-bold leading-relaxed text-neutral-900">
+                                    Album <span className="font-black uppercase text-black">&quot;{pendingDeleteAlbum.name}&quot;</span> akan dihapus dari daftar album. Kenangan di dalamnya tidak ikut terhapus.
                                 </p>
-                                <div className="border-[2px] border-black bg-amber-50 p-3 text-xs font-black uppercase tracking-wide text-black/70 rounded-xl shadow-[2px_2px_0_#000]">
-                                    Memory yang tidak punya album custom lain akan kembali ke album sistem Belum Dikelompokkan.
+                                <div className="border-[3.5px] border-black bg-[#bebdaf] p-4 text-[10.5px] font-black uppercase tracking-wider text-neutral-800 rounded-2xl shadow-[4px_4px_0_#000] leading-relaxed">
+                                    MEMORY YANG TIDAK PUNYA ALBUM CUSTOM LAIN AKAN KEMBALI KE ALBUM SISTEM BELUM DIKELOMPOKKAN.
                                 </div>
-                                <div className="flex justify-end gap-3 border-t-[2.5px] border-black pt-4">
+                                <div className="border-t-[3.5px] border-black my-5 w-full opacity-100" />
+                                <div className="flex justify-end gap-3.5 pt-1.5">
                                     <button
                                         type="button"
                                         onClick={() => setPendingDeleteAlbum(null)}
                                         disabled={isSaving}
-                                        className="border-[2.5px] border-black bg-neutral-200 rounded-xl px-5 py-2.5 text-xs font-black uppercase text-black shadow-[3px_3px_0_#000] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] active:translate-y-px active:shadow-none transition-all disabled:opacity-60"
+                                        className="border-[3.5px] border-black bg-[#9c9c9c] rounded-[18px] px-6 py-2.5 text-xs font-black uppercase text-black shadow-[4px_4px_0_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0_#000] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all disabled:opacity-60"
                                     >
                                         Batal
                                     </button>
@@ -1193,7 +1234,7 @@ export default function AlbumsPage() {
                                         type="button"
                                         onClick={confirmDeleteAlbum}
                                         disabled={isSaving}
-                                        className="border-[2.5px] border-black bg-rose-400 rounded-xl px-5 py-2.5 text-xs font-black uppercase text-black shadow-[3px_3px_0_#000] hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000] active:translate-y-px active:shadow-none transition-all disabled:opacity-60"
+                                        className="border-[3.5px] border-black bg-[#c44d58] rounded-[18px] px-6 py-2.5 text-xs font-black uppercase text-black shadow-[4px_4px_0_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0_#000] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all disabled:opacity-60"
                                     >
                                         {isSaving ? "Menghapus..." : "Hapus Album"}
                                     </button>

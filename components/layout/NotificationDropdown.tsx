@@ -21,10 +21,11 @@ const timeAgo = (date: string) => {
 
 interface Notification {
     id: string
-    type: "COMMENT" | "REACTION" | "REPLY" | "COLLABORATION_INVITE" | "FOLLOW" | "PREMIUM_ACTIVATED"
+    type: "COMMENT" | "REACTION" | "REPLY" | "COLLABORATION_INVITE" | "FOLLOW" | "PREMIUM_ACTIVATED" | "ALBUM_INVITE" | "ALBUM_LEAVE"
     isRead: boolean
     createdAt: string
     memoryId: string | null
+    albumId: string | null
     actor: {
         id: string
         name: string
@@ -33,6 +34,10 @@ interface Notification {
     memory: {
         id: string
         title: string
+    } | null
+    album: {
+        id: string
+        name: string
     } | null
 }
 
@@ -171,6 +176,33 @@ export function NotificationDropdown() {
         }
     }
 
+    const handleAlbumCollaborationRespond = async (e: React.MouseEvent, notifId: string, albumId: string, action: "ACCEPT" | "DECLINE") => {
+        e.stopPropagation()
+        e.preventDefault()
+        setRespondingId(notifId)
+        try {
+            const res = await fetch(`/api/albums/${albumId}/respond`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action })
+            })
+
+            if (res.ok) {
+                await fetch("/api/notifications", {
+                    method: "DELETE",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ id: notifId })
+                })
+                setNotifications(prev => prev.filter(n => n.id !== notifId))
+                setUnreadCount(prev => Math.max(0, prev - 1))
+            }
+        } catch (err) {
+            console.error("Failed to respond to album invite", err)
+        } finally {
+            setRespondingId(null)
+        }
+    }
+
     return (
         <>
             <div className="relative" ref={dropdownRef}>
@@ -257,18 +289,21 @@ export function NotificationDropdown() {
                                                         <div className={`absolute -bottom-2 -right-2 w-6 h-6 rounded-lg flex items-center justify-center border-[2px] border-[var(--mm-border)] shadow-[2px_2px_0_var(--mm-shadow)] ${
                                                             n.type === "PREMIUM_ACTIVATED" ? "bg-[var(--mm-warning)]" :
                                                             n.type === "REACTION" ? "bg-[var(--mm-accent)]" :
-                                                            n.type === "COLLABORATION_INVITE" ? "bg-[var(--mm-secondary)]" :
+                                                            n.type === "COLLABORATION_INVITE" || n.type === "ALBUM_INVITE" ? "bg-[var(--mm-secondary)]" :
                                                             n.type === "FOLLOW" ? "bg-[var(--mm-lime)]" :
+                                                            n.type === "ALBUM_LEAVE" ? "bg-[var(--mm-accent)]" :
                                                             "bg-[var(--mm-primary)]"
                                                         }`}>
                                                             {n.type === "REACTION" ? (
                                                                 <Heart className="w-3 h-3 text-white fill-white" />
-                                                            ) : n.type === "COLLABORATION_INVITE" ? (
+                                                            ) : n.type === "COLLABORATION_INVITE" || n.type === "ALBUM_INVITE" ? (
                                                                 <Users className="w-3 h-3 text-black" />
                                                             ) : n.type === "FOLLOW" ? (
                                                                 <UserPlus className="w-3 h-3 text-black" />
                                                             ) : n.type === "PREMIUM_ACTIVATED" ? (
                                                                 <Crown className="w-3 h-3 text-black" />
+                                                            ) : n.type === "ALBUM_LEAVE" ? (
+                                                                <XCircle className="w-3 h-3 text-white fill-white" />
                                                             ) : (
                                                                 <MessageCircle className="w-3 h-3 text-black fill-black" />
                                                             )}
@@ -284,12 +319,22 @@ export function NotificationDropdown() {
                                                                 n.type === "REPLY" ? "membalas komentar Anda di" :
                                                                 n.type === "FOLLOW" ? "mulai mengikuti Anda" :
                                                                 n.type === "PREMIUM_ACTIVATED" ? "" :
+                                                                n.type === "ALBUM_INVITE" ? "mengundang Anda berkolaborasi di album" :
+                                                                n.type === "ALBUM_LEAVE" ? "keluar dari album kolaborasi" :
                                                                 "mengundang Anda berkolaborasi di"}
-                                                            {n.type !== "FOLLOW" && n.type !== "PREMIUM_ACTIVATED" && (
+                                                            {n.type !== "FOLLOW" && n.type !== "PREMIUM_ACTIVATED" && n.type !== "ALBUM_INVITE" && n.type !== "ALBUM_LEAVE" && (
                                                                 <>
                                                                     {" "}
                                                                     <span className="font-black text-[var(--mm-accent)]">
                                                                         &quot;{n.memory?.title || "sebuah kenangan"}&quot;
+                                                                    </span>
+                                                                </>
+                                                            )}
+                                                            {(n.type === "ALBUM_INVITE" || n.type === "ALBUM_LEAVE") && (
+                                                                <>
+                                                                    {" "}
+                                                                    <span className="font-black text-[var(--mm-secondary)]">
+                                                                        &quot;{n.album?.name || "sebuah album"}&quot;
                                                                     </span>
                                                                 </>
                                                             )}
@@ -323,6 +368,27 @@ export function NotificationDropdown() {
                                                             </div>
                                                         )}
 
+                                                        {n.type === "ALBUM_INVITE" && n.albumId && (
+                                                            <div className="flex items-center gap-2 mt-3" onClick={e => e.stopPropagation()}>
+                                                                <button
+                                                                    disabled={respondingId === n.id}
+                                                                    onClick={(e) => handleAlbumCollaborationRespond(e, n.id, n.albumId!, "ACCEPT")}
+                                                                    className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black bg-[var(--mm-lime)] border-[2px] border-[var(--mm-border)] text-[var(--mm-ink)] shadow-[2px_2px_0_var(--mm-shadow)] hover:-translate-y-0.5 hover:shadow-[3px_3px_0_var(--mm-shadow)] active:translate-y-0 active:shadow-none transition-all disabled:opacity-50 uppercase"
+                                                                >
+                                                                    {respondingId === n.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <CheckCircle2 className="w-3 h-3" />}
+                                                                    Terima
+                                                                </button>
+                                                                <button
+                                                                    disabled={respondingId === n.id}
+                                                                    onClick={(e) => handleAlbumCollaborationRespond(e, n.id, n.albumId!, "DECLINE")}
+                                                                    className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black bg-[var(--mm-surface)] border-[2px] border-[var(--mm-border)] text-[var(--mm-ink)] shadow-[2px_2px_0_var(--mm-shadow)] hover:bg-[var(--mm-accent)] hover:text-white hover:-translate-y-0.5 hover:shadow-[3px_3px_0_var(--mm-shadow)] active:translate-y-0 active:shadow-none transition-all disabled:opacity-50 uppercase"
+                                                                >
+                                                                    <XCircle className="w-3 h-3" />
+                                                                    Tolak
+                                                                </button>
+                                                            </div>
+                                                        )}
+
                                                         {/* Premium claim action */}
                                                         {n.type === "PREMIUM_ACTIVATED" && (
                                                             <div className="mt-3" onClick={e => e.stopPropagation()}>
@@ -342,7 +408,7 @@ export function NotificationDropdown() {
                                                     </div>
 
                                                     {/* Delete */}
-                                                    {n.type !== "COLLABORATION_INVITE" && n.type !== "PREMIUM_ACTIVATED" && (
+                                                    {n.type !== "COLLABORATION_INVITE" && n.type !== "ALBUM_INVITE" && n.type !== "PREMIUM_ACTIVATED" && (
                                                         <button
                                                             onClick={(e) => deleteNotification(e, n.id)}
                                                             className="shrink-0 self-center p-2 rounded-lg border-[2px] border-transparent hover:border-[var(--mm-border)] bg-[var(--mm-surface)] hover:bg-[var(--mm-accent)] text-[var(--mm-ink)] hover:text-white hover:shadow-[2px_2px_0_var(--mm-shadow)] transition-all opacity-0 group-hover:opacity-100 relative z-30"
@@ -354,9 +420,13 @@ export function NotificationDropdown() {
                                                 </div>
 
                                                 {/* Link Wrapper */}
-                                                {n.type !== "COLLABORATION_INVITE" && n.type !== "PREMIUM_ACTIVATED" && (
+                                                {n.type !== "COLLABORATION_INVITE" && n.type !== "ALBUM_INVITE" && n.type !== "PREMIUM_ACTIVATED" && (
                                                     <Link
-                                                        href={n.type === "FOLLOW" ? `/profile/${n.actor.id}` : (n.memory ? `/memories/${n.memory.id}` : "/map")}
+                                                        href={
+                                                            n.type === "FOLLOW" ? `/profile/${n.actor.id}` :
+                                                            n.type === "ALBUM_LEAVE" ? `/albums/${n.albumId}` :
+                                                            (n.memory ? `/memories/${n.memory.id}` : "/map")
+                                                        }
                                                         onClick={() => {
                                                             if (!n.isRead) markAsRead(n.id)
                                                             setIsOpen(false)

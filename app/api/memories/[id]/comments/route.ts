@@ -54,12 +54,16 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         if (!rl.success) return rateLimitResponse(rl.reset)
 
 
+        const { voiceUrl, voiceDuration } = body
+
         const comment = await prisma.comment.create({
             data: {
                 content,
                 userId: session.user.id,
                 memoryId: id,
-                parentId: parentId || null
+                parentId: parentId || null,
+                voiceUrl: typeof voiceUrl === "string" ? voiceUrl : null,
+                voiceDuration: typeof voiceDuration === "number" ? voiceDuration : null
             },
             include: {
                 user: { select: { id: true, name: true, image: true, premiumExpiresAt: true, isVerified: true } },

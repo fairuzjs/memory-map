@@ -81,12 +81,21 @@ interface DashboardMemory {
 
 interface DashboardAlbum {
     id: string
+    userId?: string
     name: string
     description?: string | null
     coverImage?: string | null
     icon?: string | null
     createdAt: string
     _count: { memories: number }
+    collaborators?: {
+        id: string
+        user: {
+            id: string
+            name: string
+            image: string | null
+        }
+    }[]
 }
 
 interface StreakApiResponse {
@@ -462,9 +471,18 @@ export default function DashboardPage() {
             .catch(() => { })
 
         fetch("/api/albums?sort=terbaru")
-            .then(r => r.json())
-            .then((d: DashboardAlbum[]) => setAlbums(d))
-            .catch(() => {})
+            .then(r => {
+                if (!r.ok) throw new Error("Gagal mengambil data album")
+                return r.json()
+            })
+            .then((d: any) => {
+                if (Array.isArray(d)) {
+                    setAlbums(d)
+                } else {
+                    setAlbums([])
+                }
+            })
+            .catch(() => setAlbums([]))
     }, [session?.user?.id])
 
     if (loading) return <DashboardSkeleton />
@@ -649,14 +667,41 @@ export default function DashboardPage() {
                                             {album.name}
                                         </h3>
                                     </div>
-                                    <span className="shrink-0 border-[1.5px] border-[var(--mm-border)] bg-[var(--mm-warning)] px-2 py-0.5 text-[9px] font-black uppercase leading-none shadow-[1.5px_1.5px_0_var(--mm-shadow)] rounded-md">
-                                        Baru
-                                    </span>
+                                    <div className="flex gap-1 shrink-0">
+                                        {(album.userId !== session?.user?.id || (album.collaborators && album.collaborators.length > 0)) && (
+                                            <span className="shrink-0 border-[1.5px] border-[var(--mm-border)] bg-[var(--mm-success)] px-2 py-0.5 text-[9px] font-black uppercase leading-none shadow-[1.5px_1.5px_0_var(--mm-shadow)] rounded-md">
+                                                Shared
+                                            </span>
+                                        )}
+                                        <span className="shrink-0 border-[1.5px] border-[var(--mm-border)] bg-[var(--mm-warning)] px-2 py-0.5 text-[9px] font-black uppercase leading-none shadow-[1.5px_1.5px_0_var(--mm-shadow)] rounded-md">
+                                            Baru
+                                        </span>
+                                    </div>
                                 </div>
 
                                 <p className="line-clamp-2 min-h-[30px] text-[11px] font-bold leading-relaxed text-black/55 pr-1">
                                     {album.description || "Belum ada deskripsi album."}
                                 </p>
+
+                                {/* Avatar Stack kontributor */}
+                                {album.collaborators && album.collaborators.length > 0 && (
+                                    <div className="flex items-center gap-1.5 mt-1.5 mb-1">
+                                        <div className="flex -space-x-1.5 overflow-hidden">
+                                            {album.collaborators.slice(0, 4).map(c => (
+                                                <img
+                                                    key={c.user.id}
+                                                    className="inline-block h-5.5 w-5.5 rounded-full border-[1.5px] border-black object-cover"
+                                                    src={c.user.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.user.id}`}
+                                                    alt={c.user.name}
+                                                    title={c.user.name}
+                                                />
+                                            ))}
+                                        </div>
+                                        {album.collaborators.length > 4 && (
+                                            <span className="text-[9px] font-black text-black/55">+{album.collaborators.length - 4}</span>
+                                        )}
+                                    </div>
+                                )}
 
                                 <div className="mt-auto flex items-end justify-between gap-3 border-t-[2px] border-dashed border-black/20 pt-1.5">
                                     <span className="text-[9px] font-black uppercase leading-none text-black/45">

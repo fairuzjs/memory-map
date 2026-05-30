@@ -113,12 +113,29 @@ export async function GET(req: NextRequest) {
             })
         }
 
-        // ── 8. Fetch semua album dengan memory count ──
-        const whereClause: Prisma.AlbumWhereInput = { userId }
+        // ── 8. Fetch semua album dengan memory count dan data kolaborator ──
+        const whereClause: Prisma.AlbumWhereInput = {
+            OR: [
+                { userId },
+                {
+                    collaborators: {
+                        some: {
+                            userId,
+                            status: "ACCEPTED"
+                        }
+                    }
+                }
+            ]
+        }
+
         if (search) {
-            whereClause.OR = [
-                { name: { contains: search, mode: "insensitive" } },
-                { description: { contains: search, mode: "insensitive" } }
+            whereClause.AND = [
+                {
+                    OR: [
+                        { name: { contains: search, mode: "insensitive" } },
+                        { description: { contains: search, mode: "insensitive" } }
+                    ]
+                }
             ]
         }
 
@@ -130,6 +147,20 @@ export async function GET(req: NextRequest) {
                 },
                 _count: {
                     select: { memories: true }
+                },
+                collaborators: {
+                    where: {
+                        status: "ACCEPTED"
+                    },
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                name: true,
+                                image: true
+                            }
+                        }
+                    }
                 }
             }
         })

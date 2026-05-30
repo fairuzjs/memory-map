@@ -12,7 +12,15 @@ const supabase = createClient(
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024 // 5MB
 const MAX_AUDIO_SIZE = 4 * 1024 * 1024 // 4MB
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"]
-const ALLOWED_AUDIO_TYPES = ["audio/mpeg"]
+const ALLOWED_AUDIO_TYPES = [
+    "audio/mpeg",
+    "audio/webm",
+    "audio/ogg",
+    "audio/wav",
+    "audio/x-wav",
+    "audio/mp4",
+    "audio/aac"
+]
 
 // Map MIME type ke ekstensi file yang aman
 // Mengabaikan nama file dari client agar tidak bisa dimanipulasi
@@ -22,6 +30,12 @@ const MIME_TO_EXT: Record<string, string> = {
     "image/webp": "webp",
     "image/gif":  "gif",
     "audio/mpeg": "mp3",
+    "audio/webm": "webm",
+    "audio/ogg":  "ogg",
+    "audio/wav":  "wav",
+    "audio/x-wav": "wav",
+    "audio/mp4":  "m4a",
+    "audio/aac":  "aac"
 }
 
 import sharp from "sharp"
@@ -51,7 +65,7 @@ export async function POST(req: Request) {
     const isImage = ALLOWED_IMAGE_TYPES.includes(file.type)
     const isAudio = ALLOWED_AUDIO_TYPES.includes(file.type)
     if (!isImage && !isAudio) {
-      return NextResponse.json({ error: "Invalid file type. Only JPG, PNG, WEBP, GIF, and MP3 are allowed." }, { status: 400 })
+      return NextResponse.json({ error: "Invalid file type. Only standard images and audio formats (MP3, WEBM, OGG, WAV) are allowed." }, { status: 400 })
     }
 
     // SECURITY CHECK 4: Batasi Ukuran File (5MB image, 4MB audio)

@@ -31,15 +31,15 @@ type CardTheme = {
     footerTextColor: string
 }
 
-const emotionMap: Record<string, { icon: string; bg: string; border: string }> = {
-    HAPPY: { icon: "🌟", bg: "bg-[#FFFF00]", border: "border-black" },
-    SAD: { icon: "💧", bg: "bg-[#00FFFF]", border: "border-black" },
-    NOSTALGIC: { icon: "🕰️", bg: "bg-[#FF9900]", border: "border-black" },
-    EXCITED: { icon: "🔥", bg: "bg-[#FF00FF]", border: "border-black" },
-    PEACEFUL: { icon: "🍃", bg: "bg-[#00FF00]", border: "border-black" },
-    GRATEFUL: { icon: "🙏", bg: "bg-[#E5E5E5]", border: "border-black" },
-    ROMANTIC: { icon: "❤️", bg: "bg-[#FF3366]", border: "border-black" },
-    ADVENTUROUS: { icon: "🏕️", bg: "bg-[#9900FF]", border: "border-black" },
+const emotionMap: Record<string, { icon: string; bg: string; text: string }> = {
+    HAPPY:       { icon: "🌟", bg: "bg-amber-100",  text: "text-amber-700"  },
+    SAD:         { icon: "💧", bg: "bg-sky-100",    text: "text-sky-700"    },
+    NOSTALGIC:   { icon: "🕰️", bg: "bg-orange-100", text: "text-orange-700" },
+    EXCITED:     { icon: "🔥", bg: "bg-rose-100",   text: "text-rose-700"   },
+    PEACEFUL:    { icon: "🍃", bg: "bg-emerald-100",text: "text-emerald-700"},
+    GRATEFUL:    { icon: "🙏", bg: "bg-neutral-100", text: "text-neutral-600"},
+    ROMANTIC:    { icon: "❤️", bg: "bg-pink-100",   text: "text-pink-700"   },
+    ADVENTUROUS: { icon: "🏕️", bg: "bg-violet-100", text: "text-violet-700" },
 }
 
 function parseTheme(rawValue: string | null | undefined): CardTheme | null {
@@ -89,29 +89,29 @@ export function MemoryCard({ memory, isCollaboration, placements = [] }: MemoryC
 
     return (
         <div
-            className="group relative flex flex-col h-full overflow-hidden transition-all duration-300 hover:translate-x-[-2px] hover:translate-y-[-2px]"
+            className="group relative flex flex-col h-full overflow-hidden transition-all duration-300 rounded-2xl"
             style={{
-                background: theme?.background ?? "#FFFDF0",
-                border: theme?.border ?? "3px solid #000",
-                borderRadius: theme?.radius ?? "0px",
-                boxShadow: theme?.shadow ?? "6px 6px 0 #000",
+                background: theme?.background ?? "#FFFFFF",
+                border: theme?.border ?? "1.5px solid rgba(0,0,0,0.08)",
+                borderRadius: theme?.radius ?? "16px",
+                boxShadow: theme?.shadow ?? "0 2px 12px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.05)",
             }}
         >
-            {/* ── Photo area ───────────────────────────────────────────────────── */}
+            {/* ── Photo area ─────────────────────────────────────── */}
             {coverUrl && (
                 <div
-                    className="relative w-full h-48 shrink-0 overflow-hidden border-b-[3px] border-black"
-                    style={{ borderRadius: theme ? `${theme.radius} ${theme.radius} 0 0` : "0px" }}
+                    className="relative w-full h-48 shrink-0 overflow-hidden"
+                    style={{ borderRadius: theme ? `${theme.radius} ${theme.radius} 0 0` : "16px 16px 0 0" }}
                 >
                     <Image
                         src={coverUrl}
                         alt={memory.title}
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                        className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
                         loading="lazy"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent pointer-events-none" />
 
                     {/* Sticker placements */}
                     {placements.map(p => {
@@ -140,68 +140,71 @@ export function MemoryCard({ memory, isCollaboration, placements = [] }: MemoryC
                         )
                     })}
 
-                    {/* Collab badge — di atas foto */}
+                    {/* Collab badge */}
                     {collab && (
-                        <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5 px-2.5 py-1 bg-[#FF00FF] border-[2px] border-black shadow-[2px_2px_0_#000]">
+                        <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5 px-2 py-1 bg-[#FF00FF]/90 backdrop-blur-sm rounded-full">
                             <Users className="w-3 h-3 text-white" />
-                            <span className="text-[10px] font-black text-white tracking-wider uppercase">Collab</span>
+                            <span className="text-[9px] font-black text-white tracking-wider uppercase">Collab</span>
                         </div>
                     )}
 
                     {/* Music badge */}
                     {(memory.audioUrl || memory.spotifyTrackId) && (
-                        <div 
-                            className={`absolute top-3 left-3 z-10 flex items-center gap-1 px-2 py-1 border-[2px] border-black shadow-[2px_2px_0_#000] ${
-                                memory.spotifyTrackId 
-                                    ? "bg-[#1DB954]" 
-                                    : "bg-[#00FFFF]"
-                            }`} 
+                        <div
+                            className={`absolute top-3 left-3 z-10 flex items-center gap-1 px-2 py-1 rounded-full backdrop-blur-sm ${
+                                memory.spotifyTrackId
+                                    ? "bg-[#1DB954]/90"
+                                    : "bg-black/60"
+                            }`}
                             title={memory.spotifyTrackId ? "Mempunyai lagu Spotify" : "Memiliki musik"}
                         >
-                            <Music className="w-3 h-3 text-black" />
+                            <Music className="w-3 h-3 text-white" />
                         </div>
                     )}
                 </div>
             )}
 
-            {/* ── Content area ─────────────────────────────────────────────────── */}
-            <div className={`relative flex flex-col flex-1 ${theme?.contentPadding ?? "p-5"}`}>
+            {/* ── Content area ──────────────────────────────────── */}
+            <div className={`relative flex flex-col flex-1 ${theme?.contentPadding ?? "p-4"}`}>
 
-                {/* Collab badge — jika tidak ada foto, tampil di sini */}
+                {/* Collab badge — jika tidak ada foto */}
                 {collab && !coverUrl && (
                     <div className="flex justify-end mb-3">
-                        <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#FF00FF] border-[2px] border-black shadow-[2px_2px_0_#000]">
-                            <Users className="w-3 h-3 text-white" />
-                            <span className="text-[10px] font-black text-white tracking-wider uppercase">Collab</span>
+                        <div className="flex items-center gap-1.5 px-2 py-1 bg-[#FF00FF]/15 border border-[#FF00FF]/30 rounded-full">
+                            <Users className="w-3 h-3 text-[#FF00FF]" />
+                            <span className="text-[9px] font-black text-[#FF00FF] tracking-wider uppercase">Collab</span>
                         </div>
                     </div>
                 )}
 
-                {/* Emotion + Title row */}
-                <div className="flex items-start gap-3 mb-3">
-                    <div className={`shrink-0 w-10 h-10 flex items-center justify-center border-[2px] shadow-[2px_2px_0_#000] ${emotion.bg} ${emotion.border}`}>
-                        <span className="text-xl leading-none">{emotion.icon}</span>
+                {/* Emotion chip + Title */}
+                <div className="flex items-start gap-2.5 mb-2.5">
+                    <div className={`shrink-0 w-9 h-9 flex items-center justify-center rounded-xl ${emotion.bg}`}>
+                        <span className="text-lg leading-none">{emotion.icon}</span>
                     </div>
-                    <div className="min-w-0 flex-1">
+                    <div className="min-w-0 flex-1 pt-0.5">
                         <p
-                            className="text-[15px] font-black line-clamp-1 leading-snug uppercase tracking-tight"
-                            style={{ color: theme?.titleColor ?? "#000" }}
+                            className="text-[13px] font-black line-clamp-1 leading-snug uppercase tracking-tight"
+                            style={{ color: theme?.titleColor ?? "#111" }}
                         >
                             {memory.title}
                         </p>
-                        <div className="flex items-center gap-3 text-[11px] font-bold mt-1" style={{ color: theme?.storyColor ?? "#555" }}>
+                        <div
+                            className="flex items-center gap-2.5 text-[10px] font-semibold mt-0.5 flex-wrap"
+                            style={{ color: theme?.storyColor ?? "#888" }}
+                        >
                             <span className="flex items-center gap-1">
-                                <Calendar className="w-3 h-3 shrink-0 text-black" />
+                                <Calendar className="w-3 h-3 shrink-0" />
                                 {formatDate(memory.date)}
                             </span>
                             {memory.locationName && (
                                 <Link
                                     href={`/map?lat=${memory.latitude}&lng=${memory.longitude}&memoryId=${memory.id}`}
-                                    className="flex items-center gap-1 min-w-0 group/loc relative z-30 hover:text-[#FF00FF] transition-colors"
+                                    className="flex items-center gap-1 min-w-0 relative z-30 hover:text-[#FF00FF] transition-colors"
                                     onClick={e => e.stopPropagation()}
                                 >
-                                    <MapPin className="w-3 h-3 shrink-0 group-hover/loc:animate-bounce text-black" />
-                                    <span className="truncate max-w-[90px]">{memory.locationName}</span>
+                                    <MapPin className="w-3 h-3 shrink-0" />
+                                    <span className="truncate max-w-[80px]">{memory.locationName}</span>
                                 </Link>
                             )}
                         </div>
@@ -210,14 +213,17 @@ export function MemoryCard({ memory, isCollaboration, placements = [] }: MemoryC
 
                 {/* Story */}
                 <p
-                    className="flex-1 text-[13px] font-medium line-clamp-3 leading-relaxed mb-4"
-                    style={{ color: theme?.storyColor ?? "#333" }}
+                    className="flex-1 text-[12px] font-medium line-clamp-2 leading-relaxed mb-3"
+                    style={{ color: theme?.storyColor ?? "#555" }}
                 >
                     {memory.story}
                 </p>
 
                 {/* Footer */}
-                <div className={`flex items-center justify-between pt-3.5 border-t-[3px] border-black ${theme?.footerBorder ?? ""}`}>
+                <div
+                    className="flex items-center justify-between pt-3 mt-auto"
+                    style={{ borderTop: "1px solid rgba(0,0,0,0.07)" }}
+                >
                     <Link
                         href={`/profile/${memory.user.id}`}
                         className="relative z-30 flex items-center gap-2 group/author"
@@ -226,23 +232,23 @@ export function MemoryCard({ memory, isCollaboration, placements = [] }: MemoryC
                         <Image
                             src={memory.user.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${memory.user.id}`}
                             alt={memory.user.name}
-                            width={28}
-                            height={28}
-                            className="border-[2px] border-black group-hover/author:border-[#FF00FF] transition-colors object-cover"
+                            width={24}
+                            height={24}
+                            className="rounded-full object-cover ring-1 ring-black/10 group-hover/author:ring-[#FF00FF]/50 transition-all"
                             unoptimized={!memory.user.image || memory.user.image.startsWith("https://api.dicebear.com")}
                         />
-                        <span className={`text-[12px] font-black uppercase transition-colors group-hover/author:text-[#FF00FF] ${theme ? (isDarkTheme(theme) ? "text-white" : "text-black") : "text-black"}`}>
+                        <span className={`text-[11px] font-black uppercase transition-colors group-hover/author:text-[#FF00FF] ${theme ? (isDarkTheme(theme) ? "text-white" : "text-black/70") : "text-black/70"}`}>
                             {memory.user.name}
                         </span>
                     </Link>
 
-                    <div className={`flex items-center gap-3 font-black ${theme?.footerTextColor ?? "text-black"}`}>
-                        <span className="flex items-center gap-1 text-[12px]">
-                            <Heart className="w-4 h-4 text-black" />
+                    <div className={`flex items-center gap-2.5 ${theme?.footerTextColor ?? "text-black/40"}`}>
+                        <span className="flex items-center gap-1 text-[11px] font-semibold">
+                            <Heart className="w-3.5 h-3.5" />
                             {memory._count?.reactions ?? 0}
                         </span>
-                        <span className="flex items-center gap-1 text-[12px]">
-                            <MessageCircle className="w-4 h-4 text-black" />
+                        <span className="flex items-center gap-1 text-[11px] font-semibold">
+                            <MessageCircle className="w-3.5 h-3.5" />
                             {memory._count?.comments ?? 0}
                         </span>
                     </div>
