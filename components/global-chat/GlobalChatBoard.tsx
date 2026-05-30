@@ -123,7 +123,7 @@ export function GlobalChatBoard() {
             } catch {
                 // Silently fail untuk polling
             }
-        }, 3000)
+        }, 10000)
 
         return () => {
             clearInterval(pollingInterval)
