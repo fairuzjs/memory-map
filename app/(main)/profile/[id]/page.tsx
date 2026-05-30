@@ -24,7 +24,7 @@ import { getBannerClass } from "@/components/profile/ProfileUtils"
 export default function UserProfilePage() {
     const { id } = useParams()
     const router = useRouter()
-    const { data: session, update: updateSession } = useSession()
+    const { data: session, status, update: updateSession } = useSession()
 
     const [user, setUser] = useState<any>(null)
     const [memories, setMemories] = useState<any[]>([])
@@ -37,10 +37,15 @@ export default function UserProfilePage() {
     const [followsModalType, setFollowsModalType] = useState<"followers" | "following">("followers")
 
     useEffect(() => {
+        if (status === "loading") return;
+
         setLoading(true)
+        const isOwner = session?.user?.id === id;
+        const publicQuery = isOwner ? "" : "&public=true";
+
         Promise.all([
             fetch(`/api/users/${id}`).then(res => res.ok ? res.json() : null),
-            fetch(`/api/memories?userId=${id}&public=true`).then(res => res.ok ? res.json() : [])
+            fetch(`/api/memories?userId=${id}${publicQuery}`).then(res => res.ok ? res.json() : [])
         ])
             .then(([userData, userMemories]) => {
                 if (!userData) { router.push("/404"); return }
@@ -52,7 +57,7 @@ export default function UserProfilePage() {
                 toast.error("Gagal memuat profil")
                 router.push("/404")
             })
-    }, [id, router])
+    }, [id, router, session?.user?.id, status])
 
     const handleFollow = async () => {
         if (!session?.user?.id) {
