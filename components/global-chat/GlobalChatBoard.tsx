@@ -53,34 +53,16 @@ export function GlobalChatBoard() {
         }
 
         fetchMessages()
-        
-        let pollingInterval: NodeJS.Timeout | null = null
-        let isRealtimeActive = false
 
-        // Fallback polling — aktif hanya jika Realtime gagal
-        const startPolling = () => {
-            if (pollingInterval) return
-            console.warn("[GlobalChat] Realtime tidak aktif, memulai fallback polling...")
-            pollingInterval = setInterval(() => {
-                fetchMessages(true)
-            }, 5000)
-        }
-
-        const stopPolling = () => {
-            if (pollingInterval) {
-                clearInterval(pollingInterval)
-                pollingInterval = null
-            }
-        }
-
-        // Supabase Realtime Subscription
+        // ──────────────────────────────────────────────
+        // 1. Supabase Realtime — instant delivery (best-effort)
+        // ──────────────────────────────────────────────
         const channel = supabase
             .channel('global-chat')
             .on(
                 'postgres_changes',
                 { event: 'INSERT', schema: 'public', table: 'global_chat_messages' },
                 async (payload) => {
-                    // Jika dihapus sejak awal (jarang terjadi tapi aman), abaikan
                     if (payload.new.isDeleted) return
                     
                     try {
@@ -89,7 +71,6 @@ export function GlobalChatBoard() {
                             const data = await res.json()
                             if (data.message) {
                                 setMessages(prev => {
-                                    // Cek duplikasi jika dikirim oleh diri sendiri dan sudah di-append
                                     if (prev.find(m => m.id === data.message.id)) return prev
                                     return [...prev, data.message]
                                 })
@@ -112,27 +93,40 @@ export function GlobalChatBoard() {
             )
             .subscribe((status) => {
                 console.log("[GlobalChat] Realtime status:", status)
-                if (status === 'SUBSCRIBED') {
-                    isRealtimeActive = true
-                    stopPolling()
-                    console.log("[GlobalChat] ✅ Realtime aktif")
-                } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-                    isRealtimeActive = false
-                    console.error("[GlobalChat] ❌ Realtime gagal, status:", status)
-                    startPolling()
-                }
             })
 
-        // Beri waktu 5 detik untuk koneksi Realtime, jika gagal mulai polling
-        const realtimeTimeout = setTimeout(() => {
-            if (!isRealtimeActive) {
-                startPolling()
+        // ──────────────────────────────────────────────
+        // 2. Polling — SELALU aktif sebagai safety net
+        //    Hanya update state jika ada perubahan nyata
+        // ──────────────────────────────────────────────
+        const pollingInterval = setInterval(async () => {
+            try {
+                const res = await fetch("/api/global-chat")
+                if (!res.ok) return
+                const data = await res.json()
+                const incoming = data.messages as ChatMessage[]
+
+                setMessages(prev => {
+                    const prevLastId = prev.length > 0 ? prev[prev.length - 1].id : null
+                    const newLastId = incoming.length > 0 ? incoming[incoming.length - 1].id : null
+
+                    // Hanya update jika ada perubahan (jumlah berbeda atau pesan terakhir berbeda)
+                    if (prev.length !== incoming.length || prevLastId !== newLastId) {
+                        // Ada pesan baru → auto-scroll
+                        if (incoming.length > prev.length) {
+                            setTimeout(scrollToBottom, 100)
+                        }
+                        return incoming
+                    }
+                    return prev // Tidak ada perubahan, skip re-render
+                })
+            } catch {
+                // Silently fail untuk polling
             }
-        }, 5000)
+        }, 3000)
 
         return () => {
-            clearTimeout(realtimeTimeout)
-            stopPolling()
+            clearInterval(pollingInterval)
             supabase.removeChannel(channel)
         }
     }, [currentUserId, fetchMessages, scrollToBottom])
