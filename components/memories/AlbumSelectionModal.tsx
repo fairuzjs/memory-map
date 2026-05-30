@@ -130,6 +130,13 @@ export function AlbumSelectionModal({ memoryId, memoryPhotos = [], onClose }: Al
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files || e.target.files.length === 0) return
         const file = e.target.files[0]
+        
+        // Client-side validations
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error("Ukuran file maksimal 5MB")
+            if (fileInputRef.current) fileInputRef.current.value = ""
+            return
+        }
 
         setIsUploadingCover(true)
         const formData = new FormData()
@@ -141,7 +148,10 @@ export function AlbumSelectionModal({ memoryId, memoryPhotos = [], onClose }: Al
                 method: "POST",
                 body: formData,
             })
-            if (!res.ok) throw new Error("Upload cover gagal")
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.error || "Upload cover gagal")
+            }
             const data = await res.json() as { url?: string }
             if (!data.url) throw new Error("Upload tidak mengembalikan URL cover")
             setNewAlbumCover(data.url)
@@ -465,7 +475,7 @@ export function AlbumSelectionModal({ memoryId, memoryPhotos = [], onClose }: Al
                                                 type="file"
                                                 ref={fileInputRef}
                                                 onChange={handleFileUpload}
-                                                accept="image/*"
+                                                accept="image/jpeg, image/png, image/webp, image/gif"
                                                 className="hidden"
                                             />
                                             {newAlbumCover && (

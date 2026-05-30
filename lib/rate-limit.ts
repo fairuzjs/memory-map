@@ -154,4 +154,7 @@ export const RATE_LIMITS = {
 
     /** Pembelian shop: 20 kali per jam per user */
     SHOP_PURCHASE: { limit: 20, windowMs: 60 * 60_000 },
+
+    /** Global Chat: 10 kali per menit per user */
+    GLOBAL_CHAT: { limit: 10, windowMs: 60 * 1000 },
 } as const

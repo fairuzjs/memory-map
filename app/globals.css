@@ -109,6 +109,26 @@
   --mm-soft-cyan: #FFDDD2;
 }
 
+/* ── Buttermilk 🍼 ───────────────────────────────────────────────────────────── */
+[data-theme="buttermilk"] {
+  --mm-bg: #FAFAFA;
+  --mm-bg-95: rgba(250, 250, 250, 0.95);
+  --mm-surface: #FFFFFF;
+  --mm-primary: #FFD633;
+  --mm-secondary: #FFEB9A;
+  --mm-accent: #B4982A;
+  --mm-tertiary: #FFF9E6;
+  --mm-success: #86efac;
+  --mm-warning: #FFEB9A;
+  --mm-danger: #FF3300;
+  --mm-lime: #FFE259;
+  --mm-ink: #000000;
+  --mm-ink-muted: rgba(0, 0, 0, 0.6);
+  --mm-border: #000000;
+  --mm-shadow: #000000;
+  --mm-soft-cyan: #FFF5CC;
+}
+
 @theme {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-outfit: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;

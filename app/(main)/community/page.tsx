@@ -5,14 +5,15 @@ import { motion, AnimatePresence } from "framer-motion"
 import {
     Globe, Loader2, MapPin, Image as ImageIcon,
     Search, X, Users, UserRound, ChevronRight,
-    Clock, TrendingUp
+    Clock, TrendingUp, MessageSquareText
 } from "lucide-react"
 import Link from "next/link"
 import { getMemoryCover } from "@/lib/utils"
+import { GlobalChatBoard } from "@/components/global-chat/GlobalChatBoard"
 
 // ─── Types & Constants ────────────────────────────────────────────────────────
 
-type Tab  = "memories" | "explorers"
+type Tab  = "memories" | "explorers" | "chat"
 type Sort = "latest"   | "popular"
 
 const EMOTIONS = [
@@ -568,23 +569,23 @@ export default function CommunityPage() {
                     transition={{ duration: 0.3, delay: 0.1 }}
                     className="mb-6"
                 >
-                    <div className="flex w-full items-center gap-2 rounded-2xl border-[3px] border-black bg-white p-2 shadow-[4px_4px_0_#000] sm:inline-flex sm:w-auto">
+                    <div className="flex flex-wrap w-full items-center gap-2 rounded-2xl border-[3px] border-black bg-white p-2 shadow-[4px_4px_0_#000] sm:inline-flex sm:w-auto sm:flex-nowrap">
                         {([
-                            { id: "memories"  as Tab, label: "Memories",  icon: <Globe className="w-5 h-5" />, activeBg: "bg-[var(--mm-warning)]" },
-                            { id: "explorers" as Tab, label: "Explorers", icon: <Users className="w-5 h-5" />, activeBg: "bg-[var(--mm-tertiary)]" },
+                            { id: "memories" as Tab, label: "Memories", activeBg: "bg-[var(--mm-warning)]" },
+                            { id: "explorers" as Tab, label: "Explorers", activeBg: "bg-[var(--mm-tertiary)]" },
+                            { id: "chat" as Tab, label: "Global Chat", activeBg: "bg-[var(--mm-success)]" },
                         ] as const).map((tab) => {
                             const active = activeTab === tab.id
                             return (
                                 <button
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id)}
-                                    className={`flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-[14px] font-black uppercase transition-all sm:flex-none sm:justify-start sm:px-6 sm:text-[15px] border-[2px] border-transparent ${
+                                    className={`flex min-h-12 flex-1 items-center justify-center gap-1.5 sm:gap-2 rounded-xl px-2 sm:px-6 py-2.5 text-[11px] sm:text-[15px] font-black uppercase transition-all sm:flex-none sm:justify-start border-[2px] border-transparent ${
                                         active
                                             ? `${tab.activeBg} text-black border-black shadow-[2.5px_2.5px_0_#000]`
                                             : "bg-transparent text-black hover:bg-[color-mix(in_srgb,var(--mm-primary)_8%,transparent)] hover:border-black/20"
                                     }`}
                                 >
-                                    <span>{tab.icon}</span>
                                     {tab.label}
                                 </button>
                             )
@@ -601,7 +602,7 @@ export default function CommunityPage() {
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.18 }}
                     >
-                        {activeTab === "memories" ? <MemoriesFeedTab /> : <ExplorersTab />}
+                        {activeTab === "memories" ? <MemoriesFeedTab /> : activeTab === "explorers" ? <ExplorersTab /> : <GlobalChatBoard />}
                     </motion.div>
                 </AnimatePresence>
             </div>

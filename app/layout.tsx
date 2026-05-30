@@ -21,7 +21,7 @@ const themeScript = `
 (function(){
   try {
     var t = localStorage.getItem('mm-theme');
-    if (t && ['classic','candy','ocean','matcha','sunset'].includes(t)) {
+    if (t && ['classic','candy','ocean','matcha','sunset','buttermilk'].includes(t)) {
       document.documentElement.dataset.theme = t;
     } else {
       document.documentElement.dataset.theme = 'classic';

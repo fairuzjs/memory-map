@@ -23,6 +23,15 @@ export function PhotoUploader({ photos, onChange, isPublic, maxPhotos = 3 }: Pho
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files || e.target.files.length === 0) return
 
+        // Validate size of each file
+        for (let i = 0; i < e.target.files.length; i++) {
+            if (e.target.files[i].size > 5 * 1024 * 1024) {
+                toast.error(`File ${e.target.files[i].name} melebihi batas 5MB`);
+                if (fileInputRef.current) fileInputRef.current.value = "";
+                return;
+            }
+        }
+
         if (photos.length + e.target.files.length > maxPhotos) {
             toast.error(`Maksimal ${maxPhotos} foto diperbolehkan`)
             if (fileInputRef.current) fileInputRef.current.value = ""
@@ -149,7 +158,7 @@ export function PhotoUploader({ photos, onChange, isPublic, maxPhotos = 3 }: Pho
                 type="file"
                 ref={fileInputRef}
                 onChange={handleFileChange}
-                accept="image/*"
+                accept="image/jpeg, image/png, image/webp, image/gif"
                 multiple
                 className="hidden"
             />

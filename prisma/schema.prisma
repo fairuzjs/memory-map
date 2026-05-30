@@ -62,6 +62,8 @@ model User {
   albumCollaborators AlbumCollaborator[]
   albumStickyNotes   AlbumStickyNote[]
   albumChatMessages  AlbumChatMessage[]
+  globalChatMessages        GlobalChatMessage[] @relation("UserGlobalChatMessages")
+  deletedGlobalChatMessages GlobalChatMessage[] @relation("DeletedGlobalChatMessages")
 }
 
 model Notification {
@@ -603,4 +605,22 @@ model AlbumChatMessage {
   @@index([albumId])
   @@index([userId])
   @@map("album_chat_messages")
+}
+
+model GlobalChatMessage {
+  id          String    @id @default(cuid())
+  content     String    @db.Text
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  isDeleted   Boolean   @default(false)
+  deletedAt   DateTime?
+  deletedById String?
+
+  userId      String
+  user        User      @relation("UserGlobalChatMessages", fields: [userId], references: [id], onDelete: Cascade)
+  deletedBy   User?     @relation("DeletedGlobalChatMessages", fields: [deletedById], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([userId])
+  @@map("global_chat_messages")
 }

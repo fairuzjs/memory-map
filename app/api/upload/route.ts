@@ -58,6 +58,7 @@ export async function POST(req: Request) {
 
     // SECURITY CHECK 2: File Wajib Ada
     if (!file) {
+      console.log("Error: No file uploaded");
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 })
     }
 
@@ -65,18 +66,21 @@ export async function POST(req: Request) {
     const isImage = ALLOWED_IMAGE_TYPES.includes(file.type)
     const isAudio = ALLOWED_AUDIO_TYPES.includes(file.type)
     if (!isImage && !isAudio) {
+      console.log("Error: Invalid file type", file.type);
       return NextResponse.json({ error: "Invalid file type. Only standard images and audio formats (MP3, WEBM, OGG, WAV) are allowed." }, { status: 400 })
     }
 
     // SECURITY CHECK 4: Batasi Ukuran File (5MB image, 4MB audio)
     const maxSize = isAudio ? MAX_AUDIO_SIZE : MAX_IMAGE_SIZE
     if (file.size > maxSize) {
+      console.log("Error: File size exceeds", file.size);
       return NextResponse.json({ error: `File size exceeds ${isAudio ? "4MB" : "5MB"} limit` }, { status: 400 })
     }
 
     // SECURITY CHECK 5: Derive ekstensi dari MIME type (BUKAN dari nama file client)
     const fileExt = MIME_TO_EXT[file.type]
     if (!fileExt) {
+        console.log("Error: Unsupported file type", file.type);
         return NextResponse.json({ error: "Unsupported file type" }, { status: 400 })
     }
     const fileName = `${session.user.id}/${crypto.randomUUID()}.${fileExt}`

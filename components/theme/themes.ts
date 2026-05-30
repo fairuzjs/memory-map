@@ -77,6 +77,18 @@ export const THEMES: ThemeConfig[] = [
             accent: "#EF4444",
         },
     },
+    {
+        id: "buttermilk",
+        name: "Buttermilk",
+        emoji: "🍼",
+        description: "Manis, lembut, energi, kalem dan hangat",
+        preview: {
+            bg: "#FAFAFA",
+            primary: "#FFD633",
+            secondary: "#FFEB9A",
+            accent: "#B4982A",
+        },
+    },
 ]
 
 export const DEFAULT_THEME = "classic"
