@@ -21,6 +21,8 @@ function TikTokIcon({ className }: { className?: string }) {
 
 interface UserProfilePopupProps {
     userId: string
+    isGuest?: boolean
+    guestName?: string
     anchorRef: React.RefObject<HTMLElement | null>
     onClose: () => void
 }
@@ -46,7 +48,7 @@ interface PopupUser {
     }
 }
 
-export function UserProfilePopup({ userId, anchorRef, onClose }: UserProfilePopupProps) {
+export function UserProfilePopup({ userId, isGuest, guestName, anchorRef, onClose }: UserProfilePopupProps) {
     const { data: session } = useSession()
     const currentUserId = session?.user?.id
     const isOwnProfile = currentUserId === userId
@@ -60,6 +62,31 @@ export function UserProfilePopup({ userId, anchorRef, onClose }: UserProfilePopu
 
     // Fetch user data
     useEffect(() => {
+        if (isGuest) {
+            setUser({
+                id: userId,
+                name: guestName || "Tamu",
+                username: "guest",
+                image: null,
+                bio: "Pengunjung tanpa akun",
+                role: "USER",
+                isVerified: false,
+                isPremium: false,
+                isFollowing: false,
+                createdAt: new Date().toISOString(),
+                instagram: null,
+                tiktok: null,
+                facebook: null,
+                _count: {
+                    memories: 0,
+                    followers: 0,
+                    following: 0,
+                }
+            })
+            setLoading(false)
+            return
+        }
+
         setLoading(true)
         fetch(`/api/users/${userId}`)
             .then(r => r.json())
@@ -72,7 +99,7 @@ export function UserProfilePopup({ userId, anchorRef, onClose }: UserProfilePopu
                 toast.error("Gagal memuat profil")
                 onClose()
             })
-    }, [userId, onClose])
+    }, [userId, isGuest, guestName, onClose])
 
     // Smart positioning relative to anchor
     useEffect(() => {
@@ -258,25 +285,27 @@ export function UserProfilePopup({ userId, anchorRef, onClose }: UserProfilePopu
                                 </div>
 
                                 {/* ── Stats Bar ── */}
-                                <div className="w-full flex items-stretch gap-0 overflow-hidden border-[2.5px] border-black shadow-[3px_3px_0_#000] rounded-xl mt-3 mb-3">
-                                    {[
-                                        { label: "Kenangan", value: user._count?.memories ?? 0, bg: "var(--mm-secondary)" },
-                                        { label: "Pengikut",  value: user._count?.followers ?? 0, bg: "var(--mm-accent)" },
-                                        { label: "Mengikuti", value: user._count?.following ?? 0, bg: "var(--mm-primary)" },
-                                    ].map(({ label, value, bg }, i, arr) => (
-                                        <div
-                                            key={label}
-                                            className="flex-1 flex flex-col items-center justify-center py-2.5 relative"
-                                            style={{ background: bg }}
-                                        >
-                                            {i < arr.length - 1 && (
-                                                <div className="absolute right-0 top-0 bottom-0 w-[2.5px] bg-black" />
-                                            )}
-                                            <span className="text-[15px] font-black text-black">{value}</span>
-                                            <span className="text-[8px] font-black tracking-widest uppercase text-black/70">{label}</span>
-                                        </div>
-                                    ))}
-                                </div>
+                                {!isGuest && (
+                                    <div className="w-full flex items-stretch gap-0 overflow-hidden border-[2.5px] border-black shadow-[3px_3px_0_#000] rounded-xl mt-3 mb-3">
+                                        {[
+                                            { label: "Kenangan", value: user._count?.memories ?? 0, bg: "var(--mm-secondary)" },
+                                            { label: "Pengikut",  value: user._count?.followers ?? 0, bg: "var(--mm-accent)" },
+                                            { label: "Mengikuti", value: user._count?.following ?? 0, bg: "var(--mm-primary)" },
+                                        ].map(({ label, value, bg }, i, arr) => (
+                                            <div
+                                                key={label}
+                                                className="flex-1 flex flex-col items-center justify-center py-2.5 relative"
+                                                style={{ background: bg }}
+                                            >
+                                                {i < arr.length - 1 && (
+                                                    <div className="absolute right-0 top-0 bottom-0 w-[2.5px] bg-black" />
+                                                )}
+                                                <span className="text-[15px] font-black text-black">{value}</span>
+                                                <span className="text-[8px] font-black tracking-widest uppercase text-black/70">{label}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
 
                                 {/* ── Social Links ── */}
                                 {hasSocials && (
@@ -315,51 +344,53 @@ export function UserProfilePopup({ userId, anchorRef, onClose }: UserProfilePopu
                                 )}
 
                                 {/* ── Action Buttons ── */}
-                                <div className="w-full flex gap-2">
-                                    {!isOwnProfile && currentUserId && (
-                                        <button
-                                            onClick={handleFollow}
-                                            disabled={followLoading}
+                                {!isGuest && (
+                                    <div className="w-full flex gap-2 mt-2">
+                                        {!isOwnProfile && currentUserId && (
+                                            <button
+                                                onClick={handleFollow}
+                                                disabled={followLoading}
+                                                className={`
+                                                    flex-1 flex items-center justify-center gap-1.5 h-10 rounded-xl
+                                                    border-[2.5px] border-black text-[12px] font-black uppercase
+                                                    shadow-[3px_3px_0_#000] transition-all
+                                                    hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000]
+                                                    active:translate-y-px active:shadow-none
+                                                    disabled:opacity-60 disabled:pointer-events-none
+                                                    ${isFollowing
+                                                        ? "bg-white text-black"
+                                                        : "bg-[var(--mm-accent)] text-white"
+                                                    }
+                                                `}
+                                            >
+                                                {followLoading ? (
+                                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                                ) : isFollowing ? (
+                                                    <><UserCheck className="w-4 h-4" /> Mengikuti</>
+                                                ) : (
+                                                    <><UserPlus className="w-4 h-4" /> Ikuti</>
+                                                )}
+                                            </button>
+                                        )}
+
+                                        <Link
+                                            href={`/profile/${user.id}`}
+                                            onClick={onClose}
                                             className={`
-                                                flex-1 flex items-center justify-center gap-1.5 h-10 rounded-xl
-                                                border-[2.5px] border-black text-[12px] font-black uppercase
-                                                shadow-[3px_3px_0_#000] transition-all
+                                                flex items-center justify-center gap-1.5 h-10 rounded-xl px-3
+                                                border-[2.5px] border-black text-[12px] font-black uppercase text-black
+                                                bg-[var(--mm-warning)] shadow-[3px_3px_0_#000] transition-all
                                                 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000]
                                                 active:translate-y-px active:shadow-none
-                                                disabled:opacity-60 disabled:pointer-events-none
-                                                ${isFollowing
-                                                    ? "bg-white text-black"
-                                                    : "bg-[var(--mm-accent)] text-white"
-                                                }
+                                                ${!isOwnProfile && currentUserId ? "" : "flex-1"}
                                             `}
                                         >
-                                            {followLoading ? (
-                                                <Loader2 className="w-4 h-4 animate-spin" />
-                                            ) : isFollowing ? (
-                                                <><UserCheck className="w-4 h-4" /> Mengikuti</>
-                                            ) : (
-                                                <><UserPlus className="w-4 h-4" /> Ikuti</>
-                                            )}
-                                        </button>
-                                    )}
-
-                                    <Link
-                                        href={`/profile/${user.id}`}
-                                        onClick={onClose}
-                                        className={`
-                                            flex items-center justify-center gap-1.5 h-10 rounded-xl px-3
-                                            border-[2.5px] border-black text-[12px] font-black uppercase text-black
-                                            bg-[var(--mm-warning)] shadow-[3px_3px_0_#000] transition-all
-                                            hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#000]
-                                            active:translate-y-px active:shadow-none
-                                            ${!isOwnProfile && currentUserId ? "" : "flex-1"}
-                                        `}
-                                    >
-                                        <ExternalLink className="w-4 h-4" />
-                                        {(!isOwnProfile && currentUserId) ? "" : "Lihat Profil"}
-                                        {(!isOwnProfile && currentUserId) && <span className="hidden sm:inline">Profil</span>}
-                                    </Link>
-                                </div>
+                                            <ExternalLink className="w-4 h-4" />
+                                            {(!isOwnProfile && currentUserId) ? "" : "Lihat Profil"}
+                                            {(!isOwnProfile && currentUserId) && <span className="hidden sm:inline">Profil</span>}
+                                        </Link>
+                                    </div>
+                                )}
                             </div>
                         </>
                     ) : null}

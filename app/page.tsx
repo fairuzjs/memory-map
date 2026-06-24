@@ -11,6 +11,7 @@ import { LandingFooter }     from "@/components/landing/LandingFooter"
 import { LandingModals }     from "@/components/landing/LandingModals"
 import { WelcomePopup }      from "@/components/landing/WelcomePopup"
 import { HowItWorksTimeline } from "@/components/landing/HowItWorksTimeline"
+import { GlobalChatBoard }   from "@/components/global-chat/GlobalChatBoard"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface PublicMemory {
@@ -104,6 +105,19 @@ export default function LandingPage() {
       <main className="relative z-10">
         <LandingHero />
         <LandingMapPreview memories={memories} loading={loading} />
+
+        <section id="global-chat" className="px-4 pb-20 max-w-5xl mx-auto">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-black mb-4">
+              Live <span className="text-[var(--mm-accent)]">Global Chat</span>
+            </h2>
+            <p className="text-black/60 font-bold max-w-xl mx-auto">
+              Sapa komunitas Memory Map! Cobalah berinteraksi sekarang.
+            </p>
+          </div>
+          <GlobalChatBoard />
+        </section>
+
         <LandingStatsStrip />
         <LandingFeatures />
 

@@ -113,7 +113,10 @@ export type AdminOrderActionInput = z.infer<typeof adminOrderActionSchema>
 export type AdminUserVerifyInput = z.infer<typeof adminUserVerifySchema>
 
 export const globalChatSchema = z.object({
-    content: z.string().trim().min(1, { message: "Pesan tidak boleh kosong" }).max(300, { message: "Pesan maksimal 300 karakter" })
+    content: z.string().trim().min(1, { message: "Pesan tidak boleh kosong" }),
+    guestId: z.string().optional(),
+    guestName: z.string().optional(),
+    replyToId: z.string().optional(),
 })
 
 export type GlobalChatInput = z.infer<typeof globalChatSchema>

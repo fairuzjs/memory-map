@@ -10,6 +10,7 @@ import { useSession } from "next-auth/react"
 import { motion } from "framer-motion"
 import { supabase } from "@/lib/supabase"
 import { MessageSquare, ChevronDown, Globe } from "lucide-react"
+import { signOut } from "next-auth/react"
 
 // ── Date divider helper ──────────────────────────────────────────────────────
 
@@ -46,6 +47,15 @@ export function GlobalChatBoard() {
     const [isLoadingMore, setIsLoadingMore] = useState(false)
     const [showScrollBtn, setShowScrollBtn] = useState(false)
     const [replyingTo, setReplyingTo]       = useState<ChatMessage | null>(null)
+    const [bannedUntil, setBannedUntil]     = useState<string | null>(null)
+
+    // Guest states
+    const [guestId, setGuestId] = useState<string>("")
+    const [guestName, setGuestName] = useState<string>("")
+    const [guestChatsLeft, setGuestChatsLeft] = useState(3)
+
+    const isGuest = !currentUserId
+    const activeUserId = currentUserId || guestId
 
     const scrollRef        = useRef<HTMLDivElement>(null)
     const lastMessageIdRef = useRef<string | null>(null)
@@ -78,14 +88,44 @@ export function GlobalChatBoard() {
         }
     }, [messages])
 
+    // ── Init Guest Session ──────────────────────────────────────────────────
+    useEffect(() => {
+        if (!currentUserId && typeof window !== "undefined") {
+            let storedId = localStorage.getItem("mm_guest_id")
+            let storedName = localStorage.getItem("mm_guest_name")
+            let storedChatsLeft = localStorage.getItem("mm_guest_chats_left")
+
+            if (!storedId) {
+                storedId = "guest_" + Math.random().toString(36).substring(2, 10)
+                localStorage.setItem("mm_guest_id", storedId)
+            }
+            if (!storedName) {
+                // Generate a random 4-char alphanumeric suffix
+                const randSuffix = Math.random().toString(36).substring(2, 6).toUpperCase()
+                storedName = `Guest_${randSuffix}`
+                localStorage.setItem("mm_guest_name", storedName)
+            }
+            if (!storedChatsLeft) {
+                localStorage.setItem("mm_guest_chats_left", "3")
+                storedChatsLeft = "3"
+            }
+
+            setGuestId(storedId)
+            setGuestName(storedName)
+            setGuestChatsLeft(parseInt(storedChatsLeft, 10))
+        }
+    }, [currentUserId])
+
     // ── Initial fetch ──────────────────────────────────────────────────────
     const fetchMessages = useCallback(async () => {
         try {
-            const res = await fetch("/api/global-chat")
+            const url = isGuest && guestId ? `/api/global-chat?guestId=${guestId}` : "/api/global-chat"
+            const res = await fetch(url)
             if (!res.ok) throw new Error("Gagal mengambil pesan")
             const data = await res.json()
             setMessages(data.messages)
             setNextCursor(data.nextCursor)
+            if (data.bannedUntil) setBannedUntil(data.bannedUntil)
             setTimeout(scrollToBottom, 100)
         } catch {
             toast.error("Gagal memuat obrolan")
@@ -129,11 +169,7 @@ export function GlobalChatBoard() {
 
     // ── Realtime + Polling + Full Sync ─────────────────────────────────────
     useEffect(() => {
-        if (!currentUserId) {
-            setIsLoading(false)
-            return
-        }
-
+        // Now guest can chat too, we still want realtime for them
         fetchMessages()
 
         // 1. Supabase Realtime — instant delivery
@@ -226,7 +262,7 @@ export function GlobalChatBoard() {
             clearInterval(fullSyncInterval)
             supabase.removeChannel(channel)
         }
-    }, [currentUserId, fetchMessages, scrollToBottom, isNearBottom])
+    }, [fetchMessages, scrollToBottom, isNearBottom])
 
     // ── Handlers ───────────────────────────────────────────────────────────
     const handleReply = useCallback((message: ChatMessage) => {
@@ -238,14 +274,30 @@ export function GlobalChatBoard() {
     }, [])
 
     const handleSend = useCallback(async (content: string, replyToId?: string) => {
+        const payload: any = { content }
+        if (replyToId) payload.replyToId = replyToId
+        if (isGuest) {
+            payload.guestId = guestId
+            payload.guestName = guestName
+        }
+
         const res = await fetch("/api/global-chat", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ content, ...(replyToId ? { replyToId } : {}) })
+            body: JSON.stringify(payload)
         })
         if (!res.ok) {
             const error = await res.json()
+            if (error.bannedUntil) setBannedUntil(error.bannedUntil)
             toast.error(error.error || "Gagal mengirim pesan")
+
+            if (error.isPermanentBan) {
+                // Log out automatically if permanently banned
+                setTimeout(() => {
+                    signOut({ callbackUrl: "/login" })
+                }, 2500)
+            }
+
             throw new Error(error.error)
         }
         const newMessage = await res.json()
@@ -255,7 +307,13 @@ export function GlobalChatBoard() {
         })
         setReplyingTo(null)
         setTimeout(scrollToBottom, 100)
-    }, [scrollToBottom])
+
+        if (isGuest) {
+            const newCount = guestChatsLeft - 1
+            setGuestChatsLeft(newCount)
+            localStorage.setItem("mm_guest_chats_left", newCount.toString())
+        }
+    }, [scrollToBottom, isGuest, guestId, guestName, guestChatsLeft])
 
     const handleDelete = useCallback((messageId: string) => {
         openConfirm({
@@ -279,22 +337,7 @@ export function GlobalChatBoard() {
         })
     }, [openConfirm])
 
-    // ── Not logged in state ────────────────────────────────────────────────
-    if (!currentUserId) {
-        return (
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex flex-col items-center justify-center rounded-2xl border-[3px] border-black bg-white py-20 text-center shadow-[4px_4px_0_#000]"
-            >
-                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl border-[3px] border-black bg-[var(--mm-warning)] shadow-[4px_4px_0_#000]">
-                    <span className="text-2xl">🔒</span>
-                </div>
-                <h2 className="mb-2 text-[18px] font-black uppercase text-black">Akses Terbatas</h2>
-                <p className="text-[14px] font-bold text-black/60">Anda harus login untuk mengakses Global Chat.</p>
-            </motion.div>
-        )
-    }
+    // We removed the block that prevented non-logged in users from seeing the chat
 
     // ── Build messages with date separators ────────────────────────────────
     const messagesWithDividers: Array<ChatMessage | { _type: "divider"; label: string; _key: string }> = []
@@ -402,7 +445,7 @@ export function GlobalChatBoard() {
                                 <GlobalChatMessageItem
                                     key={msg.id}
                                     message={msg}
-                                    currentUserId={currentUserId}
+                                    currentUserId={activeUserId}
                                     currentUserRole={currentUserRole}
                                     onDelete={handleDelete}
                                     onReply={handleReply}
@@ -430,6 +473,9 @@ export function GlobalChatBoard() {
                 isDisabled={isLoading}
                 replyTo={replyingTo}
                 onCancelReply={handleCancelReply}
+                isGuest={isGuest}
+                guestChatsLeft={guestChatsLeft}
+                bannedUntil={bannedUntil}
             />
         </motion.div>
     )

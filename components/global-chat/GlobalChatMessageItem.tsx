@@ -29,7 +29,10 @@ export interface ChatMessage {
     id: string
     content: string
     createdAt: string
-    userId: string
+    userId: string | null
+    isGuest?: boolean
+    guestId?: string | null
+    guestName?: string | null
     user: ChatUser
     replyTo?: ChatReplyPreview | null
 }
@@ -59,7 +62,7 @@ const REPLY_ICON_SHOW = 40  // px — icon appears
 export const GlobalChatMessageItem = memo(function GlobalChatMessageItem({
     message, currentUserId, currentUserRole, onDelete, onReply
 }: Props) {
-    const isMe    = currentUserId === message.userId
+    const isMe    = !!currentUserId && (currentUserId === message.userId || currentUserId === message.user.id)
     const canDelete = isMe || currentUserRole === "ADMIN"
 
     const avatarRef = useRef<HTMLButtonElement>(null)
@@ -280,7 +283,9 @@ export const GlobalChatMessageItem = memo(function GlobalChatMessageItem({
             {/* Profile Popup — rendered in fixed position */}
             {showPopup && (
                 <UserProfilePopup
-                    userId={message.userId}
+                    userId={message.user.id}
+                    isGuest={message.isGuest}
+                    guestName={message.user.name}
                     anchorRef={avatarRef}
                     onClose={handleClosePopup}
                 />

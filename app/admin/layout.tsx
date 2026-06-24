@@ -17,6 +17,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         { label: "Pesanan Topup", href: "/admin/topup", icon: Coins },
         { label: "Proses Topup", href: "/admin/topup/process", icon: Zap },
         { label: "Pesanan Premium", href: "/admin/premium", icon: Crown },
+        { label: "Banding Akun", href: "/admin/appeals", icon: Flag },
         { label: "Pengguna", href: "/admin/users", icon: BadgeCheck },
     ]
 

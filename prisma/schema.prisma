@@ -27,6 +27,11 @@ model User {
   points          Int      @default(0)
   createdAt       DateTime @default(now())
 
+  // ── Moderation ──────────────────────────────────────
+  bannedUntil           DateTime?
+  bannedReason          String?
+  globalChatBannedUntil DateTime?
+
   // ── Premium ──────────────────────────────
   isPremium              Boolean   @default(false)
   premiumExpiresAt       DateTime? // null = belum pernah premium
@@ -64,6 +69,7 @@ model User {
   albumChatMessages  AlbumChatMessage[]
   globalChatMessages        GlobalChatMessage[] @relation("UserGlobalChatMessages")
   deletedGlobalChatMessages GlobalChatMessage[] @relation("DeletedGlobalChatMessages")
+  banAppeals                BanAppeal[]
 }
 
 model Notification {
@@ -616,8 +622,14 @@ model GlobalChatMessage {
   deletedAt   DateTime?
   deletedById String?
 
-  userId      String
-  user        User      @relation("UserGlobalChatMessages", fields: [userId], references: [id], onDelete: Cascade)
+  userId      String?
+  user        User?      @relation("UserGlobalChatMessages", fields: [userId], references: [id], onDelete: Cascade)
+  
+  // ── Guest fields ──────────────────────────────────────────────
+  isGuest     Boolean   @default(false)
+  guestId     String?
+  guestName   String?
+
   deletedBy   User?     @relation("DeletedGlobalChatMessages", fields: [deletedById], references: [id], onDelete: SetNull)
 
   // ── Reply fields ──────────────────────────────────────────────
@@ -630,4 +642,25 @@ model GlobalChatMessage {
   @@index([isDeleted, createdAt])
   @@index([replyToId])
   @@map("global_chat_messages")
+}
+
+enum BanAppealStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model BanAppeal {
+  id         String          @id @default(cuid())
+  userId     String
+  reason     String          @db.Text
+  adminNotes String?         @db.Text
+  status     BanAppealStatus @default(PENDING)
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
 }

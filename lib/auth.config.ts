@@ -33,7 +33,7 @@ export const authConfig = {
                 return true
             }
 
-            const isPublicRoute = nextUrl.pathname === "/" || nextUrl.pathname === "/api/register" || nextUrl.pathname.startsWith("/api/auth")
+            const isPublicRoute = nextUrl.pathname === "/" || nextUrl.pathname === "/appeal" || nextUrl.pathname === "/api/appeal" || nextUrl.pathname === "/api/register" || nextUrl.pathname.startsWith("/api/auth")
 
             if (!isLoggedIn && !isPublicRoute && !nextUrl.pathname.includes('.')) {
                 return false // Redirects to login page

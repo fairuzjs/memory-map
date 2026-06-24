@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { loginSchema, type LoginInput } from "@/lib/validations"
+import { checkBanStatus } from "./actions"
 import toast from "react-hot-toast"
 import { Input } from "@/components/ui/Input"
 import Link from "next/link"
@@ -39,6 +40,26 @@ export default function LoginPage() {
     async function onSubmit(data: LoginInput) {
         setIsLoading(true)
         try {
+            // Cek status banned sebelum login agar tidak terblokir oleh NextAuth error masking
+            const banStatus = await checkBanStatus(data.email)
+            if (banStatus.isBanned) {
+                toast((t) => (
+                    <div className="flex flex-col gap-2">
+                        <span className="font-bold text-red-600">Akun Anda Diblokir Permanen!</span>
+                        <span className="text-xs text-black/70">Alasan: {banStatus.reason}</span>
+                        <Link 
+                            href={`/appeal?email=${encodeURIComponent(data.email)}`} 
+                            className="text-xs text-white bg-black hover:bg-black/80 px-3 py-1.5 rounded-lg text-center font-bold mt-1 transition-colors" 
+                            onClick={() => toast.dismiss(t.id)}
+                        >
+                            Ajukan Banding
+                        </Link>
+                    </div>
+                ), { duration: 8000, position: 'top-center' })
+                setIsLoading(false)
+                return
+            }
+
             const result = await signIn("credentials", {
                 redirect: false,
                 email: data.email,
@@ -46,7 +67,7 @@ export default function LoginPage() {
                 isAdminLogin: "false",
             })
             if (result?.error) {
-                toast.error(result.error !== "CredentialsSignin" ? result.error : "Email atau password tidak valid")
+                toast.error("Email atau password tidak valid")
             } else {
                 toast.success("Berhasil masuk")
                 router.push("/dashboard")

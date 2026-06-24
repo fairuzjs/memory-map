@@ -1,4 +1,11 @@
-import NextAuth from "next-auth"
+import NextAuth, { CredentialsSignin } from "next-auth"
+
+class BannedError extends CredentialsSignin {
+    constructor(message: string) {
+        super(message)
+        this.code = message // Set code property as NextAuth sometimes uses it to pass strings
+    }
+}
 import CredentialsProvider from "next-auth/providers/credentials"
 import { prisma } from "./prisma"
 import bcrypt from "bcryptjs"
@@ -26,6 +33,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
                 if (!user || !user.password) {
                     return null
+                }
+
+                if (user.bannedUntil && new Date(user.bannedUntil) > new Date()) {
+                    throw new BannedError(`BANNED_PERMANENT:${user.bannedReason || "Pelanggaran pedoman komunitas"}`)
                 }
 
                 const isValid = await bcrypt.compare(credentials.password as string, user.password)

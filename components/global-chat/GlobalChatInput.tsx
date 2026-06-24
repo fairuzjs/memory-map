@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { Send, X, CornerUpLeft } from "lucide-react"
+import { Send, X, CornerUpLeft, Lock } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import type { ChatMessage } from "./GlobalChatMessageItem"
 
@@ -10,9 +10,12 @@ interface Props {
     isDisabled?: boolean
     replyTo?: ChatMessage | null
     onCancelReply?: () => void
+    isGuest?: boolean
+    guestChatsLeft?: number
+    bannedUntil?: string | null
 }
 
-export function GlobalChatInput({ onSend, isDisabled, replyTo, onCancelReply }: Props) {
+export function GlobalChatInput({ onSend, isDisabled, replyTo, onCancelReply, isGuest, guestChatsLeft, bannedUntil }: Props) {
     const [content, setContent]     = useState("")
     const [isSending, setIsSending] = useState(false)
     const [cooldown, setCooldown]   = useState(0)
@@ -26,6 +29,42 @@ export function GlobalChatInput({ onSend, isDisabled, replyTo, onCancelReply }: 
         }
     }, [cooldown])
 
+    // Ban countdown timer
+    const [banTimeLeft, setBanTimeLeft] = useState<number | null>(null)
+    useEffect(() => {
+        if (!bannedUntil) {
+            setBanTimeLeft(null)
+            return
+        }
+
+        const updateBanTime = () => {
+            const until = new Date(bannedUntil).getTime()
+            const now = Date.now()
+            if (until > now) {
+                setBanTimeLeft(until - now)
+            } else {
+                setBanTimeLeft(null)
+            }
+        }
+
+        updateBanTime()
+        const interval = setInterval(updateBanTime, 1000)
+        return () => clearInterval(interval)
+    }, [bannedUntil])
+
+    const formatTimeLeft = (ms: number) => {
+        const totalSeconds = Math.floor(ms / 1000)
+        const hours = Math.floor(totalSeconds / 3600)
+        const minutes = Math.floor((totalSeconds % 3600) / 60)
+        const seconds = totalSeconds % 60
+
+        if (hours > 24 * 365) return "PERMANEN"
+
+        return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
+    }
+
+    const isBanned = banTimeLeft !== null
+
     // Focus textarea when reply target is set
     useEffect(() => {
         if (replyTo) {
@@ -35,7 +74,8 @@ export function GlobalChatInput({ onSend, isDisabled, replyTo, onCancelReply }: 
 
     const handleSubmit = async () => {
         const text = content.trim()
-        if (!text || text.length > 300 || isSending || cooldown > 0 || isDisabled) return
+        const charLimit = isGuest ? 100 : 300
+        if (!text || text.length > charLimit || isSending || cooldown > 0 || isDisabled) return
         try {
             setIsSending(true)
             await onSend(text, replyTo?.id)
@@ -65,17 +105,19 @@ export function GlobalChatInput({ onSend, isDisabled, replyTo, onCancelReply }: 
 
     const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const val = e.target.value
-        if (val.length <= 300) setContent(val)
+        const charLimit = isGuest ? 100 : 300
+        if (val.length <= charLimit) setContent(val)
         if (textareaRef.current) {
             textareaRef.current.style.height = "auto"
             textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`
         }
     }
 
-    const isBlocked   = !content.trim() || isSending || cooldown > 0 || isDisabled
-    const charLeft    = 300 - content.length
-    const isNearLimit = content.length >= 260
-    const isAtLimit   = content.length >= 300
+    const charLimit   = isGuest ? 100 : 300
+    const isBlocked   = !content.trim() || isSending || cooldown > 0 || isDisabled || (isGuest && (guestChatsLeft || 0) <= 0)
+    const charLeft    = charLimit - content.length
+    const isNearLimit = charLimit - content.length <= 40
+    const isAtLimit   = content.length >= charLimit
 
     return (
         <div className="shrink-0 border-t-[3px] border-black bg-[var(--mm-surface)] z-20">
@@ -125,69 +167,88 @@ export function GlobalChatInput({ onSend, isDisabled, replyTo, onCancelReply }: 
 
             {/* ── Main Input Row ── */}
             <div className="flex items-end gap-2 max-w-4xl mx-auto p-3">
+                {isBanned ? (
+                    <div className="w-full flex items-center justify-between bg-[var(--mm-bg)] border-[3px] border-red-600 rounded-xl px-4 py-3 h-[48px] shadow-[4px_4px_0_#dc2626]">
+                        <div className="flex items-center gap-3">
+                            <Lock className="w-5 h-5 text-red-600" />
+                            <span className="text-[13px] font-black text-red-600 uppercase tracking-wide">
+                                Akses Chat Diblokir
+                            </span>
+                        </div>
+                        <div className="text-[14px] font-black text-red-600 font-mono tracking-widest bg-red-100 border-[2px] border-red-600 px-3 py-0.5 rounded-lg">
+                            {formatTimeLeft(banTimeLeft)}
+                        </div>
+                    </div>
+                ) : (
+                    <>
+                        {/* Textarea wrapper */}
+                        <div className="relative flex-1">
+                            <textarea
+                                ref={textareaRef}
+                                value={content}
+                                onChange={handleInput}
+                                onKeyDown={handleKeyDown}
+                                disabled={isDisabled || isSending || cooldown > 0}
+                                placeholder={
+                                    cooldown > 0
+                                        ? `Tunggu ${cooldown}s...`
+                                        : isDisabled
+                                            ? "Login untuk chat"
+                                            : isGuest && guestChatsLeft !== undefined && guestChatsLeft <= 0
+                                                ? "Batas chat tamu habis. Silakan daftar!"
+                                                : replyTo
+                                                    ? `Balas ${replyTo.user.name}...`
+                                                    : isGuest 
+                                                        ? `Ketik pesan (Tamu: sisa ${guestChatsLeft}x chat)`
+                                                        : "Ketik pesan... (Enter untuk kirim)"
+                                }
+                                className="
+                                    w-full resize-none outline-none
+                                    bg-[var(--mm-bg)] text-black font-bold text-[13px] leading-relaxed
+                                    placeholder:text-black/40
+                                    border-[3px] border-black rounded-xl px-4 py-3 pr-14
+                                    focus:shadow-[3px_3px_0_#000] transition-shadow
+                                    disabled:opacity-50
+                                "
+                                style={{ height: "48px", minHeight: "48px" }}
+                            />
 
-                {/* Textarea wrapper */}
-                <div className="relative flex-1">
-                    <textarea
-                        ref={textareaRef}
-                        value={content}
-                        onChange={handleInput}
-                        onKeyDown={handleKeyDown}
-                        disabled={isDisabled || isSending || cooldown > 0}
-                        placeholder={
-                            cooldown > 0
-                                ? `Tunggu ${cooldown}s...`
-                                : isDisabled
-                                    ? "Login untuk chat"
-                                    : replyTo
-                                        ? `Balas ${replyTo.user.name}...`
-                                        : "Ketik pesan... (Enter untuk kirim)"
-                        }
-                        className="
-                            w-full resize-none outline-none
-                            bg-[var(--mm-bg)] text-black font-bold text-[13px] leading-relaxed
-                            placeholder:text-black/40
-                            border-[3px] border-black rounded-xl px-4 py-3 pr-14
-                            focus:shadow-[3px_3px_0_#000] transition-shadow
-                            disabled:opacity-50
-                        "
-                        style={{ height: "48px", minHeight: "48px" }}
-                    />
+                            {/* Character counter */}
+                            <span
+                                className={`absolute bottom-3 right-3 text-[11px] font-black tabular-nums ${
+                                    isAtLimit   ? "text-red-600" :
+                                    isNearLimit ? "text-orange-500" :
+                                                "text-black/40"
+                                }`}
+                            >
+                                {isNearLimit ? charLeft : `${content.length}/${charLimit}`}
+                            </span>
+                        </div>
 
-                    {/* Character counter */}
-                    <span
-                        className={`absolute bottom-3 right-3 text-[11px] font-black tabular-nums ${
-                            isAtLimit   ? "text-red-600" :
-                            isNearLimit ? "text-orange-500" :
-                                          "text-black/40"
-                        }`}
-                    >
-                        {isNearLimit ? charLeft : `${content.length}/300`}
-                    </span>
-                </div>
-
-                {/* Send Button */}
-                <button
-                    onClick={handleSubmit}
-                    disabled={isBlocked}
-                    className="
-                        shrink-0 h-12 w-12 flex items-center justify-center rounded-xl
-                        border-[3px] border-black bg-[var(--mm-accent)] text-black
-                        shadow-[4px_4px_0_#000]
-                        hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-[6px_6px_0_#000]
-                        active:translate-x-0 active:translate-y-0 active:shadow-none
-                        disabled:opacity-40 disabled:pointer-events-none
-                        transition-all duration-150
-                    "
-                >
-                    {isSending ? (
-                        <div className="w-5 h-5 border-[3px] border-black border-t-transparent rounded-full animate-spin" />
-                    ) : cooldown > 0 ? (
-                        <span className="text-[11px] font-black text-black">{cooldown}s</span>
-                    ) : (
-                        <Send className="w-5 h-5 text-black" />
-                    )}
-                </button>
+                        {/* Send Button */}
+                        <button
+                            onClick={handleSubmit}
+                            disabled={isBlocked}
+                            className="
+                                shrink-0 h-12 w-12 flex items-center justify-center rounded-xl
+                                border-[3px] border-black bg-[var(--mm-accent)] text-black
+                                shadow-[4px_4px_0_#000]
+                                hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-[6px_6px_0_#000]
+                                active:translate-x-0 active:translate-y-0 active:shadow-none
+                                disabled:opacity-40 disabled:pointer-events-none
+                                transition-all duration-150
+                            "
+                        >
+                            {isSending ? (
+                                <div className="w-5 h-5 border-[3px] border-black border-t-transparent rounded-full animate-spin" />
+                            ) : cooldown > 0 ? (
+                                <span className="text-[11px] font-black text-black">{cooldown}s</span>
+                            ) : (
+                                <Send className="w-5 h-5 text-black" />
+                            )}
+                        </button>
+                    </>
+                )}
             </div>
 
             {/* Hint */}
